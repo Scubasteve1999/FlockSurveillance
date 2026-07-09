@@ -90,8 +90,9 @@ struct MapRadarView: View {
                     nearestMeters: nearest?.meters,
                     nearestLabel: nearest.map { $0.camera.displayManufacturer },
                     densityLabel: AppTheme.densityLabel(count: camerasInView.count),
-                    isLoading: repository.isLoading,
+                    isLoading: repository.isLoading || repository.isSeeding,
                     errorMessage: repository.lastError,
+                    coverageHint: repository.coverageHint,
                     freshnessLabel: repository.freshnessLabel,
                     watchModeEnabled: radar.watchModeEnabled,
                     onToggleWatch: toggleWatchMode

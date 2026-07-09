@@ -38,6 +38,7 @@ struct RadarHUD: View {
     let densityLabel: String
     let isLoading: Bool
     let errorMessage: String?
+    let coverageHint: String?
     let freshnessLabel: String?
     let watchModeEnabled: Bool
     let onToggleWatch: () -> Void
@@ -94,6 +95,13 @@ struct RadarHUD: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(AppTheme.primary.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+
+            if let coverageHint {
+                Text(coverageHint)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             HStack(spacing: 8) {

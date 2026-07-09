@@ -38,4 +38,34 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(GeoHelpers.relativeFreshness(from: now.addingTimeInterval(-120), now: now), "Updated 2m ago")
         XCTAssertNil(GeoHelpers.relativeFreshness(from: nil, now: now))
     }
+
+    func testContinentalRegionIsTooLargeForFullFetch() {
+        let america = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 30, longitude: -95),
+            span: MKCoordinateSpan(latitudeDelta: 50, longitudeDelta: 60)
+        )
+        XCTAssertTrue(GeoHelpers.isRegionTooLargeForFullFetch(america))
+        let tiles = GeoHelpers.queryTiles(for: america)
+        XCTAssertEqual(tiles.count, 1)
+        XCTAssertLessThanOrEqual(tiles[0].span.latitudeDelta, GeoHelpers.maxQuerySpanDegrees + 0.001)
+    }
+
+    func testMetroRegionUsesSingleTile() {
+        let la = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 34.05, longitude: -118.25),
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+        XCTAssertFalse(GeoHelpers.isRegionTooLargeForFullFetch(la))
+        XCTAssertEqual(GeoHelpers.queryTiles(for: la).count, 1)
+    }
+
+    func testWideRegionSplitsIntoMultipleTiles() {
+        let bay = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 37.5, longitude: -122.0),
+            span: MKCoordinateSpan(latitudeDelta: 1.0, longitudeDelta: 1.0)
+        )
+        let tiles = GeoHelpers.queryTiles(for: bay)
+        XCTAssertGreaterThan(tiles.count, 1)
+        XCTAssertLessThanOrEqual(tiles.count, GeoHelpers.maxTilesPerFetch)
+    }
 }

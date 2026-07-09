@@ -8,17 +8,21 @@ final class CameraRepository {
     private(set) var cameras: [ALPRCamera] = []
     private(set) var isLoading = false
     private(set) var lastError: String?
+    private(set) var coverageHint: String?
     private(set) var lastRegion: MKCoordinateRegion?
     private(set) var lastSuccessfulFetchAt: Date?
     private(set) var isServingStale = false
+    private(set) var isSeeding = false
 
     private let client: OverpassClient
     private var modelContext: ModelContext?
     private var debounceTask: Task<Void, Never>?
+    private var seedTask: Task<Void, Never>?
     private var fetchGeneration = 0
 
-    private let maxCachedCameras = 8_000
+    private let maxCachedCameras = 12_000
     private let maxAge: TimeInterval = 14 * 24 * 60 * 60
+    private let seedMinimumCacheCount = 250
 
     init(client: OverpassClient = .shared) {
         self.client = client
@@ -28,12 +32,14 @@ final class CameraRepository {
         self.modelContext = modelContext
         loadCached()
         lastSuccessfulFetchAt = cameras.map(\.fetchedAt).max()
+        if cameras.count < seedMinimumCacheCount {
+            startSeedIfNeeded()
+        }
     }
 
     func loadCached() {
         guard let modelContext else { return }
-        // Sort in memory to avoid Swift 6 KeyPath<ALPRCamera, Date>: Sendable diagnostics
-        // from SortDescriptor(\.fetchedAt).
+        // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         cameras = fetched.sorted { $0.fetchedAt > $1.fetchedAt }
     }
@@ -54,10 +60,26 @@ final class CameraRepository {
         isLoading = true
         lastError = nil
 
+        let tooLarge = GeoHelpers.isRegionTooLargeForFullFetch(region)
+        coverageHint = tooLarge
+            ? "Zoom into a city to load more cameras — Overpass only serves metro-sized areas."
+            : nil
+
+        let tiles = GeoHelpers.queryTiles(for: region)
+
         do {
-            let remote = try await client.fetchCameras(in: region)
+            var combined: [ALPRCameraDTO] = []
+            var seen = Set<String>()
+            for tile in tiles {
+                guard generation == fetchGeneration else { return }
+                let remote = try await client.fetchCameras(in: tile)
+                for dto in remote where seen.insert(dto.id).inserted {
+                    combined.append(dto)
+                }
+            }
+
             guard generation == fetchGeneration else { return }
-            upsert(remote.map { $0.makeModel() })
+            upsert(combined.map { $0.makeModel() })
             pruneCache()
             loadCached()
             lastSuccessfulFetchAt = .now
@@ -67,7 +89,12 @@ final class CameraRepository {
             // ignore
         } catch {
             if generation == fetchGeneration {
-                lastError = error.localizedDescription
+                lastError = tooLarge
+                    ? nil
+                    : error.localizedDescription
+                if tooLarge {
+                    coverageHint = "Zoom into a city to load more cameras — showing cached pins only."
+                }
                 isServingStale = !cameras.isEmpty
                 if cameras.isEmpty {
                     loadCached()
@@ -81,7 +108,55 @@ final class CameraRepository {
         }
     }
 
+    func startSeedIfNeeded() {
+        guard !isSeeding, cameras.count < seedMinimumCacheCount else { return }
+        seedTask?.cancel()
+        isSeeding = true
+        coverageHint = "Loading major metro areas…"
+
+        seedTask = Task { [weak self] in
+            guard let self else { return }
+            var loadedAny = false
+            for metro in GeoHelpers.seedMetros {
+                if Task.isCancelled { break }
+                // Skip seed tiles that already have dense local cache.
+                let region = GeoHelpers.seedRegion(for: metro.coordinate)
+                let existingNearby = self.cameras(in: region).count
+                if existingNearby >= 40 { continue }
+
+                do {
+                    let remote = try await self.client.fetchCameras(in: region)
+                    if !remote.isEmpty {
+                        self.upsert(remote.map { $0.makeModel() })
+                        loadedAny = true
+                        self.loadCached()
+                        self.lastSuccessfulFetchAt = .now
+                        self.isServingStale = false
+                        WidgetBridge.writeNearbySnapshot(from: self.cameras)
+                    }
+                } catch {
+                    // Soft-fail individual seed tiles; continue warming the rest.
+                }
+
+                if self.cameras.count >= self.seedMinimumCacheCount { break }
+                // Pace seed requests so Overpass rate limits don't reject the whole pass.
+                try? await Task.sleep(nanoseconds: 700_000_000)
+            }
+
+            self.pruneCache()
+            self.loadCached()
+            self.isSeeding = false
+            if loadedAny {
+                self.coverageHint = nil
+            } else if self.cameras.count < self.seedMinimumCacheCount {
+                self.coverageHint = "Zoom into a city to load cameras from OpenStreetMap."
+            }
+        }
+    }
+
     func clearCache() {
+        seedTask?.cancel()
+        isSeeding = false
         guard let modelContext else {
             cameras = []
             return
@@ -93,7 +168,9 @@ final class CameraRepository {
         cameras = []
         lastSuccessfulFetchAt = nil
         isServingStale = false
+        coverageHint = nil
         WidgetBridge.writeNearbySnapshot(from: [])
+        startSeedIfNeeded()
     }
 
     func refreshWidgetSnapshot() {
@@ -135,6 +212,7 @@ final class CameraRepository {
     var freshnessLabel: String? {
         let base = GeoHelpers.relativeFreshness(from: lastSuccessfulFetchAt)
         guard let base else { return nil }
+        if isSeeding { return "\(base) · seeding metros" }
         return isServingStale ? "\(base) · cached" : base
     }
 
@@ -160,7 +238,9 @@ final class CameraRepository {
                 current.fetchedAt = camera.fetchedAt
             } else {
                 modelContext.insert(camera)
-                byID[camera.id] = camera
+                if byID[camera.id] == nil {
+                    byID[camera.id] = camera
+                }
             }
         }
         try? modelContext.save()

@@ -1,0 +1,113 @@
+name: FlockSurveillance
+options:
+  bundleIdPrefix: com.flocksurveillance
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    MARKETING_VERSION: "1.1.0"
+    CURRENT_PROJECT_VERSION: "2"
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    INFOPLIST_KEY_CFBundleDisplayName: "Flock Surveillance"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+targets:
+  FlockSurveillance:
+    type: application
+    platform: iOS
+    sources:
+      - path: FlockSurveillance
+        excludes:
+          - "**/.DS_Store"
+          - Info.plist
+    info:
+      path: FlockSurveillance/Info.plist
+      properties:
+        CFBundleDisplayName: Flock Surveillance
+        UILaunchScreen: {}
+        CFBundleURLTypes:
+          - CFBundleURLName: com.flocksurveillance.app
+            CFBundleURLSchemes:
+              - flocksurveillance
+        NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.
+        NSLocationAlwaysAndWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_STRICT_CONCURRENCY: complete
+    dependencies:
+      - target: NearbyCamerasWidgetExtension
+        embed: true
+    entitlements:
+      path: FlockSurveillance/FlockSurveillance.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.flocksurveillance.shared
+  FlockSurveillanceTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: FlockSurveillanceTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app.tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+    dependencies:
+      - target: FlockSurveillance
+  NearbyCamerasWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: NearbyCamerasWidget
+        excludes:
+          - "**/.DS_Store"
+          - Info.plist
+    info:
+      path: NearbyCamerasWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Nearby ALPRs
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app.widget
+        SKIP_INSTALL: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@executable_path/../../Frameworks"
+    entitlements:
+      path: NearbyCamerasWidget/NearbyCamerasWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.flocksurveillance.shared
+schemes:
+  FlockSurveillance:
+    build:
+      targets:
+        FlockSurveillance: all
+        NearbyCamerasWidgetExtension: all
+        FlockSurveillanceTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - FlockSurveillanceTests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

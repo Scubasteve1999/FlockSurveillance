@@ -58,6 +58,12 @@ final class OverpassParserTests: XCTestCase {
 
         let relation = try XCTUnwrap(cameras.first { $0.id == "osm-relation-333" })
         XCTAssertEqual(relation.latitude, 33.71, accuracy: 0.0001)
+
+        // DTO → model conversion stays on MainActor in production; validate fields here.
+        XCTAssertEqual(node.id, "osm-node-111")
+        XCTAssertEqual(way.id, "osm-way-222")
+        XCTAssertEqual(relation.id, "osm-relation-333")
+
     }
 
     func testOSMURLForTypedAndLegacyIDs() {

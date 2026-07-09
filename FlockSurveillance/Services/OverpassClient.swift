@@ -32,6 +32,38 @@ struct OverpassResponse: Decodable, Sendable {
     let elements: [OverpassElement]
 }
 
+/// Sendable transfer object so Overpass results can cross actor boundaries safely.
+struct ALPRCameraDTO: Sendable, Equatable {
+    let id: String
+    let latitude: Double
+    let longitude: Double
+    let manufacturer: String?
+    let operatorName: String?
+    let direction: String?
+    let cameraName: String?
+    let tagsJSON: String
+    let fetchedAt: Date
+
+    var isFlock: Bool {
+        (manufacturer ?? "").lowercased().contains("flock")
+    }
+
+    @MainActor
+    func makeModel() -> ALPRCamera {
+        ALPRCamera(
+            id: id,
+            latitude: latitude,
+            longitude: longitude,
+            manufacturer: manufacturer,
+            operatorName: operatorName,
+            direction: direction,
+            cameraName: cameraName,
+            tagsJSON: tagsJSON,
+            fetchedAt: fetchedAt
+        )
+    }
+}
+
 enum OverpassError: LocalizedError {
     case invalidURL
     case httpStatus(Int)
@@ -49,7 +81,7 @@ enum OverpassError: LocalizedError {
 }
 
 enum OverpassParser {
-    static func cameras(from data: Data, fetchedAt: Date = .now) throws -> [ALPRCamera] {
+    static func cameras(from data: Data, fetchedAt: Date = .now) throws -> [ALPRCameraDTO] {
         let decoded: OverpassResponse
         do {
             decoded = try JSONDecoder().decode(OverpassResponse.self, from: data)
@@ -58,7 +90,7 @@ enum OverpassParser {
         }
 
         var seen = Set<String>()
-        var cameras: [ALPRCamera] = []
+        var cameras: [ALPRCameraDTO] = []
 
         for element in decoded.elements {
             guard let coordinate = coordinate(for: element) else { continue }
@@ -71,7 +103,7 @@ enum OverpassParser {
             let tagsJSON = String(data: tagsData, encoding: .utf8) ?? "{}"
 
             cameras.append(
-                ALPRCamera(
+                ALPRCameraDTO(
                     id: id,
                     latitude: coordinate.lat,
                     longitude: coordinate.lon,
@@ -101,10 +133,8 @@ enum OverpassParser {
     }
 
     static func osmURL(forCameraID id: String) -> URL? {
-        // id format: osm-{type}-{numericId}
         let parts = id.split(separator: "-")
         guard parts.count >= 3, parts[0] == "osm" else {
-            // Legacy osm-{numericId} node ids
             if parts.count == 2, parts[0] == "osm", let nodeID = parts.last {
                 return URL(string: "https://www.openstreetmap.org/node/\(nodeID)")
             }
@@ -132,7 +162,7 @@ actor OverpassClient {
         self.session = session
     }
 
-    func fetchCameras(in region: MKCoordinateRegion) async throws -> [ALPRCamera] {
+    func fetchCameras(in region: MKCoordinateRegion) async throws -> [ALPRCameraDTO] {
         let south = region.center.latitude - region.span.latitudeDelta / 2
         let north = region.center.latitude + region.span.latitudeDelta / 2
         let west = region.center.longitude - region.span.longitudeDelta / 2
@@ -173,7 +203,7 @@ actor OverpassClient {
         throw lastError
     }
 
-    private func perform(query: String, endpoint: String) async throws -> [ALPRCamera] {
+    private func perform(query: String, endpoint: String) async throws -> [ALPRCameraDTO] {
         guard let url = URL(string: endpoint) else { throw OverpassError.invalidURL }
 
         var request = URLRequest(url: url)

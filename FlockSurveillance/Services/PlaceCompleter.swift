@@ -1,5 +1,5 @@
-import MapKit
 import Foundation
+import MapKit
 
 @MainActor
 @Observable
@@ -26,9 +26,9 @@ final class PlaceCompleter: NSObject, MKLocalSearchCompleterDelegate {
     }
 
     nonisolated func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-        let results = completer.results
+        // Don't capture non-Sendable results across isolation; re-read on MainActor.
         Task { @MainActor in
-            self.results = results
+            self.results = self.completer.results
         }
     }
 

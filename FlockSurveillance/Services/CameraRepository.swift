@@ -32,8 +32,10 @@ final class CameraRepository {
 
     func loadCached() {
         guard let modelContext else { return }
-        let descriptor = FetchDescriptor<ALPRCamera>(sortBy: [SortDescriptor(\.fetchedAt, order: .reverse)])
-        cameras = (try? modelContext.fetch(descriptor)) ?? []
+        // Sort in memory to avoid Swift 6 KeyPath<ALPRCamera, Date>: Sendable diagnostics
+        // from SortDescriptor(\.fetchedAt).
+        let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        cameras = fetched.sorted { $0.fetchedAt > $1.fetchedAt }
     }
 
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {
@@ -55,7 +57,7 @@ final class CameraRepository {
         do {
             let remote = try await client.fetchCameras(in: region)
             guard generation == fetchGeneration else { return }
-            upsert(remote)
+            upsert(remote.map { $0.makeModel() })
             pruneCache()
             loadCached()
             lastSuccessfulFetchAt = .now
@@ -142,21 +144,23 @@ final class CameraRepository {
             return
         }
 
+        // Index existing rows in memory instead of #Predicate KeyPaths (not Sendable in Swift 6).
+        let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        var byID = Dictionary(uniqueKeysWithValues: existing.map { ($0.id, $0) })
+
         for camera in remote {
-            let id = camera.id
-            var descriptor = FetchDescriptor<ALPRCamera>(predicate: #Predicate { $0.id == id })
-            descriptor.fetchLimit = 1
-            if let existing = try? modelContext.fetch(descriptor).first {
-                existing.latitude = camera.latitude
-                existing.longitude = camera.longitude
-                existing.manufacturer = camera.manufacturer
-                existing.operatorName = camera.operatorName
-                existing.direction = camera.direction
-                existing.cameraName = camera.cameraName
-                existing.tagsJSON = camera.tagsJSON
-                existing.fetchedAt = camera.fetchedAt
+            if let current = byID[camera.id] {
+                current.latitude = camera.latitude
+                current.longitude = camera.longitude
+                current.manufacturer = camera.manufacturer
+                current.operatorName = camera.operatorName
+                current.direction = camera.direction
+                current.cameraName = camera.cameraName
+                current.tagsJSON = camera.tagsJSON
+                current.fetchedAt = camera.fetchedAt
             } else {
                 modelContext.insert(camera)
+                byID[camera.id] = camera
             }
         }
         try? modelContext.save()
@@ -165,14 +169,14 @@ final class CameraRepository {
     private func pruneCache() {
         guard let modelContext else { return }
         let cutoff = Date().addingTimeInterval(-maxAge)
-        let descriptor = FetchDescriptor<ALPRCamera>(sortBy: [SortDescriptor(\.fetchedAt, order: .reverse)])
-        guard let all = try? modelContext.fetch(descriptor) else { return }
+        let all = ((try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? [])
+            .sorted { $0.fetchedAt > $1.fetchedAt }
 
         for camera in all where camera.fetchedAt < cutoff {
             modelContext.delete(camera)
         }
 
-        let remaining = (try? modelContext.fetch(descriptor)) ?? []
+        let remaining = all.filter { $0.fetchedAt >= cutoff }
         if remaining.count > maxCachedCameras {
             for camera in remaining.dropFirst(maxCachedCameras) {
                 modelContext.delete(camera)

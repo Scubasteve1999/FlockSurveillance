@@ -7,6 +7,17 @@ extension Notification.Name {
     static let flockPlaceScore = Notification.Name("flockPlaceScore")
 }
 
+/// Cross-launch handoff for intents: the flag survives until the map view is
+/// actually mounted, so cold starts don't drop the request.
+enum PendingIntentActions {
+    private static let placeScoreKey = "pending.placeScore"
+
+    static var placeScoreRequested: Bool {
+        get { UserDefaults.standard.bool(forKey: placeScoreKey) }
+        set { UserDefaults.standard.set(newValue, forKey: placeScoreKey) }
+    }
+}
+
 struct NearbyCamerasIntent: AppIntent {
     static let title: LocalizedStringResource = "Check Nearby ALPRs"
     static let description = IntentDescription("Counts community-mapped ALPR cameras within a mile of Home.")
@@ -16,6 +27,9 @@ struct NearbyCamerasIntent: AppIntent {
         let snapshot = WidgetBridge.readSnapshot()
         guard WidgetBridge.homeCoordinate() != nil else {
             return .result(dialog: "Set a Home location in Flock Surveillance settings first.")
+        }
+        guard snapshot.updatedAt != nil else {
+            return .result(dialog: "Open Flock Surveillance once so it can load cameras near Home.")
         }
         var dialog = snapshot.count == 1
             ? "There is 1 ALPR camera within a mile of Home."
@@ -37,8 +51,9 @@ struct CheckPlaceScoreIntent: AppIntent {
         if let url = URL(string: "flocksurveillance://map") {
             NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
         }
-        // Let the map tab mount before asking it to score.
-        try? await Task.sleep(nanoseconds: 350_000_000)
+        // Belt and braces: the notification reaches an already-mounted map; the
+        // flag survives until the map appears on a cold start.
+        PendingIntentActions.placeScoreRequested = true
         NotificationCenter.default.post(name: .flockPlaceScore, object: nil)
         return .result()
     }

@@ -39,7 +39,7 @@ final class NotificationTapHandler: NSObject, UNUserNotificationCenterDelegate {
 
 /// Lightweight camera point persisted to disk so the alerts engine can reseed
 /// geofences on background wake-ups without touching SwiftData.
-struct AlertCandidate: Codable {
+struct AlertCandidate: Codable, Sendable {
     let id: String
     let latitude: Double
     let longitude: Double
@@ -48,22 +48,27 @@ struct AlertCandidate: Codable {
 }
 
 enum AlertCandidateStore {
+    /// Serial queue keeps writes ordered (rapid loadCached calls must not let an
+    /// older snapshot win) and reads consistent with in-flight writes.
+    private static let queue = DispatchQueue(label: "com.flocksurveillance.alertCandidates", qos: .utility)
+
     private static var fileURL: URL {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return support.appendingPathComponent("AlertCandidates.json")
     }
 
     static func write(_ candidates: [AlertCandidate]) {
-        let url = fileURL
-        Task.detached(priority: .utility) {
+        queue.async {
             guard let data = try? JSONEncoder().encode(candidates) else { return }
-            try? data.write(to: url, options: .atomic)
+            try? data.write(to: fileURL, options: .atomic)
         }
     }
 
     static func read() -> [AlertCandidate] {
-        guard let data = try? Data(contentsOf: fileURL) else { return [] }
-        return (try? JSONDecoder().decode([AlertCandidate].self, from: data)) ?? []
+        queue.sync {
+            guard let data = try? Data(contentsOf: fileURL) else { return [] }
+            return (try? JSONDecoder().decode([AlertCandidate].self, from: data)) ?? []
+        }
     }
 }
 
@@ -71,6 +76,7 @@ enum AlertCandidateStore {
 /// and reseeds them on significant location changes, so users get notified even
 /// with the app closed.
 @MainActor
+@Observable
 final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     static let shared = AlertsEngine()
 
@@ -81,7 +87,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     private static let lastAlertKey = "alerts.lastAlertAt"
     private nonisolated static let regionPrefix = "alpr."
 
-    private let manager = CLLocationManager()
+    @ObservationIgnored private let manager = CLLocationManager()
     private(set) var authorizationStatus: CLAuthorizationStatus
 
     /// Set while Drive Mode is active — the HUD already covers approach warnings.
@@ -147,6 +153,17 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Region seeding
 
+    /// Reseeds using the engine's own last fix, or requests one if none exists —
+    /// so preference changes (e.g. Flock-only) apply even before the UI's
+    /// location manager has a fix.
+    func reseedFromLastKnownLocation() {
+        if let location = manager.location {
+            reseed(around: location.coordinate)
+        } else {
+            manager.requestLocation()
+        }
+    }
+
     func reseed(around coordinate: CLLocationCoordinate2D) {
         guard AppPreferences.alertsEnabled else { return }
 
@@ -169,7 +186,11 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
             let region = CLCircularRegion(
                 center: CLLocationCoordinate2D(latitude: candidate.latitude, longitude: candidate.longitude),
                 radius: Self.regionRadius,
-                identifier: Self.regionPrefix + candidate.id + "|" + (candidate.isFlock ? "1" : "0") + "|" + candidate.title
+                identifier: Self.regionIdentifier(
+                    cameraID: candidate.id,
+                    isFlock: candidate.isFlock,
+                    title: candidate.title
+                )
             )
             region.notifyOnEntry = true
             region.notifyOnExit = false
@@ -177,16 +198,32 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    // MARK: - Region identifier encoding
+
+    nonisolated static func regionIdentifier(cameraID: String, isFlock: Bool, title: String) -> String {
+        regionPrefix + cameraID + "|" + (isFlock ? "1" : "0") + "|" + title
+    }
+
+    nonisolated static func parseRegionIdentifier(
+        _ identifier: String
+    ) -> (cameraID: String, isFlock: Bool, title: String?) {
+        let raw = String(identifier.dropFirst(regionPrefix.count))
+        let parts = raw.split(separator: "|", maxSplits: 2).map(String.init)
+        let cameraID = parts.first ?? raw
+        let isFlock = parts.count > 1 && parts[1] == "1"
+        let title = parts.count > 2 && !parts[2].isEmpty ? parts[2] : nil
+        return (cameraID, isFlock, title)
+    }
+
     // MARK: - Notification delivery
 
     private func fireAlert(regionIdentifier: String) {
         guard AppPreferences.alertsEnabled, !isSuppressed, !isQuietHours() else { return }
 
-        let raw = String(regionIdentifier.dropFirst(Self.regionPrefix.count))
-        let parts = raw.split(separator: "|", maxSplits: 2).map(String.init)
-        let cameraID = parts.first ?? raw
-        let isFlock = parts.count > 1 && parts[1] == "1"
-        let title = parts.count > 2 && !parts[2].isEmpty ? parts[2] : (isFlock ? "Flock ALPR" : "ALPR camera")
+        let parsed = Self.parseRegionIdentifier(regionIdentifier)
+        let cameraID = parsed.cameraID
+        let isFlock = parsed.isFlock
+        let title = parsed.title ?? (isFlock ? "Flock ALPR" : "ALPR camera")
 
         guard !isInCooldown(cameraID: cameraID) else { return }
         recordAlert(cameraID: cameraID)
@@ -208,10 +245,17 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     private func isQuietHours(now: Date = .now) -> Bool {
         guard AppPreferences.quietHoursEnabled else { return false }
         let hour = Calendar.current.component(.hour, from: now)
-        let start = AppPreferences.quietStartHour
-        let end = AppPreferences.quietEndHour
+        return Self.quietWindowContains(
+            hour: hour,
+            start: AppPreferences.quietStartHour,
+            end: AppPreferences.quietEndHour
+        )
+    }
+
+    /// Whether `hour` falls in the [start, end) window; the window may wrap
+    /// midnight (e.g. 22 -> 7). Equal start/end means no window.
+    nonisolated static func quietWindowContains(hour: Int, start: Int, end: Int) -> Bool {
         if start == end { return false }
-        // Window may wrap midnight (e.g. 22 -> 7).
         if start < end {
             return hour >= start && hour < end
         }

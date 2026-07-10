@@ -21,8 +21,12 @@ jobs:
 
       - name: Build and test
         run: |
+          # Pick whatever iPhone simulator the runner image ships, so the job
+          # survives Xcode/simulator runtime bumps.
+          DEVICE=$(xcrun simctl list devices available | grep -oE 'iPhone [A-Za-z0-9 ]+' | head -1 | sed 's/ *$//')
+          echo "Using simulator: $DEVICE"
           xcodebuild test \
             -scheme FlockSurveillance \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination "platform=iOS Simulator,name=$DEVICE" \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions || exit ${PIPESTATUS[0]}

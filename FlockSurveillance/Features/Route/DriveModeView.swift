@@ -10,6 +10,9 @@ struct DriveModeView: View {
     @Environment(\.requestReview) private var requestReview
 
     @State private var mapPosition: MapCameraPosition = .userLocation(fallback: .automatic)
+    /// Accumulated rotation so the arrow takes the short way across north
+    /// (359° -> 1° must not spin the long way around).
+    @State private var arrowAngle: Double = 0
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -74,11 +77,25 @@ struct DriveModeView: View {
                 )
             }
         }
+        .onChange(of: currentRelativeBearing) { _, newBearing in
+            guard let newBearing else { return }
+            let current = arrowAngle.truncatingRemainder(dividingBy: 360)
+            var delta = (newBearing - current).truncatingRemainder(dividingBy: 360)
+            if delta > 180 { delta -= 360 }
+            if delta < -180 { delta += 360 }
+            withAnimation(.easeInOut(duration: 0.3)) {
+                arrowAngle += delta
+            }
+        }
         .onDisappear {
             if driveSession.isActive {
                 driveSession.stop()
             }
         }
+    }
+
+    private var currentRelativeBearing: Double? {
+        driveSession.nextHit.flatMap { relativeBearing(to: $0) }
     }
 
     /// Screen-relative bearing to the next hit: 0 = straight ahead of the phone's compass heading.
@@ -109,12 +126,11 @@ struct DriveModeView: View {
                     Text(driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—")
                         .font(.system(size: 34, weight: .bold))
                         .foregroundStyle(AppTheme.foreground)
-                    if let relativeBearing = relativeBearing(to: next) {
+                    if relativeBearing(to: next) != nil {
                         Image(systemName: "location.north.fill")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(AppTheme.accent)
-                            .rotationEffect(.degrees(relativeBearing))
-                            .animation(.easeInOut(duration: 0.3), value: relativeBearing)
+                            .rotationEffect(.degrees(arrowAngle))
                             .accessibilityLabel("Direction to next camera")
                     }
                 }

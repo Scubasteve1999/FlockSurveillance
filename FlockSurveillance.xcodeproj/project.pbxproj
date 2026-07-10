@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
+		1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */; };
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
 		1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */; };
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
@@ -112,6 +113,7 @@
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpersTests.swift; sourceTree = "<group>"; };
 		A4B0B4143401454EFDFBD3EA /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsAndReportTests.swift; sourceTree = "<group>"; };
 		ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassClient.swift; sourceTree = "<group>"; };
 		B071FF59632161F16D40277C /* CameraAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAnnotationView.swift; sourceTree = "<group>"; };
 		B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 		0B1D16367074D3BA3423FA49 /* FlockSurveillanceTests */ = {
 			isa = PBXGroup;
 			children = (
+				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
 				A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
@@ -477,6 +480,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,

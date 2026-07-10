@@ -1,8 +1,26 @@
 import SwiftData
 import SwiftUI
+import UIKit
+
+/// Runs before the app finishes launching, which SwiftUI's `.onAppear` does not
+/// guarantee — critical for background relaunches (region-monitoring wake-ups
+/// deliver their event only if a CLLocationManager delegate exists at launch)
+/// and for notification taps on cold start (UNUserNotificationCenter requires
+/// its delegate to be set before launch completes).
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        NotificationTapHandler.shared.install()
+        AlertsEngine.shared.activateIfEnabled()
+        return true
+    }
+}
 
 @main
 struct FlockSurveillanceApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var repository = CameraRepository()
     @State private var locationManager = LocationManager()
     @State private var radar = ProximityRadar()
@@ -39,8 +57,6 @@ struct FlockSurveillanceApp: App {
             .onAppear {
                 repository.attach(modelContext: modelContainer.mainContext)
                 locationManager.start()
-                NotificationTapHandler.shared.install()
-                AlertsEngine.shared.activateIfEnabled()
             }
             .onOpenURL { url in
                 handleDeepLink(url)

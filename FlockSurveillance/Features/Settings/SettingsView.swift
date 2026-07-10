@@ -283,9 +283,7 @@ struct SettingsView: View {
     }
 
     private func reseedAlerts() {
-        if let coordinate = locationManager.location?.coordinate {
-            AlertsEngine.shared.reseed(around: coordinate)
-        }
+        AlertsEngine.shared.reseedFromLastKnownLocation()
     }
 
     private func labelRow(_ title: String, _ subtitle: String) -> some View {

@@ -160,6 +160,10 @@ struct MapRadarView: View {
             radar.watchModeEnabled = watchModeStored
             bootstrapRegion()
             startPulseIfNeeded()
+            if PendingIntentActions.placeScoreRequested {
+                PendingIntentActions.placeScoreRequested = false
+                computePlaceScore()
+            }
         }
         .onChange(of: nearest?.meters) { _, meters in
             radar.update(userLocation: locationManager.location, nearestMeters: meters)
@@ -180,6 +184,7 @@ struct MapRadarView: View {
             defaultFilterRaw = value.rawValue
         }
         .onReceive(NotificationCenter.default.publisher(for: .flockPlaceScore)) { _ in
+            PendingIntentActions.placeScoreRequested = false
             computePlaceScore()
         }
         .sheet(item: $selectedCluster) { cluster in

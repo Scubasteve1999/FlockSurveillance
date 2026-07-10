@@ -1,0 +1,100 @@
+import CoreLocation
+import XCTest
+@testable import FlockSurveillance
+
+final class AlertsAndReportTests: XCTestCase {
+    // MARK: - Quiet hours
+
+    func testQuietWindowSameDay() {
+        XCTAssertTrue(AlertsEngine.quietWindowContains(hour: 10, start: 9, end: 17))
+        XCTAssertFalse(AlertsEngine.quietWindowContains(hour: 8, start: 9, end: 17))
+        XCTAssertFalse(AlertsEngine.quietWindowContains(hour: 17, start: 9, end: 17))
+    }
+
+    func testQuietWindowWrapsMidnight() {
+        XCTAssertTrue(AlertsEngine.quietWindowContains(hour: 23, start: 22, end: 7))
+        XCTAssertTrue(AlertsEngine.quietWindowContains(hour: 0, start: 22, end: 7))
+        XCTAssertTrue(AlertsEngine.quietWindowContains(hour: 6, start: 22, end: 7))
+        XCTAssertFalse(AlertsEngine.quietWindowContains(hour: 7, start: 22, end: 7))
+        XCTAssertFalse(AlertsEngine.quietWindowContains(hour: 12, start: 22, end: 7))
+    }
+
+    func testQuietWindowDisabledWhenStartEqualsEnd() {
+        XCTAssertFalse(AlertsEngine.quietWindowContains(hour: 5, start: 5, end: 5))
+    }
+
+    // MARK: - Region identifier round trip
+
+    func testRegionIdentifierRoundTrip() {
+        let identifier = AlertsEngine.regionIdentifier(cameraID: "node/123", isFlock: true, title: "Main St ALPR")
+        let parsed = AlertsEngine.parseRegionIdentifier(identifier)
+        XCTAssertEqual(parsed.cameraID, "node/123")
+        XCTAssertTrue(parsed.isFlock)
+        XCTAssertEqual(parsed.title, "Main St ALPR")
+    }
+
+    func testRegionIdentifierTitleMayContainPipes() {
+        let identifier = AlertsEngine.regionIdentifier(cameraID: "way/9", isFlock: false, title: "NB | Exit 4")
+        let parsed = AlertsEngine.parseRegionIdentifier(identifier)
+        XCTAssertEqual(parsed.cameraID, "way/9")
+        XCTAssertFalse(parsed.isFlock)
+        XCTAssertEqual(parsed.title, "NB | Exit 4")
+    }
+
+    func testRegionIdentifierEmptyTitleParsesAsNil() {
+        let identifier = AlertsEngine.regionIdentifier(cameraID: "node/7", isFlock: true, title: "")
+        let parsed = AlertsEngine.parseRegionIdentifier(identifier)
+        XCTAssertEqual(parsed.cameraID, "node/7")
+        XCTAssertNil(parsed.title)
+    }
+
+    // MARK: - OSM report note text
+
+    func testNewCameraNoteIncludesStructuredFields() {
+        let report = OSMCameraReport(
+            kind: .newCamera,
+            coordinate: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            existingCameraID: nil,
+            direction: "NE",
+            mountType: "Pole",
+            operatorGuess: "Flock Safety",
+            notes: "By the intersection"
+        )
+        let text = report.noteText
+        XCTAssertTrue(text.contains("surveillance:type=ALPR"))
+        XCTAssertTrue(text.contains("Facing: NE"))
+        XCTAssertTrue(text.contains("Mount: Pole"))
+        XCTAssertTrue(text.contains("Flock Safety"))
+        XCTAssertTrue(text.contains("By the intersection"))
+    }
+
+    func testRemovedReportMentionsExistingElement() {
+        let report = OSMCameraReport(
+            kind: .removed,
+            coordinate: CLLocationCoordinate2D(latitude: 1, longitude: 2),
+            existingCameraID: "node/9",
+            direction: nil,
+            mountType: nil,
+            operatorGuess: nil,
+            notes: nil
+        )
+        XCTAssertTrue(report.noteText.contains("node/9"))
+        XCTAssertTrue(report.noteText.contains("removed"))
+    }
+
+    func testOptionalFieldsAreOmittedWhenEmpty() {
+        let report = OSMCameraReport(
+            kind: .newCamera,
+            coordinate: CLLocationCoordinate2D(latitude: 1, longitude: 2),
+            existingCameraID: nil,
+            direction: nil,
+            mountType: nil,
+            operatorGuess: nil,
+            notes: nil
+        )
+        let text = report.noteText
+        XCTAssertFalse(text.contains("Facing:"))
+        XCTAssertFalse(text.contains("Mount:"))
+        XCTAssertFalse(text.contains("operator"))
+    }
+}

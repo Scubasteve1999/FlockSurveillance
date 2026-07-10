@@ -7,6 +7,12 @@ import UIKit
 /// Requires the `com.apple.developer.carplay-driving-task` entitlement, which
 /// Apple grants per-app — see the commented block in project.yml. Until it's
 /// granted, this scene never connects and the code is inert.
+///
+/// Do NOT declare `UIApplicationSceneManifest` / CarPlay scene roles in Info.plist
+/// until the entitlement is approved. Declaring
+/// `CPTemplateApplicationSceneSessionRoleApplication` with
+/// `UIApplicationSupportsMultipleScenes` and no window-scene configuration
+/// freezes iPad scene transitions (including onboarding).
 @MainActor
 final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegate {
     private var interfaceController: CPInterfaceController?

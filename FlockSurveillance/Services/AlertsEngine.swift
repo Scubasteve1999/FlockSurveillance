@@ -105,7 +105,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     /// the system relaunches the app in the background.
     func activateIfEnabled() {
         guard AppPreferences.alertsEnabled else { return }
-        manager.startMonitoringSignificantLocationChanges()
+        startBackgroundMonitoringIfAuthorized()
         if let location = manager.location {
             reseed(around: location.coordinate)
         }
@@ -121,21 +121,31 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let center = UNUserNotificationCenter.current()
         _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
 
+        // Apple requires When-In-Use before Always. Jumping straight to Always
+        // from .notDetermined can hang the permission sheet on iPad.
         switch manager.authorizationStatus {
         case .notDetermined:
-            manager.requestAlwaysAuthorization()
+            manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
             manager.requestAlwaysAuthorization()
+        case .authorizedAlways:
+            startBackgroundMonitoringIfAuthorized()
         default:
             break
         }
 
-        manager.startMonitoringSignificantLocationChanges()
         if let location = manager.location {
             reseed(around: location.coordinate)
-        } else {
+        } else if manager.authorizationStatus == .authorizedWhenInUse
+            || manager.authorizationStatus == .authorizedAlways
+        {
             manager.requestLocation()
         }
+    }
+
+    private func startBackgroundMonitoringIfAuthorized() {
+        guard manager.authorizationStatus == .authorizedAlways else { return }
+        manager.startMonitoringSignificantLocationChanges()
     }
 
     /// Whether alerts can actually fire (permission-wise). Used by Settings to
@@ -166,23 +176,37 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
 
     func reseed(around coordinate: CLLocationCoordinate2D) {
         guard AppPreferences.alertsEnabled else { return }
-
         let flockOnly = AppPreferences.alertsFlockOnly
-        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        let nearest = AlertCandidateStore.read()
-            .filter { flockOnly ? $0.isFlock : true }
-            .map { candidate -> (AlertCandidate, CLLocationDistance) in
-                let location = CLLocation(latitude: candidate.latitude, longitude: candidate.longitude)
-                return (candidate, location.distance(from: origin))
-            }
-            .sorted { $0.1 < $1.1 }
-            .prefix(Self.maxRegions)
+        let lat = coordinate.latitude
+        let lon = coordinate.longitude
+        let maxRegions = Self.maxRegions
 
+        // Distance-sort thousands of candidates off the main thread — doing this
+        // synchronously on MainActor freezes the UI (especially on iPad).
+        Task.detached(priority: .utility) {
+            let origin = CLLocation(latitude: lat, longitude: lon)
+            let nearest = AlertCandidateStore.read()
+                .filter { flockOnly ? $0.isFlock : true }
+                .map { candidate -> (AlertCandidate, CLLocationDistance) in
+                    let location = CLLocation(latitude: candidate.latitude, longitude: candidate.longitude)
+                    return (candidate, location.distance(from: origin))
+                }
+                .sorted { $0.1 < $1.1 }
+                .prefix(maxRegions)
+                .map(\.0)
+
+            await MainActor.run {
+                self.applyMonitoredRegions(nearest)
+            }
+        }
+    }
+
+    private func applyMonitoredRegions(_ candidates: [AlertCandidate]) {
         for region in manager.monitoredRegions where region.identifier.hasPrefix(Self.regionPrefix) {
             manager.stopMonitoring(for: region)
         }
 
-        for (candidate, _) in nearest {
+        for candidate in candidates {
             let region = CLCircularRegion(
                 center: CLLocationCoordinate2D(latitude: candidate.latitude, longitude: candidate.longitude),
                 radius: Self.regionRadius,
@@ -283,9 +307,17 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authorizationStatus = status
-            if status == .authorizedAlways, AppPreferences.alertsEnabled {
-                self.manager.startMonitoringSignificantLocationChanges()
-                if let location = self.manager.location {
+            if AppPreferences.alertsEnabled {
+                if status == .authorizedWhenInUse {
+                    // Upgrade path: Always prompt only after When-In-Use is granted.
+                    self.manager.requestAlwaysAuthorization()
+                }
+                if status == .authorizedAlways {
+                    self.startBackgroundMonitoringIfAuthorized()
+                }
+                if status == .authorizedAlways || status == .authorizedWhenInUse,
+                   let location = self.manager.location
+                {
                     self.reseed(around: location.coordinate)
                 }
             }

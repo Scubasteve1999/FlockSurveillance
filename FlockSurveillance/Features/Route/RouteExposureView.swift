@@ -14,14 +14,23 @@ struct RouteExposureView: View {
     @State private var completer = PlaceCompleter()
     @State private var isRouting = false
     @State private var errorMessage: String?
-    @State private var result: RouteExposureResult?
+    @State private var analysis: RouteExposureAnalysis?
+    @State private var selectedOptionID: UUID?
     @State private var shareText: String?
     @State private var activeField: ActiveField = .destination
     @State private var mapPosition: MapCameraPosition = .automatic
-    @State private var safariPresentation: SafariPresentation?
 
     private enum ActiveField {
         case origin, destination
+    }
+
+    private var selectedResult: RouteExposureResult? {
+        guard let analysis else { return nil }
+        if let selectedOptionID,
+           let match = analysis.options.first(where: { $0.id == selectedOptionID }) {
+            return match.result
+        }
+        return analysis.recommended
     }
 
     var body: some View {
@@ -33,10 +42,11 @@ struct RouteExposureView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         brandBlock
                         searchCard
-                        if let result {
-                            exposureCard(result)
-                            routeMap(result)
-                            cameraList(result)
+                        if let analysis, let selectedResult {
+                            alternativesCard(analysis)
+                            exposureCard(selectedResult)
+                            routeMap(selectedResult, options: analysis.options)
+                            cameraList(selectedResult)
                         } else {
                             emptyState
                         }
@@ -47,7 +57,7 @@ struct RouteExposureView: View {
             .navigationBarHidden(true)
             .overlay {
                 if isRouting {
-                    ProgressView("Mapping exposure…")
+                    ProgressView("Scoring lower-exposure routes…")
                         .padding(20)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
@@ -58,7 +68,6 @@ struct RouteExposureView: View {
             )) { payload in
                 ActivityView(items: [payload.text])
             }
-            .safariSheet(item: $safariPresentation)
             .onAppear {
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
@@ -95,7 +104,7 @@ struct RouteExposureView: View {
             Text("Route Exposure")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
-            Text("Count community-mapped ALPRs along a drive. For lower-exposure route planning, use DeFlock Maps.")
+            Text("Compare MapKit drives and pick the lower-exposure path using community-mapped OSM ALPRs.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
         }
@@ -159,37 +168,78 @@ struct RouteExposureView: View {
 
     private var emptyState: some View {
         SectionCard {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("No route yet")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Pick an origin and destination. We’ll count community-mapped ALPRs within about 75 meters of the driving path.")
+                Text("Pick an origin and destination. We’ll score alternate MapKit drives by ALPRs within about 75 meters of each path, then recommend the lower-exposure option.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
-                deFlockMapsButton
             }
         }
     }
 
-    private var deFlockMapsButton: some View {
-        Button {
-            safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
-        } label: {
-            Label("Plan a lower-exposure route on DeFlock Maps", systemImage: "safari")
-                .font(.system(size: 14, weight: .semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 12)
-                .foregroundStyle(AppTheme.accent)
-                .background(AppTheme.cardTop)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(AppTheme.border, lineWidth: 1)
-                )
+    private func alternativesCard(_ analysis: RouteExposureAnalysis) -> some View {
+        SectionCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("ROUTE OPTIONS")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(AppTheme.mutedForeground)
+                Text(analysis.options.count > 1
+                     ? "Tap a route to compare. Recommended has the fewest corridor cameras."
+                     : "MapKit returned one drive for this pair.")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+
+                ForEach(Array(analysis.options.enumerated()), id: \.element.id) { index, option in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedOptionID = option.id
+                            fitMap(to: option.result)
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(spacing: 8) {
+                                    Text(option.isRecommended ? "Recommended" : "Option \(index + 1)")
+                                        .font(.system(size: 15, weight: .semibold))
+                                        .foregroundStyle(AppTheme.foreground)
+                                    if option.isRecommended {
+                                        StatusBadge(text: "Best", color: AppTheme.accent)
+                                    }
+                                }
+                                Text("\(option.cameraCount) cameras · \(String(format: "%.1f mi", option.distance / 1609.34))")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundStyle(AppTheme.mutedForeground)
+                            }
+                            Spacer()
+                            StatusBadge(
+                                text: option.result.exposureScore,
+                                color: AppTheme.densityColor(count: option.cameraCount)
+                            )
+                        }
+                        .padding(12)
+                        .background(
+                            (selectedOptionID == option.id || (selectedOptionID == nil && option.isRecommended))
+                                ? AppTheme.primary.opacity(0.12)
+                                : AppTheme.cardTop
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(
+                                    (selectedOptionID == option.id || (selectedOptionID == nil && option.isRecommended))
+                                        ? AppTheme.accent.opacity(0.55)
+                                        : AppTheme.border,
+                                    lineWidth: 1
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Plan a lower-exposure route on DeFlock Maps")
     }
 
     private func exposureCard(_ result: RouteExposureResult) -> some View {
@@ -234,16 +284,20 @@ struct RouteExposureView: View {
                         )
                 }
                 .buttonStyle(.plain)
-
-                deFlockMapsButton
             }
         }
     }
 
-    private func routeMap(_ result: RouteExposureResult) -> some View {
+    private func routeMap(_ result: RouteExposureResult, options: [RankedRouteExposure]) -> some View {
         Map(position: $mapPosition) {
-            MapPolyline(result.route.polyline)
-                .stroke(AppTheme.accent, lineWidth: 4)
+            ForEach(options) { option in
+                let isSelected = option.result.id == result.id
+                MapPolyline(option.result.route.polyline)
+                    .stroke(
+                        isSelected ? AppTheme.accent : AppTheme.mutedForeground.opacity(0.45),
+                        lineWidth: isSelected ? 4 : 2
+                    )
+            }
             ForEach(result.cameras, id: \.camera.id) { item in
                 Annotation("", coordinate: item.camera.coordinate) {
                     CameraAnnotationView(count: 1, isFlock: item.camera.isFlock)
@@ -257,6 +311,9 @@ struct RouteExposureView: View {
                 .stroke(AppTheme.border, lineWidth: 1)
         )
         .onAppear {
+            fitMap(to: result)
+        }
+        .onChange(of: result.id) { _, _ in
             fitMap(to: result)
         }
     }
@@ -409,15 +466,18 @@ struct RouteExposureView: View {
         defer { isRouting = false }
 
         do {
-            let route = try await RouteExposureService.directions(from: origin, to: destination)
-            let region = regionFor(route: route)
+            let routes = try await RouteExposureService.directions(from: origin, to: destination)
+            let region = regionCovering(routes: routes)
             await repository.fetch(for: region)
             let candidates = repository.cameras(in: region)
-            let exposure = RouteExposureService.exposure(route: route, cameras: candidates)
+            let scored = RouteExposureService.analyze(routes: routes, cameras: candidates)
             withAnimation(.easeInOut(duration: 0.25)) {
-                result = exposure
+                analysis = scored
+                selectedOptionID = scored.options.first(where: \.isRecommended)?.id ?? scored.options.first?.id
             }
-            fitMap(to: exposure)
+            if let recommended = scored.recommended {
+                fitMap(to: recommended)
+            }
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } catch {
             errorMessage = error.localizedDescription
@@ -439,8 +499,11 @@ struct RouteExposureView: View {
         return try? await search.start().mapItems.first?.placemark.coordinate
     }
 
-    private func regionFor(route: MKRoute) -> MKCoordinateRegion {
-        let rect = route.polyline.boundingMapRect
+    private func regionCovering(routes: [MKRoute]) -> MKCoordinateRegion {
+        var rect = routes.first?.polyline.boundingMapRect ?? .null
+        for route in routes.dropFirst() {
+            rect = rect.union(route.polyline.boundingMapRect)
+        }
         var region = MKCoordinateRegion(rect)
         region.span.latitudeDelta *= 1.3
         region.span.longitudeDelta *= 1.3
@@ -450,6 +513,7 @@ struct RouteExposureView: View {
     private func shareReport(_ result: RouteExposureResult) -> String {
         let from = originQuery.isEmpty ? "Origin" : originQuery
         let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
+        let optionCount = analysis?.options.count ?? 1
         return """
         Flock Surveillance — Drive Report
         From: \(from)
@@ -457,7 +521,8 @@ struct RouteExposureView: View {
         Cameras along route: \(result.cameraCount) (\(result.flockCount) Flock)
         Exposure: \(result.exposureScore)
         Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi
-        Data: OpenStreetMap community-mapped ALPRs
+        Alternatives scored: \(optionCount)
+        Data: OpenStreetMap / DeFlock community-mapped ALPRs
         flocksurveillance.com
         """
     }

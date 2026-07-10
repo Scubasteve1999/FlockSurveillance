@@ -155,8 +155,7 @@ actor OverpassClient {
     private let endpoints = [
         "https://overpass.osm.ch/api/interpreter",
         "https://overpass.openstreetmap.fr/api/interpreter",
-        "https://overpass-api.de/api/interpreter",
-        "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+        "https://overpass-api.de/api/interpreter"
     ]
 
     private var lastFetchAt: Date?
@@ -169,7 +168,8 @@ actor OverpassClient {
             let configuration = URLSessionConfiguration.ephemeral
             configuration.timeoutIntervalForRequest = 18
             configuration.timeoutIntervalForResource = 28
-            configuration.waitsForConnectivity = true
+            // Fail fast so mirror failover / stale-cache UI can run offline.
+            configuration.waitsForConnectivity = false
             configuration.httpAdditionalHeaders = [
                 "Accept": "application/json",
                 "User-Agent": "FlockSurveillance/1.1 (civic transparency; contact: flocksurveillance.com)"

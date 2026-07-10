@@ -51,15 +51,11 @@ struct FlockSurveillanceApp: App {
         switch url.host?.lowercased() {
         case "map", nil:
             selectedTab = 0
-        case "route":
+        case "route", "deflock":
+            // Privacy routing lives on the Route tab (native MapKit, not DeFlock web).
             selectedTab = 1
         case "settings":
             selectedTab = 3
-        case "deflock":
-            selectedTab = 0
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: AppLinks.openDeFlockMapsNotification, object: nil)
-            }
         default:
             selectedTab = 0
         }

@@ -8,7 +8,6 @@ final class RouteExposureTests: XCTestCase {
             CLLocationCoordinate2D(latitude: 33.7500, longitude: -84.3900),
             CLLocationCoordinate2D(latitude: 33.7600, longitude: -84.3900)
         ]
-        // Midpoint roughly on the segment
         let onPath = CLLocationCoordinate2D(latitude: 33.7550, longitude: -84.3900)
         let distance = RouteExposureService.distanceAlongPolyline(
             to: onPath,
@@ -31,5 +30,24 @@ final class RouteExposureTests: XCTestCase {
             corridorMeters: 75
         )
         XCTAssertNil(distance)
+    }
+
+    func testRankByMetricsPrefersFewerCameras() {
+        let order = RouteExposureService.rankByMetrics([
+            (cameraCount: 5, distance: 1_000),
+            (cameraCount: 2, distance: 2_000),
+            (cameraCount: 2, distance: 1_500)
+        ])
+        XCTAssertEqual(order, [2, 1, 0])
+    }
+
+    func testRankByMetricsUsesDistanceAsTieBreak() {
+        let order = RouteExposureService.rankByMetrics([
+            (cameraCount: 3, distance: 4_000),
+            (cameraCount: 3, distance: 2_500),
+            (cameraCount: 3, distance: 3_000)
+        ])
+        XCTAssertEqual(order.first, 1)
+        XCTAssertEqual(order, [1, 2, 0])
     }
 }

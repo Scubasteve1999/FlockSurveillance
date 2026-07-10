@@ -21,20 +21,38 @@ struct RouteExposureResult: Identifiable {
     }
 }
 
+struct RankedRouteExposure: Identifiable {
+    let id = UUID()
+    let result: RouteExposureResult
+    let isRecommended: Bool
+
+    var cameraCount: Int { result.cameraCount }
+    var distance: CLLocationDistance { result.route.distance }
+}
+
+struct RouteExposureAnalysis {
+    let options: [RankedRouteExposure]
+    var recommended: RouteExposureResult? { options.first(where: \.isRecommended)?.result ?? options.first?.result }
+}
+
 enum RouteExposureService {
-    static func directions(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) async throws -> MKRoute {
+    static func directions(
+        from origin: CLLocationCoordinate2D,
+        to destination: CLLocationCoordinate2D,
+        requestAlternates: Bool = true
+    ) async throws -> [MKRoute] {
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: origin))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
         request.transportType = .automobile
-        request.requestsAlternateRoutes = false
+        request.requestsAlternateRoutes = requestAlternates
 
         let directions = MKDirections(request: request)
         let response = try await directions.calculate()
-        guard let route = response.routes.first else {
+        guard !response.routes.isEmpty else {
             throw NSError(domain: "RouteExposure", code: 1, userInfo: [NSLocalizedDescriptionKey: "No driving route found."])
         }
-        return route
+        return response.routes
     }
 
     static func exposure(
@@ -53,6 +71,43 @@ enum RouteExposureService {
 
         hits.sort { $0.metersFromStart < $1.metersFromStart }
         return RouteExposureResult(route: route, cameras: hits, corridorMeters: corridorMeters)
+    }
+
+    /// Scores MapKit routes by ALPR corridor hits, then distance. Lowest exposure wins.
+    static func analyze(
+        routes: [MKRoute],
+        cameras: [ALPRCamera],
+        corridorMeters: CLLocationDistance = 75,
+        maxOptions: Int = 3
+    ) -> RouteExposureAnalysis {
+        let scored = routes.map { exposure(route: $0, cameras: cameras, corridorMeters: corridorMeters) }
+        let ranked = rank(scored).prefix(maxOptions)
+        let options = ranked.enumerated().map { index, result in
+            RankedRouteExposure(result: result, isRecommended: index == 0)
+        }
+        return RouteExposureAnalysis(options: Array(options))
+    }
+
+    /// Pure ranking helper for tests: fewest cameras, then shorter distance.
+    static func rank(_ results: [RouteExposureResult]) -> [RouteExposureResult] {
+        results.sorted { lhs, rhs in
+            if lhs.cameraCount != rhs.cameraCount {
+                return lhs.cameraCount < rhs.cameraCount
+            }
+            return lhs.route.distance < rhs.route.distance
+        }
+    }
+
+    /// Testable ranking on lightweight metrics (avoids constructing MKRoute in unit tests).
+    static func rankByMetrics(_ metrics: [(cameraCount: Int, distance: CLLocationDistance)]) -> [Int] {
+        metrics.enumerated()
+            .sorted { lhs, rhs in
+                if lhs.element.cameraCount != rhs.element.cameraCount {
+                    return lhs.element.cameraCount < rhs.element.cameraCount
+                }
+                return lhs.element.distance < rhs.element.distance
+            }
+            .map(\.offset)
     }
 
     /// Returns distance along the polyline when the coordinate is within `corridorMeters` of the path.

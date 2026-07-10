@@ -1,6 +1,8 @@
 import ActivityKit
 import Foundation
 
+extension Activity: @retroactive @unchecked Sendable {}
+
 @MainActor
 final class DriveLiveActivityController {
     static let shared = DriveLiveActivityController()
@@ -9,9 +11,9 @@ final class DriveLiveActivityController {
 
     private init() {}
 
-    func start(session: DriveSession) {
+    func start(session: DriveSession) async {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-        end()
+        await end()
 
         let state = contentState(from: session)
         let attributes = DriveActivityAttributes(routeSummary: "ALPR Drive Mode")
@@ -22,15 +24,13 @@ final class DriveLiveActivityController {
         }
     }
 
-    func update(session: DriveSession) {
+    func update(session: DriveSession) async {
         guard let activity else { return }
         let state = contentState(from: session)
-        Task {
-            await activity.update(.init(state: state, staleDate: nil))
-        }
+        await activity.update(.init(state: state, staleDate: nil))
     }
 
-    func end() {
+    func end() async {
         guard let activity else { return }
         let finalState = DriveActivityAttributes.ContentState(
             nextLabel: "Drive ended",
@@ -38,10 +38,8 @@ final class DriveLiveActivityController {
             remaining: 0,
             exposureLabel: sessionExposureFallback
         )
-        Task {
-            await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
-        }
         self.activity = nil
+        await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
     }
 
     private var sessionExposureFallback: String { "Clear" }

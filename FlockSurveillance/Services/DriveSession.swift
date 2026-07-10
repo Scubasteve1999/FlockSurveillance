@@ -51,7 +51,7 @@ final class DriveSession {
         isActive = true
         lastPulseDistance = .greatestFiniteMagnitude
         refresh(userLocation: nil)
-        DriveLiveActivityController.shared.start(session: self)
+        Task { await DriveLiveActivityController.shared.start(session: self) }
     }
 
     func stop() {
@@ -62,13 +62,13 @@ final class DriveSession {
         nextHit = nil
         metersToNext = nil
         camerasRemaining = 0
-        DriveLiveActivityController.shared.end()
+        Task { await DriveLiveActivityController.shared.end() }
     }
 
     func update(userLocation: CLLocation?, hapticsEnabled: Bool) {
         guard isActive else { return }
         refresh(userLocation: userLocation)
-        DriveLiveActivityController.shared.update(session: self)
+        Task { await DriveLiveActivityController.shared.update(session: self) }
 
         guard hapticsEnabled, let metersToNext else { return }
         let thresholds: [CLLocationDistance] = [400, 200, 100, 50]

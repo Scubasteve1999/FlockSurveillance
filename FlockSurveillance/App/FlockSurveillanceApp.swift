@@ -6,7 +6,7 @@ struct FlockSurveillanceApp: App {
     @State private var repository = CameraRepository()
     @State private var locationManager = LocationManager()
     @State private var radar = ProximityRadar()
-    @State private var driveSession = DriveSession()
+    @State private var driveSession = DriveSession.shared
     @State private var selectedTab = 0
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
@@ -39,9 +39,16 @@ struct FlockSurveillanceApp: App {
             .onAppear {
                 repository.attach(modelContext: modelContainer.mainContext)
                 locationManager.start()
+                NotificationTapHandler.shared.install()
+                AlertsEngine.shared.activateIfEnabled()
             }
             .onOpenURL { url in
                 handleDeepLink(url)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .flockDeepLink)) { note in
+                if let url = note.userInfo?["url"] as? URL {
+                    handleDeepLink(url)
+                }
             }
         }
         .modelContainer(modelContainer)

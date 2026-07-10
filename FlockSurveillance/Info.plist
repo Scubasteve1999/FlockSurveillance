@@ -34,11 +34,28 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Flock Surveillance uses your location to show nearby ALPR cameras.</string>
+	<string>Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>CPTemplateApplicationSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>CarPlay</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).CarPlaySceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

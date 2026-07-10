@@ -5,6 +5,8 @@ struct CameraDetailSheet: View {
     let cameras: [ALPRCamera]
     var userLocation: CLLocation?
 
+    @State private var reportedCamera: ALPRCamera?
+
     private let highlightKeys = [
         "manufacturer", "brand", "operator", "direction", "camera:direction",
         "surveillance", "surveillance:type", "camera:type", "name", "ref"
@@ -99,6 +101,16 @@ struct CameraDetailSheet: View {
                                             .padding(.top, 4)
                                     }
                                 }
+
+                                Button {
+                                    reportedCamera = camera
+                                } label: {
+                                    Label("Report wrong info or removal", systemImage: "flag")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(AppTheme.primary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
@@ -109,6 +121,17 @@ struct CameraDetailSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .sheet(item: Binding(
+            get: { reportedCamera.map { ReportedCameraPayload(camera: $0) } },
+            set: { reportedCamera = $0?.camera }
+        )) { payload in
+            ReportCameraSheet(
+                coordinate: payload.camera.coordinate,
+                existingCameraID: payload.camera.id,
+                initialKind: .wrongInfo
+            )
+            .presentationBackground(AppTheme.background)
+        }
     }
 
     private func detailRow(_ label: String, _ value: String) -> some View {
@@ -144,6 +167,11 @@ struct CameraDetailSheet: View {
             return false
         }
     }
+}
+
+private struct ReportedCameraPayload: Identifiable {
+    var id: String { camera.id }
+    let camera: ALPRCamera
 }
 
 private struct FOVConePreview: View {

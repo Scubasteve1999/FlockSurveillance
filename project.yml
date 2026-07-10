@@ -10,8 +10,8 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     TARGETED_DEVICE_FAMILY: "1,2"
-    MARKETING_VERSION: "1.2.0"
-    CURRENT_PROJECT_VERSION: "4"
+    MARKETING_VERSION: "1.3.0"
+    CURRENT_PROJECT_VERSION: "5"
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
@@ -39,12 +39,18 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
         NSSupportsLiveActivities: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+          UISceneConfigurations:
+            CPTemplateApplicationSceneSessionRoleApplication:
+              - UISceneConfigurationName: CarPlay
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).CarPlaySceneDelegate
         CFBundleURLTypes:
           - CFBundleURLName: com.flocksurveillance.app
             CFBundleURLSchemes:
               - flocksurveillance
         NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.
-        NSLocationAlwaysAndWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras.
+        NSLocationAlwaysAndWhenInUseUsageDescription: Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app
@@ -59,6 +65,12 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.flocksurveillance.shared
+        # CarPlay: once Apple grants the driving-task entitlement
+        # (developer.apple.com > Account > CarPlay App Entitlement Request,
+        # category "Driving task"), uncomment the line below and re-run
+        # `xcodegen generate`. Until then, leaving it out keeps automatic
+        # signing working; the CarPlay scene code is inert without it.
+        # com.apple.developer.carplay-driving-task: true
   FlockSurveillanceTests:
     type: bundle.unit-test
     platform: iOS

@@ -1,7 +1,4 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
-name: Swift
+name: iOS
 
 on:
   push:
@@ -10,13 +7,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
-    runs-on: macos-latest
+  build-and-test:
+    runs-on: macos-15
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build and test
+        run: |
+          xcodebuild test \
+            -scheme FlockSurveillance \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions || exit ${PIPESTATUS[0]}

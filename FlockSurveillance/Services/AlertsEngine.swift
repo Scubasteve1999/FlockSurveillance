@@ -1,0 +1,274 @@
+import CoreLocation
+import Foundation
+import UserNotifications
+
+extension Notification.Name {
+    /// Posted with a "url" userInfo entry when a notification tap or App Intent
+    /// wants the app to navigate somewhere.
+    static let flockDeepLink = Notification.Name("flockDeepLink")
+}
+
+/// Routes notification taps into the app's deep-link handling.
+@MainActor
+final class NotificationTapHandler: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = NotificationTapHandler()
+
+    func install() {
+        UNUserNotificationCenter.current().delegate = self
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .sound]
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        guard let raw = response.notification.request.content.userInfo["deepLink"] as? String,
+              let url = URL(string: raw)
+        else { return }
+        await MainActor.run {
+            NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
+        }
+    }
+}
+
+/// Lightweight camera point persisted to disk so the alerts engine can reseed
+/// geofences on background wake-ups without touching SwiftData.
+struct AlertCandidate: Codable {
+    let id: String
+    let latitude: Double
+    let longitude: Double
+    let isFlock: Bool
+    let title: String
+}
+
+enum AlertCandidateStore {
+    private static var fileURL: URL {
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        return support.appendingPathComponent("AlertCandidates.json")
+    }
+
+    static func write(_ candidates: [AlertCandidate]) {
+        let url = fileURL
+        Task.detached(priority: .utility) {
+            guard let data = try? JSONEncoder().encode(candidates) else { return }
+            try? data.write(to: url, options: .atomic)
+        }
+    }
+
+    static func read() -> [AlertCandidate] {
+        guard let data = try? Data(contentsOf: fileURL) else { return [] }
+        return (try? JSONDecoder().decode([AlertCandidate].self, from: data)) ?? []
+    }
+}
+
+/// Background ALPR proximity alerts: monitors geofences around the nearest cameras
+/// and reseeds them on significant location changes, so users get notified even
+/// with the app closed.
+@MainActor
+final class AlertsEngine: NSObject, CLLocationManagerDelegate {
+    static let shared = AlertsEngine()
+
+    /// iOS hard-caps region monitoring at 20 regions per app.
+    static let maxRegions = 20
+    static let regionRadius: CLLocationDistance = 150
+    static let cooldown: TimeInterval = 30 * 60
+    private static let lastAlertKey = "alerts.lastAlertAt"
+    private nonisolated static let regionPrefix = "alpr."
+
+    private let manager = CLLocationManager()
+    private(set) var authorizationStatus: CLAuthorizationStatus
+
+    /// Set while Drive Mode is active — the HUD already covers approach warnings.
+    var isSuppressed = false
+
+    private override init() {
+        authorizationStatus = manager.authorizationStatus
+        super.init()
+        manager.delegate = self
+        manager.allowsBackgroundLocationUpdates = false
+        manager.pausesLocationUpdatesAutomatically = true
+    }
+
+    /// Call once at launch. Re-attaches the delegate so region callbacks work after
+    /// the system relaunches the app in the background.
+    func activateIfEnabled() {
+        guard AppPreferences.alertsEnabled else { return }
+        manager.startMonitoringSignificantLocationChanges()
+        if let location = manager.location {
+            reseed(around: location.coordinate)
+        }
+    }
+
+    func setEnabled(_ enabled: Bool) async {
+        AppPreferences.alertsEnabled = enabled
+        guard enabled else {
+            stopAll()
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
+
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestAlwaysAuthorization()
+        case .authorizedWhenInUse:
+            manager.requestAlwaysAuthorization()
+        default:
+            break
+        }
+
+        manager.startMonitoringSignificantLocationChanges()
+        if let location = manager.location {
+            reseed(around: location.coordinate)
+        } else {
+            manager.requestLocation()
+        }
+    }
+
+    /// Whether alerts can actually fire (permission-wise). Used by Settings to
+    /// surface a "grant Always access" hint.
+    var hasAlwaysAuthorization: Bool {
+        authorizationStatus == .authorizedAlways
+    }
+
+    private func stopAll() {
+        manager.stopMonitoringSignificantLocationChanges()
+        for region in manager.monitoredRegions where region.identifier.hasPrefix(Self.regionPrefix) {
+            manager.stopMonitoring(for: region)
+        }
+    }
+
+    // MARK: - Region seeding
+
+    func reseed(around coordinate: CLLocationCoordinate2D) {
+        guard AppPreferences.alertsEnabled else { return }
+
+        let flockOnly = AppPreferences.alertsFlockOnly
+        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let nearest = AlertCandidateStore.read()
+            .filter { flockOnly ? $0.isFlock : true }
+            .map { candidate -> (AlertCandidate, CLLocationDistance) in
+                let location = CLLocation(latitude: candidate.latitude, longitude: candidate.longitude)
+                return (candidate, location.distance(from: origin))
+            }
+            .sorted { $0.1 < $1.1 }
+            .prefix(Self.maxRegions)
+
+        for region in manager.monitoredRegions where region.identifier.hasPrefix(Self.regionPrefix) {
+            manager.stopMonitoring(for: region)
+        }
+
+        for (candidate, _) in nearest {
+            let region = CLCircularRegion(
+                center: CLLocationCoordinate2D(latitude: candidate.latitude, longitude: candidate.longitude),
+                radius: Self.regionRadius,
+                identifier: Self.regionPrefix + candidate.id + "|" + (candidate.isFlock ? "1" : "0") + "|" + candidate.title
+            )
+            region.notifyOnEntry = true
+            region.notifyOnExit = false
+            manager.startMonitoring(for: region)
+        }
+    }
+
+    // MARK: - Notification delivery
+
+    private func fireAlert(regionIdentifier: String) {
+        guard AppPreferences.alertsEnabled, !isSuppressed, !isQuietHours() else { return }
+
+        let raw = String(regionIdentifier.dropFirst(Self.regionPrefix.count))
+        let parts = raw.split(separator: "|", maxSplits: 2).map(String.init)
+        let cameraID = parts.first ?? raw
+        let isFlock = parts.count > 1 && parts[1] == "1"
+        let title = parts.count > 2 && !parts[2].isEmpty ? parts[2] : (isFlock ? "Flock ALPR" : "ALPR camera")
+
+        guard !isInCooldown(cameraID: cameraID) else { return }
+        recordAlert(cameraID: cameraID)
+
+        let content = UNMutableNotificationContent()
+        content.title = isFlock ? "Flock ALPR ahead" : "ALPR camera ahead"
+        content.body = "\(title) within \(Int(Self.regionRadius)) m of you."
+        content.sound = .default
+        content.userInfo = ["deepLink": "flocksurveillance://map"]
+
+        let request = UNNotificationRequest(
+            identifier: "alpr-alert-\(cameraID)",
+            content: content,
+            trigger: nil
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    private func isQuietHours(now: Date = .now) -> Bool {
+        guard AppPreferences.quietHoursEnabled else { return false }
+        let hour = Calendar.current.component(.hour, from: now)
+        let start = AppPreferences.quietStartHour
+        let end = AppPreferences.quietEndHour
+        if start == end { return false }
+        // Window may wrap midnight (e.g. 22 -> 7).
+        if start < end {
+            return hour >= start && hour < end
+        }
+        return hour >= start || hour < end
+    }
+
+    private func isInCooldown(cameraID: String, now: Date = .now) -> Bool {
+        let history = UserDefaults.standard.dictionary(forKey: Self.lastAlertKey) as? [String: TimeInterval] ?? [:]
+        guard let last = history[cameraID] else { return false }
+        return now.timeIntervalSince1970 - last < Self.cooldown
+    }
+
+    private func recordAlert(cameraID: String, now: Date = .now) {
+        var history = UserDefaults.standard.dictionary(forKey: Self.lastAlertKey) as? [String: TimeInterval] ?? [:]
+        history[cameraID] = now.timeIntervalSince1970
+        // Prune stale entries so the dictionary doesn't grow unbounded.
+        let cutoff = now.timeIntervalSince1970 - Self.cooldown * 4
+        history = history.filter { $0.value >= cutoff }
+        UserDefaults.standard.set(history, forKey: Self.lastAlertKey)
+    }
+
+    // MARK: - CLLocationManagerDelegate
+
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        Task { @MainActor in
+            self.authorizationStatus = status
+            if status == .authorizedAlways, AppPreferences.alertsEnabled {
+                self.manager.startMonitoringSignificantLocationChanges()
+                if let location = self.manager.location {
+                    self.reseed(around: location.coordinate)
+                }
+            }
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let latest = locations.last else { return }
+        let coordinate = latest.coordinate
+        Task { @MainActor in
+            self.reseed(around: coordinate)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        let identifier = region.identifier
+        guard identifier.hasPrefix(Self.regionPrefix) else { return }
+        Task { @MainActor in
+            self.fireAlert(regionIdentifier: identifier)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        // Region monitoring soft-fails; the next significant change retries.
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        // Individual regions can fail (e.g. over quota); remaining regions still fire.
+    }
+}

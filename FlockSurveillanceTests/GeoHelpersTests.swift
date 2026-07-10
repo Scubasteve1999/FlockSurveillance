@@ -32,6 +32,15 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(flockOnly.map(\.id), ["f"])
     }
 
+    func testBearingBetweenCoordinates() {
+        let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let north = CLLocationCoordinate2D(latitude: 34.75, longitude: -84.39)
+        let east = CLLocationCoordinate2D(latitude: 33.75, longitude: -83.39)
+
+        XCTAssertEqual(GeoHelpers.bearing(from: origin, to: north), 0, accuracy: 0.5)
+        XCTAssertEqual(GeoHelpers.bearing(from: origin, to: east), 90, accuracy: 1.5)
+    }
+
     func testRelativeFreshness() {
         let now = Date()
         XCTAssertEqual(GeoHelpers.relativeFreshness(from: now.addingTimeInterval(-30), now: now), "Updated just now")

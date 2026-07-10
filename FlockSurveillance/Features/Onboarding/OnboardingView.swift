@@ -4,7 +4,150 @@ struct OnboardingView: View {
     @Binding var hasSeenOnboarding: Bool
     @Environment(LocationManager.self) private var locationManager
 
+    @State private var page = 0
+    @State private var didRequestLocation = false
+    @State private var didEnableAlerts = false
+
     var body: some View {
+        ZStack {
+            backdrop
+
+            VStack(spacing: 0) {
+                TabView(selection: $page) {
+                    missionPage.tag(0)
+                    featuresPage.tag(1)
+                    permissionsPage.tag(2)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                pageDots
+                    .padding(.bottom, 10)
+
+                footer
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 36)
+            }
+        }
+    }
+
+    // MARK: - Pages
+
+    private var missionPage: some View {
+        VStack(spacing: 18) {
+            Spacer()
+
+            Image(systemName: "camera.metering.spot")
+                .font(.system(size: 44, weight: .light))
+                .foregroundStyle(AppTheme.primary)
+                .padding(24)
+                .background(AppTheme.card.opacity(0.9))
+                .clipShape(Circle())
+                .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+
+            Text("FLOCK SURVEILLANCE")
+                .font(.system(size: 32, weight: .bold))
+                .tracking(1.4)
+                .foregroundStyle(AppTheme.foreground)
+                .multilineTextAlignment(.center)
+
+            Text("See the cameras watching you.")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(AppTheme.primary)
+                .multilineTextAlignment(.center)
+
+            Text("Thousands of license plate readers track cars across the country. This is the community map of where they are — powered by OpenStreetMap volunteers, not vendor APIs.")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+
+            Spacer()
+        }
+        .padding(.horizontal, 28)
+    }
+
+    private var featuresPage: some View {
+        VStack(spacing: 14) {
+            Spacer()
+
+            Text("Built to keep you aware")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(AppTheme.foreground)
+                .multilineTextAlignment(.center)
+                .padding(.bottom, 6)
+
+            featureCard(
+                icon: "map.fill",
+                title: "Live camera map",
+                detail: "ALPR pins, coverage heat, and field-of-view cones wherever you look."
+            )
+            featureCard(
+                icon: "car.fill",
+                title: "Low-exposure drives",
+                detail: "Compare routes by camera count, then Drive Mode counts them down live."
+            )
+            featureCard(
+                icon: "bell.badge.fill",
+                title: "Background alerts",
+                detail: "Get a heads-up near a mapped ALPR — even with the app closed."
+            )
+            featureCard(
+                icon: "gauge.with.dots.needle.67percent",
+                title: "Place Score",
+                detail: "Grade any neighborhood's surveillance density in one tap."
+            )
+
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+    }
+
+    private var permissionsPage: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Text("Make it yours")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(AppTheme.foreground)
+
+            Text("Both are optional. Everything stays on your device — no accounts, no tracking, no data collection.")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+
+            permissionCard(
+                icon: "location.fill",
+                title: "Location",
+                detail: "Centers the map on you and powers proximity radar.",
+                actionLabel: didRequestLocation ? "Requested" : "Enable location",
+                isDone: didRequestLocation
+            ) {
+                locationManager.requestPermissionIfNeeded()
+                didRequestLocation = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+
+            permissionCard(
+                icon: "bell.badge.fill",
+                title: "ALPR alerts",
+                detail: "Notifies you near mapped cameras, even in the background.",
+                actionLabel: didEnableAlerts ? "Enabled" : "Enable alerts",
+                isDone: didEnableAlerts
+            ) {
+                didEnableAlerts = true
+                Task { await AlertsEngine.shared.setEnabled(true) }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+    }
+
+    // MARK: - Chrome
+
+    private var backdrop: some View {
         ZStack {
             LinearGradient(
                 colors: [
@@ -32,70 +175,152 @@ struct OnboardingView: View {
                 .stroke(AppTheme.border.opacity(0.35), lineWidth: 0.5)
             }
             .ignoresSafeArea()
+        }
+    }
 
-            VStack(spacing: 0) {
-                Spacer()
-
-                VStack(spacing: 18) {
-                    Text("FLOCK SURVEILLANCE")
-                        .font(.system(size: 34, weight: .bold))
-                        .tracking(1.4)
-                        .foregroundStyle(AppTheme.foreground)
-                        .multilineTextAlignment(.center)
-
-                    Text("How watched is your life right now?")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(AppTheme.primary)
-                        .multilineTextAlignment(.center)
-
-                    Text("A civic map of community-documented ALPR cameras — proximity radar, route exposure, and clear context. Built on OpenStreetMap, not vendor APIs.")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(AppTheme.mutedForeground)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-                }
-                .padding(.horizontal, 28)
-
-                Spacer()
-
-                VStack(spacing: 12) {
-                    DataSourcePill()
-
-                    Button {
-                        locationManager.requestPermissionIfNeeded()
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            hasSeenOnboarding = true
-                        }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    } label: {
-                        Text("Enable location & enter")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(AppTheme.background)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(AppTheme.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            hasSeenOnboarding = true
-                        }
-                    } label: {
-                        Text("Continue without location")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(AppTheme.mutedForeground)
-                    }
-                    .buttonStyle(.plain)
-
-                    Text("Not affiliated with Flock Safety")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(AppTheme.mutedForeground)
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 36)
+    private var pageDots: some View {
+        HStack(spacing: 8) {
+            ForEach(0..<3, id: \.self) { index in
+                Capsule()
+                    .fill(index == page ? AppTheme.primary : AppTheme.border)
+                    .frame(width: index == page ? 22 : 8, height: 8)
+                    .animation(.easeInOut(duration: 0.25), value: page)
             }
         }
+    }
+
+    private var footer: some View {
+        VStack(spacing: 12) {
+            DataSourcePill()
+
+            Button {
+                if page < 2 {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        page += 1
+                    }
+                } else {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        hasSeenOnboarding = true
+                    }
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                }
+            } label: {
+                Text(page < 2 ? "Continue" : "Enter the map")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(AppTheme.background)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(AppTheme.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
+
+            if page < 2 {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        hasSeenOnboarding = true
+                    }
+                } label: {
+                    Text("Skip")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Text("Not affiliated with Flock Safety")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+        }
+    }
+
+    // MARK: - Components
+
+    private func featureCard(icon: String, title: String, detail: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(AppTheme.accent)
+                .frame(width: 42, height: 42)
+                .background(AppTheme.card)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(AppTheme.border, lineWidth: 1)
+                )
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(AppTheme.foreground)
+                Text(detail)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .background(AppTheme.card.opacity(0.65))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
+    }
+
+    private func permissionCard(
+        icon: String,
+        title: String,
+        detail: String,
+        actionLabel: String,
+        isDone: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+                Text(title)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(AppTheme.foreground)
+                Spacer()
+            }
+
+            Text(detail)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button(action: action) {
+                HStack(spacing: 6) {
+                    if isDone {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    Text(actionLabel)
+                        .font(.system(size: 14, weight: .bold))
+                }
+                .foregroundStyle(isDone ? AppTheme.densityLow : AppTheme.background)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(isDone ? AppTheme.densityLow.opacity(0.15) : AppTheme.accent)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(isDone ? AppTheme.densityLow.opacity(0.4) : .clear, lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(isDone)
+        }
+        .padding(16)
+        .background(AppTheme.card.opacity(0.65))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
     }
 }

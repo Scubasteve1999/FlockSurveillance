@@ -1,4 +1,5 @@
 import MapKit
+import StoreKit
 import SwiftUI
 import UIKit
 
@@ -6,6 +7,7 @@ struct MapRadarView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(LocationManager.self) private var locationManager
     @Environment(ProximityRadar.self) private var radar
+    @Environment(\.requestReview) private var requestReview
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
@@ -20,6 +22,8 @@ struct MapRadarView: View {
     @State private var placeScore: PlaceScore?
     @State private var placeScoreRadius: CLLocationDistance = 1609.34
     @State private var shareText: String?
+    @State private var isPlacingReport = false
+    @State private var reportTarget: ReportTarget?
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -96,6 +100,14 @@ struct MapRadarView: View {
             }
             .ignoresSafeArea()
 
+            if isPlacingReport {
+                Image(systemName: "plus.viewfinder")
+                    .font(.system(size: 34, weight: .light))
+                    .foregroundStyle(AppTheme.primary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
+            }
+
             VStack(spacing: 12) {
                 brandHeader
                 filterBar
@@ -103,6 +115,10 @@ struct MapRadarView: View {
                     LocationDeniedBanner()
                 }
                 Spacer()
+                if isPlacingReport {
+                    reportPlacementBar
+                        .padding(.horizontal, 16)
+                }
                 if let placeScore {
                     PlaceScoreCard(
                         score: placeScore,
@@ -111,7 +127,10 @@ struct MapRadarView: View {
                             placeScoreRadius = meters
                             computePlaceScore()
                         },
-                        onShare: { shareText = placeScore.shareText },
+                        onShare: {
+                            shareText = placeScore.shareText
+                            ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
+                        },
                         onClose: { self.placeScore = nil }
                     )
                     .padding(.horizontal, 16)
@@ -160,6 +179,9 @@ struct MapRadarView: View {
         .onChange(of: filter) { _, value in
             defaultFilterRaw = value.rawValue
         }
+        .onReceive(NotificationCenter.default.publisher(for: .flockPlaceScore)) { _ in
+            computePlaceScore()
+        }
         .sheet(item: $selectedCluster) { cluster in
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
                 .presentationBackground(AppTheme.background)
@@ -170,6 +192,48 @@ struct MapRadarView: View {
         )) { payload in
             ActivityShareView(items: [payload.text])
         }
+        .sheet(item: $reportTarget) { target in
+            ReportCameraSheet(coordinate: target.coordinate)
+                .presentationBackground(AppTheme.background)
+        }
+    }
+
+    private var reportPlacementBar: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Report a camera")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(AppTheme.foreground)
+                Text("Pan so the crosshair is on the camera")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+            }
+            Spacer()
+            Button {
+                if let center = visibleRegion?.center {
+                    reportTarget = ReportTarget(coordinate: center)
+                }
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isPlacingReport = false
+                }
+            } label: {
+                Text("Here")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(AppTheme.background)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 10)
+                    .background(AppTheme.primary)
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     private var fovCameras: [ALPRCamera] {
@@ -191,6 +255,22 @@ struct MapRadarView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
             }
             Spacer()
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isPlacingReport.toggle()
+                }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            } label: {
+                Image(systemName: "flag.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(isPlacingReport ? AppTheme.primary : AppTheme.accent)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.card.opacity(0.92))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+            }
+            .accessibilityLabel("Report a camera")
+
             Button {
                 computePlaceScore()
             } label: {
@@ -329,6 +409,11 @@ struct MapRadarView: View {
 private struct ShareTextPayload: Identifiable {
     let id = UUID()
     let text: String
+}
+
+private struct ReportTarget: Identifiable {
+    let id = UUID()
+    let coordinate: CLLocationCoordinate2D
 }
 
 private struct ActivityShareView: UIViewControllerRepresentable {

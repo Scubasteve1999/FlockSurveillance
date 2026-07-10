@@ -4,8 +4,13 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.2)
+## Features (v1.3)
 
+- **Background ALPR alerts** — geofenced notifications near mapped cameras, even with the app closed (Always location, opt-in, quiet hours)
+- **Siri + Shortcuts** — "How many cameras near me?", Place Score, and Start Drive Mode via App Intents
+- **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget
+- **Community reporting** — flag unmapped or changed cameras as anonymous OpenStreetMap notes from the map or camera intel
+- **CarPlay Drive Mode** — driving-task template mirroring the HUD (code ready; awaits Apple's CarPlay entitlement)
 - **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, coverage heat, freshness label, optional approach haptics
 - **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
 - **Place Score** — one-tap watchedness grade for your location / viewport, with share card

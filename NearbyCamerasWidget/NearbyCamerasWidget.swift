@@ -1,3 +1,4 @@
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -42,8 +43,60 @@ struct NearbyCamerasProvider: TimelineProvider {
 
 struct NearbyCamerasWidgetView: View {
     var entry: NearbyCamerasEntry
+    @Environment(\.widgetFamily) private var family
 
     var body: some View {
+        switch family {
+        case .accessoryCircular:
+            accessoryCircular
+        case .accessoryRectangular:
+            accessoryRectangular
+        case .accessoryInline:
+            Text(entry.hasHome ? "\(entry.count) ALPRs near Home" : "Set Home for ALPRs")
+                .widgetURL(URL(string: "flocksurveillance://map"))
+        default:
+            systemView
+        }
+    }
+
+    private var accessoryCircular: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            VStack(spacing: 0) {
+                Image(systemName: "camera.metering.spot")
+                    .font(.system(size: 12, weight: .semibold))
+                Text(entry.hasHome ? "\(entry.count)" : "—")
+                    .font(.system(size: 18, weight: .bold))
+            }
+        }
+        .containerBackground(for: .widget) { Color.clear }
+        .widgetURL(URL(string: "flocksurveillance://map"))
+    }
+
+    private var accessoryRectangular: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("FLOCK SURVEILLANCE")
+                .font(.system(size: 10, weight: .bold))
+                .tracking(0.5)
+            if entry.hasHome {
+                Text("\(entry.count) ALPRs near Home")
+                    .font(.system(size: 14, weight: .semibold))
+                if let nearest = entry.nearestMeters {
+                    Text("Nearest \(format(nearest))")
+                        .font(.system(size: 12, weight: .medium))
+                        .opacity(0.75)
+                }
+            } else {
+                Text("Set Home in Settings")
+                    .font(.system(size: 14, weight: .semibold))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .containerBackground(for: .widget) { Color.clear }
+        .widgetURL(URL(string: "flocksurveillance://map"))
+    }
+
+    private var systemView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("FLOCK SURVEILLANCE")
                 .font(.system(size: 10, weight: .bold))
@@ -63,9 +116,17 @@ struct NearbyCamerasWidgetView: View {
                         .foregroundStyle(Color(red: 0.35, green: 0.78, blue: 0.86))
                 }
                 if let updatedAt = entry.updatedAt {
-                    Text(relative(updatedAt))
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.55))
+                    HStack(spacing: 6) {
+                        Text(relative(updatedAt))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.55))
+                        Button(intent: RefreshNearbyIntent()) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(Color(red: 0.35, green: 0.78, blue: 0.86))
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             } else {
                 Text("Open the app")
@@ -117,6 +178,9 @@ struct NearbyCamerasWidget: Widget {
         }
         .configurationDisplayName("Nearby ALPRs")
         .description("Shows how many community-mapped ALPRs are within 1 mile of Home.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([
+            .systemSmall, .systemMedium,
+            .accessoryCircular, .accessoryRectangular, .accessoryInline
+        ])
     }
 }

@@ -116,6 +116,11 @@ struct LearnArticle: Identifiable {
             eyebrow: "This map",
             title: "Community infrastructure",
             body: "Flock Surveillance plots ALPR nodes that volunteers have tagged in OpenStreetMap. Coverage is uneven by design: it reflects what people have documented, not a vendor’s private inventory."
+        ),
+        LearnArticle(
+            eyebrow: "Reporting",
+            title: "How camera reports work",
+            body: "Tap the flag on the map to report an unmapped camera, or flag a mapped one that changed. Your report is posted as an anonymous public note on OpenStreetMap. Volunteer mappers verify it on the ground, tag it with surveillance:type=ALPR, and it then appears here and in DeFlock — usually within days."
         )
     ]
 }

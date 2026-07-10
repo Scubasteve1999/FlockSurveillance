@@ -42,6 +42,22 @@ final class CameraRepository {
         // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         cameras = fetched.sorted { $0.fetchedAt > $1.fetchedAt }
+        publishAlertCandidates()
+    }
+
+    /// Snapshot cameras to disk so AlertsEngine can reseed geofences on
+    /// background wake-ups without opening SwiftData.
+    private func publishAlertCandidates() {
+        let candidates = cameras.prefix(5000).map {
+            AlertCandidate(
+                id: $0.id,
+                latitude: $0.latitude,
+                longitude: $0.longitude,
+                isFlock: $0.isFlock,
+                title: $0.displayTitle
+            )
+        }
+        AlertCandidateStore.write(Array(candidates))
     }
 
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {

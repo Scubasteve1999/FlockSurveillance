@@ -1,4 +1,5 @@
 import MapKit
+import StoreKit
 import SwiftUI
 
 struct DriveModeView: View {
@@ -6,6 +7,7 @@ struct DriveModeView: View {
     @Environment(LocationManager.self) private var locationManager
     @Environment(ProximityRadar.self) private var radar
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.requestReview) private var requestReview
 
     @State private var mapPosition: MapCameraPosition = .userLocation(fallback: .automatic)
 
@@ -35,6 +37,7 @@ struct DriveModeView: View {
                 Spacer()
                 Button {
                     driveSession.stop()
+                    ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
                     dismiss()
                 } label: {
                     Text("End Drive")
@@ -78,6 +81,15 @@ struct DriveModeView: View {
         }
     }
 
+    /// Screen-relative bearing to the next hit: 0 = straight ahead of the phone's compass heading.
+    private func relativeBearing(to hit: DriveHit) -> Double? {
+        guard let userCoordinate = locationManager.location?.coordinate,
+              let heading = locationManager.headingDegrees
+        else { return nil }
+        let absolute = GeoHelpers.bearing(from: userCoordinate, to: hit.coordinate)
+        return (absolute - heading + 360).truncatingRemainder(dividingBy: 360)
+    }
+
     private var driveHUD: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -93,9 +105,19 @@ struct DriveModeView: View {
                 Text(next.isFlock ? "Next Flock ALPR" : "Next ALPR")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
-                Text(driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—")
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundStyle(AppTheme.foreground)
+                HStack(spacing: 10) {
+                    Text(driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—")
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundStyle(AppTheme.foreground)
+                    if let relativeBearing = relativeBearing(to: next) {
+                        Image(systemName: "location.north.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(AppTheme.accent)
+                            .rotationEffect(.degrees(relativeBearing))
+                            .animation(.easeInOut(duration: 0.3), value: relativeBearing)
+                            .accessibilityLabel("Direction to next camera")
+                    }
+                }
                 Text(next.title)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(AppTheme.accent)

@@ -23,6 +23,9 @@ struct DriveHit: Identifiable, Hashable {
 @MainActor
 @Observable
 final class DriveSession {
+    /// Shared instance so the CarPlay scene can observe the active drive.
+    static let shared = DriveSession()
+
     private(set) var isActive = false
     private(set) var route: MKRoute?
     private(set) var hits: [DriveHit] = []
@@ -50,12 +53,15 @@ final class DriveSession {
         exposureLabel = result.exposureScore
         isActive = true
         lastPulseDistance = .greatestFiniteMagnitude
+        // The Drive HUD already surfaces approaches; don't double-notify.
+        AlertsEngine.shared.isSuppressed = true
         refresh(userLocation: nil)
         Task { await DriveLiveActivityController.shared.start(session: self) }
     }
 
     func stop() {
         isActive = false
+        AlertsEngine.shared.isSuppressed = false
         route = nil
         hits = []
         passedIDs = []

@@ -5,6 +5,11 @@ enum AppPreferenceKey {
     static let showHeatDefault = "prefs.showHeatDefault"
     static let defaultFilter = "prefs.defaultFilter"
     static let watchModeEnabled = "prefs.watchModeEnabled"
+    static let alertsEnabled = "prefs.alertsEnabled"
+    static let alertsFlockOnly = "prefs.alertsFlockOnly"
+    static let quietHoursEnabled = "prefs.quietHoursEnabled"
+    static let quietStartHour = "prefs.quietStartHour"
+    static let quietEndHour = "prefs.quietEndHour"
 }
 
 enum AppPreferences {
@@ -30,5 +35,36 @@ enum AppPreferences {
             return CameraFilter(rawValue: raw) ?? .all
         }
         set { UserDefaults.standard.set(newValue.rawValue, forKey: AppPreferenceKey.defaultFilter) }
+    }
+
+    static var alertsEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.alertsEnabled) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.alertsEnabled) }
+    }
+
+    static var alertsFlockOnly: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.alertsFlockOnly) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.alertsFlockOnly) }
+    }
+
+    static var quietHoursEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.quietHoursEnabled) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.quietHoursEnabled) }
+    }
+
+    static var quietStartHour: Int {
+        get {
+            if UserDefaults.standard.object(forKey: AppPreferenceKey.quietStartHour) == nil { return 22 }
+            return UserDefaults.standard.integer(forKey: AppPreferenceKey.quietStartHour)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.quietStartHour) }
+    }
+
+    static var quietEndHour: Int {
+        get {
+            if UserDefaults.standard.object(forKey: AppPreferenceKey.quietEndHour) == nil { return 7 }
+            return UserDefaults.standard.integer(forKey: AppPreferenceKey.quietEndHour)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.quietEndHour) }
     }
 }

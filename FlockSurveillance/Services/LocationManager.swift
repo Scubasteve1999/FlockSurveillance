@@ -8,7 +8,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
 
     private(set) var authorizationStatus: CLAuthorizationStatus
     private(set) var location: CLLocation?
-    private(set) var heading: CLHeading?
+    /// Compass heading in degrees (0 = north), nil until the first heading fix.
+    private(set) var headingDegrees: Double?
 
     override init() {
         authorizationStatus = manager.authorizationStatus
@@ -33,6 +34,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         requestPermissionIfNeeded()
         if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
             manager.startUpdatingLocation()
+            if CLLocationManager.headingAvailable() {
+                manager.startUpdatingHeading()
+            }
         }
     }
 
@@ -43,6 +47,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
             self.authorizationStatus = status
             if status == .authorizedWhenInUse || status == .authorizedAlways {
                 self.manager.startUpdatingLocation()
+                if CLLocationManager.headingAvailable() {
+                    self.manager.startUpdatingHeading()
+                }
             }
         }
     }
@@ -52,6 +59,15 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         Task { @MainActor in
             self.location = latest
             WidgetBridge.writeHomeCoordinateIfNeeded(latest.coordinate)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        // Prefer true north; fall back to magnetic when declination is unknown.
+        let degrees = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+        guard degrees >= 0 else { return }
+        Task { @MainActor in
+            self.headingDegrees = degrees
         }
     }
 

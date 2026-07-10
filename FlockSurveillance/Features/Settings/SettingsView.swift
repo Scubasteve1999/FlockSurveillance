@@ -8,6 +8,11 @@ struct SettingsView: View {
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatDefault = true
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
+    @AppStorage(AppPreferenceKey.alertsEnabled) private var alertsEnabled = false
+    @AppStorage(AppPreferenceKey.alertsFlockOnly) private var alertsFlockOnly = false
+    @AppStorage(AppPreferenceKey.quietHoursEnabled) private var quietHoursEnabled = false
+    @AppStorage(AppPreferenceKey.quietStartHour) private var quietStartHour = 22
+    @AppStorage(AppPreferenceKey.quietEndHour) private var quietEndHour = 7
 
     @State private var homeQuery = ""
     @State private var homeSuggestions: [MKLocalSearchCompletion] = []
@@ -69,6 +74,57 @@ struct SettingsView: View {
                                         }
                                     }
                                     .pickerStyle(.segmented)
+                                }
+                            }
+                        }
+
+                        SectionCard {
+                            VStack(alignment: .leading, spacing: 14) {
+                                Text("ALERTS")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .tracking(0.8)
+                                    .foregroundStyle(AppTheme.mutedForeground)
+
+                                Toggle(isOn: Binding(
+                                    get: { alertsEnabled },
+                                    set: { enabled in
+                                        alertsEnabled = enabled
+                                        Task { await AlertsEngine.shared.setEnabled(enabled) }
+                                    }
+                                )) {
+                                    labelRow("ALPR proximity alerts", "Get notified near cameras, even with the app closed")
+                                }
+                                .tint(AppTheme.accent)
+
+                                if alertsEnabled {
+                                    if !AlertsEngine.shared.hasAlwaysAuthorization {
+                                        Text("Allow “Always” location access so alerts work in the background. iOS may ask again after a few days of use.")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundStyle(AppTheme.primary)
+                                    }
+
+                                    Toggle(isOn: Binding(
+                                        get: { alertsFlockOnly },
+                                        set: { value in
+                                            alertsFlockOnly = value
+                                            reseedAlerts()
+                                        }
+                                    )) {
+                                        labelRow("Flock cameras only", "Skip other ALPR manufacturers")
+                                    }
+                                    .tint(AppTheme.accent)
+
+                                    Toggle(isOn: $quietHoursEnabled) {
+                                        labelRow("Quiet hours", "Mute alerts during a nightly window")
+                                    }
+                                    .tint(AppTheme.accent)
+
+                                    if quietHoursEnabled {
+                                        HStack(spacing: 12) {
+                                            quietHourPicker("From", selection: $quietStartHour)
+                                            quietHourPicker("Until", selection: $quietEndHour)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -201,6 +257,34 @@ struct SettingsView: View {
                     completer.bias(to: location.coordinate)
                 }
             }
+        }
+    }
+
+    private func quietHourPicker(_ label: String, selection: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label.uppercased())
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(0.8)
+                .foregroundStyle(AppTheme.mutedForeground)
+            Picker(label, selection: selection) {
+                ForEach(0..<24, id: \.self) { hour in
+                    Text(hourLabel(hour)).tag(hour)
+                }
+            }
+            .pickerStyle(.menu)
+            .tint(AppTheme.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func hourLabel(_ hour: Int) -> String {
+        let normalized = hour % 12 == 0 ? 12 : hour % 12
+        return "\(normalized) \(hour < 12 ? "AM" : "PM")"
+    }
+
+    private func reseedAlerts() {
+        if let coordinate = locationManager.location?.coordinate {
+            AlertsEngine.shared.reseed(around: coordinate)
         }
     }
 

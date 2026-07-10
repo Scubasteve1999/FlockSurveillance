@@ -86,7 +86,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     static let regionRadius: CLLocationDistance = 150
     static let cooldown: TimeInterval = 30 * 60
     /// Core Location region identifiers are short; keep titles bounded.
-    static let maxTitleLength = 40
+    nonisolated static let maxTitleLength = 40
     private static let lastAlertKey = "alerts.lastAlertAt"
     private nonisolated static let regionPrefix = "alpr."
 

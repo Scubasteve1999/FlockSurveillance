@@ -36,7 +36,9 @@ struct MapRadarView: View {
     }
 
     private var camerasInView: [ALPRCamera] {
-        guard let region = visibleRegion else { return repository.filtered(filter) }
+        // Never fall back to the full cache — that can be thousands of rows and
+        // stalls the first Map paint (especially on iPad).
+        guard let region = visibleRegion else { return [] }
         return repository.cameras(in: region, filter: filter)
     }
 
@@ -89,7 +91,7 @@ struct MapRadarView: View {
                     }
                 }
             }
-            .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll, showsTraffic: false))
+            .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll, showsTraffic: false))
             .mapControls {
                 MapCompass()
                 MapScaleView()

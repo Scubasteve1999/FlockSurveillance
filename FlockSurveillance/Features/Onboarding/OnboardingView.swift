@@ -189,8 +189,10 @@ struct OnboardingView: View {
             .ignoresSafeArea()
 
             GeometryReader { geo in
+                // Sparse grid — a dense Path on iPad Pro was expensive during
+                // the onboarding → map handoff.
                 Path { path in
-                    let step: CGFloat = 36
+                    let step: CGFloat = 72
                     for x in stride(from: 0, through: geo.size.width, by: step) {
                         path.move(to: CGPoint(x: x, y: 0))
                         path.addLine(to: CGPoint(x: x, y: geo.size.height))
@@ -201,8 +203,10 @@ struct OnboardingView: View {
                     }
                 }
                 .stroke(AppTheme.border.opacity(0.35), lineWidth: 0.5)
+                .drawingGroup()
             }
             .ignoresSafeArea()
+            .allowsHitTesting(false)
         }
     }
 
@@ -227,9 +231,9 @@ struct OnboardingView: View {
                         page += 1
                     }
                 } else {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        hasSeenOnboarding = true
-                    }
+                    // Do NOT wrap this in withAnimation — animating MapKit into the
+                    // hierarchy freezes the UI on iPad (and often iPhone).
+                    hasSeenOnboarding = true
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
             } label: {

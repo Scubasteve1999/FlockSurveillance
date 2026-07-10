@@ -45,6 +45,8 @@ struct FlockSurveillanceApp: App {
             Group {
                 if hasSeenOnboarding {
                     RootTabView(selectedTab: $selectedTab)
+                        // Keep MapKit out of any inherited transition animation.
+                        .transaction { $0.animation = nil }
                 } else {
                     OnboardingView(hasSeenOnboarding: $hasSeenOnboarding)
                 }

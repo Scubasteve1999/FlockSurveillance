@@ -1,8 +1,9 @@
 import AppIntents
 import Foundation
+import WidgetKit
 
-/// Interactive-widget refresh: completing the intent makes WidgetKit rebuild the
-/// timeline, which re-reads the latest App Group snapshot.
+/// Interactive-widget refresh: recomputes the nearby ALPR count from the App
+/// Group camera points + Home, then reloads timelines.
 struct RefreshNearbyIntent: AppIntent {
     static let title: LocalizedStringResource = "Refresh Nearby ALPRs"
     static let description = IntentDescription("Reloads the nearby ALPR count from the latest snapshot.")
@@ -10,6 +11,7 @@ struct RefreshNearbyIntent: AppIntent {
     static let isDiscoverable = false
 
     func perform() async throws -> some IntentResult {
-        .result()
+        WidgetSnapshotStore.recomputeNearbyFromHome()
+        return .result()
     }
 }

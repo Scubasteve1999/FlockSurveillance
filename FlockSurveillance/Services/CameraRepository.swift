@@ -47,8 +47,20 @@ final class CameraRepository {
 
     /// Snapshot cameras to disk so AlertsEngine can reseed geofences on
     /// background wake-ups without opening SwiftData.
+    /// Prefer cameras nearest Home (then last viewport, then Atlanta) — not the
+    /// most recently fetched — so travel / a large cache still geofences locally.
     private func publishAlertCandidates() {
-        let candidates = cameras.prefix(5000).map {
+        let anchor = WidgetBridge.homeCoordinate()
+            ?? lastRegion?.center
+            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        let origin = CLLocation(latitude: anchor.latitude, longitude: anchor.longitude)
+
+        let ranked = cameras
+            .map { ($0, $0.location.distance(from: origin)) }
+            .sorted { $0.1 < $1.1 }
+
+        let alertSlice = ranked.prefix(5_000).map(\.0)
+        let candidates = alertSlice.map {
             AlertCandidate(
                 id: $0.id,
                 latitude: $0.latitude,
@@ -57,7 +69,22 @@ final class CameraRepository {
                 title: $0.displayTitle
             )
         }
-        AlertCandidateStore.write(Array(candidates))
+        AlertCandidateStore.write(candidates)
+
+        // Widget refresh needs points near Home in the App Group (5 mi / 1k cap).
+        let homeOrigin: CLLocation
+        if let home = WidgetBridge.homeCoordinate() {
+            homeOrigin = CLLocation(latitude: home.latitude, longitude: home.longitude)
+        } else {
+            homeOrigin = origin
+        }
+        let widgetPoints = cameras
+            .map { ($0, $0.location.distance(from: homeOrigin)) }
+            .filter { $0.1 <= 5 * 1609.34 }
+            .sorted { $0.1 < $1.1 }
+            .prefix(1_000)
+            .map { WidgetSnapshotStore.CameraPoint(latitude: $0.0.latitude, longitude: $0.0.longitude) }
+        WidgetSnapshotStore.writeCameraPoints(Array(widgetPoints))
     }
 
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {
@@ -179,6 +206,9 @@ final class CameraRepository {
         isSeeding = false
         guard let modelContext else {
             cameras = []
+            AlertCandidateStore.clear()
+            WidgetSnapshotStore.clearNearbySnapshot()
+            AlertsEngine.shared.clearGeofences()
             return
         }
         for camera in cameras {
@@ -189,6 +219,9 @@ final class CameraRepository {
         lastSuccessfulFetchAt = nil
         isServingStale = false
         coverageHint = nil
+        AlertCandidateStore.clear()
+        WidgetSnapshotStore.clearNearbySnapshot()
+        AlertsEngine.shared.clearGeofences()
         WidgetBridge.writeNearbySnapshot(from: [])
         startSeedIfNeeded()
     }

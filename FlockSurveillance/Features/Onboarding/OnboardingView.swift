@@ -249,9 +249,8 @@ struct OnboardingView: View {
 
             if page < 2 {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        hasSeenOnboarding = true
-                    }
+                    // Same as Enter the map — never animate MapKit into the hierarchy.
+                    hasSeenOnboarding = true
                 } label: {
                     Text("Skip")
                         .font(.system(size: 13, weight: .semibold))

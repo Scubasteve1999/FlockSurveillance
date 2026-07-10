@@ -65,6 +65,10 @@ enum AlertCandidateStore {
         }
     }
 
+    static func clear() {
+        write([])
+    }
+
     static func read() -> [AlertCandidate] {
         queue.sync {
             guard let data = try? Data(contentsOf: fileURL) else { return [] }
@@ -191,6 +195,12 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     /// Opted in but missing Always — foreground-only / no reliable wake-ups.
     var needsAlwaysAuthorization: Bool {
         AppPreferences.alertsEnabled && !hasAlwaysAuthorization
+    }
+
+    /// Drop monitored regions after the camera cache is cleared so stale
+    /// notifications cannot fire for deleted cameras.
+    func clearGeofences() {
+        clearMonitoredRegions()
     }
 
     private func stopAll() {

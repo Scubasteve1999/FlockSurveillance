@@ -55,6 +55,23 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertEqual(parsed.title?.count, AlertsEngine.maxTitleLength)
     }
 
+    func testWidgetSnapshotRecomputeUsesHomeRadius() {
+        // Isolate App Group keys for the test process.
+        let defaults = UserDefaults(suiteName: WidgetSnapshotStore.appGroupID)
+        defaults?.removeObject(forKey: WidgetSnapshotStore.cameraPointsKey)
+        defaults?.set(33.75, forKey: WidgetSnapshotStore.homeLatKey)
+        defaults?.set(-84.39, forKey: WidgetSnapshotStore.homeLonKey)
+
+        WidgetSnapshotStore.writeCameraPoints([
+            .init(latitude: 33.7501, longitude: -84.3901), // ~within 1 mi
+            .init(latitude: 34.5, longitude: -84.39) // far
+        ])
+        let result = WidgetSnapshotStore.recomputeNearbyFromHome()
+        XCTAssertEqual(result.count, 1)
+        XCTAssertNotNil(result.nearestMeters)
+        XCTAssertLessThan(result.nearestMeters ?? 9999, WidgetSnapshotStore.radiusMeters)
+    }
+
     // MARK: - OSM report note text
 
     func testNewCameraNoteIncludesStructuredFields() {

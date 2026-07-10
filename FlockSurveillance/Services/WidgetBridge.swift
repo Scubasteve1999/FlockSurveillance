@@ -52,6 +52,16 @@ enum WidgetBridge {
         defaults.set(nearby.count, forKey: nearbyCountKey)
         defaults.set(nearby.first?.1 ?? -1, forKey: nearestMetersKey)
         defaults.set(Date().timeIntervalSince1970, forKey: updatedAtKey)
+
+        // Keep App Group points in sync so the widget refresh intent can recompute.
+        let points = cameras
+            .map { ($0, $0.location.distance(from: origin)) }
+            .filter { $0.1 <= 5 * 1609.34 }
+            .sorted { $0.1 < $1.1 }
+            .prefix(1_000)
+            .map { WidgetSnapshotStore.CameraPoint(latitude: $0.0.latitude, longitude: $0.0.longitude) }
+        WidgetSnapshotStore.writeCameraPoints(Array(points))
+
         WidgetCenter.shared.reloadAllTimelines()
     }
 

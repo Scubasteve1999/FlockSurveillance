@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
 		1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */; };
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
 		1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */; };
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
+		3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
@@ -114,6 +116,7 @@
 		A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpersTests.swift; sourceTree = "<group>"; };
 		A4B0B4143401454EFDFBD3EA /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsAndReportTests.swift; sourceTree = "<group>"; };
+		A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
 		ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassClient.swift; sourceTree = "<group>"; };
 		B071FF59632161F16D40277C /* CameraAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAnnotationView.swift; sourceTree = "<group>"; };
 		B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -298,6 +301,7 @@
 			children = (
 				B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */,
 				546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */,
+				A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -473,6 +477,7 @@
 				7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */,
 				AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */,
 				4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */,
+				3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,6 +501,7 @@
 				1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */,
 				466405D7B1B3A7FEB9AA0911 /* NearbyCamerasWidgetBundle.swift in Sources */,
 				C63B431F7CBF224F966ACC0C /* RefreshNearbyIntent.swift in Sources */,
+				06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

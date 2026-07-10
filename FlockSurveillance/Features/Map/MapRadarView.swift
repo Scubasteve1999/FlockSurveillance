@@ -120,13 +120,11 @@ struct MapRadarView: View {
                 }
                 .padding(.top, 8)
             }
+            .onAppear {
+                armMapWhenSized(geo.size)
+            }
             .onChange(of: geo.size) { _, size in
-                guard !mapReady, size.width > 1, size.height > 1 else { return }
-                // Yield so SwiftUI finishes the onboarding → tab transition first.
-                Task { @MainActor in
-                    await Task.yield()
-                    mapReady = true
-                }
+                armMapWhenSized(size)
             }
         }
         .onAppear {
@@ -136,6 +134,11 @@ struct MapRadarView: View {
             radar.watchModeEnabled = watchModeStored
             bootstrapRegion()
             startPulseIfNeeded()
+            // Hard fallback — never leave the spinner up if size callbacks miss.
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 150_000_000)
+                mapReady = true
+            }
             if PendingIntentActions.placeScoreRequested {
                 PendingIntentActions.placeScoreRequested = false
                 computePlaceScore()
@@ -232,6 +235,11 @@ struct MapRadarView: View {
             repository.scheduleFetch(for: context.region)
         }
         .ignoresSafeArea()
+    }
+
+    private func armMapWhenSized(_ size: CGSize) {
+        guard !mapReady, size.width > 1, size.height > 1 else { return }
+        mapReady = true
     }
 
     private var reportPlacementBar: some View {

@@ -150,16 +150,32 @@ actor OverpassClient {
     static let shared = OverpassClient()
 
     private let session: URLSession
+    /// Public Overpass mirrors. Prefer hosts that answer quickly on IPv4 when
+    /// community endpoints refuse IPv6 (common on some Wi‑Fi / carrier paths).
     private let endpoints = [
+        "https://overpass.osm.ch/api/interpreter",
+        "https://overpass.openstreetmap.fr/api/interpreter",
         "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter"
+        "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
     ]
 
     private var lastFetchAt: Date?
     private let minimumInterval: TimeInterval = 1.2
 
-    init(session: URLSession = .shared) {
-        self.session = session
+    init(session: URLSession? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.timeoutIntervalForRequest = 18
+            configuration.timeoutIntervalForResource = 28
+            configuration.waitsForConnectivity = true
+            configuration.httpAdditionalHeaders = [
+                "Accept": "application/json",
+                "User-Agent": "FlockSurveillance/1.1 (civic transparency; contact: flocksurveillance.com)"
+            ]
+            self.session = URLSession(configuration: configuration)
+        }
     }
 
     func fetchCameras(in region: MKCoordinateRegion) async throws -> [ALPRCameraDTO] {
@@ -196,6 +212,8 @@ actor OverpassClient {
                 let cameras = try await perform(query: query, endpoint: endpoint)
                 lastFetchAt = Date()
                 return cameras
+            } catch is CancellationError {
+                throw CancellationError()
             } catch {
                 lastError = error
             }
@@ -209,9 +227,8 @@ actor OverpassClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.setValue("FlockSurveillance/1.1 (civic transparency; contact: flocksurveillance.com)", forHTTPHeaderField: "User-Agent")
         request.httpBody = "data=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query)".data(using: .utf8)
-        request.timeoutInterval = 30
+        request.timeoutInterval = 18
 
         let (data, response) = try await session.data(for: request)
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {

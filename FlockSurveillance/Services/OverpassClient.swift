@@ -150,12 +150,12 @@ actor OverpassClient {
     static let shared = OverpassClient()
 
     private let session: URLSession
-    /// Public Overpass mirrors. Prefer hosts that answer quickly on IPv4 when
-    /// community endpoints refuse IPv6 (common on some Wi‑Fi / carrier paths).
+    /// Prefer mirrors known to carry full ALPR coverage. Some hosts answer 200
+    /// with an empty element list even when other mirrors have cameras.
     private let endpoints = [
-        "https://overpass.osm.ch/api/interpreter",
         "https://overpass.openstreetmap.fr/api/interpreter",
-        "https://overpass-api.de/api/interpreter"
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.osm.ch/api/interpreter"
     ]
 
     private var lastFetchAt: Date?
@@ -207,9 +207,16 @@ actor OverpassClient {
         """
 
         var lastError: Error = OverpassError.invalidURL
+        var emptyResult: [ALPRCameraDTO]?
+
         for endpoint in endpoints {
             do {
                 let cameras = try await perform(query: query, endpoint: endpoint)
+                // Incomplete mirrors can return [] while others have data — keep looking.
+                if cameras.isEmpty {
+                    emptyResult = cameras
+                    continue
+                }
                 lastFetchAt = Date()
                 return cameras
             } catch is CancellationError {
@@ -217,6 +224,11 @@ actor OverpassClient {
             } catch {
                 lastError = error
             }
+        }
+
+        if let emptyResult {
+            lastFetchAt = Date()
+            return emptyResult
         }
         throw lastError
     }
@@ -227,7 +239,11 @@ actor OverpassClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.httpBody = "data=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query)".data(using: .utf8)
+        // Encode as a proper form field (urlQueryAllowed leaves characters that some mirrors mishandle).
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: "&=+?")
+        let encoded = query.addingPercentEncoding(withAllowedCharacters: allowed) ?? query
+        request.httpBody = "data=\(encoded)".data(using: .utf8)
         request.timeoutInterval = 18
 
         let (data, response) = try await session.data(for: request)

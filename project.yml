@@ -11,12 +11,12 @@ settings:
     SWIFT_VERSION: "5.9"
     TARGETED_DEVICE_FAMILY: "1,2"
     MARKETING_VERSION: "1.1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "3"
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
     INFOPLIST_KEY_CFBundleDisplayName: "Flock Surveillance"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: "742YD3WJAR"
     CODE_SIGN_STYLE: Automatic
 targets:
   FlockSurveillance:
@@ -31,6 +31,9 @@ targets:
       path: FlockSurveillance/Info.plist
       properties:
         CFBundleDisplayName: Flock Surveillance
+        CFBundleIconName: AppIcon
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
         CFBundleURLTypes:
           - CFBundleURLName: com.flocksurveillance.app
@@ -76,6 +79,8 @@ targets:
       path: NearbyCamerasWidget/Info.plist
       properties:
         CFBundleDisplayName: Nearby ALPRs
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:

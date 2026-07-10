@@ -14,6 +14,8 @@ struct SettingsView: View {
     @AppStorage(AppPreferenceKey.quietStartHour) private var quietStartHour = 22
     @AppStorage(AppPreferenceKey.quietEndHour) private var quietEndHour = 7
 
+    /// Hold the shared engine so SwiftUI observes authorizationStatus changes.
+    @State private var alertsEngine = AlertsEngine.shared
     @State private var homeQuery = ""
     @State private var homeSuggestions: [MKLocalSearchCompletion] = []
     @State private var completer = PlaceCompleter()
@@ -22,6 +24,10 @@ struct SettingsView: View {
 
     private var homeCoordinate: CLLocationCoordinate2D? {
         WidgetBridge.homeCoordinate()
+    }
+
+    private var alertsHaveAlways: Bool {
+        alertsEngine.hasAlwaysAuthorization
     }
 
     var body: some View {
@@ -89,7 +95,7 @@ struct SettingsView: View {
                                     get: { alertsEnabled },
                                     set: { enabled in
                                         alertsEnabled = enabled
-                                        Task { await AlertsEngine.shared.setEnabled(enabled) }
+                                        Task { await alertsEngine.setEnabled(enabled) }
                                     }
                                 )) {
                                     labelRow("ALPR proximity alerts", "Get notified near cameras, even with the app closed")
@@ -97,10 +103,26 @@ struct SettingsView: View {
                                 .tint(AppTheme.accent)
 
                                 if alertsEnabled {
-                                    if !AlertsEngine.shared.hasAlwaysAuthorization {
-                                        Text("Allow “Always” location access so alerts work in the background. iOS may ask again after a few days of use.")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundStyle(AppTheme.primary)
+                                    // Observe auth so the Always hint updates live.
+                                    let _ = alertsEngine.authorizationStatus
+                                    if !alertsHaveAlways {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Text("Allow “Always” location access so alerts work in the background. Without it, alerts won’t fire with the app closed.")
+                                                .font(.system(size: 12, weight: .medium))
+                                                .foregroundStyle(AppTheme.primary)
+                                            Button {
+                                                alertsEngine.requestAlwaysAccess()
+                                            } label: {
+                                                Text("Grant Always access")
+                                                    .font(.system(size: 13, weight: .semibold))
+                                                    .foregroundStyle(AppTheme.background)
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 8)
+                                                    .background(AppTheme.primary)
+                                                    .clipShape(Capsule())
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
                                     }
 
                                     Toggle(isOn: Binding(

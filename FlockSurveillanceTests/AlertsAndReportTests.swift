@@ -48,6 +48,13 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertNil(parsed.title)
     }
 
+    func testRegionIdentifierTruncatesLongTitles() {
+        let long = String(repeating: "A", count: 80)
+        let identifier = AlertsEngine.regionIdentifier(cameraID: "node/1", isFlock: false, title: long)
+        let parsed = AlertsEngine.parseRegionIdentifier(identifier)
+        XCTAssertEqual(parsed.title?.count, AlertsEngine.maxTitleLength)
+    }
+
     // MARK: - OSM report note text
 
     func testNewCameraNoteIncludesStructuredFields() {

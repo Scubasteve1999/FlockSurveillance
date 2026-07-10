@@ -7,6 +7,8 @@ struct OnboardingView: View {
     @State private var page = 0
     @State private var didRequestLocation = false
     @State private var didEnableAlerts = false
+    /// Hold the shared engine so SwiftUI observes authorizationStatus changes.
+    @State private var alertsEngine = AlertsEngine.shared
 
     var body: some View {
         ZStack {
@@ -132,17 +134,43 @@ struct OnboardingView: View {
                 icon: "bell.badge.fill",
                 title: "ALPR alerts",
                 detail: "Notifies you near mapped cameras, even in the background.",
-                actionLabel: didEnableAlerts ? "Enabled" : "Enable alerts",
-                isDone: didEnableAlerts
+                actionLabel: alertsActionLabel,
+                isDone: alertsFullyEnabled
             ) {
+                Task {
+                    if alertsEngine.needsAlwaysAuthorization {
+                        alertsEngine.requestAlwaysAccess()
+                    } else {
+                        await alertsEngine.setEnabled(true)
+                    }
+                }
                 didEnableAlerts = true
-                Task { await AlertsEngine.shared.setEnabled(true) }
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+
+            if didEnableAlerts && !alertsFullyEnabled {
+                Text("Alerts need “Always” location. Allow it when prompted, or finish setup in Settings.")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(AppTheme.primary)
+                    .multilineTextAlignment(.center)
             }
 
             Spacer()
         }
         .padding(.horizontal, 24)
+        // Observe auth so labels update when Always is granted.
+        .onChange(of: alertsEngine.authorizationStatus) { _, _ in }
+    }
+
+    private var alertsFullyEnabled: Bool {
+        let _ = alertsEngine.authorizationStatus
+        return AppPreferences.alertsEnabled && alertsEngine.hasAlwaysAuthorization
+    }
+
+    private var alertsActionLabel: String {
+        if alertsFullyEnabled { return "Enabled" }
+        if didEnableAlerts || AppPreferences.alertsEnabled { return "Needs Always access" }
+        return "Enable alerts"
     }
 
     // MARK: - Chrome

@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import UIKit
 import UserNotifications
 
 extension Notification.Name {
@@ -84,6 +85,8 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     static let maxRegions = 20
     static let regionRadius: CLLocationDistance = 150
     static let cooldown: TimeInterval = 30 * 60
+    /// Core Location region identifiers are short; keep titles bounded.
+    static let maxTitleLength = 40
     private static let lastAlertKey = "alerts.lastAlertAt"
     private nonisolated static let regionPrefix = "alpr."
 
@@ -92,6 +95,15 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
 
     /// Set while Drive Mode is active — the HUD already covers approach warnings.
     var isSuppressed = false
+
+    /// True after an explicit user action asked for Always; cleared once Always
+    /// is granted or the user lands on denied/restricted. Prevents re-prompting
+    /// from every authorization callback (which races LocationManager and hangs
+    /// the iPad permission sheet).
+    @ObservationIgnored private var pendingAlwaysUpgrade = false
+
+    /// Monotonic generation so overlapping detached reseeds don't apply stale sets.
+    @ObservationIgnored private var reseedGeneration = 0
 
     private override init() {
         authorizationStatus = manager.authorizationStatus
@@ -104,9 +116,10 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     /// Call once at launch. Re-attaches the delegate so region callbacks work after
     /// the system relaunches the app in the background.
     func activateIfEnabled() {
+        authorizationStatus = manager.authorizationStatus
         guard AppPreferences.alertsEnabled else { return }
         startBackgroundMonitoringIfAuthorized()
-        if let location = manager.location {
+        if hasAlwaysAuthorization, let location = manager.location {
             reseed(around: location.coordinate)
         }
     }
@@ -114,6 +127,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     func setEnabled(_ enabled: Bool) async {
         AppPreferences.alertsEnabled = enabled
         guard enabled else {
+            pendingAlwaysUpgrade = false
             stopAll()
             return
         }
@@ -121,25 +135,46 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let center = UNUserNotificationCenter.current()
         _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
 
-        // Apple requires When-In-Use before Always. Jumping straight to Always
-        // from .notDetermined can hang the permission sheet on iPad.
+        // Apple requires When-In-Use before Always. Only request Always from this
+        // explicit user action (or requestAlwaysAccess) — never from every auth callback.
         switch manager.authorizationStatus {
         case .notDetermined:
+            pendingAlwaysUpgrade = true
             manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
+            pendingAlwaysUpgrade = true
             manager.requestAlwaysAuthorization()
         case .authorizedAlways:
+            pendingAlwaysUpgrade = false
             startBackgroundMonitoringIfAuthorized()
+            if let location = manager.location {
+                reseed(around: location.coordinate)
+            } else {
+                manager.requestLocation()
+            }
         default:
+            pendingAlwaysUpgrade = false
             break
         }
+    }
 
-        if let location = manager.location {
-            reseed(around: location.coordinate)
-        } else if manager.authorizationStatus == .authorizedWhenInUse
-            || manager.authorizationStatus == .authorizedAlways
-        {
-            manager.requestLocation()
+    /// Explicit Always upgrade from Settings when the user already has When-In-Use.
+    func requestAlwaysAccess() {
+        guard AppPreferences.alertsEnabled else { return }
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse:
+            pendingAlwaysUpgrade = true
+            manager.requestAlwaysAuthorization()
+        case .notDetermined:
+            pendingAlwaysUpgrade = true
+            manager.requestWhenInUseAuthorization()
+        case .authorizedAlways:
+            startBackgroundMonitoringIfAuthorized()
+            reseedFromLastKnownLocation()
+        default:
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
         }
     }
 
@@ -148,14 +183,22 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         manager.startMonitoringSignificantLocationChanges()
     }
 
-    /// Whether alerts can actually fire (permission-wise). Used by Settings to
-    /// surface a "grant Always access" hint.
+    /// Whether alerts can actually fire in the background.
     var hasAlwaysAuthorization: Bool {
         authorizationStatus == .authorizedAlways
     }
 
+    /// Opted in but missing Always — foreground-only / no reliable wake-ups.
+    var needsAlwaysAuthorization: Bool {
+        AppPreferences.alertsEnabled && !hasAlwaysAuthorization
+    }
+
     private func stopAll() {
         manager.stopMonitoringSignificantLocationChanges()
+        clearMonitoredRegions()
+    }
+
+    private func clearMonitoredRegions() {
         for region in manager.monitoredRegions where region.identifier.hasPrefix(Self.regionPrefix) {
             manager.stopMonitoring(for: region)
         }
@@ -167,19 +210,32 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     /// so preference changes (e.g. Flock-only) apply even before the UI's
     /// location manager has a fix.
     func reseedFromLastKnownLocation() {
+        guard hasAlwaysAuthorization else {
+            clearMonitoredRegions()
+            return
+        }
         if let location = manager.location {
             reseed(around: location.coordinate)
-        } else {
+        } else if manager.authorizationStatus == .authorizedAlways {
             manager.requestLocation()
         }
     }
 
     func reseed(around coordinate: CLLocationCoordinate2D) {
         guard AppPreferences.alertsEnabled else { return }
+        // Background delivery requires Always. Registering regions on When-In-Use
+        // makes alerts look "on" while wake-ups silently fail.
+        guard hasAlwaysAuthorization else {
+            clearMonitoredRegions()
+            return
+        }
+
         let flockOnly = AppPreferences.alertsFlockOnly
         let lat = coordinate.latitude
         let lon = coordinate.longitude
         let maxRegions = Self.maxRegions
+        reseedGeneration += 1
+        let generation = reseedGeneration
 
         // Distance-sort thousands of candidates off the main thread — doing this
         // synchronously on MainActor freezes the UI (especially on iPad).
@@ -196,15 +252,19 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
                 .map(\.0)
 
             await MainActor.run {
+                guard generation == self.reseedGeneration else { return }
                 self.applyMonitoredRegions(nearest)
             }
         }
     }
 
     private func applyMonitoredRegions(_ candidates: [AlertCandidate]) {
-        for region in manager.monitoredRegions where region.identifier.hasPrefix(Self.regionPrefix) {
-            manager.stopMonitoring(for: region)
+        guard hasAlwaysAuthorization else {
+            clearMonitoredRegions()
+            return
         }
+
+        clearMonitoredRegions()
 
         for candidate in candidates {
             let region = CLCircularRegion(
@@ -225,7 +285,8 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     // MARK: - Region identifier encoding
 
     nonisolated static func regionIdentifier(cameraID: String, isFlock: Bool, title: String) -> String {
-        regionPrefix + cameraID + "|" + (isFlock ? "1" : "0") + "|" + title
+        let trimmed = String(title.prefix(maxTitleLength))
+        return regionPrefix + cameraID + "|" + (isFlock ? "1" : "0") + "|" + trimmed
     }
 
     nonisolated static func parseRegionIdentifier(
@@ -307,19 +368,29 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authorizationStatus = status
-            if AppPreferences.alertsEnabled {
-                if status == .authorizedWhenInUse {
-                    // Upgrade path: Always prompt only after When-In-Use is granted.
+            guard AppPreferences.alertsEnabled else { return }
+
+            switch status {
+            case .authorizedWhenInUse:
+                // Only continue the Always upgrade if the user just opted in —
+                // never re-prompt on every callback after they declined Always.
+                if self.pendingAlwaysUpgrade {
+                    self.pendingAlwaysUpgrade = false
                     self.manager.requestAlwaysAuthorization()
                 }
-                if status == .authorizedAlways {
-                    self.startBackgroundMonitoringIfAuthorized()
-                }
-                if status == .authorizedAlways || status == .authorizedWhenInUse,
-                   let location = self.manager.location
-                {
+            case .authorizedAlways:
+                self.pendingAlwaysUpgrade = false
+                self.startBackgroundMonitoringIfAuthorized()
+                if let location = self.manager.location {
                     self.reseed(around: location.coordinate)
+                } else {
+                    self.manager.requestLocation()
                 }
+            case .denied, .restricted:
+                self.pendingAlwaysUpgrade = false
+                self.clearMonitoredRegions()
+            default:
+                break
             }
         }
     }

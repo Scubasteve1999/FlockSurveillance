@@ -96,6 +96,23 @@ enum GeoHelpers {
         max(region.span.latitudeDelta, region.span.longitudeDelta)
     }
 
+    /// True when `coordinate` lies inside `region` (inclusive edges).
+    static func region(_ region: MKCoordinateRegion, contains coordinate: CLLocationCoordinate2D) -> Bool {
+        let latMin = region.center.latitude - region.span.latitudeDelta / 2
+        let latMax = region.center.latitude + region.span.latitudeDelta / 2
+        let lonMin = region.center.longitude - region.span.longitudeDelta / 2
+        let lonMax = region.center.longitude + region.span.longitudeDelta / 2
+        return coordinate.latitude >= latMin && coordinate.latitude <= latMax
+            && coordinate.longitude >= lonMin && coordinate.longitude <= lonMax
+    }
+
+    /// Finite lat/lon in valid geographic range (rejects deep-link garbage).
+    static func isValidMapCoordinate(_ coordinate: CLLocationCoordinate2D) -> Bool {
+        CLLocationCoordinate2DIsValid(coordinate)
+            && coordinate.latitude >= -90 && coordinate.latitude <= 90
+            && coordinate.longitude >= -180 && coordinate.longitude <= 180
+    }
+
     static func isRegionTooLargeForFullFetch(_ region: MKCoordinateRegion) -> Bool {
         dominantSpan(region) > maxTileableSpanDegrees
     }

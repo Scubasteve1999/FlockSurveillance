@@ -148,4 +148,13 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(rankings.first?.name, "Atlanta")
         XCTAssertGreaterThan(rankings.first?.cameraCount ?? 0, rankings[1].cameraCount)
     }
+
+    func testRegionContainsCoordinate() {
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+        XCTAssertTrue(GeoHelpers.region(region, contains: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)))
+        XCTAssertFalse(GeoHelpers.region(region, contains: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0)))
+    }
 }

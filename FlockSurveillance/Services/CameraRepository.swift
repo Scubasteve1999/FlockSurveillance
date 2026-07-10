@@ -113,16 +113,28 @@ final class CameraRepository {
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {
         lastRegion = region
         debounceTask?.cancel()
+        // Invalidate any in-flight fetch so a newer focus/score request isn't
+        // cleared by an older Overpass response finishing first.
+        fetchGeneration += 1
+        let generation = fetchGeneration
         debounceTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: delayNanoseconds)
             guard let self, !Task.isCancelled else { return }
-            await self.fetch(for: region)
+            guard generation == self.fetchGeneration else { return }
+            await self.fetch(for: region, generation: generation)
         }
     }
 
     func fetch(for region: MKCoordinateRegion, collapseContinental: Bool = true) async {
         fetchGeneration += 1
-        let generation = fetchGeneration
+        await fetch(for: region, generation: fetchGeneration, collapseContinental: collapseContinental)
+    }
+
+    private func fetch(
+        for region: MKCoordinateRegion,
+        generation: Int,
+        collapseContinental: Bool = true
+    ) async {
         isLoading = true
         lastError = nil
 

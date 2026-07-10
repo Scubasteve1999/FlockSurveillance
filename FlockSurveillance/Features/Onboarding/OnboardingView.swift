@@ -91,7 +91,7 @@ struct OnboardingView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
 
-            if isLoadingTeaser, teaserScore == nil {
+            if isLoadingTeaser {
                 ProgressView()
                     .tint(AppTheme.accent)
                     .frame(maxWidth: .infinity)
@@ -149,6 +149,12 @@ struct OnboardingView: View {
         .onChange(of: repository.cameras.count) { _, _ in
             refreshTeaserScore()
         }
+        .onChange(of: repository.isLoading) { _, loading in
+            if !loading { refreshTeaserScore() }
+        }
+        .onChange(of: repository.isSeeding) { _, seeding in
+            if !seeding { refreshTeaserScore() }
+        }
     }
 
     private func prepareTeaser() {
@@ -158,28 +164,37 @@ struct OnboardingView: View {
         repository.attach(modelContext: modelContext)
         locationManager.start()
         isLoadingTeaser = true
+        teaserScore = nil
+        let coordinate = teaserCoordinate()
+        repository.scheduleFetch(
+            for: GeoHelpers.seedRegion(for: coordinate),
+            delayNanoseconds: 50_000_000
+        )
         refreshTeaserScore()
-        // If cache is still empty (first install), keep spinner briefly while seed starts.
-        if repository.cameras.isEmpty {
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 800_000_000)
-                refreshTeaserScore()
-                isLoadingTeaser = false
-            }
-        } else {
-            isLoadingTeaser = false
-        }
+    }
+
+    private func teaserCoordinate() -> CLLocationCoordinate2D {
+        locationManager.location?.coordinate
+            ?? WidgetBridge.homeCoordinate()
+            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
     }
 
     private func refreshTeaserScore() {
         let hasPersonalLocation = locationManager.location != nil || WidgetBridge.homeCoordinate() != nil
-        let coordinate = locationManager.location?.coordinate
-            ?? WidgetBridge.homeCoordinate()
-            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        let coordinate = teaserCoordinate()
         teaserIsSample = !hasPersonalLocation
-        teaserScore = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
-        if !repository.cameras.isEmpty {
+        let score = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
+        let regionCovers = repository.lastRegion.map { GeoHelpers.region($0, contains: coordinate) } ?? false
+        let settled = !repository.isLoading && !repository.isSeeding && regionCovers
+
+        // Don't publish a Clear grade until we have nearby cameras or a settled
+        // fetch for this coordinate (avoids false "your block looks clear").
+        if score.cameraCount > 0 || settled {
+            teaserScore = score
             isLoadingTeaser = false
+        } else {
+            isLoadingTeaser = true
+            teaserScore = nil
         }
     }
 

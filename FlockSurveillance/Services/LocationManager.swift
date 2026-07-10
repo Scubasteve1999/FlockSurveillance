@@ -58,7 +58,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         guard let latest = locations.last else { return }
         Task { @MainActor in
             self.location = latest
-            WidgetBridge.writeHomeCoordinateIfNeeded(latest.coordinate)
+            // Home is set explicitly in Settings — don't silently bind commute/widget
+            // to the first GPS fix (often work or travel).
         }
     }
 

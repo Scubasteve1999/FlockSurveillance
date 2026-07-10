@@ -17,8 +17,7 @@ struct RouteExposureView: View {
     @State private var errorMessage: String?
     @State private var analysis: RouteExposureAnalysis?
     @State private var selectedOptionID: UUID?
-    @State private var shareItems: [Any] = []
-    @State private var showShareSheet = false
+    @State private var sharePayload: ShareActivityPayload?
     @State private var activeField: ActiveField = .destination
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDriveMode = false
@@ -70,8 +69,9 @@ struct RouteExposureView: View {
             .fullScreenCover(isPresented: $showDriveMode) {
                 DriveModeView()
             }
-            .sheet(isPresented: $showShareSheet) {
-                ActivityView(items: shareItems)
+            .sheet(item: $sharePayload) { payload in
+                ActivityView(items: payload.items)
+                    .id(payload.id)
             }
             .onAppear {
                 if let location = locationManager.location {
@@ -587,11 +587,28 @@ struct RouteExposureView: View {
     }
 
     private func handlePendingCommuteIfNeeded() {
-        guard let toHome = PendingIntentActions.commuteToHome else { return }
+        guard PendingIntentActions.commuteToHome != nil else { return }
         // Leave pending until the in-flight analyze finishes (onChange of isRouting retries).
         guard !isRouting else { return }
+        Task { await runCommuteFromPending() }
+    }
+
+    private func runCommuteFromPending() async {
+        guard let toHome = PendingIntentActions.commuteToHome else { return }
+        guard !isRouting else { return }
+        guard WidgetBridge.homeCoordinate() != nil else {
+            PendingIntentActions.commuteToHome = nil
+            commuteHint = "Set Home in Settings first."
+            return
+        }
+        guard WidgetBridge.workCoordinate() != nil else {
+            PendingIntentActions.commuteToHome = nil
+            commuteHint = "Set Work in Settings first."
+            return
+        }
+        // Clear only once we're committed past the routing guard.
         PendingIntentActions.commuteToHome = nil
-        Task { await runCommute(toHome: toHome) }
+        await runCommute(toHome: toHome)
     }
 
     private func runCommute(toHome: Bool) async {
@@ -633,8 +650,7 @@ struct RouteExposureView: View {
             ) {
                 items.insert(image, at: 0)
             }
-            shareItems = items
-            showShareSheet = true
+            sharePayload = ShareActivityPayload(items: items)
         }
     }
 
@@ -654,6 +670,11 @@ struct RouteExposureView: View {
         flocksurveillance.com
         """
     }
+}
+
+private struct ShareActivityPayload: Identifiable {
+    let id = UUID()
+    let items: [Any]
 }
 
 private struct ActivityView: UIViewControllerRepresentable {

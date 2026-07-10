@@ -27,13 +27,14 @@ struct MapRadarView: View {
     @State private var pulsePhase = false
     @State private var placeScore: PlaceScore?
     @State private var placeScoreRadius: CLLocationDistance = 1609.34
-    @State private var shareItems: [Any] = []
-    @State private var showShareSheet = false
+    @State private var sharePayload: ShareActivityPayload?
     @State private var isPlacingReport = false
     @State private var reportTarget: ReportTarget?
     @State private var cityRankings: [CityRanking] = []
-    /// Recompute Place Score for this coordinate after the next fetch settles.
+    /// Recompute Place Score for this coordinate after the matching fetch settles.
     @State private var pendingScoreCoordinate: CLLocationCoordinate2D?
+    /// When true, burn `hasAutoShownPlaceScore` only after pending score settles.
+    @State private var pendingAutoShowBurn = false
     /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
     @State private var mapReady = false
 
@@ -163,7 +164,13 @@ struct MapRadarView: View {
         }
         .onChange(of: repository.isLoading) { _, loading in
             if !loading {
-                refreshPendingScoreIfNeeded(clearPending: true)
+                refreshPendingScoreIfNeeded(allowClear: true)
+            }
+        }
+        .onChange(of: repository.isSeeding) { _, seeding in
+            if !seeding {
+                maybeAutoShowPlaceScore()
+                refreshPendingScoreIfNeeded(allowClear: true)
             }
         }
         .onChange(of: nearest?.meters) { _, meters in
@@ -196,8 +203,9 @@ struct MapRadarView: View {
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
                 .presentationBackground(AppTheme.background)
         }
-        .sheet(isPresented: $showShareSheet) {
-            ActivityShareView(items: shareItems)
+        .sheet(item: $sharePayload) { payload in
+            ActivityShareView(items: payload.items)
+                .id(payload.id)
         }
         .sheet(item: $reportTarget) { target in
             ReportCameraSheet(coordinate: target.coordinate)
@@ -466,56 +474,100 @@ struct MapRadarView: View {
     }
 
     private func computePlaceScore() {
-        // Prefer current location, then viewport center, then Home, then Atlanta fallback.
         let scoreCoordinate = locationManager.location?.coordinate
-            ?? visibleRegion?.center
             ?? WidgetBridge.homeCoordinate()
+            ?? visibleRegion?.center
             ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
-        withAnimation(.easeInOut(duration: 0.25)) {
-            placeScore = repository.placeScore(near: scoreCoordinate, radiusMeters: placeScoreRadius)
-        }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        presentScore(at: scoreCoordinate, scheduleFetch: true)
     }
 
     private func maybeAutoShowPlaceScore() {
-        guard !hasAutoShownPlaceScore, placeScore == nil else { return }
-        // Wait for local cache so we don't burn the one-shot on a false "Clear".
-        guard !repository.cameras.isEmpty else { return }
-        hasAutoShownPlaceScore = true
-        computePlaceScore()
+        guard !hasAutoShownPlaceScore else { return }
+        // Personal coordinate only — don't burn the wow on Atlanta/viewport.
+        guard let coordinate = locationManager.location?.coordinate ?? WidgetBridge.homeCoordinate()
+        else { return }
+
+        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let regionCovers = repository.lastRegion.map { GeoHelpers.region($0, contains: coordinate) } ?? false
+        let settled = !repository.isLoading && !repository.isSeeding && regionCovers
+
+        // Kick off once; later calls only refresh / burn when data is ready.
+        if pendingScoreCoordinate == nil, placeScore == nil {
+            presentScore(at: coordinate, scheduleFetch: true, burnAutoShowWhenSettled: true)
+        } else if pendingAutoShowBurn {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                placeScore = score
+            }
+        }
+
+        // Burn only when we have nearby cameras, or a settled fetch for this spot
+        // confirmed a real Clear (not "cache has LA while you're in Miami").
+        if score.cameraCount > 0 || settled {
+            hasAutoShownPlaceScore = true
+            pendingAutoShowBurn = false
+            withAnimation(.easeInOut(duration: 0.25)) {
+                placeScore = score
+            }
+            if settled {
+                pendingScoreCoordinate = nil
+            }
+        }
     }
 
     private func applyPendingMapFocusIfNeeded() {
         guard let coordinate = PendingIntentActions.mapFocusCoordinate else { return }
         PendingIntentActions.mapFocusCoordinate = nil
-        focusAndScore(coordinate: coordinate)
+        presentScore(at: coordinate, scheduleFetch: true, moveCamera: true)
     }
 
     private func focusAndScore(coordinate: CLLocationCoordinate2D) {
+        presentScore(at: coordinate, scheduleFetch: true, moveCamera: true)
+    }
+
+    private func presentScore(
+        at coordinate: CLLocationCoordinate2D,
+        scheduleFetch: Bool,
+        moveCamera: Bool = false,
+        burnAutoShowWhenSettled: Bool = false
+    ) {
         let region = MKCoordinateRegion(
             center: coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
         )
         pendingScoreCoordinate = coordinate
-        withAnimation(.easeInOut(duration: 0.35)) {
-            position = .region(region)
-            visibleRegion = region
+        if burnAutoShowWhenSettled {
+            pendingAutoShowBurn = true
         }
-        placeScoreRadius = 1609.34
+        if moveCamera {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                position = .region(region)
+                visibleRegion = region
+            }
+        }
         withAnimation(.easeInOut(duration: 0.25)) {
             placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
         }
-        repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
+        if scheduleFetch {
+            repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
+        }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
-    private func refreshPendingScoreIfNeeded(clearPending: Bool = false) {
+    private func refreshPendingScoreIfNeeded(allowClear: Bool = false) {
         guard let coordinate = pendingScoreCoordinate else { return }
+        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
         withAnimation(.easeInOut(duration: 0.2)) {
-            placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+            placeScore = score
         }
-        if clearPending {
-            pendingScoreCoordinate = nil
+
+        guard allowClear, !repository.isLoading else { return }
+        guard let last = repository.lastRegion, GeoHelpers.region(last, contains: coordinate) else { return }
+
+        pendingScoreCoordinate = nil
+        if pendingAutoShowBurn {
+            // Nearby cameras or a settled Clear for this region — safe to burn.
+            hasAutoShownPlaceScore = true
+            pendingAutoShowBurn = false
         }
     }
 
@@ -528,11 +580,15 @@ struct MapRadarView: View {
             if let link = score.mapDeepLink {
                 items.append(link)
             }
-            shareItems = items
-            showShareSheet = true
+            sharePayload = ShareActivityPayload(items: items)
             ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
         }
     }
+}
+
+private struct ShareActivityPayload: Identifiable {
+    let id = UUID()
+    let items: [Any]
 }
 
 private struct ReportTarget: Identifiable {

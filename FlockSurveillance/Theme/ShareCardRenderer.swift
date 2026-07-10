@@ -7,7 +7,6 @@ import UIKit
 enum ShareCardRenderer {
     static func placeScoreImage(_ score: PlaceScore) -> UIImage? {
         let view = PlaceScoreShareCard(score: score)
-            .frame(width: 390, height: 520)
         return render(view)
     }
 
@@ -25,17 +24,22 @@ enum ShareCardRenderer {
             originLabel: originLabel,
             destinationLabel: destinationLabel
         )
-        .frame(width: 390, height: 520)
         return render(view)
     }
 
     private static func render<V: View>(_ view: V) -> UIImage? {
-        let renderer = ImageRenderer(content: view)
-        renderer.scale = 3
-        renderer.proposedSize = ProposedViewSize(width: 390, height: 520)
-        if let image = renderer.uiImage { return image }
-        // ImageRenderer can return nil on the first pass before layout settles.
-        return renderer.uiImage
+        let sized = view.frame(width: 390, height: 520)
+        // Fresh renderer each attempt — reusing one ImageRenderer after a nil
+        // uiImage does not re-layout.
+        for _ in 0..<2 {
+            let renderer = ImageRenderer(content: sized)
+            renderer.scale = 3
+            renderer.proposedSize = ProposedViewSize(width: 390, height: 520)
+            if let image = renderer.uiImage {
+                return image
+            }
+        }
+        return nil
     }
 }
 

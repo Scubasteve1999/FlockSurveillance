@@ -67,6 +67,13 @@ final class PendingIntentActionsTests: XCTestCase {
         XCTAssertEqual(items.first(where: { $0.name == "lon" })?.value, "-84.388")
     }
 
+    func testInvalidMapCoordinatesRejected() {
+        XCTAssertTrue(GeoHelpers.isValidMapCoordinate(CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)))
+        XCTAssertFalse(GeoHelpers.isValidMapCoordinate(CLLocationCoordinate2D(latitude: 999, longitude: -84.39)))
+        XCTAssertFalse(GeoHelpers.isValidMapCoordinate(CLLocationCoordinate2D(latitude: 33.75, longitude: 200)))
+        XCTAssertFalse(GeoHelpers.isValidMapCoordinate(CLLocationCoordinate2D(latitude: .nan, longitude: -84.39)))
+    }
+
     private func clearPending() {
         PendingIntentActions.placeScoreRequested = false
         PendingIntentActions.mapFocusCoordinate = nil

@@ -87,20 +87,23 @@ struct FlockSurveillanceApp: App {
 
     private func handleDeepLink(_ url: URL) {
         guard url.scheme == "flocksurveillance" else { return }
-        hasSeenOnboarding = true
         let host = url.host?.lowercased()
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
 
         switch host {
         case "map", nil:
+            hasSeenOnboarding = true
             selectedTab = 0
             if let lat = items.first(where: { $0.name == "lat" })?.value.flatMap(Double.init),
                let lon = items.first(where: { $0.name == "lon" || $0.name == "lng" })?.value.flatMap(Double.init) {
-                PendingIntentActions.mapFocusCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                guard GeoHelpers.isValidMapCoordinate(coordinate) else { break }
+                PendingIntentActions.mapFocusCoordinate = coordinate
                 NotificationCenter.default.post(name: .flockMapFocus, object: nil)
             }
         case "route", "deflock":
             // Privacy routing lives on the Route tab (native MapKit, not DeFlock web).
+            hasSeenOnboarding = true
             selectedTab = 1
             if let commute = items.first(where: { $0.name == "commute" })?.value,
                commute == "home" || commute == "work" {
@@ -108,9 +111,11 @@ struct FlockSurveillanceApp: App {
                 NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
             }
         case "settings":
+            hasSeenOnboarding = true
             selectedTab = 3
         default:
-            selectedTab = 0
+            // Ignore unknown hosts — don't skip onboarding or change tabs.
+            break
         }
     }
 }

@@ -8,12 +8,12 @@ struct CityRankingsStrip: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("MOST MAPPED METROS")
+            Text("ON YOUR DEVICE")
                 .font(.system(size: 11, weight: .bold))
                 .tracking(1.1)
                 .foregroundStyle(AppTheme.accent)
 
-            Text("From cameras on this device — not a national census.")
+            Text("Most mapped metros in your cache — not a national census.")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
 

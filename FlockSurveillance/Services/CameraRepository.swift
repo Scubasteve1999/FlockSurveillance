@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import MapKit
 import SwiftData
@@ -29,6 +30,8 @@ final class CameraRepository {
     }
 
     func attach(modelContext: ModelContext) {
+        // Idempotent — onboarding → map can call this more than once.
+        if self.modelContext != nil { return }
         self.modelContext = modelContext
         loadCached()
         lastSuccessfulFetchAt = cameras.map(\.fetchedAt).max()
@@ -42,26 +45,17 @@ final class CameraRepository {
         // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         cameras = fetched.sorted { $0.fetchedAt > $1.fetchedAt }
-        publishAlertCandidates()
+        // Heavy distance ranking must not block the main thread (onboarding → map).
+        Task { await publishAlertCandidatesAsync() }
     }
 
     /// Snapshot cameras to disk so AlertsEngine can reseed geofences on
     /// background wake-ups without opening SwiftData.
     /// Prefer cameras nearest Home (then last viewport, then Atlanta) — not the
     /// most recently fetched — so travel / a large cache still geofences locally.
-    private func publishAlertCandidates() {
-        let anchor = WidgetBridge.homeCoordinate()
-            ?? lastRegion?.center
-            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
-        let origin = CLLocation(latitude: anchor.latitude, longitude: anchor.longitude)
-
-        let ranked = cameras
-            .map { ($0, $0.location.distance(from: origin)) }
-            .sorted { $0.1 < $1.1 }
-
-        let alertSlice = ranked.prefix(5_000).map(\.0)
-        let candidates = alertSlice.map {
-            AlertCandidate(
+    private func publishAlertCandidatesAsync() async {
+        let snapshot = cameras.map {
+            (
                 id: $0.id,
                 latitude: $0.latitude,
                 longitude: $0.longitude,
@@ -69,22 +63,51 @@ final class CameraRepository {
                 title: $0.displayTitle
             )
         }
-        AlertCandidateStore.write(candidates)
+        let home = WidgetBridge.homeCoordinate()
+        let regionCenter = lastRegion?.center
+        let fallback = CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
 
-        // Widget refresh needs points near Home in the App Group (5 mi / 1k cap).
-        let homeOrigin: CLLocation
-        if let home = WidgetBridge.homeCoordinate() {
-            homeOrigin = CLLocation(latitude: home.latitude, longitude: home.longitude)
-        } else {
-            homeOrigin = origin
-        }
-        let widgetPoints = cameras
-            .map { ($0, $0.location.distance(from: homeOrigin)) }
-            .filter { $0.1 <= 5 * 1609.34 }
-            .sorted { $0.1 < $1.1 }
-            .prefix(1_000)
-            .map { WidgetSnapshotStore.CameraPoint(latitude: $0.0.latitude, longitude: $0.0.longitude) }
-        WidgetSnapshotStore.writeCameraPoints(Array(widgetPoints))
+        let result = await Task.detached(priority: .utility) { () -> (candidates: [AlertCandidate], points: [WidgetSnapshotStore.CameraPoint]) in
+            let anchor = home ?? regionCenter ?? fallback
+            let origin = CLLocation(latitude: anchor.latitude, longitude: anchor.longitude)
+            let ranked = snapshot
+                .map { row -> (row: (id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String), distance: CLLocationDistance) in
+                    let location = CLLocation(latitude: row.latitude, longitude: row.longitude)
+                    return (row, location.distance(from: origin))
+                }
+                .sorted { $0.distance < $1.distance }
+
+            let candidates = ranked.prefix(5_000).map {
+                AlertCandidate(
+                    id: $0.row.id,
+                    latitude: $0.row.latitude,
+                    longitude: $0.row.longitude,
+                    isFlock: $0.row.isFlock,
+                    title: $0.row.title
+                )
+            }
+
+            let homeOrigin: CLLocation
+            if let home {
+                homeOrigin = CLLocation(latitude: home.latitude, longitude: home.longitude)
+            } else {
+                homeOrigin = origin
+            }
+            let widgetPoints = snapshot
+                .map { row -> (row: (id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String), distance: CLLocationDistance) in
+                    let location = CLLocation(latitude: row.latitude, longitude: row.longitude)
+                    return (row, location.distance(from: homeOrigin))
+                }
+                .filter { $0.distance <= 5 * 1609.34 }
+                .sorted { $0.distance < $1.distance }
+                .prefix(1_000)
+                .map { WidgetSnapshotStore.CameraPoint(latitude: $0.row.latitude, longitude: $0.row.longitude) }
+
+            return (Array(candidates), Array(widgetPoints))
+        }.value
+
+        AlertCandidateStore.write(result.candidates)
+        WidgetSnapshotStore.writeCameraPoints(result.points)
     }
 
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {

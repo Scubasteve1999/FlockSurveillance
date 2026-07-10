@@ -13,7 +13,12 @@ struct MapRadarView: View {
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.watchModeEnabled) private var watchModeStored = false
 
-    @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
+    @State private var position: MapCameraPosition = .region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880),
+            span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
+        )
+    )
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var filter: CameraFilter = AppPreferences.defaultFilter
     @State private var selectedCluster: CameraCluster?
@@ -24,6 +29,8 @@ struct MapRadarView: View {
     @State private var shareText: String?
     @State private var isPlacingReport = false
     @State private var reportTarget: ReportTarget?
+    /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
+    @State private var mapReady = false
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -48,112 +55,79 @@ struct MapRadarView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Map(position: $position) {
-                UserAnnotation()
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                AppTheme.background.ignoresSafeArea()
 
-                if radar.watchModeEnabled, let nearest, let user = locationManager.location?.coordinate {
-                    MapCircle(center: user, radius: max(nearest.meters, 25))
-                        .foregroundStyle(AppTheme.primary.opacity(pulsePhase ? 0.18 : 0.08))
-                    MapCircle(center: user, radius: max(nearest.meters * 0.55, 18))
-                        .foregroundStyle(AppTheme.accent.opacity(pulsePhase ? 0.16 : 0.06))
+                if mapReady, geo.size.width > 1, geo.size.height > 1 {
+                    mapContent
+                } else {
+                    ProgressView()
+                        .tint(AppTheme.accent)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
 
-                if showHeat {
-                    ForEach(clusters) { cluster in
-                        MapCircle(center: cluster.coordinate, radius: heatRadius(for: cluster.count))
-                            .foregroundStyle(AppTheme.densityColor(count: cluster.count).opacity(0.14))
-                    }
-                }
-
-                ForEach(fovCameras) { camera in
-                    if let degrees = GeoHelpers.directionDegrees(from: camera.direction) {
-                        MapPolygon(
-                            coordinates: GeoHelpers.fovPolygon(
-                                center: camera.coordinate,
-                                bearingDegrees: degrees
-                            )
-                        )
-                        .foregroundStyle(
-                            (camera.isFlock ? AppTheme.flockMarker : AppTheme.otherMarker).opacity(0.22)
-                        )
-                    }
-                }
-
-                ForEach(clusters) { cluster in
-                    Annotation("", coordinate: cluster.coordinate, anchor: .center) {
-                        Button {
-                            selectedCluster = cluster
-                        } label: {
-                            CameraAnnotationView(count: cluster.count, isFlock: cluster.isFlockDominant)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-            .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll, showsTraffic: false))
-            .mapControls {
-                MapCompass()
-                MapScaleView()
-            }
-            .onMapCameraChange(frequency: .onEnd) { context in
-                visibleRegion = context.region
-                repository.scheduleFetch(for: context.region)
-            }
-            .ignoresSafeArea()
-
-            if isPlacingReport {
-                Image(systemName: "plus.viewfinder")
-                    .font(.system(size: 34, weight: .light))
-                    .foregroundStyle(AppTheme.primary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .allowsHitTesting(false)
-            }
-
-            VStack(spacing: 12) {
-                brandHeader
-                filterBar
-                if locationDenied {
-                    LocationDeniedBanner()
-                }
-                Spacer()
                 if isPlacingReport {
-                    reportPlacementBar
-                        .padding(.horizontal, 16)
+                    Image(systemName: "plus.viewfinder")
+                        .font(.system(size: 34, weight: .light))
+                        .foregroundStyle(AppTheme.primary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .allowsHitTesting(false)
                 }
-                if let placeScore {
-                    PlaceScoreCard(
-                        score: placeScore,
-                        selectedRadiusMeters: placeScoreRadius,
-                        onSelectRadius: { meters in
-                            placeScoreRadius = meters
-                            computePlaceScore()
-                        },
-                        onShare: {
-                            shareText = placeScore.shareText
-                            ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
-                        },
-                        onClose: { self.placeScore = nil }
+
+                VStack(spacing: 12) {
+                    brandHeader
+                    filterBar
+                    if locationDenied {
+                        LocationDeniedBanner()
+                    }
+                    Spacer()
+                    if isPlacingReport {
+                        reportPlacementBar
+                            .padding(.horizontal, 16)
+                    }
+                    if let placeScore {
+                        PlaceScoreCard(
+                            score: placeScore,
+                            selectedRadiusMeters: placeScoreRadius,
+                            onSelectRadius: { meters in
+                                placeScoreRadius = meters
+                                computePlaceScore()
+                            },
+                            onShare: {
+                                shareText = placeScore.shareText
+                                ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
+                            },
+                            onClose: { self.placeScore = nil }
+                        )
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                    RadarHUD(
+                        visibleCount: camerasInView.count,
+                        nearestMeters: nearest?.meters,
+                        nearestLabel: nearest.map { $0.camera.displayManufacturer },
+                        densityLabel: AppTheme.densityLabel(count: camerasInView.count),
+                        isLoading: repository.isLoading || repository.isSeeding,
+                        errorMessage: repository.lastError,
+                        coverageHint: repository.coverageHint,
+                        freshnessLabel: repository.freshnessLabel,
+                        watchModeEnabled: radar.watchModeEnabled,
+                        onToggleWatch: toggleWatchMode
                     )
                     .padding(.horizontal, 16)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom, 8)
                 }
-                RadarHUD(
-                    visibleCount: camerasInView.count,
-                    nearestMeters: nearest?.meters,
-                    nearestLabel: nearest.map { $0.camera.displayManufacturer },
-                    densityLabel: AppTheme.densityLabel(count: camerasInView.count),
-                    isLoading: repository.isLoading || repository.isSeeding,
-                    errorMessage: repository.lastError,
-                    coverageHint: repository.coverageHint,
-                    freshnessLabel: repository.freshnessLabel,
-                    watchModeEnabled: radar.watchModeEnabled,
-                    onToggleWatch: toggleWatchMode
-                )
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
+                .padding(.top, 8)
             }
-            .padding(.top, 8)
+            .onChange(of: geo.size) { _, size in
+                guard !mapReady, size.width > 1, size.height > 1 else { return }
+                // Yield so SwiftUI finishes the onboarding → tab transition first.
+                Task { @MainActor in
+                    await Task.yield()
+                    mapReady = true
+                }
+            }
         }
         .onAppear {
             locationManager.start()
@@ -203,6 +177,61 @@ struct MapRadarView: View {
             ReportCameraSheet(coordinate: target.coordinate)
                 .presentationBackground(AppTheme.background)
         }
+    }
+
+    private var mapContent: some View {
+        Map(position: $position) {
+            UserAnnotation()
+
+            if radar.watchModeEnabled, let nearest, let user = locationManager.location?.coordinate {
+                MapCircle(center: user, radius: max(nearest.meters, 25))
+                    .foregroundStyle(AppTheme.primary.opacity(pulsePhase ? 0.18 : 0.08))
+                MapCircle(center: user, radius: max(nearest.meters * 0.55, 18))
+                    .foregroundStyle(AppTheme.accent.opacity(pulsePhase ? 0.16 : 0.06))
+            }
+
+            if showHeat {
+                ForEach(clusters.prefix(80)) { cluster in
+                    MapCircle(center: cluster.coordinate, radius: heatRadius(for: cluster.count))
+                        .foregroundStyle(AppTheme.densityColor(count: cluster.count).opacity(0.14))
+                }
+            }
+
+            ForEach(fovCameras) { camera in
+                if let degrees = GeoHelpers.directionDegrees(from: camera.direction) {
+                    MapPolygon(
+                        coordinates: GeoHelpers.fovPolygon(
+                            center: camera.coordinate,
+                            bearingDegrees: degrees
+                        )
+                    )
+                    .foregroundStyle(
+                        (camera.isFlock ? AppTheme.flockMarker : AppTheme.otherMarker).opacity(0.22)
+                    )
+                }
+            }
+
+            ForEach(clusters.prefix(120)) { cluster in
+                Annotation("", coordinate: cluster.coordinate, anchor: .center) {
+                    Button {
+                        selectedCluster = cluster
+                    } label: {
+                        CameraAnnotationView(count: cluster.count, isFlock: cluster.isFlockDominant)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll, showsTraffic: false))
+        .mapControls {
+            MapCompass()
+            MapScaleView()
+        }
+        .onMapCameraChange(frequency: .onEnd) { context in
+            visibleRegion = context.region
+            repository.scheduleFetch(for: context.region)
+        }
+        .ignoresSafeArea()
     }
 
     private var reportPlacementBar: some View {

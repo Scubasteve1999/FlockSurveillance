@@ -5,17 +5,31 @@ struct RootTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            MapRadarView()
-                .tabItem {
-                    Label("Map", systemImage: "dot.radiowaves.left.and.right")
+            // Only mount MapKit when the Map tab is selected — eager TabView
+            // construction of Map + Route maps freezes the first frame on iPad.
+            Group {
+                if selectedTab == 0 {
+                    MapRadarView()
+                } else {
+                    AppTheme.background.ignoresSafeArea()
                 }
-                .tag(0)
+            }
+            .tabItem {
+                Label("Map", systemImage: "dot.radiowaves.left.and.right")
+            }
+            .tag(0)
 
-            RouteExposureView()
-                .tabItem {
-                    Label("Route", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+            Group {
+                if selectedTab == 1 {
+                    RouteExposureView()
+                } else {
+                    AppTheme.background.ignoresSafeArea()
                 }
-                .tag(1)
+            }
+            .tabItem {
+                Label("Route", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+            }
+            .tag(1)
 
             LearnView()
                 .tabItem {

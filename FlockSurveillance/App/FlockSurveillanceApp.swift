@@ -57,8 +57,20 @@ struct FlockSurveillanceApp: App {
             .environment(driveSession)
             .preferredColorScheme(.dark)
             .onAppear {
-                repository.attach(modelContext: modelContainer.mainContext)
-                locationManager.start()
+                // Attach after first frame so Enter the map isn't competing with
+                // a full SwiftData load + candidate ranking on the main thread.
+                if hasSeenOnboarding {
+                    repository.attach(modelContext: modelContainer.mainContext)
+                    locationManager.start()
+                }
+            }
+            .onChange(of: hasSeenOnboarding) { _, seen in
+                guard seen else { return }
+                Task { @MainActor in
+                    await Task.yield()
+                    repository.attach(modelContext: modelContainer.mainContext)
+                    locationManager.start()
+                }
             }
             .onOpenURL { url in
                 handleDeepLink(url)

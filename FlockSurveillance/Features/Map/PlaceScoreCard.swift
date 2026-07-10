@@ -11,7 +11,7 @@ struct PlaceScoreCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("PLACE SCORE")
+                Text("HOW WATCHED?")
                     .font(.system(size: 10, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(AppTheme.mutedForeground)
@@ -27,13 +27,18 @@ struct PlaceScoreCard: View {
                 .buttonStyle(.plain)
             }
 
+            Text(score.headline)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(AppTheme.foreground)
+                .fixedSize(horizontal: false, vertical: true)
+
             HStack(alignment: .firstTextBaseline) {
                 Text(score.grade)
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(AppTheme.foreground)
+                    .foregroundStyle(AppTheme.primary)
                 Spacer()
                 StatusBadge(
-                    text: "\(score.cameraCount) ALPRs",
+                    text: score.cameraCountLabel,
                     color: AppTheme.densityColor(count: score.cameraCount)
                 )
             }
@@ -56,7 +61,7 @@ struct PlaceScoreCard: View {
             }
 
             Button(action: onShare) {
-                Label("Share place score", systemImage: "square.and.arrow.up")
+                Label("Share how watched you are", systemImage: "square.and.arrow.up")
                     .font(.system(size: 14, weight: .semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)

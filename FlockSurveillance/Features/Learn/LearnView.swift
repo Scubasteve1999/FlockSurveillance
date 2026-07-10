@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct LearnView: View {
+    @Environment(CameraRepository.self) private var repository
     private let articles: [LearnArticle] = LearnArticle.all
+
+    private var cityRankings: [CityRanking] {
+        GeoHelpers.cityRankings(from: repository.cameras, limit: 8)
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,6 +26,36 @@ struct LearnView: View {
                             Text("Short, sharp context on ALPRs, networks, and why maps matter.")
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(AppTheme.mutedForeground)
+                        }
+
+                        if !cityRankings.isEmpty {
+                            SectionCard {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("MOST MAPPED METROS")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .tracking(0.8)
+                                        .foregroundStyle(AppTheme.accent)
+                                    Text("From cameras already on your device — incomplete coverage is curiosity, not a blank map.")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(AppTheme.mutedForeground)
+
+                                    ForEach(Array(cityRankings.enumerated()), id: \.element.id) { index, city in
+                                        HStack {
+                                            Text("#\(index + 1)")
+                                                .font(.system(size: 13, weight: .bold))
+                                                .foregroundStyle(AppTheme.primary)
+                                                .frame(width: 28, alignment: .leading)
+                                            Text(city.name)
+                                                .font(.system(size: 15, weight: .semibold))
+                                                .foregroundStyle(AppTheme.foreground)
+                                            Spacer()
+                                            Text(city.subtitle)
+                                                .font(.system(size: 12, weight: .medium))
+                                                .foregroundStyle(AppTheme.mutedForeground)
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         ForEach(articles) { article in
@@ -62,7 +97,7 @@ struct LearnView: View {
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Lower-exposure routing scores MapKit drives against that map. It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)

@@ -120,6 +120,32 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(score.grade, "Watched")
         XCTAssertEqual(score.cameraCount, 8)
         XCTAssertEqual(score.flockPercent, 50)
-        XCTAssertTrue(score.shareText.contains("Place Score"))
+        XCTAssertTrue(score.headline.lowercased().contains("watched"))
+        XCTAssertTrue(score.shareText.contains("cameras"))
+    }
+
+    func testCityRankingsSortsByCount() {
+        let atlanta = CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        let miami = CLLocationCoordinate2D(latitude: 25.7617, longitude: -80.1918)
+        var cameras: [ALPRCamera] = (0..<5).map { index in
+            ALPRCamera(
+                id: "atl\(index)",
+                latitude: atlanta.latitude + Double(index) * 0.01,
+                longitude: atlanta.longitude,
+                manufacturer: "Flock Safety"
+            )
+        }
+        cameras.append(
+            ALPRCamera(
+                id: "mia0",
+                latitude: miami.latitude,
+                longitude: miami.longitude,
+                manufacturer: "Other"
+            )
+        )
+        let rankings = GeoHelpers.cityRankings(from: cameras, limit: 5)
+        XCTAssertGreaterThanOrEqual(rankings.count, 2)
+        XCTAssertEqual(rankings.first?.name, "Atlanta")
+        XCTAssertGreaterThan(rankings.first?.cameraCount ?? 0, rankings[1].cameraCount)
     }
 }

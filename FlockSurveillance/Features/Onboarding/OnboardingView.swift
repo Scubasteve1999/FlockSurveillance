@@ -1,12 +1,15 @@
+import CoreLocation
 import SwiftUI
 
 struct OnboardingView: View {
     @Binding var hasSeenOnboarding: Bool
     @Environment(LocationManager.self) private var locationManager
+    @Environment(CameraRepository.self) private var repository
 
     @State private var page = 0
     @State private var didRequestLocation = false
     @State private var didEnableAlerts = false
+    @State private var teaserScore: PlaceScore?
     /// Hold the shared engine so SwiftUI observes authorizationStatus changes.
     @State private var alertsEngine = AlertsEngine.shared
 
@@ -69,39 +72,78 @@ struct OnboardingView: View {
     }
 
     private var featuresPage: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 18) {
             Spacer()
 
-            Text("Built to keep you aware")
+            Text("How watched is your life?")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
-                .padding(.bottom, 6)
 
-            featureCard(
-                icon: "map.fill",
-                title: "Live camera map",
-                detail: "ALPR pins, coverage heat, and field-of-view cones wherever you look."
-            )
-            featureCard(
-                icon: "car.fill",
-                title: "Low-exposure drives",
-                detail: "Compare routes by camera count, then Drive Mode counts them down live."
-            )
-            featureCard(
-                icon: "bell.badge.fill",
-                title: "Background alerts",
-                detail: "Get a heads-up near a mapped ALPR — even with the app closed."
-            )
-            featureCard(
-                icon: "gauge.with.dots.needle.67percent",
-                title: "Place Score",
-                detail: "Grade any neighborhood's surveillance density in one tap."
-            )
+            Text("A personal grade for where you are — no jargon, no signup.")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+
+            if let teaserScore {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(teaserScore.headline)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(AppTheme.foreground)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(teaserScore.grade)
+                            .font(.system(size: 36, weight: .black))
+                            .foregroundStyle(AppTheme.primary)
+                        Spacer()
+                        Text(teaserScore.cameraCountLabel)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(AppTheme.accent)
+                    }
+
+                    Text("\(teaserScore.cameraCountLabel) within a mile · \(teaserScore.flockPercent)% Flock")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppTheme.card.opacity(0.85))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                        .stroke(AppTheme.border, lineWidth: 1)
+                )
+            } else {
+                ProgressView()
+                    .tint(AppTheme.accent)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+            }
+
+            Text("Share a card. Tap once for the safest drive home. See which metros are most mapped.")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .multilineTextAlignment(.center)
 
             Spacer()
         }
         .padding(.horizontal, 24)
+        .onAppear { refreshTeaserScore() }
+        .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+            refreshTeaserScore()
+        }
+        .onChange(of: repository.cameras.count) { _, _ in
+            refreshTeaserScore()
+        }
+    }
+
+    private func refreshTeaserScore() {
+        let coordinate = locationManager.location?.coordinate
+            ?? WidgetBridge.homeCoordinate()
+            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        teaserScore = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
     }
 
     private var permissionsPage: some View {
@@ -132,7 +174,7 @@ struct OnboardingView: View {
 
             permissionCard(
                 icon: "bell.badge.fill",
-                title: "ALPR alerts",
+                title: "Camera alerts",
                 detail: "Notifies you near mapped cameras, even in the background.",
                 actionLabel: alertsActionLabel,
                 isDone: alertsFullyEnabled
@@ -266,39 +308,6 @@ struct OnboardingView: View {
     }
 
     // MARK: - Components
-
-    private func featureCard(icon: String, title: String, detail: String) -> some View {
-        HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(AppTheme.accent)
-                .frame(width: 42, height: 42)
-                .background(AppTheme.card)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(AppTheme.border, lineWidth: 1)
-                )
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title)
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(AppTheme.foreground)
-                Text(detail)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(AppTheme.mutedForeground)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(14)
-        .background(AppTheme.card.opacity(0.65))
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                .stroke(AppTheme.border, lineWidth: 1)
-        )
-    }
 
     private func permissionCard(
         icon: String,

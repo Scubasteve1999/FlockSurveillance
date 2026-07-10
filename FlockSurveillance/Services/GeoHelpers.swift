@@ -296,6 +296,38 @@ enum GeoHelpers {
             span: MKCoordinateSpan(latitudeDelta: 0.28, longitudeDelta: 0.28)
         )
     }
+
+    /// Rank seed metros by how many cached cameras fall in each metro tile.
+    static func cityRankings(from cameras: [ALPRCamera], limit: Int = 5) -> [CityRanking] {
+        let ranked = seedMetros.compactMap { metro -> CityRanking? in
+            let region = seedRegion(for: metro.coordinate)
+            let count = Self.cameras(in: region, from: cameras).count
+            guard count > 0 else { return nil }
+            return CityRanking(name: metro.name, coordinate: metro.coordinate, cameraCount: count)
+        }
+        .sorted { $0.cameraCount > $1.cameraCount }
+        return Array(ranked.prefix(limit))
+    }
+}
+
+struct CityRanking: Identifiable, Hashable {
+    var id: String { name }
+    let name: String
+    let coordinate: CLLocationCoordinate2D
+    let cameraCount: Int
+
+    var subtitle: String {
+        cameraCount == 1 ? "1 mapped camera" : "\(cameraCount) mapped cameras"
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(cameraCount)
+    }
+
+    static func == (lhs: CityRanking, rhs: CityRanking) -> Bool {
+        lhs.name == rhs.name && lhs.cameraCount == rhs.cameraCount
+    }
 }
 
 struct PlaceScore: Identifiable, Equatable, Hashable {
@@ -317,15 +349,38 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         return String(format: "%.0f mi", miles)
     }
 
+    /// Mainstream headline: "Your block is Watched"
+    var headline: String {
+        switch grade {
+        case "Clear": return "Your block looks clear"
+        case "Light": return "Your block is lightly watched"
+        case "Watched": return "Your block is watched"
+        case "Heavy": return "Your block is heavily watched"
+        default: return "Your block is saturated with cameras"
+        }
+    }
+
+    var cameraCountLabel: String {
+        cameraCount == 1 ? "1 camera" : "\(cameraCount) cameras"
+    }
+
     var shareText: String {
         """
-        Flock Surveillance — Place Score
-        Grade: \(grade)
-        ALPRs within \(radiusMilesLabel): \(cameraCount) (\(flockCount) Flock · \(flockPercent)%)
+        Flock Surveillance
+        \(headline)
+        \(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)
         Density: \(String(format: "%.1f", densityPerSquareMile)) per sq mi
         How watched is your life right now?
         flocksurveillance.com
         """
+    }
+
+    var mapDeepLink: URL? {
+        URL(string: String(
+            format: "flocksurveillance://map?lat=%.5f&lon=%.5f",
+            coordinate.latitude,
+            coordinate.longitude
+        ))
     }
 
     func hash(into hasher: inout Hasher) {

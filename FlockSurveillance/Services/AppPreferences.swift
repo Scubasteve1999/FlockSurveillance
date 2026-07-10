@@ -10,6 +10,7 @@ enum AppPreferenceKey {
     static let quietHoursEnabled = "prefs.quietHoursEnabled"
     static let quietStartHour = "prefs.quietStartHour"
     static let quietEndHour = "prefs.quietEndHour"
+    static let hasAutoShownPlaceScore = "prefs.hasAutoShownPlaceScore"
 }
 
 enum AppPreferences {
@@ -66,5 +67,10 @@ enum AppPreferences {
             return UserDefaults.standard.integer(forKey: AppPreferenceKey.quietEndHour)
         }
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.quietEndHour) }
+    }
+
+    static var hasAutoShownPlaceScore: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.hasAutoShownPlaceScore) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.hasAutoShownPlaceScore) }
     }
 }

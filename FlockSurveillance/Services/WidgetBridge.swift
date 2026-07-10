@@ -8,6 +8,8 @@ enum WidgetBridge {
     static let nearestMetersKey = "nearestMeters"
     static let homeLatKey = "homeLatitude"
     static let homeLonKey = "homeLongitude"
+    static let workLatKey = "workLatitude"
+    static let workLonKey = "workLongitude"
     static let updatedAtKey = "updatedAt"
     static let radiusMeters: CLLocationDistance = 1609.34
 
@@ -38,6 +40,23 @@ enum WidgetBridge {
         return CLLocationCoordinate2D(
             latitude: defaults.double(forKey: homeLatKey),
             longitude: defaults.double(forKey: homeLonKey)
+        )
+    }
+
+    static func setWorkCoordinate(_ coordinate: CLLocationCoordinate2D) {
+        guard let defaults else { return }
+        defaults.set(coordinate.latitude, forKey: workLatKey)
+        defaults.set(coordinate.longitude, forKey: workLonKey)
+    }
+
+    static func workCoordinate() -> CLLocationCoordinate2D? {
+        guard let defaults,
+              defaults.object(forKey: workLatKey) != nil,
+              defaults.object(forKey: workLonKey) != nil
+        else { return nil }
+        return CLLocationCoordinate2D(
+            latitude: defaults.double(forKey: workLatKey),
+            longitude: defaults.double(forKey: workLonKey)
         )
     }
 

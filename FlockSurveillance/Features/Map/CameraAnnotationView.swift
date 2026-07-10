@@ -86,7 +86,7 @@ struct RadarHUD: View {
                         .fill(AppTheme.primary)
                         .frame(width: 8, height: 8)
                         .opacity(0.9)
-                    Text("Watching · \(ProximityRadar.formatDistance(nearestMeters)) to nearest ALPR")
+                    Text("Watching · \(ProximityRadar.formatDistance(nearestMeters)) to nearest camera")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(AppTheme.foreground)
                 }
@@ -127,7 +127,7 @@ struct RadarHUD: View {
                 }
             }
 
-            Text("Lower-exposure drives live on the Route tab.")
+            Text("Lower-camera drives live on the Route tab.")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
 

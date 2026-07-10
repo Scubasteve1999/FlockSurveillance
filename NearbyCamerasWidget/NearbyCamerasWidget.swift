@@ -52,7 +52,7 @@ struct NearbyCamerasWidgetView: View {
         case .accessoryRectangular:
             accessoryRectangular
         case .accessoryInline:
-            Text(entry.hasHome ? "\(entry.count) ALPRs near Home" : "Set Home for ALPRs")
+            Text(entry.hasHome ? "\(entry.count) cameras near Home" : "Set Home for cameras")
                 .widgetURL(URL(string: "flocksurveillance://map"))
         default:
             systemView
@@ -79,7 +79,7 @@ struct NearbyCamerasWidgetView: View {
                 .font(.system(size: 10, weight: .bold))
                 .tracking(0.5)
             if entry.hasHome {
-                Text("\(entry.count) ALPRs near Home")
+                Text("\(entry.count) cameras near Home")
                     .font(.system(size: 14, weight: .semibold))
                 if let nearest = entry.nearestMeters {
                     Text("Nearest \(format(nearest))")
@@ -107,7 +107,7 @@ struct NearbyCamerasWidgetView: View {
                 Text("\(entry.count)")
                     .font(.system(size: 34, weight: .bold))
                     .foregroundStyle(.white)
-                Text("ALPRs within 1 mi of Home")
+                Text("Cameras near Home")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.white.opacity(0.7))
                 if let nearest = entry.nearestMeters {
@@ -132,7 +132,7 @@ struct NearbyCamerasWidgetView: View {
                 Text("Open the app")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
-                Text("Set Home in Settings to track nearby ALPRs.")
+                Text("Set Home in Settings to track cameras nearby.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.white.opacity(0.7))
             }
@@ -176,8 +176,8 @@ struct NearbyCamerasWidget: Widget {
         StaticConfiguration(kind: kind, provider: NearbyCamerasProvider()) { entry in
             NearbyCamerasWidgetView(entry: entry)
         }
-        .configurationDisplayName("Nearby ALPRs")
-        .description("Shows how many community-mapped ALPRs are within 1 mile of Home.")
+        .configurationDisplayName("Cameras near Home")
+        .description("Shows how many community-mapped cameras are within 1 mile of Home.")
         .supportedFamilies([
             .systemSmall, .systemMedium,
             .accessoryCircular, .accessoryRectangular, .accessoryInline

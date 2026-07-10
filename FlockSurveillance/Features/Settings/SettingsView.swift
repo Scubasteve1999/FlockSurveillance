@@ -18,12 +18,24 @@ struct SettingsView: View {
     @State private var alertsEngine = AlertsEngine.shared
     @State private var homeQuery = ""
     @State private var homeSuggestions: [MKLocalSearchCompletion] = []
+    @State private var workQuery = ""
+    @State private var workSuggestions: [MKLocalSearchCompletion] = []
+    @State private var addressField: AddressField = .home
     @State private var completer = PlaceCompleter()
     @State private var homeStatus: String?
+    @State private var workStatus: String?
     @State private var didClearCache = false
+
+    private enum AddressField {
+        case home, work
+    }
 
     private var homeCoordinate: CLLocationCoordinate2D? {
         WidgetBridge.homeCoordinate()
+    }
+
+    private var workCoordinate: CLLocationCoordinate2D? {
+        WidgetBridge.workCoordinate()
     }
 
     private var alertsHaveAlways: Bool {
@@ -45,7 +57,7 @@ struct SettingsView: View {
                             Text("Settings")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundStyle(AppTheme.foreground)
-                            Text("Tune radar, Home for the widget, and local cache.")
+                            Text("Tune radar, Home & Work for commute, and local cache.")
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(AppTheme.mutedForeground)
                         }
@@ -187,8 +199,9 @@ struct SettingsView: View {
                                     .background(AppTheme.background.opacity(0.55))
                                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                     .foregroundStyle(AppTheme.foreground)
+                                    .onTapGesture { addressField = .home }
 
-                                if !homeSuggestions.isEmpty {
+                                if addressField == .home, !homeSuggestions.isEmpty {
                                     VStack(alignment: .leading, spacing: 0) {
                                         ForEach(Array(homeSuggestions.prefix(5).enumerated()), id: \.offset) { _, item in
                                             Button {
@@ -212,6 +225,74 @@ struct SettingsView: View {
 
                                 if let homeStatus {
                                     Text(homeStatus)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundStyle(AppTheme.accent)
+                                }
+                            }
+                        }
+
+                        SectionCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("WORK FOR COMMUTE")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .tracking(0.8)
+                                    .foregroundStyle(AppTheme.mutedForeground)
+
+                                if let work = workCoordinate {
+                                    Text(String(format: "Current Work: %.4f, %.4f", work.latitude, work.longitude))
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(AppTheme.accent)
+                                } else {
+                                    Text("No Work set yet.")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(AppTheme.mutedForeground)
+                                }
+
+                                Button {
+                                    setWorkToCurrentLocation()
+                                } label: {
+                                    Label("Use current location", systemImage: "location.fill")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 12)
+                                        .foregroundStyle(AppTheme.background)
+                                        .background(AppTheme.primary)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                }
+                                .buttonStyle(.plain)
+
+                                TextField("Search an address for Work", text: $workQuery)
+                                    .textInputAutocapitalization(.words)
+                                    .padding(12)
+                                    .background(AppTheme.background.opacity(0.55))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                    .foregroundStyle(AppTheme.foreground)
+                                    .onTapGesture { addressField = .work }
+
+                                if addressField == .work, !workSuggestions.isEmpty {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        ForEach(Array(workSuggestions.prefix(5).enumerated()), id: \.offset) { _, item in
+                                            Button {
+                                                Task { await selectWork(item) }
+                                            } label: {
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Text(item.title)
+                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .foregroundStyle(AppTheme.foreground)
+                                                    Text(item.subtitle)
+                                                        .font(.system(size: 12, weight: .medium))
+                                                        .foregroundStyle(AppTheme.mutedForeground)
+                                                }
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(.vertical, 8)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                }
+
+                                if let workStatus {
+                                    Text(workStatus)
                                         .font(.system(size: 12, weight: .medium))
                                         .foregroundStyle(AppTheme.accent)
                                 }
@@ -269,10 +350,18 @@ struct SettingsView: View {
             }
             .navigationBarHidden(true)
             .onChange(of: homeQuery) { _, value in
+                addressField = .home
+                completer.query = value
+            }
+            .onChange(of: workQuery) { _, value in
+                addressField = .work
                 completer.query = value
             }
             .onChange(of: completer.results) { _, results in
-                homeSuggestions = results
+                switch addressField {
+                case .home: homeSuggestions = results
+                case .work: workSuggestions = results
+                }
             }
             .onAppear {
                 if let location = locationManager.location {
@@ -349,6 +438,38 @@ struct SettingsView: View {
         WidgetBridge.setHomeCoordinate(coordinate)
         repository.refreshWidgetSnapshot()
         homeStatus = message
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func setWorkToCurrentLocation() {
+        locationManager.start()
+        guard let coordinate = locationManager.location?.coordinate else {
+            workStatus = "Location unavailable. Enable location access first."
+            return
+        }
+        applyWork(coordinate, message: "Work set to current location.")
+    }
+
+    private func selectWork(_ completion: MKLocalSearchCompletion) async {
+        workQuery = completion.title
+        workSuggestions = []
+        let request = MKLocalSearch.Request(completion: completion)
+        let search = MKLocalSearch(request: request)
+        do {
+            let response = try await search.start()
+            guard let coordinate = response.mapItems.first?.placemark.coordinate else {
+                workStatus = "Could not resolve that address."
+                return
+            }
+            applyWork(coordinate, message: "Work set to \(completion.title).")
+        } catch {
+            workStatus = error.localizedDescription
+        }
+    }
+
+    private func applyWork(_ coordinate: CLLocationCoordinate2D, message: String) {
+        WidgetBridge.setWorkCoordinate(coordinate)
+        workStatus = message
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 }

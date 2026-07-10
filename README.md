@@ -4,23 +4,26 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.3)
+## Features (v1.4)
 
-- **Background ALPR alerts** — geofenced notifications near mapped cameras, even with the app closed (Always location, opt-in, quiet hours)
-- **Siri + Shortcuts** — "How many cameras near me?", Place Score, and Start Drive Mode via App Intents
-- **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget
+- **Instant How Watched?** — auto Place Score on first map open + onboarding teaser grade
+- **Visual share cards** — Instagram-ready Place Score and drive-report PNGs with deep links
+- **Safest drive Home ↔ Work** — set Work in Settings; one-tap commute buttons + Siri “Safest drive home”
+- **City rankings** — most-mapped metros from seed cities + local cache (map strip + Learn)
+- **Background camera alerts** — geofenced notifications near mapped cameras, even with the app closed (Always location, opt-in, quiet hours)
+- **Siri + Shortcuts** — nearby cameras, how watched, Drive Mode, safest drive home
+- **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget (“Cameras near Home”)
 - **Community reporting** — flag unmapped or changed cameras as anonymous OpenStreetMap notes from the map or camera intel
 - **CarPlay Drive Mode** — driving-task template mirroring the HUD (code ready; awaits Apple's CarPlay entitlement). Do **not** add the CarPlay scene manifest to Info.plist until the entitlement is approved — declaring it early freezes iPad scene transitions.
 - **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, coverage heat, freshness label, optional approach haptics
 - **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
-- **Place Score** — one-tap watchedness grade for your location / viewport, with share card
 - **Camera FOV cones** — short map wedges + detail preview when OSM `camera:direction` / `direction` is tagged
-- **Route Exposure** — MapKit driving directions + alternates, per-route camera fetch (no under-fetch on long drives), shareable drive report
-- **Drive Mode** — Start Drive HUD with next ALPR distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
+- **Safest Drive** — MapKit driving directions + alternates, per-route camera fetch, shareable drive report, Start Drive + Live Activity tip
+- **Drive Mode** — Start Drive HUD with next camera distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
 - **Camera Intel 2.0** — OSM tags, copy coords, OpenStreetMap deep link, distance from you
-- **Settings** — haptics/heat/filter defaults, Set Home for widget, clear cache
-- **Learn** — short explainers + links to EFF, OSM tagging, DeFlock
-- **Widget** — ALPRs within 1 mile of Home; tap opens `flocksurveillance://map`
+- **Settings** — haptics/heat/filter defaults, Set Home + Work, clear cache
+- **Learn** — short explainers + metro rankings + links to EFF, OSM tagging, DeFlock
+- **Widget** — cameras within 1 mile of Home; tap opens `flocksurveillance://map`
 
 ## Requirements
 

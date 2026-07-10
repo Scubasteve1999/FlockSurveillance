@@ -18,9 +18,12 @@ struct RouteExposureView: View {
     @State private var analysis: RouteExposureAnalysis?
     @State private var selectedOptionID: UUID?
     @State private var shareText: String?
+    @State private var shareItems: [Any] = []
+    @State private var showShareSheet = false
     @State private var activeField: ActiveField = .destination
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDriveMode = false
+    @State private var commuteHint: String?
 
     private enum ActiveField {
         case origin, destination
@@ -43,6 +46,7 @@ struct RouteExposureView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         brandBlock
+                        commuteCard
                         searchCard
                         if let analysis, let selectedResult {
                             alternativesCard(analysis)
@@ -59,7 +63,7 @@ struct RouteExposureView: View {
             .navigationBarHidden(true)
             .overlay {
                 if isRouting {
-                    ProgressView("Scoring lower-exposure routes…")
+                    ProgressView("Finding the drive with fewer cameras…")
                         .padding(20)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
@@ -73,10 +77,17 @@ struct RouteExposureView: View {
             )) { payload in
                 ActivityView(items: [payload.text])
             }
+            .sheet(isPresented: $showShareSheet) {
+                ActivityView(items: shareItems)
+            }
             .onAppear {
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
                 }
+                handlePendingCommuteIfNeeded()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .flockSafestCommute)) { _ in
+                handlePendingCommuteIfNeeded()
             }
             .onChange(of: originQuery) { _, value in
                 activeField = .origin
@@ -106,12 +117,67 @@ struct RouteExposureView: View {
                 .font(.system(size: 12, weight: .bold))
                 .tracking(1.2)
                 .foregroundStyle(AppTheme.primary)
-            Text("Route Exposure")
+            Text("Safest Drive")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
-            Text("Compare MapKit drives and pick the lower-exposure path using community-mapped OSM ALPRs.")
+            Text("One tap for Home ↔ Work, or search any trip. We pick the route with the fewest mapped cameras.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
+        }
+    }
+
+    private var commuteCard: some View {
+        SectionCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("COMMUTE")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(AppTheme.mutedForeground)
+
+                HStack(spacing: 10) {
+                    Button {
+                        Task { await runCommute(toHome: false) }
+                    } label: {
+                        Label("Home → Work", systemImage: "briefcase.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .foregroundStyle(AppTheme.background)
+                            .background(AppTheme.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isRouting)
+
+                    Button {
+                        Task { await runCommute(toHome: true) }
+                    } label: {
+                        Label("Work → Home", systemImage: "house.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .foregroundStyle(AppTheme.foreground)
+                            .background(AppTheme.cardTop)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(AppTheme.border, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isRouting)
+                }
+
+                if let commuteHint {
+                    Text(commuteHint)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(AppTheme.primary)
+                } else {
+                    Text("Set Home and Work in Settings for one-tap safest drives.")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
+            }
         }
     }
 
@@ -174,10 +240,10 @@ struct RouteExposureView: View {
     private var emptyState: some View {
         SectionCard {
             VStack(alignment: .leading, spacing: 8) {
-                Text("No route yet")
+                Text("No drive yet")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Pick an origin and destination. We’ll score alternate MapKit drives by ALPRs within about 75 meters of each path, then recommend the lower-exposure option.")
+                Text("Tap Home → Work or pick any addresses. We’ll score alternate drives by cameras near each path and recommend the one with the fewest.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
@@ -192,7 +258,7 @@ struct RouteExposureView: View {
                     .tracking(0.8)
                     .foregroundStyle(AppTheme.mutedForeground)
                 Text(analysis.options.count > 1
-                     ? "Tap a route to compare. Recommended has the fewest corridor cameras."
+                     ? "Tap a route to compare. Recommended has the fewest cameras."
                      : "MapKit returned one drive for this pair.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
@@ -270,7 +336,7 @@ struct RouteExposureView: View {
                 HStack(spacing: 16) {
                     metric("Flock", "\(result.flockCount)")
                     metric("Distance", String(format: "%.1f mi", result.route.distance / 1609.34))
-                    metric("Corridor", "\(Int(result.corridorMeters)) m")
+                    metric("Watchedness", result.exposureScore)
                 }
 
                 Button {
@@ -287,8 +353,12 @@ struct RouteExposureView: View {
                 }
                 .buttonStyle(.plain)
 
+                Text("Live Activity will show on your Lock Screen while you drive.")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+
                 Button {
-                    shareText = shareReport(result)
+                    shareDriveReport(result)
                 } label: {
                     Label("Share drive report", systemImage: "square.and.arrow.up")
                         .font(.system(size: 14, weight: .semibold))
@@ -344,7 +414,7 @@ struct RouteExposureView: View {
                 .foregroundStyle(AppTheme.foreground)
 
             if result.cameras.isEmpty {
-                Text("No mapped ALPRs within the corridor.")
+                Text("No mapped cameras near this drive.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             } else {
@@ -518,19 +588,68 @@ struct RouteExposureView: View {
         return try? await search.start().mapItems.first?.placemark.coordinate
     }
 
+    private func handlePendingCommuteIfNeeded() {
+        guard let toHome = PendingIntentActions.commuteToHome else { return }
+        PendingIntentActions.commuteToHome = nil
+        Task { await runCommute(toHome: toHome) }
+    }
+
+    private func runCommute(toHome: Bool) async {
+        guard let home = WidgetBridge.homeCoordinate() else {
+            commuteHint = "Set Home in Settings first."
+            return
+        }
+        guard let work = WidgetBridge.workCoordinate() else {
+            commuteHint = "Set Work in Settings first."
+            return
+        }
+        commuteHint = nil
+        if toHome {
+            originCoordinate = work
+            destinationCoordinate = home
+            originQuery = "Work"
+            destinationQuery = "Home"
+        } else {
+            originCoordinate = home
+            destinationCoordinate = work
+            originQuery = "Home"
+            destinationQuery = "Work"
+        }
+        await runExposure()
+    }
+
+    private func shareDriveReport(_ result: RouteExposureResult) {
+        Task { @MainActor in
+            let from = originQuery.isEmpty ? "Origin" : originQuery
+            let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
+            var items: [Any] = [shareReport(result)]
+            if let image = ShareCardRenderer.driveReportImage(
+                cameraCount: result.cameraCount,
+                exposureLabel: result.exposureScore,
+                distanceMiles: result.route.distance / 1609.34,
+                originLabel: from,
+                destinationLabel: to
+            ) {
+                items.insert(image, at: 0)
+            }
+            shareItems = items
+            showShareSheet = true
+        }
+    }
+
     private func shareReport(_ result: RouteExposureResult) -> String {
         let from = originQuery.isEmpty ? "Origin" : originQuery
         let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
         let optionCount = analysis?.options.count ?? 1
         return """
-        Flock Surveillance — Drive Report
+        Flock Surveillance — Safest Drive
         From: \(from)
         To: \(to)
-        Cameras along route: \(result.cameraCount) (\(result.flockCount) Flock)
-        Exposure: \(result.exposureScore)
+        Cameras on route: \(result.cameraCount) (\(result.flockCount) Flock)
+        Watchedness: \(result.exposureScore)
         Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi
         Alternatives scored: \(optionCount)
-        Data: OpenStreetMap / DeFlock community-mapped ALPRs
+        Fewer cameras. Same destination.
         flocksurveillance.com
         """
     }

@@ -1,11 +1,11 @@
-# App Store Optimization — Flock Surveillance v1.3
+# App Store Optimization — Flock Surveillance v1.4
 
 ## Title & subtitle
 
 | Field | Recommendation | Notes |
 |---|---|---|
 | Name (30 chars) | `Flock Surveillance: ALPR Map` | Brand + highest-value keyword in the name |
-| Subtitle (30 chars) | `Camera alerts & safe routes` | Covers the two headline features |
+| Subtitle (30 chars) | `How watched is your life?` | Mainstream hook; fits the Watched Life thesis |
 
 ## Keyword field (100 chars)
 
@@ -20,26 +20,28 @@ Notes:
 
 ## Promotional text (170 chars, editable without review)
 
-> NEW: Background ALPR alerts — get a heads-up near a mapped camera even with the app closed. Plus Siri shortcuts, lock-screen widgets, and one-tap camera reporting.
+> NEW: Instant “how watched?” grade on open, Instagram-ready share cards, one-tap Home↔Work safest drive, and most-mapped metro rankings — wow in under 10 seconds.
 
 ## Description opener (first 3 lines matter most)
 
-> Thousands of automated license plate readers photograph cars every day. Flock Surveillance shows you exactly where they are — and warns you before you pass one.
+> How watched is your life right now? Open the app and get a personal grade for your block — then share a beautiful card or tap once for the drive home with fewer cameras.
 >
 > Built on OpenStreetMap community data. No accounts. No tracking. Your location never leaves your device.
 
-Then feature bullets in this order: Alerts, Map + FOV cones, Route exposure + Drive Mode, Place Score, Widgets/Siri, Community reporting.
+Then feature bullets in this order: Instant Place Score, Share cards, Safest drive Home↔Work, Map + FOV cones, Background alerts, City rankings, Widgets/Siri, Community reporting.
 
 ## Screenshot storyboard (6.7" set, in order)
 
 1. **Map with pins + FOV cones** — caption: "See every mapped camera"
-2. **Alert notification on lock screen** — caption: "Warned before you pass one"
-3. **Drive Mode HUD + Dynamic Island** — caption: "Live countdown while you drive"
-4. **Route comparison** — caption: "Pick the low-exposure route"
-5. **Place Score card** — caption: "Grade any neighborhood"
-6. **Report a camera sheet** — caption: "Help map what's missing"
+2. **Instant How Watched? card** — caption: "Your block, graded in seconds"
+3. **Place Score share card (PNG)** — caption: "Share how watched you are"
+4. **Home → Work / Work → Home commute** — caption: "One-tap safest drive"
+5. **Drive Mode HUD + Dynamic Island** — caption: "Live countdown while you drive"
+6. **Drive report share card** — caption: "Fewer cameras. Same destination."
+7. **Most mapped metros strip** — caption: "See which cities are densest"
+8. **Alert notification on lock screen** — caption: "Warned before you pass one"
 
-Style: device frames on near-black (#0F1217) background, orange (#F26B47) captions, consistent with the app's dark theme.
+Style: device frames on near-black (#0F1217) background, orange (#F26B47) captions, consistent with the app's dark theme. Prefer exporting the in-app `ShareCardRenderer` PNGs for frames 3 and 6 so App Store art matches what users actually share.
 
 ## Privacy nutrition label (App Store Connect answers)
 

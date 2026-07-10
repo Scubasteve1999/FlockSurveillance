@@ -119,7 +119,7 @@ struct DriveModeView: View {
             }
 
             if let next = driveSession.nextHit {
-                Text(next.isFlock ? "Next Flock ALPR" : "Next ALPR")
+                Text(next.isFlock ? "Next Flock camera" : "Next camera")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
                 HStack(spacing: 10) {
@@ -142,7 +142,7 @@ struct DriveModeView: View {
                 Text("Corridor clear")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("No remaining mapped ALPRs on this drive.")
+                Text("No remaining mapped cameras on this drive.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }

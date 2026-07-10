@@ -1,3 +1,4 @@
+import CoreLocation
 import SwiftData
 import SwiftUI
 import UIKit
@@ -87,7 +88,19 @@ struct FlockSurveillanceApp: App {
     private func handleDeepLink(_ url: URL) {
         guard url.scheme == "flocksurveillance" else { return }
         hasSeenOnboarding = true
-        switch url.host?.lowercased() {
+        let host = url.host?.lowercased()
+        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        if let lat = items.first(where: { $0.name == "lat" })?.value.flatMap(Double.init),
+           let lon = items.first(where: { $0.name == "lon" || $0.name == "lng" })?.value.flatMap(Double.init) {
+            PendingIntentActions.mapFocusCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+            NotificationCenter.default.post(name: .flockMapFocus, object: nil)
+        }
+        if items.contains(where: { $0.name == "commute" && ($0.value == "home" || $0.value == "work") }) {
+            let toHome = items.first(where: { $0.name == "commute" })?.value == "home"
+            PendingIntentActions.commuteToHome = toHome
+            NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
+        }
+        switch host {
         case "map", nil:
             selectedTab = 0
         case "route", "deflock":

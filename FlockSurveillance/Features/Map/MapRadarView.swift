@@ -16,6 +16,7 @@ struct MapRadarView: View {
     @State private var selectedCluster: CameraCluster?
     @State private var showHeat = AppPreferences.showHeatDefault
     @State private var pulsePhase = false
+    @State private var safariPresentation: SafariPresentation?
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -95,7 +96,8 @@ struct MapRadarView: View {
                     coverageHint: repository.coverageHint,
                     freshnessLabel: repository.freshnessLabel,
                     watchModeEnabled: radar.watchModeEnabled,
-                    onToggleWatch: toggleWatchMode
+                    onToggleWatch: toggleWatchMode,
+                    onOpenDeFlockMaps: { safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps) }
                 )
                 .padding(.horizontal, 16)
                 .padding(.bottom, 8)
@@ -132,6 +134,10 @@ struct MapRadarView: View {
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
                 .presentationBackground(AppTheme.background)
         }
+        .safariSheet(item: $safariPresentation)
+        .onReceive(NotificationCenter.default.publisher(for: AppLinks.openDeFlockMapsNotification)) { _ in
+            safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
+        }
     }
 
     private var brandHeader: some View {
@@ -146,6 +152,19 @@ struct MapRadarView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
             }
             Spacer()
+            Button {
+                safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
+            } label: {
+                Image(systemName: "safari")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.card.opacity(0.92))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+            }
+            .accessibilityLabel("Open DeFlock Maps")
+
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showHeat.toggle()

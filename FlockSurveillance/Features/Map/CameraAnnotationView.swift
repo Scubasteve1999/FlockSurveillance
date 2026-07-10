@@ -42,6 +42,7 @@ struct RadarHUD: View {
     let freshnessLabel: String?
     let watchModeEnabled: Bool
     let onToggleWatch: () -> Void
+    var onOpenDeFlockMaps: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -125,6 +126,31 @@ struct RadarHUD: View {
                         .tint(AppTheme.accent)
                         .scaleEffect(0.8)
                 }
+            }
+
+            if let onOpenDeFlockMaps {
+                Button(action: onOpenDeFlockMaps) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "safari")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text("Open DeFlock Maps")
+                            .font(.system(size: 12, weight: .semibold))
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(size: 10, weight: .semibold))
+                    }
+                    .foregroundStyle(AppTheme.accent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(AppTheme.card.opacity(0.9))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(AppTheme.border, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open DeFlock Maps")
             }
 
             if let freshnessLabel {

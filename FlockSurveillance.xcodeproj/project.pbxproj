@@ -24,10 +24,12 @@
 		87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AA373662BC417002454737 /* ProximityRadar.swift */; };
 		8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */; };
 		90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */; };
+		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
 		AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */; };
 		B3092670D2ABF81DE8B2ABB5 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B0B4143401454EFDFBD3EA /* AppTheme.swift */; };
 		B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */; };
 		B673CA4757FB5EE3CABC7397 /* CameraDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */; };
+		D220B3D6B431AF7602078E09 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D0E64D13F0C4E74D2A12C2 /* SafariView.swift */; };
 		D5878449871C0315AF107378 /* LearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AF090DDE7F0ADE1448325 /* LearnView.swift */; };
 		E2F73E9EB82B38D978BF5D18 /* MapRadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80049F39BDDD220E4F7AC048 /* MapRadarView.swift */; };
 		E38C4EF05F3E19AFD9D025A1 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA709B0872A9F478764A4CA /* LocationManager.swift */; };
@@ -71,6 +73,7 @@
 		083E635F68719ECA057C617B /* RouteExposureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureView.swift; sourceTree = "<group>"; };
 		12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockSurveillanceApp.swift; sourceTree = "<group>"; };
 		1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureService.swift; sourceTree = "<group>"; };
+		29D0E64D13F0C4E74D2A12C2 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		2B68A447A228714091E0BCF1 /* FlockSurveillanceTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlockSurveillanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DA709B0872A9F478764A4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NearbyCamerasWidget.entitlements; sourceTree = "<group>"; };
@@ -95,6 +98,7 @@
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
 		D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidget.swift; sourceTree = "<group>"; };
+		EF94A8C60991DECD85C56617 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -130,6 +134,7 @@
 		1059DB41CEE11F492065269C /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				EF94A8C60991DECD85C56617 /* AppLinks.swift */,
 				A4B0B4143401454EFDFBD3EA /* AppTheme.swift */,
 			);
 			path = Theme;
@@ -224,6 +229,7 @@
 				8DD72CFA632A2FC4EDEFBD9F /* Onboarding */,
 				001E8A1BFF530D54A3010F84 /* Route */,
 				284529FE2954595964DE5BC0 /* Settings */,
+				E91A645682F74A2C4E135013 /* Shared */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -246,6 +252,14 @@
 				80049F39BDDD220E4F7AC048 /* MapRadarView.swift */,
 			);
 			path = Map;
+			sourceTree = "<group>";
+		};
+		E91A645682F74A2C4E135013 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				29D0E64D13F0C4E74D2A12C2 /* SafariView.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -367,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */,
+				9CB65369BA218943953FE432 /* AppLinks.swift in Sources */,
 				ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */,
 				B3092670D2ABF81DE8B2ABB5 /* AppTheme.swift in Sources */,
 				3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */,
@@ -384,6 +399,7 @@
 				11CCD893F336E16104455165 /* RootTabView.swift in Sources */,
 				498357A2C1FCB27578F991E3 /* RouteExposureService.swift in Sources */,
 				7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */,
+				D220B3D6B431AF7602078E09 /* SafariView.swift in Sources */,
 				AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */,
 				4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */,
 			);

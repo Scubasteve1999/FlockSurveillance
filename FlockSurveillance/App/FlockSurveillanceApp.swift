@@ -55,6 +55,11 @@ struct FlockSurveillanceApp: App {
             selectedTab = 1
         case "settings":
             selectedTab = 3
+        case "deflock":
+            selectedTab = 0
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: AppLinks.openDeFlockMapsNotification, object: nil)
+            }
         default:
             selectedTab = 0
         }

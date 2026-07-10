@@ -83,7 +83,7 @@ struct DataSourcePill: View {
         HStack(spacing: 6) {
             Image(systemName: "map.fill")
                 .font(.system(size: 10, weight: .semibold))
-            Text("OpenStreetMap · community mapped")
+            Text("OSM · DeFlock community")
                 .font(.system(size: 11, weight: .medium))
         }
         .foregroundStyle(AppTheme.mutedForeground)

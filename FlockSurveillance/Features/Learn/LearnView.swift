@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LearnView: View {
     private let articles: [LearnArticle] = LearnArticle.all
+    @State private var safariPresentation: SafariPresentation?
 
     var body: some View {
         NavigationStack {
@@ -55,14 +56,29 @@ struct LearnView: View {
                                     title: "OpenStreetMap ALPR tagging",
                                     url: URL(string: "https://wiki.openstreetmap.org/wiki/Tag:surveillance:type=ALPR")!
                                 )
+                                Button {
+                                    safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
+                                } label: {
+                                    HStack {
+                                        Text("DeFlock Maps")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundStyle(AppTheme.foreground)
+                                        Spacer()
+                                        Image(systemName: "safari")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundStyle(AppTheme.accent)
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                                .buttonStyle(.plain)
                                 linkRow(
                                     title: "DeFlock project",
-                                    url: URL(string: "https://deflock.org/")!
+                                    url: AppLinks.deFlockProject
                                 )
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data. It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)
@@ -71,6 +87,7 @@ struct LearnView: View {
                 }
             }
             .navigationBarHidden(true)
+            .safariSheet(item: $safariPresentation)
         }
     }
 

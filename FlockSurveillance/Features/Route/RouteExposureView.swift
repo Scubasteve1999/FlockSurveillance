@@ -18,6 +18,7 @@ struct RouteExposureView: View {
     @State private var shareText: String?
     @State private var activeField: ActiveField = .destination
     @State private var mapPosition: MapCameraPosition = .automatic
+    @State private var safariPresentation: SafariPresentation?
 
     private enum ActiveField {
         case origin, destination
@@ -57,6 +58,7 @@ struct RouteExposureView: View {
             )) { payload in
                 ActivityView(items: [payload.text])
             }
+            .safariSheet(item: $safariPresentation)
             .onAppear {
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
@@ -93,7 +95,7 @@ struct RouteExposureView: View {
             Text("Route Exposure")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
-            Text("See how many ALPRs sit along a drive before you leave.")
+            Text("Count community-mapped ALPRs along a drive. For lower-exposure route planning, use DeFlock Maps.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
         }
@@ -157,15 +159,37 @@ struct RouteExposureView: View {
 
     private var emptyState: some View {
         SectionCard {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("No route yet")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(AppTheme.foreground)
                 Text("Pick an origin and destination. We’ll count community-mapped ALPRs within about 75 meters of the driving path.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
+                deFlockMapsButton
             }
         }
+    }
+
+    private var deFlockMapsButton: some View {
+        Button {
+            safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
+        } label: {
+            Label("Plan a lower-exposure route on DeFlock Maps", systemImage: "safari")
+                .font(.system(size: 14, weight: .semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 12)
+                .foregroundStyle(AppTheme.accent)
+                .background(AppTheme.cardTop)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(AppTheme.border, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Plan a lower-exposure route on DeFlock Maps")
     }
 
     private func exposureCard(_ result: RouteExposureResult) -> some View {
@@ -210,6 +234,8 @@ struct RouteExposureView: View {
                         )
                 }
                 .buttonStyle(.plain)
+
+                deFlockMapsButton
             }
         }
     }

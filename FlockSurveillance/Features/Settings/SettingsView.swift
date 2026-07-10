@@ -14,6 +14,7 @@ struct SettingsView: View {
     @State private var completer = PlaceCompleter()
     @State private var homeStatus: String?
     @State private var didClearCache = false
+    @State private var safariPresentation: SafariPresentation?
 
     private var homeCoordinate: CLLocationCoordinate2D? {
         WidgetBridge.homeCoordinate()
@@ -174,14 +175,20 @@ struct SettingsView: View {
                                     .font(.system(size: 10, weight: .semibold))
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
-                                Text("Community-mapped ALPR locations from OpenStreetMap. Not affiliated with Flock Safety.")
+                                Text("Community-mapped ALPR locations from OpenStreetMap and the DeFlock mapping community. Not affiliated with Flock Safety.")
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundStyle(AppTheme.mutedForeground)
-                                if let url = URL(string: "https://flocksurveillance.com") {
-                                    Link("flocksurveillance.com", destination: url)
+                                Button {
+                                    safariPresentation = SafariPresentation(url: AppLinks.deFlockMaps)
+                                } label: {
+                                    Text("DeFlock Maps")
                                         .font(.system(size: 14, weight: .semibold))
                                         .foregroundStyle(AppTheme.accent)
                                 }
+                                .buttonStyle(.plain)
+                                Link("flocksurveillance.com", destination: AppLinks.website)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(AppTheme.accent)
                             }
                         }
                     }
@@ -189,6 +196,7 @@ struct SettingsView: View {
                 }
             }
             .navigationBarHidden(true)
+            .safariSheet(item: $safariPresentation)
             .onChange(of: homeQuery) { _, value in
                 completer.query = value
             }

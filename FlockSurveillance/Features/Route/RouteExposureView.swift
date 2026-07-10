@@ -17,7 +17,6 @@ struct RouteExposureView: View {
     @State private var errorMessage: String?
     @State private var analysis: RouteExposureAnalysis?
     @State private var selectedOptionID: UUID?
-    @State private var shareText: String?
     @State private var shareItems: [Any] = []
     @State private var showShareSheet = false
     @State private var activeField: ActiveField = .destination
@@ -71,12 +70,6 @@ struct RouteExposureView: View {
             .fullScreenCover(isPresented: $showDriveMode) {
                 DriveModeView()
             }
-            .sheet(item: Binding(
-                get: { shareText.map { SharePayload(text: $0) } },
-                set: { shareText = $0?.text }
-            )) { payload in
-                ActivityView(items: [payload.text])
-            }
             .sheet(isPresented: $showShareSheet) {
                 ActivityView(items: shareItems)
             }
@@ -88,6 +81,11 @@ struct RouteExposureView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .flockSafestCommute)) { _ in
                 handlePendingCommuteIfNeeded()
+            }
+            .onChange(of: isRouting) { _, routing in
+                if !routing {
+                    handlePendingCommuteIfNeeded()
+                }
             }
             .onChange(of: originQuery) { _, value in
                 activeField = .origin
@@ -590,11 +588,14 @@ struct RouteExposureView: View {
 
     private func handlePendingCommuteIfNeeded() {
         guard let toHome = PendingIntentActions.commuteToHome else { return }
+        // Leave pending until the in-flight analyze finishes (onChange of isRouting retries).
+        guard !isRouting else { return }
         PendingIntentActions.commuteToHome = nil
         Task { await runCommute(toHome: toHome) }
     }
 
     private func runCommute(toHome: Bool) async {
+        guard !isRouting else { return }
         guard let home = WidgetBridge.homeCoordinate() else {
             commuteHint = "Set Home in Settings first."
             return
@@ -653,11 +654,6 @@ struct RouteExposureView: View {
         flocksurveillance.com
         """
     }
-}
-
-private struct SharePayload: Identifiable {
-    let id = UUID()
-    let text: String
 }
 
 private struct ActivityView: UIViewControllerRepresentable {

@@ -13,6 +13,10 @@ struct CityRankingsStrip: View {
                 .tracking(1.1)
                 .foregroundStyle(AppTheme.accent)
 
+            Text("From cameras on this device — not a national census.")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(Array(rankings.enumerated()), id: \.element.id) { index, city in

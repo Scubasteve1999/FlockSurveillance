@@ -5,11 +5,14 @@ struct OnboardingView: View {
     @Binding var hasSeenOnboarding: Bool
     @Environment(LocationManager.self) private var locationManager
     @Environment(CameraRepository.self) private var repository
+    @Environment(\.modelContext) private var modelContext
 
     @State private var page = 0
     @State private var didRequestLocation = false
     @State private var didEnableAlerts = false
     @State private var teaserScore: PlaceScore?
+    @State private var teaserIsSample = false
+    @State private var isLoadingTeaser = true
     /// Hold the shared engine so SwiftUI observes authorizationStatus changes.
     @State private var alertsEngine = AlertsEngine.shared
 
@@ -80,14 +83,28 @@ struct OnboardingView: View {
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
 
-            Text("A personal grade for where you are — no jargon, no signup.")
+            Text(teaserIsSample
+                 ? "Sample grade for Atlanta — enable location next for your block."
+                 : "A personal grade for where you are — no jargon, no signup.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
 
-            if let teaserScore {
+            if isLoadingTeaser, teaserScore == nil {
+                ProgressView()
+                    .tint(AppTheme.accent)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+            } else if let teaserScore {
                 VStack(alignment: .leading, spacing: 12) {
+                    if teaserIsSample {
+                        Text("ATLANTA PREVIEW")
+                            .font(.system(size: 10, weight: .bold))
+                            .tracking(0.8)
+                            .foregroundStyle(AppTheme.accent)
+                    }
+
                     Text(teaserScore.headline)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(AppTheme.foreground)
@@ -115,11 +132,6 @@ struct OnboardingView: View {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
                         .stroke(AppTheme.border, lineWidth: 1)
                 )
-            } else {
-                ProgressView()
-                    .tint(AppTheme.accent)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 40)
             }
 
             Text("Share a card. Tap once for the safest drive home. See which metros are most mapped.")
@@ -130,7 +142,7 @@ struct OnboardingView: View {
             Spacer()
         }
         .padding(.horizontal, 24)
-        .onAppear { refreshTeaserScore() }
+        .onAppear { prepareTeaser() }
         .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
             refreshTeaserScore()
         }
@@ -139,11 +151,36 @@ struct OnboardingView: View {
         }
     }
 
+    private func prepareTeaser() {
+        // Attach early so the teaser can read the local cache. Idempotent —
+        // Enter the map won't re-load. Seeding in the background is fine here
+        // because MapKit isn't on screen yet.
+        repository.attach(modelContext: modelContext)
+        locationManager.start()
+        isLoadingTeaser = true
+        refreshTeaserScore()
+        // If cache is still empty (first install), keep spinner briefly while seed starts.
+        if repository.cameras.isEmpty {
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                refreshTeaserScore()
+                isLoadingTeaser = false
+            }
+        } else {
+            isLoadingTeaser = false
+        }
+    }
+
     private func refreshTeaserScore() {
+        let hasPersonalLocation = locationManager.location != nil || WidgetBridge.homeCoordinate() != nil
         let coordinate = locationManager.location?.coordinate
             ?? WidgetBridge.homeCoordinate()
             ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        teaserIsSample = !hasPersonalLocation
         teaserScore = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
+        if !repository.cameras.isEmpty {
+            isLoadingTeaser = false
+        }
     }
 
     private var permissionsPage: some View {

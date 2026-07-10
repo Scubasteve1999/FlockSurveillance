@@ -32,6 +32,9 @@ enum ShareCardRenderer {
     private static func render<V: View>(_ view: V) -> UIImage? {
         let renderer = ImageRenderer(content: view)
         renderer.scale = 3
+        renderer.proposedSize = ProposedViewSize(width: 390, height: 520)
+        if let image = renderer.uiImage { return image }
+        // ImageRenderer can return nil on the first pass before layout settles.
         return renderer.uiImage
     }
 }

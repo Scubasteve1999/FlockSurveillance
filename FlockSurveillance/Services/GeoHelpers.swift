@@ -371,13 +371,15 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         \(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)
         Density: \(String(format: "%.1f", densityPerSquareMile)) per sq mi
         How watched is your life right now?
+        Approximate map link opens the same block.
         flocksurveillance.com
         """
     }
 
     var mapDeepLink: URL? {
+        // ~100 m precision — enough to open the same block without sharing exact GPS.
         URL(string: String(
-            format: "flocksurveillance://map?lat=%.5f&lon=%.5f",
+            format: "flocksurveillance://map?lat=%.3f&lon=%.3f",
             coordinate.latitude,
             coordinate.longitude
         ))

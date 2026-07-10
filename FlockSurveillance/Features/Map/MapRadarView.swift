@@ -27,12 +27,13 @@ struct MapRadarView: View {
     @State private var pulsePhase = false
     @State private var placeScore: PlaceScore?
     @State private var placeScoreRadius: CLLocationDistance = 1609.34
-    @State private var shareText: String?
     @State private var shareItems: [Any] = []
     @State private var showShareSheet = false
     @State private var isPlacingReport = false
     @State private var reportTarget: ReportTarget?
     @State private var cityRankings: [CityRanking] = []
+    /// Recompute Place Score for this coordinate after the next fetch settles.
+    @State private var pendingScoreCoordinate: CLLocationCoordinate2D?
     /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
     @State private var mapReady = false
 
@@ -92,7 +93,7 @@ struct MapRadarView: View {
                     }
                     if !cityRankings.isEmpty, shouldShowRankings {
                         CityRankingsStrip(rankings: cityRankings) { city in
-                            focusMap(on: city.coordinate)
+                            focusAndScore(coordinate: city.coordinate)
                         }
                             .padding(.horizontal, 16)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -158,6 +159,12 @@ struct MapRadarView: View {
         .onChange(of: repository.cameras.count) { _, _ in
             cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
             maybeAutoShowPlaceScore()
+            refreshPendingScoreIfNeeded()
+        }
+        .onChange(of: repository.isLoading) { _, loading in
+            if !loading {
+                refreshPendingScoreIfNeeded(clearPending: true)
+            }
         }
         .onChange(of: nearest?.meters) { _, meters in
             radar.update(userLocation: locationManager.location, nearestMeters: meters)
@@ -188,12 +195,6 @@ struct MapRadarView: View {
         .sheet(item: $selectedCluster) { cluster in
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
                 .presentationBackground(AppTheme.background)
-        }
-        .sheet(item: Binding(
-            get: { shareText.map { ShareTextPayload(text: $0) } },
-            set: { shareText = $0?.text }
-        )) { payload in
-            ActivityShareView(items: [payload.text])
         }
         .sheet(isPresented: $showShareSheet) {
             ActivityShareView(items: shareItems)
@@ -478,7 +479,8 @@ struct MapRadarView: View {
 
     private func maybeAutoShowPlaceScore() {
         guard !hasAutoShownPlaceScore, placeScore == nil else { return }
-        guard !repository.cameras.isEmpty || locationManager.location != nil else { return }
+        // Wait for local cache so we don't burn the one-shot on a false "Clear".
+        guard !repository.cameras.isEmpty else { return }
         hasAutoShownPlaceScore = true
         computePlaceScore()
     }
@@ -486,23 +488,35 @@ struct MapRadarView: View {
     private func applyPendingMapFocusIfNeeded() {
         guard let coordinate = PendingIntentActions.mapFocusCoordinate else { return }
         PendingIntentActions.mapFocusCoordinate = nil
-        focusMap(on: coordinate)
-        placeScoreRadius = 1609.34
-        withAnimation(.easeInOut(duration: 0.25)) {
-            placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
-        }
+        focusAndScore(coordinate: coordinate)
     }
 
-    private func focusMap(on coordinate: CLLocationCoordinate2D) {
+    private func focusAndScore(coordinate: CLLocationCoordinate2D) {
         let region = MKCoordinateRegion(
             center: coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
         )
+        pendingScoreCoordinate = coordinate
         withAnimation(.easeInOut(duration: 0.35)) {
             position = .region(region)
             visibleRegion = region
         }
-        placeScore = nil
+        placeScoreRadius = 1609.34
+        withAnimation(.easeInOut(duration: 0.25)) {
+            placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        }
+        repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func refreshPendingScoreIfNeeded(clearPending: Bool = false) {
+        guard let coordinate = pendingScoreCoordinate else { return }
+        withAnimation(.easeInOut(duration: 0.2)) {
+            placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        }
+        if clearPending {
+            pendingScoreCoordinate = nil
+        }
     }
 
     private func sharePlaceScore(_ score: PlaceScore) {
@@ -519,11 +533,6 @@ struct MapRadarView: View {
             ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
         }
     }
-}
-
-private struct ShareTextPayload: Identifiable {
-    let id = UUID()
-    let text: String
 }
 
 private struct ReportTarget: Identifiable {

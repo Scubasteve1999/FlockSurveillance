@@ -10,6 +10,7 @@
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
+		0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */; };
 		1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */; };
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
 		1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */; };
@@ -128,6 +129,7 @@
 		BAFBB64F66A54D0AB0341497 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BCCC130CE261175F0E1588FD /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentActionsTests.swift; sourceTree = "<group>"; };
 		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
 		D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeView.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
 				A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
+				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
 			);
 			path = FlockSurveillanceTests;
@@ -496,6 +499,7 @@
 				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
+				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -90,22 +90,23 @@ struct FlockSurveillanceApp: App {
         hasSeenOnboarding = true
         let host = url.host?.lowercased()
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
-        if let lat = items.first(where: { $0.name == "lat" })?.value.flatMap(Double.init),
-           let lon = items.first(where: { $0.name == "lon" || $0.name == "lng" })?.value.flatMap(Double.init) {
-            PendingIntentActions.mapFocusCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-            NotificationCenter.default.post(name: .flockMapFocus, object: nil)
-        }
-        if items.contains(where: { $0.name == "commute" && ($0.value == "home" || $0.value == "work") }) {
-            let toHome = items.first(where: { $0.name == "commute" })?.value == "home"
-            PendingIntentActions.commuteToHome = toHome
-            NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
-        }
+
         switch host {
         case "map", nil:
             selectedTab = 0
+            if let lat = items.first(where: { $0.name == "lat" })?.value.flatMap(Double.init),
+               let lon = items.first(where: { $0.name == "lon" || $0.name == "lng" })?.value.flatMap(Double.init) {
+                PendingIntentActions.mapFocusCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                NotificationCenter.default.post(name: .flockMapFocus, object: nil)
+            }
         case "route", "deflock":
             // Privacy routing lives on the Route tab (native MapKit, not DeFlock web).
             selectedTab = 1
+            if let commute = items.first(where: { $0.name == "commute" })?.value,
+               commute == "home" || commute == "work" {
+                PendingIntentActions.commuteToHome = commute == "home"
+                NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
+            }
         case "settings":
             selectedTab = 3
         default:

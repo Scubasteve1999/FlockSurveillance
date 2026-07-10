@@ -54,18 +54,22 @@ final class CameraRepository {
         }
     }
 
-    func fetch(for region: MKCoordinateRegion) async {
+    func fetch(for region: MKCoordinateRegion, collapseContinental: Bool = true) async {
         fetchGeneration += 1
         let generation = fetchGeneration
         isLoading = true
         lastError = nil
 
-        let tooLarge = GeoHelpers.isRegionTooLargeForFullFetch(region)
+        let tooLarge = collapseContinental && GeoHelpers.isRegionTooLargeForFullFetch(region)
         coverageHint = tooLarge
             ? "Zoom into a city to load more cameras — Overpass only serves metro-sized areas."
             : nil
 
-        let tiles = GeoHelpers.queryTiles(for: region)
+        let tiles = GeoHelpers.queryTiles(
+            for: region,
+            collapseContinental: collapseContinental,
+            maxTiles: collapseContinental ? GeoHelpers.maxTilesPerFetch : 24
+        )
 
         do {
             var combined: [ALPRCameraDTO] = []
@@ -207,6 +211,24 @@ final class CameraRepository {
 
     func clusters(for filter: CameraFilter, in region: MKCoordinateRegion) -> [CameraCluster] {
         GeoHelpers.clusters(for: filter, in: region, from: cameras)
+    }
+
+    /// Warm cache along each route corridor without collapsing long unions to a center tile.
+    func fetchCamerasAlong(routes: [MKRoute]) async -> [ALPRCamera] {
+        var seen = Set<String>()
+        var combined: [ALPRCamera] = []
+        for route in routes {
+            let region = GeoHelpers.region(for: route)
+            await fetch(for: region, collapseContinental: false)
+            for camera in cameras(in: region) where seen.insert(camera.id).inserted {
+                combined.append(camera)
+            }
+        }
+        return combined
+    }
+
+    func placeScore(near coordinate: CLLocationCoordinate2D, radiusMeters: CLLocationDistance = 1609.34) -> PlaceScore {
+        GeoHelpers.placeScore(cameras: cameras, near: coordinate, radiusMeters: radiusMeters)
     }
 
     var freshnessLabel: String? {

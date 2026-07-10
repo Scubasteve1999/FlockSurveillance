@@ -101,7 +101,13 @@ enum GeoHelpers {
     }
 
     /// Split a viewport into Overpass-safe tiles (≤ maxQuerySpanDegrees), capped at maxTilesPerFetch.
-    static func queryTiles(for region: MKCoordinateRegion) -> [MKCoordinateRegion] {
+    /// - Parameter collapseContinental: When true (map pan/zoom), huge regions sample only the center tile.
+    ///   When false (route analysis), keep tiling so long drives aren't under-fetched.
+    static func queryTiles(
+        for region: MKCoordinateRegion,
+        collapseContinental: Bool = true,
+        maxTiles: Int = maxTilesPerFetch
+    ) -> [MKCoordinateRegion] {
         let latSpan = max(region.span.latitudeDelta, 0.01)
         let lonSpan = max(region.span.longitudeDelta, 0.01)
 
@@ -109,7 +115,7 @@ enum GeoHelpers {
             return [region]
         }
 
-        if dominantSpan(region) > maxTileableSpanDegrees {
+        if collapseContinental, dominantSpan(region) > maxTileableSpanDegrees {
             // Continental / country zooms: only sample the viewport center metro tile.
             return [
                 MKCoordinateRegion(
@@ -122,8 +128,9 @@ enum GeoHelpers {
             ]
         }
 
-        let latTiles = min(3, max(1, Int(ceil(latSpan / maxQuerySpanDegrees))))
-        let lonTiles = min(3, max(1, Int(ceil(lonSpan / maxQuerySpanDegrees))))
+        let maxAxisTiles = collapseContinental ? 3 : 6
+        let latTiles = min(maxAxisTiles, max(1, Int(ceil(latSpan / maxQuerySpanDegrees))))
+        let lonTiles = min(maxAxisTiles, max(1, Int(ceil(lonSpan / maxQuerySpanDegrees))))
         let tileLat = latSpan / Double(latTiles)
         let tileLon = lonSpan / Double(lonTiles)
         let originLat = region.center.latitude - latSpan / 2
@@ -142,10 +149,106 @@ enum GeoHelpers {
                         span: MKCoordinateSpan(latitudeDelta: tileLat, longitudeDelta: tileLon)
                     )
                 )
-                if tiles.count >= maxTilesPerFetch { return tiles }
+                if tiles.count >= maxTiles { return tiles }
             }
         }
         return tiles
+    }
+
+    static func region(for route: MKRoute, padding: Double = 1.25) -> MKCoordinateRegion {
+        var region = MKCoordinateRegion(route.polyline.boundingMapRect)
+        region.span.latitudeDelta = max(region.span.latitudeDelta * padding, 0.02)
+        region.span.longitudeDelta = max(region.span.longitudeDelta * padding, 0.02)
+        return region
+    }
+
+    /// Bearing degrees (0–360) from OSM direction tags, if parseable.
+    static func directionDegrees(from raw: String?) -> Double? {
+        guard let raw = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else { return nil }
+        if let value = Double(raw) {
+            return (value.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
+        }
+        let cardinals: [String: Double] = [
+            "n": 0, "nne": 22.5, "ne": 45, "ene": 67.5,
+            "e": 90, "ese": 112.5, "se": 135, "sse": 157.5,
+            "s": 180, "ssw": 202.5, "sw": 225, "wsw": 247.5,
+            "w": 270, "wnw": 292.5, "nw": 315, "nnw": 337.5
+        ]
+        return cardinals[raw.lowercased()]
+    }
+
+    /// Wedge polygon for a camera FOV cone (bearing center, half-angle, radius meters).
+    static func fovPolygon(
+        center: CLLocationCoordinate2D,
+        bearingDegrees: Double,
+        halfAngleDegrees: Double = 35,
+        radiusMeters: CLLocationDistance = 90,
+        samples: Int = 12
+    ) -> [CLLocationCoordinate2D] {
+        var coords = [center]
+        let start = bearingDegrees - halfAngleDegrees
+        let end = bearingDegrees + halfAngleDegrees
+        for index in 0...samples {
+            let t = Double(index) / Double(samples)
+            let bearing = start + (end - start) * t
+            coords.append(destination(from: center, distanceMeters: radiusMeters, bearingDegrees: bearing))
+        }
+        coords.append(center)
+        return coords
+    }
+
+    static func destination(
+        from coordinate: CLLocationCoordinate2D,
+        distanceMeters: CLLocationDistance,
+        bearingDegrees: Double
+    ) -> CLLocationCoordinate2D {
+        let earthRadius = 6_371_000.0
+        let angular = distanceMeters / earthRadius
+        let bearing = bearingDegrees * .pi / 180
+        let lat1 = coordinate.latitude * .pi / 180
+        let lon1 = coordinate.longitude * .pi / 180
+        let lat2 = asin(sin(lat1) * cos(angular) + cos(lat1) * sin(angular) * cos(bearing))
+        let lon2 = lon1 + atan2(
+            sin(bearing) * sin(angular) * cos(lat1),
+            cos(angular) - sin(lat1) * sin(lat2)
+        )
+        return CLLocationCoordinate2D(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
+    }
+
+    static func placeScore(
+        cameras: [ALPRCamera],
+        near coordinate: CLLocationCoordinate2D,
+        radiusMeters: CLLocationDistance
+    ) -> PlaceScore {
+        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let nearby = cameras.filter { $0.location.distance(from: origin) <= radiusMeters }
+        let flock = nearby.filter(\.isFlock).count
+        let radiusMiles = radiusMeters / 1609.34
+        let areaSqMi = max(radiusMiles * radiusMiles * Double.pi, 0.01)
+        let perSqMi = Double(nearby.count) / areaSqMi
+        let grade: String
+        switch nearby.count {
+        case 0: grade = "Clear"
+        case 1...4: grade = "Light"
+        case 5...14: grade = "Watched"
+        case 15...29: grade = "Heavy"
+        default: grade = "Saturated"
+        }
+        let flockPercent: Int
+        if nearby.isEmpty {
+            flockPercent = 0
+        } else {
+            flockPercent = Int((Double(flock) / Double(nearby.count) * 100).rounded())
+        }
+        return PlaceScore(
+            coordinate: coordinate,
+            radiusMeters: radiusMeters,
+            cameraCount: nearby.count,
+            flockCount: flock,
+            flockPercent: flockPercent,
+            densityPerSquareMile: perSqMi,
+            grade: grade
+        )
     }
 
     /// Major US metros to warm the local cache so zoomed-out maps aren't a single-city island.
@@ -181,5 +284,44 @@ enum GeoHelpers {
             center: coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.28, longitudeDelta: 0.28)
         )
+    }
+}
+
+struct PlaceScore: Identifiable, Equatable, Hashable {
+    var id: String {
+        String(format: "%.4f:%.4f:%.0f:%d", coordinate.latitude, coordinate.longitude, radiusMeters, cameraCount)
+    }
+
+    let coordinate: CLLocationCoordinate2D
+    let radiusMeters: CLLocationDistance
+    let cameraCount: Int
+    let flockCount: Int
+    let flockPercent: Int
+    let densityPerSquareMile: Double
+    let grade: String
+
+    var radiusMilesLabel: String {
+        let miles = radiusMeters / 1609.34
+        if miles < 1.05 { return "1 mi" }
+        return String(format: "%.0f mi", miles)
+    }
+
+    var shareText: String {
+        """
+        Flock Surveillance — Place Score
+        Grade: \(grade)
+        ALPRs within \(radiusMilesLabel): \(cameraCount) (\(flockCount) Flock · \(flockPercent)%)
+        Density: \(String(format: "%.1f", densityPerSquareMile)) per sq mi
+        How watched is your life right now?
+        flocksurveillance.com
+        """
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: PlaceScore, rhs: PlaceScore) -> Bool {
+        lhs.id == rhs.id
     }
 }

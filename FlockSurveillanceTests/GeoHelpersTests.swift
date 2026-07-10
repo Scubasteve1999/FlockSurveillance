@@ -68,4 +68,49 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertGreaterThan(tiles.count, 1)
         XCTAssertLessThanOrEqual(tiles.count, GeoHelpers.maxTilesPerFetch)
     }
+
+    func testLongRouteRegionDoesNotCollapseWhenDisabled() {
+        let longDrive = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 34.0, longitude: -118.5),
+            span: MKCoordinateSpan(latitudeDelta: 3.5, longitudeDelta: 3.5)
+        )
+        let collapsed = GeoHelpers.queryTiles(for: longDrive, collapseContinental: true)
+        let expanded = GeoHelpers.queryTiles(for: longDrive, collapseContinental: false, maxTiles: 24)
+        XCTAssertEqual(collapsed.count, 1)
+        XCTAssertGreaterThan(expanded.count, 1)
+        XCTAssertLessThanOrEqual(expanded.count, 24)
+    }
+
+    func testDirectionDegreesParsesCardinalsAndNumbers() {
+        XCTAssertEqual(GeoHelpers.directionDegrees(from: "90"), 90)
+        XCTAssertEqual(GeoHelpers.directionDegrees(from: "NE"), 45)
+        XCTAssertEqual(GeoHelpers.directionDegrees(from: "s"), 180)
+        XCTAssertNil(GeoHelpers.directionDegrees(from: nil))
+        XCTAssertNil(GeoHelpers.directionDegrees(from: "unknown"))
+    }
+
+    func testFOVPolygonStartsAndEndsAtCamera() {
+        let center = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let polygon = GeoHelpers.fovPolygon(center: center, bearingDegrees: 90)
+        XCTAssertGreaterThan(polygon.count, 3)
+        XCTAssertEqual(polygon.first?.latitude ?? 0, center.latitude, accuracy: 0.00001)
+        XCTAssertEqual(polygon.last?.latitude ?? 0, center.latitude, accuracy: 0.00001)
+    }
+
+    func testPlaceScoreGradesDensity() {
+        let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let cameras = (0..<8).map { index in
+            ALPRCamera(
+                id: "c\(index)",
+                latitude: 33.75 + Double(index) * 0.001,
+                longitude: -84.39,
+                manufacturer: index.isMultiple(of: 2) ? "Flock Safety" : "Other"
+            )
+        }
+        let score = GeoHelpers.placeScore(cameras: cameras, near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(score.grade, "Watched")
+        XCTAssertEqual(score.cameraCount, 8)
+        XCTAssertEqual(score.flockPercent, 50)
+        XCTAssertTrue(score.shareText.contains("Place Score"))
+    }
 }

@@ -14,11 +14,15 @@
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
+		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
 		45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAFBB64F66A54D0AB0341497 /* Assets.xcassets */; };
+		466405D7B1B3A7FEB9AA0911 /* NearbyCamerasWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE7601E92A7F1F36F2ACA42 /* NearbyCamerasWidgetBundle.swift */; };
 		497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45829E80D0617450FB748525 /* RouteExposureTests.swift */; };
 		498357A2C1FCB27578F991E3 /* RouteExposureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */; };
+		52E36171496623748B17B062 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */; };
+		78D3ED0E79E02A4762E4B55C /* DriveLiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */; };
 		7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083E635F68719ECA057C617B /* RouteExposureView.swift */; };
 		7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637361494637A5B0C42496C5 /* OverpassParserTests.swift */; };
 		87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AA373662BC417002454737 /* ProximityRadar.swift */; };
@@ -26,13 +30,17 @@
 		90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */; };
 		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
 		AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */; };
+		B22450893821AAC205D17413 /* DriveLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6307ACB080E1B65CDAB1DF /* DriveLiveActivityWidget.swift */; };
 		B3092670D2ABF81DE8B2ABB5 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B0B4143401454EFDFBD3EA /* AppTheme.swift */; };
 		B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */; };
 		B673CA4757FB5EE3CABC7397 /* CameraDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */; };
+		CFE3323B5D6F07320A658E8A /* DriveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012CEF579CDF48C3BF98B22 /* DriveSession.swift */; };
 		D5878449871C0315AF107378 /* LearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AF090DDE7F0ADE1448325 /* LearnView.swift */; };
 		E2F73E9EB82B38D978BF5D18 /* MapRadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80049F39BDDD220E4F7AC048 /* MapRadarView.swift */; };
 		E38C4EF05F3E19AFD9D025A1 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA709B0872A9F478764A4CA /* LocationManager.swift */; };
 		ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */; };
+		F67177DA7F2B4400E75DDE7B /* DriveModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */; };
+		F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */; };
 		FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC739360F96B00B18FF118D /* GeoHelpers.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,14 +78,17 @@
 /* Begin PBXFileReference section */
 		06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDetailSheet.swift; sourceTree = "<group>"; };
 		083E635F68719ECA057C617B /* RouteExposureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureView.swift; sourceTree = "<group>"; };
+		11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceScoreCard.swift; sourceTree = "<group>"; };
 		12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockSurveillanceApp.swift; sourceTree = "<group>"; };
 		1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureService.swift; sourceTree = "<group>"; };
 		2B68A447A228714091E0BCF1 /* FlockSurveillanceTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlockSurveillanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DA709B0872A9F478764A4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NearbyCamerasWidget.entitlements; sourceTree = "<group>"; };
+		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
 		4D4AF090DDE7F0ADE1448325 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
 		593E4E84A26593904B0FAE3A /* FlockSurveillance.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlockSurveillance.entitlements; sourceTree = "<group>"; };
+		5CE7601E92A7F1F36F2ACA42 /* NearbyCamerasWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidgetBundle.swift; sourceTree = "<group>"; };
 		5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		637361494637A5B0C42496C5 /* OverpassParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassParserTests.swift; sourceTree = "<group>"; };
 		6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRepository.swift; sourceTree = "<group>"; };
@@ -90,12 +101,16 @@
 		ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassClient.swift; sourceTree = "<group>"; };
 		B071FF59632161F16D40277C /* CameraAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAnnotationView.swift; sourceTree = "<group>"; };
 		B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveActivityAttributes.swift; sourceTree = "<group>"; };
 		BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		BAFBB64F66A54D0AB0341497 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BCCC130CE261175F0E1588FD /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
+		D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeView.swift; sourceTree = "<group>"; };
 		D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidget.swift; sourceTree = "<group>"; };
+		EE6307ACB080E1B65CDAB1DF /* DriveLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityWidget.swift; sourceTree = "<group>"; };
 		EF94A8C60991DECD85C56617 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,6 +120,7 @@
 		001E8A1BFF530D54A3010F84 /* Route */ = {
 			isa = PBXGroup;
 			children = (
+				D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */,
 				083E635F68719ECA057C617B /* RouteExposureView.swift */,
 			);
 			path = Route;
@@ -173,8 +189,10 @@
 		4282805050D872B940F606A4 /* NearbyCamerasWidget */ = {
 			isa = PBXGroup;
 			children = (
+				EE6307ACB080E1B65CDAB1DF /* DriveLiveActivityWidget.swift */,
 				30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */,
 				D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */,
+				5CE7601E92A7F1F36F2ACA42 /* NearbyCamerasWidgetBundle.swift */,
 			);
 			path = NearbyCamerasWidget;
 			sourceTree = "<group>";
@@ -208,6 +226,8 @@
 			children = (
 				C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */,
 				6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */,
+				CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */,
+				4012CEF579CDF48C3BF98B22 /* DriveSession.swift */,
 				6AC739360F96B00B18FF118D /* GeoHelpers.swift */,
 				2DA709B0872A9F478764A4CA /* LocationManager.swift */,
 				ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */,
@@ -237,8 +257,17 @@
 				2B1D0B10AC5ED55A5844E990 /* FlockSurveillance */,
 				0B1D16367074D3BA3423FA49 /* FlockSurveillanceTests */,
 				4282805050D872B940F606A4 /* NearbyCamerasWidget */,
+				D1FD6B99158084B1D420AE07 /* Shared */,
 				4224528057CA9301A097BC3E /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		D1FD6B99158084B1D420AE07 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		E163E36B1DA9F6A7A5D35874 /* Map */ = {
@@ -247,6 +276,7 @@
 				B071FF59632161F16D40277C /* CameraAnnotationView.swift */,
 				06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */,
 				80049F39BDDD220E4F7AC048 /* MapRadarView.swift */,
+				11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -376,6 +406,10 @@
 				3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */,
 				B673CA4757FB5EE3CABC7397 /* CameraDetailSheet.swift in Sources */,
 				332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */,
+				52E36171496623748B17B062 /* DriveActivityAttributes.swift in Sources */,
+				78D3ED0E79E02A4762E4B55C /* DriveLiveActivityController.swift in Sources */,
+				F67177DA7F2B4400E75DDE7B /* DriveModeView.swift in Sources */,
+				CFE3323B5D6F07320A658E8A /* DriveSession.swift in Sources */,
 				2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */,
 				FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */,
 				D5878449871C0315AF107378 /* LearnView.swift in Sources */,
@@ -384,6 +418,7 @@
 				8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */,
 				08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */,
 				5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */,
+				F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */,
 				87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */,
 				11CCD893F336E16104455165 /* RootTabView.swift in Sources */,
 				498357A2C1FCB27578F991E3 /* RouteExposureService.swift in Sources */,
@@ -407,7 +442,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */,
+				B22450893821AAC205D17413 /* DriveLiveActivityWidget.swift in Sources */,
 				1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */,
+				466405D7B1B3A7FEB9AA0911 /* NearbyCamerasWidgetBundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,7 +518,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -498,7 +536,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -600,7 +638,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -624,7 +662,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

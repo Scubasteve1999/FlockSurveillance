@@ -4,6 +4,7 @@ import SwiftUI
 struct RouteExposureView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(LocationManager.self) private var locationManager
+    @Environment(DriveSession.self) private var driveSession
 
     @State private var originQuery = ""
     @State private var destinationQuery = ""
@@ -19,6 +20,7 @@ struct RouteExposureView: View {
     @State private var shareText: String?
     @State private var activeField: ActiveField = .destination
     @State private var mapPosition: MapCameraPosition = .automatic
+    @State private var showDriveMode = false
 
     private enum ActiveField {
         case origin, destination
@@ -61,6 +63,9 @@ struct RouteExposureView: View {
                         .padding(20)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
+            }
+            .fullScreenCover(isPresented: $showDriveMode) {
+                DriveModeView()
             }
             .sheet(item: Binding(
                 get: { shareText.map { SharePayload(text: $0) } },
@@ -269,6 +274,20 @@ struct RouteExposureView: View {
                 }
 
                 Button {
+                    driveSession.start(from: result)
+                    showDriveMode = true
+                } label: {
+                    Label("Start Drive", systemImage: "car.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .foregroundStyle(AppTheme.background)
+                        .background(AppTheme.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+                Button {
                     shareText = shareReport(result)
                 } label: {
                     Label("Share drive report", systemImage: "square.and.arrow.up")
@@ -467,9 +486,9 @@ struct RouteExposureView: View {
 
         do {
             let routes = try await RouteExposureService.directions(from: origin, to: destination)
-            let region = regionCovering(routes: routes)
-            await repository.fetch(for: region)
-            let candidates = repository.cameras(in: region)
+            // Fetch each route corridor separately so long alternate unions aren't collapsed
+            // to a single center Overpass tile.
+            let candidates = await repository.fetchCamerasAlong(routes: routes)
             let scored = RouteExposureService.analyze(routes: routes, cameras: candidates)
             withAnimation(.easeInOut(duration: 0.25)) {
                 analysis = scored
@@ -497,17 +516,6 @@ struct RouteExposureView: View {
         request.naturalLanguageQuery = query
         let search = MKLocalSearch(request: request)
         return try? await search.start().mapItems.first?.placemark.coordinate
-    }
-
-    private func regionCovering(routes: [MKRoute]) -> MKCoordinateRegion {
-        var rect = routes.first?.polyline.boundingMapRect ?? .null
-        for route in routes.dropFirst() {
-            rect = rect.union(route.polyline.boundingMapRect)
-        }
-        var region = MKCoordinateRegion(rect)
-        region.span.latitudeDelta *= 1.3
-        region.span.longitudeDelta *= 1.3
-        return region
     }
 
     private func shareReport(_ result: RouteExposureResult) -> String {

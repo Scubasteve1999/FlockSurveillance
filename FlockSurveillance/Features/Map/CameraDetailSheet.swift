@@ -40,6 +40,13 @@ struct CameraDetailSheet: View {
                                 detailRow("Operator", camera.operatorName ?? "Not tagged")
                                 detailRow("Direction", camera.direction ?? "Not tagged")
 
+                                if let degrees = GeoHelpers.directionDegrees(from: camera.direction) {
+                                    FOVConePreview(
+                                        bearingDegrees: degrees,
+                                        isFlock: camera.isFlock
+                                    )
+                                }
+
                                 if let userLocation {
                                     let meters = camera.location.distance(from: userLocation)
                                     detailRow("Distance", ProximityRadar.formatDistance(meters))
@@ -136,5 +143,62 @@ struct CameraDetailSheet: View {
         default:
             return false
         }
+    }
+}
+
+private struct FOVConePreview: View {
+    let bearingDegrees: Double
+    let isFlock: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("FIELD OF VIEW")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(0.8)
+                .foregroundStyle(AppTheme.mutedForeground)
+
+            ZStack {
+                Circle()
+                    .stroke(AppTheme.border, lineWidth: 1)
+                    .frame(width: 96, height: 96)
+
+                FOVWedge(bearingDegrees: bearingDegrees)
+                    .fill((isFlock ? AppTheme.flockMarker : AppTheme.otherMarker).opacity(0.45))
+                    .frame(width: 96, height: 96)
+
+                Circle()
+                    .fill(isFlock ? AppTheme.flockMarker : AppTheme.otherMarker)
+                    .frame(width: 10, height: 10)
+
+                Text(String(format: "%.0f°", bearingDegrees))
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(AppTheme.foreground)
+                    .offset(y: 42)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+
+            Text("From OSM camera:direction / direction. Approximate facing wedge.")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+        }
+    }
+}
+
+private struct FOVWedge: Shape {
+    let bearingDegrees: Double
+    var halfAngleDegrees: Double = 35
+
+    func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2
+        // Screen coords: 0° = up (north), clockwise like map bearings.
+        let start = Angle(degrees: bearingDegrees - halfAngleDegrees - 90)
+        let end = Angle(degrees: bearingDegrees + halfAngleDegrees - 90)
+        var path = Path()
+        path.move(to: center)
+        path.addArc(center: center, radius: radius, startAngle: start, endAngle: end, clockwise: false)
+        path.closeSubpath()
+        return path
     }
 }

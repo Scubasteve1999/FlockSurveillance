@@ -1,5 +1,6 @@
 import MapKit
 import SwiftUI
+import UIKit
 
 struct MapRadarView: View {
     @Environment(CameraRepository.self) private var repository
@@ -16,6 +17,9 @@ struct MapRadarView: View {
     @State private var selectedCluster: CameraCluster?
     @State private var showHeat = AppPreferences.showHeatDefault
     @State private var pulsePhase = false
+    @State private var placeScore: PlaceScore?
+    @State private var placeScoreRadius: CLLocationDistance = 1609.34
+    @State private var shareText: String?
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -56,6 +60,20 @@ struct MapRadarView: View {
                     }
                 }
 
+                ForEach(fovCameras) { camera in
+                    if let degrees = GeoHelpers.directionDegrees(from: camera.direction) {
+                        MapPolygon(
+                            coordinates: GeoHelpers.fovPolygon(
+                                center: camera.coordinate,
+                                bearingDegrees: degrees
+                            )
+                        )
+                        .foregroundStyle(
+                            (camera.isFlock ? AppTheme.flockMarker : AppTheme.otherMarker).opacity(0.22)
+                        )
+                    }
+                }
+
                 ForEach(clusters) { cluster in
                     Annotation("", coordinate: cluster.coordinate, anchor: .center) {
                         Button {
@@ -85,6 +103,20 @@ struct MapRadarView: View {
                     LocationDeniedBanner()
                 }
                 Spacer()
+                if let placeScore {
+                    PlaceScoreCard(
+                        score: placeScore,
+                        selectedRadiusMeters: placeScoreRadius,
+                        onSelectRadius: { meters in
+                            placeScoreRadius = meters
+                            computePlaceScore()
+                        },
+                        onShare: { shareText = placeScore.shareText },
+                        onClose: { self.placeScore = nil }
+                    )
+                    .padding(.horizontal, 16)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
                 RadarHUD(
                     visibleCount: camerasInView.count,
                     nearestMeters: nearest?.meters,
@@ -132,6 +164,19 @@ struct MapRadarView: View {
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
                 .presentationBackground(AppTheme.background)
         }
+        .sheet(item: Binding(
+            get: { shareText.map { ShareTextPayload(text: $0) } },
+            set: { shareText = $0?.text }
+        )) { payload in
+            ActivityShareView(items: [payload.text])
+        }
+    }
+
+    private var fovCameras: [ALPRCamera] {
+        camerasInView
+            .filter { GeoHelpers.directionDegrees(from: $0.direction) != nil }
+            .prefix(40)
+            .map { $0 }
     }
 
     private var brandHeader: some View {
@@ -146,6 +191,19 @@ struct MapRadarView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
             }
             Spacer()
+            Button {
+                computePlaceScore()
+            } label: {
+                Image(systemName: "gauge.with.dots.needle.67percent")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(placeScore == nil ? AppTheme.accent : AppTheme.primary)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.card.opacity(0.92))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+            }
+            .accessibilityLabel("Place score")
+
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     showHeat.toggle()
@@ -254,4 +312,31 @@ struct MapRadarView: View {
         default: return 200
         }
     }
+
+    private func computePlaceScore() {
+        // Prefer current location, then viewport center, then Home, then Atlanta fallback.
+        let scoreCoordinate = locationManager.location?.coordinate
+            ?? visibleRegion?.center
+            ?? WidgetBridge.homeCoordinate()
+            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        withAnimation(.easeInOut(duration: 0.25)) {
+            placeScore = repository.placeScore(near: scoreCoordinate, radiusMeters: placeScoreRadius)
+        }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+}
+
+private struct ShareTextPayload: Identifiable {
+    let id = UUID()
+    let text: String
+}
+
+private struct ActivityShareView: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

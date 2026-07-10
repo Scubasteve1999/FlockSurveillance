@@ -6,6 +6,7 @@ struct FlockSurveillanceApp: App {
     @State private var repository = CameraRepository()
     @State private var locationManager = LocationManager()
     @State private var radar = ProximityRadar()
+    @State private var driveSession = DriveSession()
     @State private var selectedTab = 0
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
@@ -33,6 +34,7 @@ struct FlockSurveillanceApp: App {
             .environment(repository)
             .environment(locationManager)
             .environment(radar)
+            .environment(driveSession)
             .preferredColorScheme(.dark)
             .onAppear {
                 repository.attach(modelContext: modelContainer.mainContext)

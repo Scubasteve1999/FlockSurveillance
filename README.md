@@ -4,11 +4,14 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.1)
+## Features (v1.2)
 
 - **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, coverage heat, freshness label, optional approach haptics
 - **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
-- **Route Exposure** — MapKit driving directions, ~75 m corridor, auto-fit map, along-route distances, shareable drive report
+- **Place Score** — one-tap watchedness grade for your location / viewport, with share card
+- **Camera FOV cones** — short map wedges + detail preview when OSM `camera:direction` / `direction` is tagged
+- **Route Exposure** — MapKit driving directions + alternates, per-route camera fetch (no under-fetch on long drives), shareable drive report
+- **Drive Mode** — Start Drive HUD with next ALPR distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
 - **Camera Intel 2.0** — OSM tags, copy coords, OpenStreetMap deep link, distance from you
 - **Settings** — haptics/heat/filter defaults, Set Home for widget, clear cache
 - **Learn** — short explainers + links to EFF, OSM tagging, DeFlock

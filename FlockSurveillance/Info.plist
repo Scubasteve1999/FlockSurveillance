@@ -37,6 +37,8 @@
 	<string>Flock Surveillance uses your location to show nearby ALPR cameras.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

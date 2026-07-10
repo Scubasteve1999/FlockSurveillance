@@ -108,7 +108,6 @@ struct NearbyCamerasWidgetView: View {
     }
 }
 
-@main
 struct NearbyCamerasWidget: Widget {
     let kind = "NearbyCamerasWidget"
 

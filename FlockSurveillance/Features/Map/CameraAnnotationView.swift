@@ -1,5 +1,6 @@
 import CoreLocation
 import SwiftUI
+import UIKit
 
 struct CameraAnnotationView: View {
     let count: Int
@@ -36,66 +37,111 @@ struct RadarHUD: View {
     let nearestMeters: CLLocationDistance?
     let nearestLabel: String?
     let densityLabel: String
-    let isLoading: Bool
-    let errorMessage: String?
+    let confidence: CoverageConfidence
     let coverageHint: String?
-    let freshnessLabel: String?
+    let errorMessage: String?
     let watchModeEnabled: Bool
     let onToggleWatch: () -> Void
 
+    @State private var ringProgress: CGFloat = 0
+
+    private var densityColor: Color {
+        AppTheme.densityColor(count: visibleCount)
+    }
+
+    private var targetRing: CGFloat {
+        switch visibleCount {
+        case 0: return 0.08
+        case 1...4: return 0.32
+        case 5...14: return 0.62
+        default: return 0.92
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 16) {
+                ZStack {
+                    Circle()
+                        .stroke(AppTheme.border, lineWidth: 8)
+                        .frame(width: 88, height: 88)
+
+                    Circle()
+                        .trim(from: 0, to: ringProgress)
+                        .stroke(
+                            densityColor,
+                            style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                        )
+                        .frame(width: 88, height: 88)
+                        .rotationEffect(.degrees(-90))
+
+                    if watchModeEnabled {
+                        Circle()
+                            .stroke(AppTheme.primary.opacity(0.55), lineWidth: 2)
+                            .frame(width: 102, height: 102)
+                            .opacity(0.9)
+                    }
+
+                    VStack(spacing: 0) {
+                        Text("\(visibleCount)")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundStyle(AppTheme.foreground)
+                            .contentTransition(.numericText())
+                        Text(watchModeEnabled ? "LIVE" : "VIEW")
+                            .font(.system(size: 9, weight: .bold))
+                            .tracking(0.8)
+                            .foregroundStyle(watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(visibleCount) cameras in view, \(densityLabel) density")
+
+                VStack(alignment: .leading, spacing: 8) {
                     Text(watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR")
                         .font(.system(size: 10, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
-                    Text("\(visibleCount)")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(AppTheme.foreground)
-                        .contentTransition(.numericText())
-                    Text("cameras in view")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(AppTheme.mutedForeground)
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 6) {
-                    StatusBadge(text: densityLabel, color: AppTheme.densityColor(count: visibleCount))
+
+                    StatusBadge(text: densityLabel, color: densityColor)
+
                     if let nearestMeters {
-                        Text("Nearest \(ProximityRadar.formatDistance(nearestMeters))")
-                            .font(.system(size: 12, weight: .semibold))
+                        Text("Lock \(ProximityRadar.formatDistance(nearestMeters))")
+                            .font(.system(size: 15, weight: .bold))
                             .foregroundStyle(AppTheme.accent)
+                        if let nearestLabel {
+                            Text(nearestLabel)
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(AppTheme.mutedForeground)
+                                .lineLimit(1)
+                        }
                     } else {
-                        Text("No nearby hit")
-                            .font(.system(size: 12, weight: .medium))
+                        Text("No nearby lock")
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(AppTheme.mutedForeground)
-                    }
-                    if let nearestLabel {
-                        Text(nearestLabel)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(AppTheme.mutedForeground)
-                            .lineLimit(1)
                     }
                 }
+
+                Spacer(minLength: 0)
+
+                Button(action: onToggleWatch) {
+                    Text(watchModeEnabled ? "Watching" : "Watch")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(watchModeEnabled ? AppTheme.primary : AppTheme.card)
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: watchModeEnabled ? 0 : 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(watchModeEnabled ? "Disable watch mode" : "Enable watch mode")
             }
 
-            if watchModeEnabled, let nearestMeters {
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(AppTheme.primary)
-                        .frame(width: 8, height: 8)
-                        .opacity(0.9)
-                    Text("Watching · \(ProximityRadar.formatDistance(nearestMeters)) to nearest camera")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(AppTheme.foreground)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(AppTheme.primary.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
+            Text(confidence.instrumentLine)
+                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
 
             if let coverageHint {
                 Text(coverageHint)
@@ -104,44 +150,19 @@ struct RadarHUD: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            HStack(spacing: 8) {
-                DataSourcePill()
-                Spacer()
-                Button(action: onToggleWatch) {
-                    Text(watchModeEnabled ? "Watching" : "Watch")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(watchModeEnabled ? AppTheme.primary : AppTheme.card)
-                        .clipShape(Capsule())
-                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: watchModeEnabled ? 0 : 1))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(watchModeEnabled ? "Disable watch mode" : "Enable watch mode")
-
-                if isLoading {
-                    ProgressView()
-                        .tint(AppTheme.accent)
-                        .scaleEffect(0.8)
-                }
-            }
-
-            Text("Lower-camera drives live on the Route tab.")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(AppTheme.mutedForeground)
-
-            if let freshnessLabel {
-                Text(freshnessLabel)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(AppTheme.mutedForeground)
-            }
-
             if let errorMessage {
                 Text(errorMessage)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.primary)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack {
+                DataSourcePill()
+                Spacer()
+                Text("Lower-camera drives on Route")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
             }
         }
         .padding(14)
@@ -150,6 +171,21 @@ struct RadarHUD: View {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
                 .stroke(AppTheme.border, lineWidth: 1)
         )
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.7)) {
+                ringProgress = targetRing
+            }
+        }
+        .onChange(of: visibleCount) { _, _ in
+            withAnimation(.easeInOut(duration: 0.45)) {
+                ringProgress = targetRing
+            }
+        }
+        .onChange(of: watchModeEnabled) { _, enabled in
+            if enabled {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            }
+        }
     }
 }
 

@@ -15,6 +15,8 @@ final class ALPRCamera {
     var fetchedAt: Date
     /// Soft-hidden after a confirmed removal report (device-local).
     var isHidden: Bool = false
+    /// Soft-absent after a successful covering fetch no longer returned this OSM id.
+    var isAbsentFromOSM: Bool = false
 
     init(
         id: String,
@@ -26,7 +28,8 @@ final class ALPRCamera {
         cameraName: String? = nil,
         tagsJSON: String = "{}",
         fetchedAt: Date = .now,
-        isHidden: Bool = false
+        isHidden: Bool = false,
+        isAbsentFromOSM: Bool = false
     ) {
         self.id = id
         self.latitude = latitude
@@ -38,6 +41,7 @@ final class ALPRCamera {
         self.tagsJSON = tagsJSON
         self.fetchedAt = fetchedAt
         self.isHidden = isHidden
+        self.isAbsentFromOSM = isAbsentFromOSM
     }
 
     var coordinate: CLLocationCoordinate2D {

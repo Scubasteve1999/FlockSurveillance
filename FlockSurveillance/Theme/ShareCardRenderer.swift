@@ -58,23 +58,30 @@ private struct PlaceScoreShareCard: View {
                 endPoint: .bottomTrailing
             )
 
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 18) {
                 Text("FLOCK SURVEILLANCE")
                     .font(.system(size: 13, weight: .bold))
                     .tracking(1.4)
                     .foregroundStyle(Color(red: 0.95, green: 0.42, blue: 0.28))
 
                 Text(score.headline)
-                    .font(.system(size: 32, weight: .bold))
+                    .font(.system(size: 26, weight: .bold))
                     .foregroundStyle(.white)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text(score.grade.uppercased())
-                    .font(.system(size: 48, weight: .black))
-                    .foregroundStyle(Color(red: 0.95, green: 0.42, blue: 0.28))
+                HStack {
+                    Spacer()
+                    WatchednessDial(
+                        grade: score.grade,
+                        cameraCount: score.cameraCount,
+                        size: 180,
+                        animate: false
+                    )
+                    Spacer()
+                }
+                .padding(.vertical, 8)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    row("Cameras", score.cameraCountLabel)
                     row("Within", score.radiusMilesLabel)
                     row("Flock share", "\(score.flockPercent)%")
                     row("Density", String(format: "%.1f / sq mi", score.densityPerSquareMile))

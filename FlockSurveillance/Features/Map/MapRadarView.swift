@@ -63,6 +63,24 @@ struct MapRadarView: View {
         return repository.nearest(to: coordinate, filter: filter)
     }
 
+    private var coverageConfidence: CoverageConfidence {
+        let hasViewportFetch: Bool = {
+            guard let visible = visibleRegion,
+                  let fetched = repository.lastFetchedRegion
+            else { return false }
+            return GeoHelpers.region(fetched, contains: visible.center)
+        }()
+        return CoverageConfidence.make(
+            visibleCameras: camerasInView,
+            isLoading: repository.isLoading,
+            isSeeding: repository.isSeeding,
+            isServingStale: repository.isServingStale,
+            lastError: repository.lastError,
+            lastSuccessfulFetchAt: repository.lastSuccessfulFetchAt,
+            hasViewportFetch: hasViewportFetch
+        )
+    }
+
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .top) {
@@ -121,10 +139,9 @@ struct MapRadarView: View {
                         nearestMeters: nearest?.meters,
                         nearestLabel: nearest.map { $0.camera.displayManufacturer },
                         densityLabel: AppTheme.densityLabel(count: camerasInView.count),
-                        isLoading: repository.isLoading || repository.isSeeding,
-                        errorMessage: repository.lastError,
+                        confidence: coverageConfidence,
                         coverageHint: repository.coverageHint,
-                        freshnessLabel: repository.freshnessLabel,
+                        errorMessage: repository.lastError,
                         watchModeEnabled: radar.watchModeEnabled,
                         onToggleWatch: toggleWatchMode
                     )
@@ -357,7 +374,7 @@ struct MapRadarView: View {
     }
 
     private var brandHeader: some View {
-        HStack {
+        HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("FLOCK SURVEILLANCE")
                     .font(.system(size: 13, weight: .bold))
@@ -367,81 +384,74 @@ struct MapRadarView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
-            Spacer()
-            Button {
-                showARCameraSight = true
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            } label: {
-                Image(systemName: "viewfinder")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
-            }
-            .accessibilityLabel("AR Camera Sight")
-
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    isPlacingReport.toggle()
+            Spacer(minLength: 8)
+            HStack(spacing: 0) {
+                headerRailButton(
+                    systemName: "viewfinder",
+                    tint: AppTheme.accent,
+                    label: "AR Camera Sight"
+                ) {
+                    showARCameraSight = true
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            } label: {
-                Image(systemName: "flag.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(isPlacingReport ? AppTheme.primary : AppTheme.accent)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
-            }
-            .accessibilityLabel("Report a camera")
-
-            Button {
-                computePlaceScore()
-            } label: {
-                Image(systemName: "gauge.with.dots.needle.67percent")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(placeScore == nil ? AppTheme.accent : AppTheme.primary)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
-            }
-            .accessibilityLabel("Place score")
-
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    showHeat.toggle()
+                headerRailButton(
+                    systemName: "flag.fill",
+                    tint: isPlacingReport ? AppTheme.primary : AppTheme.accent,
+                    label: "Report a camera"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        isPlacingReport.toggle()
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
-            } label: {
-                Image(systemName: showHeat ? "circle.hexagongrid.fill" : "circle.hexagongrid")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(showHeat ? AppTheme.accent : AppTheme.mutedForeground)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
-            }
-            .accessibilityLabel(showHeat ? "Hide coverage heat" : "Show coverage heat")
-
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    position = .userLocation(fallback: .automatic)
+                headerRailButton(
+                    systemName: "gauge.with.dots.needle.67percent",
+                    tint: placeScore == nil ? AppTheme.accent : AppTheme.primary,
+                    label: "Place score"
+                ) {
+                    computePlaceScore()
                 }
-            } label: {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+                headerRailButton(
+                    systemName: showHeat ? "circle.hexagongrid.fill" : "circle.hexagongrid",
+                    tint: showHeat ? AppTheme.accent : AppTheme.mutedForeground,
+                    label: showHeat ? "Hide coverage heat" : "Show coverage heat"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        showHeat.toggle()
+                    }
+                }
+                headerRailButton(
+                    systemName: "location.fill",
+                    tint: AppTheme.accent,
+                    label: "Center on my location"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        position = .userLocation(fallback: .automatic)
+                    }
+                }
             }
-            .accessibilityLabel("Center on my location")
+            .padding(3)
+            .background(AppTheme.card.opacity(0.92))
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(AppTheme.border, lineWidth: 1))
         }
         .padding(.horizontal, 16)
+    }
+
+    private func headerRailButton(
+        systemName: String,
+        tint: Color,
+        label: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 
     private var filterBar: some View {

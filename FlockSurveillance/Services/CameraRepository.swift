@@ -50,7 +50,7 @@ final class CameraRepository {
         // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         cameras = fetched
-            .filter { !$0.isHidden }
+            .filter { !$0.isHidden && !$0.isAbsentFromOSM }
             .sorted { $0.fetchedAt > $1.fetchedAt }
         // Heavy distance ranking must not block the main thread (onboarding → map).
         Task { await publishAlertCandidatesAsync() }
@@ -208,14 +208,24 @@ final class CameraRepository {
         do {
             var combined: [ALPRCameraDTO] = []
             var seen = Set<String>()
+            var nonEmptyTiles: [(region: MKCoordinateRegion, ids: Set<String>)] = []
             for tile in tiles {
                 guard generation == fetchGeneration else {
                     endFetch(generation)
                     return nil
                 }
                 let remote = try await client.fetchCameras(in: tile)
-                for dto in remote where seen.insert(dto.id).inserted {
-                    combined.append(dto)
+                var tileIDs = Set<String>()
+                for dto in remote {
+                    tileIDs.insert(dto.id)
+                    if seen.insert(dto.id).inserted {
+                        combined.append(dto)
+                    }
+                }
+                // Only trust absent diffs for tiles that returned cameras — empty
+                // tiles may be incomplete mirrors, not true OSM voids.
+                if !tileIDs.isEmpty {
+                    nonEmptyTiles.append((tile, tileIDs))
                 }
             }
 
@@ -224,6 +234,11 @@ final class CameraRepository {
                 return nil
             }
             upsert(combined.map { $0.makeModel() })
+            if updateSettledRegion, !tooLarge {
+                for tileResult in nonEmptyTiles {
+                    markAbsentFromOSM(remoteIDs: tileResult.ids, in: [tileResult.region])
+                }
+            }
             pruneCache()
             loadCached()
             if updateSettledRegion {
@@ -326,7 +341,8 @@ final class CameraRepository {
             AlertsEngine.shared.clearGeofences()
             return
         }
-        for camera in cameras {
+        let all = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        for camera in all {
             modelContext.delete(camera)
         }
         try? modelContext.save()
@@ -443,6 +459,7 @@ final class CameraRepository {
                 current.cameraName = camera.cameraName
                 current.tagsJSON = camera.tagsJSON
                 current.fetchedAt = camera.fetchedAt
+                current.isAbsentFromOSM = false
                 // Preserve local soft-hide across refetches.
             } else {
                 modelContext.insert(camera)
@@ -450,6 +467,24 @@ final class CameraRepository {
                     byID[camera.id] = camera
                 }
             }
+        }
+        try? modelContext.save()
+    }
+
+    /// Soft-mark cameras inside successfully covered tiles that OSM no longer returned.
+    private func markAbsentFromOSM(remoteIDs: Set<String>, in regions: [MKCoordinateRegion]) {
+        guard let modelContext, !remoteIDs.isEmpty, !regions.isEmpty else { return }
+        let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        let absent = CoverageConfidence.idsToMarkAbsent(
+            cached: existing.map { ($0.id, $0.coordinate) },
+            remoteIDs: remoteIDs,
+            regions: regions
+        )
+        guard !absent.isEmpty else { return }
+        for camera in existing where absent.contains(camera.id) {
+            // Don't override an explicit user removal hide.
+            if camera.isHidden { continue }
+            camera.isAbsentFromOSM = true
         }
         try? modelContext.save()
     }

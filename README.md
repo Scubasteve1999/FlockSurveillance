@@ -4,8 +4,10 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.6)
+## Features (v1.7)
 
+- **Coverage Confidence** — radar instrument shows fetch state, facing %, and freshness; ghost pins soft-clear after a successful OSM refresh
+- **Surveillance Radar Shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
 - **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
 - **Coverage Engine** — tracked OSM reports with pending map pins, note status checks, and a notification when your camera lands
 - **Your contributions** — Settings list of open / landed reports with “check again” and map focus

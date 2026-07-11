@@ -196,7 +196,7 @@ final class ReportStore {
                 return
             }
             let nearby = repository.cameras(near: report.coordinate, radiusMeters: Self.landedProximityMeters)
-                .filter { !$0.isHidden && remoteIDs.contains($0.id) }
+                .filter { !$0.isHidden && !$0.isAbsentFromOSM && remoteIDs.contains($0.id) }
             let matchID = Self.landedCameraID(
                 for: report.coordinate,
                 among: nearby.map { ($0.id, $0.latitude, $0.longitude) },

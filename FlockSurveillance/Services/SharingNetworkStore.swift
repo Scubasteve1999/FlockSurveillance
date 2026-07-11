@@ -1,4 +1,5 @@
 import Foundation
+import MapKit
 
 @MainActor
 @Observable
@@ -9,13 +10,19 @@ final class SharingNetworkStore {
 
     func loadIfNeeded() {
         guard !isLoaded else { return }
-        isLoaded = true
+        reload()
+    }
+
+    /// Force a reload (e.g. after a failed first attempt).
+    func reload() {
         do {
             bundle = try Self.loadBundle()
             loadError = nil
+            isLoaded = true
         } catch {
             bundle = nil
             loadError = error.localizedDescription
+            isLoaded = false
         }
     }
 
@@ -43,22 +50,69 @@ final class SharingNetworkStore {
         }
     }
 
-    func arcs(for hubId: String, limit: Int = 250) -> [SharingArc] {
+    /// Prefer partners inside `preferring` when capping arcs, then stride-sample the rest.
+    func arcs(
+        for hubId: String,
+        limit: Int = 250,
+        preferring region: MKCoordinateRegion? = nil
+    ) -> [SharingArc] {
         let all = partners(for: hubId).compactMap { partner -> SharingArc? in
             guard let link = partner.link(for: hubId) else { return nil }
             return SharingArc(partner: partner, direction: link.direction)
         }
         if all.count <= limit { return all }
-        // Prefer a stable geographic sample so the map stays readable.
-        let step = max(1, all.count / limit)
-        var sampled: [SharingArc] = []
-        sampled.reserveCapacity(limit)
-        var index = 0
-        while sampled.count < limit, index < all.count {
-            sampled.append(all[index])
-            index += step
+
+        guard let region else {
+            return Self.strideSample(all, limit: limit)
         }
+
+        var inView: [SharingArc] = []
+        var outOfView: [SharingArc] = []
+        inView.reserveCapacity(min(all.count, limit))
+        outOfView.reserveCapacity(all.count)
+        for arc in all {
+            if GeoHelpers.region(region, contains: arc.partner.coordinate) {
+                inView.append(arc)
+            } else {
+                outOfView.append(arc)
+            }
+        }
+
+        if inView.count >= limit {
+            return Self.strideSample(inView, limit: limit)
+        }
+
+        var sampled = inView
+        let remaining = limit - sampled.count
+        sampled.append(contentsOf: Self.strideSample(outOfView, limit: remaining))
         return sampled
+    }
+
+    static func regionFitting(hub: SharingHub, partners: [SharingPartner]) -> MKCoordinateRegion {
+        var minLat = hub.latitude
+        var maxLat = hub.latitude
+        var minLon = hub.longitude
+        var maxLon = hub.longitude
+        for partner in partners {
+            minLat = min(minLat, partner.latitude)
+            maxLat = max(maxLat, partner.latitude)
+            minLon = min(minLon, partner.longitude)
+            maxLon = max(maxLon, partner.longitude)
+        }
+        let latPad = max((maxLat - minLat) * 0.18, 0.6)
+        let lonPad = max((maxLon - minLon) * 0.18, 0.6)
+        let latDelta = max((maxLat - minLat) + latPad * 2, 2.5)
+        let lonDelta = max((maxLon - minLon) + lonPad * 2, 2.5)
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: (minLat + maxLat) / 2,
+                longitude: (minLon + maxLon) / 2
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: min(latDelta, 45),
+                longitudeDelta: min(lonDelta, 60)
+            )
+        )
     }
 
     nonisolated static func loadBundle(
@@ -74,6 +128,20 @@ final class SharingNetworkStore {
 
     nonisolated static func loadBundle(from data: Data) throws -> SharingNetworkBundle {
         try JSONDecoder().decode(SharingNetworkBundle.self, from: data)
+    }
+
+    private static func strideSample(_ arcs: [SharingArc], limit: Int) -> [SharingArc] {
+        guard limit > 0 else { return [] }
+        if arcs.count <= limit { return arcs }
+        let step = max(1, arcs.count / limit)
+        var sampled: [SharingArc] = []
+        sampled.reserveCapacity(limit)
+        var index = 0
+        while sampled.count < limit, index < arcs.count {
+            sampled.append(arcs[index])
+            index += step
+        }
+        return sampled
     }
 }
 

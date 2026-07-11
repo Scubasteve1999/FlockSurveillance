@@ -194,7 +194,13 @@ def build_bundle(dataset: dict) -> dict:
 
     for hub in hubs:
         hub["partnerCount"] = sum(
-            1 for p in partners if any(link["hubId"] == hub["id"] for link in p["hubLinks"])
+            1
+            for p in partners
+            if not p["inactive"]
+            and any(
+                link["hubId"] == hub["id"] and not link["inactive"]
+                for link in p["hubLinks"]
+            )
         )
 
     return {
@@ -204,7 +210,7 @@ def build_bundle(dataset: dict) -> dict:
         "attribution": {
             "title": "DeFlock Dane Shared Networks",
             "url": ATTRIBUTION_URL,
-            "note": "Public FOIA / transparency-portal releases. Agency sharing links only — not which cameras feed which agency.",
+            "note": "Public FOIA / transparency-portal releases. Agency sharing links only — not which cameras feed which agency. Partner map positions are approximate (state-level).",
         },
         "sources": sources,
         "hubs": hubs,

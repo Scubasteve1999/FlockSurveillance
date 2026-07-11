@@ -12,6 +12,7 @@ struct SharingNetworkView: View {
             span: MKCoordinateSpan(latitudeDelta: 35, longitudeDelta: 50)
         )
     )
+    @State private var visibleRegion: MKCoordinateRegion?
     @State private var mapReady = false
 
     private var selectedHub: SharingHub? {
@@ -26,7 +27,7 @@ struct SharingNetworkView: View {
 
     private var arcs: [SharingArc] {
         guard let hub = selectedHub else { return [] }
-        return store.arcs(for: hub.id, limit: 250)
+        return store.arcs(for: hub.id, limit: 250, preferring: visibleRegion)
     }
 
     var body: some View {
@@ -43,17 +44,30 @@ struct SharingNetworkView: View {
 
             VStack(spacing: 10) {
                 header
+                    .allowsHitTesting(true)
                 hubPicker
-                Spacer()
+                    .allowsHitTesting(true)
+                Spacer(minLength: 0)
+                    .allowsHitTesting(false)
                 footer
+                    .allowsHitTesting(true)
             }
             .padding(.top, 8)
+            .allowsHitTesting(false)
         }
         .preferredColorScheme(.dark)
         .onAppear {
             store.loadIfNeeded()
             if selectedHubID == nil {
                 selectedHubID = store.hubs.first?.id
+            }
+            if let hub = selectedHub {
+                let fitted = SharingNetworkStore.regionFitting(
+                    hub: hub,
+                    partners: store.arcs(for: hub.id, limit: 250).map(\.partner)
+                )
+                position = .region(fitted)
+                visibleRegion = fitted
             }
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 100_000_000)
@@ -88,10 +102,8 @@ struct SharingNetworkView: View {
                 }
 
                 ForEach(arcs) { arc in
-                    MapPolyline(
-                        coordinates: [hub.coordinate, arc.partner.coordinate]
-                    )
-                    .stroke(arcColor(arc.direction), lineWidth: 1.2)
+                    MapPolyline(geodesicPolyline(from: hub.coordinate, to: arc.partner.coordinate))
+                        .stroke(arcColor(arc.direction), lineWidth: 1.2)
 
                     Annotation("", coordinate: arc.partner.coordinate) {
                         Button {
@@ -99,8 +111,9 @@ struct SharingNetworkView: View {
                         } label: {
                             Circle()
                                 .fill(arcColor(arc.direction))
-                                .frame(width: 8, height: 8)
+                                .frame(width: 10, height: 10)
                                 .overlay(Circle().stroke(.white.opacity(0.7), lineWidth: 0.8))
+                                .contentShape(Circle().scale(2.2))
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(arc.partner.name)
@@ -110,6 +123,9 @@ struct SharingNetworkView: View {
         }
         .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
         .ignoresSafeArea()
+        .onMapCameraChange(frequency: .onEnd) { context in
+            visibleRegion = context.region
+        }
     }
 
     private var header: some View {
@@ -146,13 +162,13 @@ struct SharingNetworkView: View {
                 ForEach(store.hubs) { hub in
                     Button {
                         selectedHubID = hub.id
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            position = .region(
-                                MKCoordinateRegion(
-                                    center: CLLocationCoordinate2D(latitude: 39.8, longitude: -98.5),
-                                    span: MKCoordinateSpan(latitudeDelta: 35, longitudeDelta: 50)
-                                )
-                            )
+                        let fitted = SharingNetworkStore.regionFitting(
+                            hub: hub,
+                            partners: store.partners(for: hub.id)
+                        )
+                        visibleRegion = fitted
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            position = .region(fitted)
                         }
                     } label: {
                         Text(hub.shortName)
@@ -177,11 +193,20 @@ struct SharingNetworkView: View {
                 Text(error)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.primary)
+                Button("Try again") {
+                    store.reload()
+                }
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(AppTheme.accent)
             } else {
                 Text("Public records snapshot · not live Flock data")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(AppTheme.mutedForeground)
                 Text(store.attribution?.note ?? "Agency sharing links from FOIA releases — not which cameras feed which agency.")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Partner pins are approximate (state-level), not exact agency addresses.")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
                     .fixedSize(horizontal: false, vertical: true)
@@ -216,6 +241,14 @@ struct SharingNetworkView: View {
         case .hubIn: return AppTheme.accent.opacity(0.75)
         case .bidirectional: return Color(red: 0.95, green: 0.72, blue: 0.28).opacity(0.8)
         }
+    }
+
+    private func geodesicPolyline(
+        from start: CLLocationCoordinate2D,
+        to end: CLLocationCoordinate2D
+    ) -> MKGeodesicPolyline {
+        var coordinates = [start, end]
+        return MKGeodesicPolyline(coordinates: &coordinates, count: coordinates.count)
     }
 }
 
@@ -269,6 +302,9 @@ private struct SharingPartnerSheet: View {
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(AppTheme.foreground)
                             Text(attribution?.note ?? "")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(AppTheme.mutedForeground)
+                            Text("Map position is approximate (state-level centroid), not an exact agency address.")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(AppTheme.mutedForeground)
                             if let urlString = attribution?.url, let url = URL(string: urlString) {

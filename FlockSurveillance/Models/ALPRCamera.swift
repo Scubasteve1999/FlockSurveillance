@@ -13,6 +13,8 @@ final class ALPRCamera {
     var cameraName: String?
     var tagsJSON: String
     var fetchedAt: Date
+    /// Soft-hidden after a confirmed removal report (device-local).
+    var isHidden: Bool = false
 
     init(
         id: String,
@@ -23,7 +25,8 @@ final class ALPRCamera {
         direction: String? = nil,
         cameraName: String? = nil,
         tagsJSON: String = "{}",
-        fetchedAt: Date = .now
+        fetchedAt: Date = .now,
+        isHidden: Bool = false
     ) {
         self.id = id
         self.latitude = latitude
@@ -34,6 +37,7 @@ final class ALPRCamera {
         self.cameraName = cameraName
         self.tagsJSON = tagsJSON
         self.fetchedAt = fetchedAt
+        self.isHidden = isHidden
     }
 
     var coordinate: CLLocationCoordinate2D {
@@ -45,8 +49,12 @@ final class ALPRCamera {
     }
 
     var isFlock: Bool {
-        let m = (manufacturer ?? "").lowercased()
-        return m.contains("flock")
+        ALPRIdentity.isFlock(
+            manufacturer: manufacturer,
+            operatorName: operatorName,
+            cameraName: cameraName,
+            tagsJSON: tagsJSON
+        )
     }
 
     var displayManufacturer: String {
@@ -57,6 +65,29 @@ final class ALPRCamera {
     var displayTitle: String {
         if let cameraName, !cameraName.isEmpty { return cameraName }
         return displayManufacturer
+    }
+}
+
+/// Shared Flock / brand heuristics for DTO + SwiftData model.
+enum ALPRIdentity {
+    static func isFlock(
+        manufacturer: String?,
+        operatorName: String?,
+        cameraName: String?,
+        tagsJSON: String? = nil
+    ) -> Bool {
+        let fields = [manufacturer, operatorName, cameraName].compactMap { $0 }
+        if fields.contains(where: { $0.lowercased().contains("flock") }) {
+            return true
+        }
+        guard let tagsJSON,
+              let data = tagsJSON.data(using: .utf8),
+              let tags = try? JSONDecoder().decode([String: String].self, from: data)
+        else { return false }
+        let brandKeys = ["manufacturer", "brand", "operator", "name", "ref"]
+        return brandKeys.contains { key in
+            (tags[key] ?? "").lowercased().contains("flock")
+        }
     }
 }
 

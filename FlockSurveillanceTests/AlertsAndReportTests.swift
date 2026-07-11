@@ -121,4 +121,88 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertFalse(text.contains("Mount:"))
         XCTAssertFalse(text.contains("operator"))
     }
+
+    // MARK: - OSM note JSON + landing
+
+    func testParseNoteFeatureJSON() throws {
+        let json = """
+        {
+          "type": "Feature",
+          "id": 4242,
+          "geometry": { "type": "Point", "coordinates": [-84.39, 33.75] },
+          "properties": {
+            "id": 4242,
+            "status": "open",
+            "comments": [{ "text": "hello" }]
+          }
+        }
+        """.data(using: .utf8)!
+        let note = try OSMNoteParser.parseNote(from: json)
+        XCTAssertEqual(note.id, 4242)
+        XCTAssertFalse(note.isClosed)
+        XCTAssertEqual(note.comments, ["hello"])
+    }
+
+    func testParseClosedNoteJSON() throws {
+        let json = """
+        {
+          "type": "Feature",
+          "id": 7,
+          "properties": { "status": "closed", "comments": [] }
+        }
+        """.data(using: .utf8)!
+        let note = try OSMNoteParser.parseNote(from: json)
+        XCTAssertTrue(note.isClosed)
+    }
+
+    func testLandedProximityMatchesNearbyCamera() {
+        let report = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let near = (id: "osm-node-1", latitude: 33.7502, longitude: -84.3901)
+        let far = (id: "osm-node-2", latitude: 34.0, longitude: -84.39)
+        let match = ReportStore.landedCameraID(for: report, among: [far, near])
+        XCTAssertEqual(match, "osm-node-1")
+    }
+
+    func testLandedProximityIgnoresBaselineCameras() {
+        let report = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let existing = (id: "osm-node-1", latitude: 33.7502, longitude: -84.3901)
+        let match = ReportStore.landedCameraID(
+            for: report,
+            among: [existing],
+            baselineIDs: ["osm-node-1"]
+        )
+        XCTAssertNil(match)
+    }
+
+    func testLandedProximityNilWhenTooFar() {
+        let report = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let far = (id: "osm-node-2", latitude: 34.0, longitude: -84.39)
+        XCTAssertNil(ReportStore.landedCameraID(for: report, among: [far]))
+    }
+
+    func testFlockIdentityFromOperatorAndBrandTags() {
+        XCTAssertTrue(
+            ALPRIdentity.isFlock(
+                manufacturer: nil,
+                operatorName: "Flock Safety",
+                cameraName: nil
+            )
+        )
+        let tags = "{\"brand\":\"Flock Safety\",\"surveillance:type\":\"ALPR\"}"
+        XCTAssertTrue(
+            ALPRIdentity.isFlock(
+                manufacturer: nil,
+                operatorName: nil,
+                cameraName: nil,
+                tagsJSON: tags
+            )
+        )
+        XCTAssertFalse(
+            ALPRIdentity.isFlock(
+                manufacturer: "Motorola",
+                operatorName: "City PD",
+                cameraName: "Cam 1"
+            )
+        )
+    }
 }

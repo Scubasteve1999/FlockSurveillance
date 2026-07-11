@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839B34D71A068F6E097C63DE /* PendingReport.swift */; };
 		06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
 		0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */; };
@@ -34,6 +35,7 @@
 		83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244AA03B270FF87A615A5168 /* AlertsEngine.swift */; };
 		87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AA373662BC417002454737 /* ProximityRadar.swift */; };
 		8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */; };
+		8E559FB9CF76C494A4F0F9D3 /* ReportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */; };
 		90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */; };
 		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
 		AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */; };
@@ -41,6 +43,7 @@
 		B3092670D2ABF81DE8B2ABB5 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B0B4143401454EFDFBD3EA /* AppTheme.swift */; };
 		B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */; };
 		B673CA4757FB5EE3CABC7397 /* CameraDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */; };
+		B7CF5F885EFF99A8FEA919EF /* PendingReportDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */; };
 		C63B431F7CBF224F966ACC0C /* RefreshNearbyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */; };
 		CE940758D3D077F042A5F7AA /* ReviewPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */; };
 		CFE3323B5D6F07320A658E8A /* DriveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012CEF579CDF48C3BF98B22 /* DriveSession.swift */; };
@@ -100,6 +103,7 @@
 		2DA709B0872A9F478764A4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NearbyCamerasWidget.entitlements; sourceTree = "<group>"; };
+		3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReportDetailSheet.swift; sourceTree = "<group>"; };
 		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
 		4D4AF090DDE7F0ADE1448325 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
@@ -113,6 +117,7 @@
 		6AC739360F96B00B18FF118D /* GeoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpers.swift; sourceTree = "<group>"; };
 		7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockIntents.swift; sourceTree = "<group>"; };
 		80049F39BDDD220E4F7AC048 /* MapRadarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRadarView.swift; sourceTree = "<group>"; };
+		839B34D71A068F6E097C63DE /* PendingReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReport.swift; sourceTree = "<group>"; };
 		8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPrompter.swift; sourceTree = "<group>"; };
 		87AA373662BC417002454737 /* ProximityRadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityRadar.swift; sourceTree = "<group>"; };
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +134,7 @@
 		BAFBB64F66A54D0AB0341497 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BCCC130CE261175F0E1588FD /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportStore.swift; sourceTree = "<group>"; };
 		CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentActionsTests.swift; sourceTree = "<group>"; };
 		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
@@ -248,6 +254,7 @@
 			isa = PBXGroup;
 			children = (
 				F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */,
+				839B34D71A068F6E097C63DE /* PendingReport.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -274,6 +281,7 @@
 				ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */,
 				CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */,
 				87AA373662BC417002454737 /* ProximityRadar.swift */,
+				C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */,
 				8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */,
 				1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */,
 				BCCC130CE261175F0E1588FD /* WidgetBridge.swift */,
@@ -321,6 +329,7 @@
 				06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */,
 				EA8E10E52F111D14D243853E /* CityRankingsStrip.swift */,
 				80049F39BDDD220E4F7AC048 /* MapRadarView.swift */,
+				3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */,
 				11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */,
 				D9C7E3BD8E8A9BD287C40FCB /* ReportCameraSheet.swift */,
 			);
@@ -476,11 +485,14 @@
 				DCAADB26884D5252B0422E76 /* OSMReportService.swift in Sources */,
 				8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */,
 				08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */,
+				0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */,
+				B7CF5F885EFF99A8FEA919EF /* PendingReportDetailSheet.swift in Sources */,
 				5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */,
 				F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */,
 				87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */,
 				E7ADB8087407111D5DA58BB8 /* RefreshNearbyIntent.swift in Sources */,
 				E06B1DC637DE55151FC8CC43 /* ReportCameraSheet.swift in Sources */,
+				8E559FB9CF76C494A4F0F9D3 /* ReportStore.swift in Sources */,
 				CE940758D3D077F042A5F7AA /* ReviewPrompter.swift in Sources */,
 				11CCD893F336E16104455165 /* RootTabView.swift in Sources */,
 				498357A2C1FCB27578F991E3 /* RouteExposureService.swift in Sources */,
@@ -586,7 +598,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -604,7 +616,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -706,7 +718,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -730,7 +742,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

@@ -1,4 +1,4 @@
-# App Store Optimization — Flock Surveillance v1.4
+# App Store Optimization — Flock Surveillance v1.5
 
 ## Title & subtitle
 
@@ -20,7 +20,7 @@ Notes:
 
 ## Promotional text (170 chars, editable without review)
 
-> NEW: Instant “how watched?” grade on open, Instagram-ready share cards, one-tap Home↔Work safest drive, and most-mapped metro rankings — wow in under 10 seconds.
+> NEW: Track camera reports until they land on the map, denser OSM coverage, pending pins, and contribution history — help map the cameras watching you.
 
 ## Description opener (first 3 lines matter most)
 
@@ -28,7 +28,7 @@ Notes:
 >
 > Built on OpenStreetMap community data. No accounts. No tracking. Your location never leaves your device.
 
-Then feature bullets in this order: Instant Place Score, Share cards, Safest drive Home↔Work, Map + FOV cones, Background alerts, City rankings, Widgets/Siri, Community reporting.
+Then feature bullets in this order: Instant Place Score, Share cards, Safest drive Home↔Work, Map + FOV cones, Background alerts, Coverage reporting loop, City rankings, Widgets/Siri.
 
 ## Screenshot storyboard (6.7" set, in order)
 
@@ -37,11 +37,11 @@ Then feature bullets in this order: Instant Place Score, Share cards, Safest dri
 3. **Place Score share card (PNG)** — caption: "Share how watched you are"
 4. **Home → Work / Work → Home commute** — caption: "One-tap safest drive"
 5. **Drive Mode HUD + Dynamic Island** — caption: "Live countdown while you drive"
-6. **Drive report share card** — caption: "Fewer cameras. Same destination."
-7. **Most mapped metros strip** — caption: "See which cities are densest"
+6. **Pending report pin + contributions** — caption: "Report a camera. Watch it land."
+7. **Drive report share card** — caption: "Fewer cameras. Same destination."
 8. **Alert notification on lock screen** — caption: "Warned before you pass one"
 
-Style: device frames on near-black (#0F1217) background, orange (#F26B47) captions, consistent with the app's dark theme. Prefer exporting the in-app `ShareCardRenderer` PNGs for frames 3 and 6 so App Store art matches what users actually share.
+Style: device frames on near-black (#0F1217) background, orange (#F26B47) captions, consistent with the app's dark theme. Prefer exporting the in-app `ShareCardRenderer` PNGs for frames 3 and 7 so App Store art matches what users actually share.
 
 ## Privacy nutrition label (App Store Connect answers)
 

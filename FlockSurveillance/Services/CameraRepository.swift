@@ -49,7 +49,9 @@ final class CameraRepository {
         guard let modelContext else { return }
         // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        cameras = fetched.sorted { $0.fetchedAt > $1.fetchedAt }
+        cameras = fetched
+            .filter { !$0.isHidden }
+            .sorted { $0.fetchedAt > $1.fetchedAt }
         // Heavy distance ranking must not block the main thread (onboarding → map).
         Task { await publishAlertCandidatesAsync() }
     }
@@ -133,7 +135,43 @@ final class CameraRepository {
     func fetch(for region: MKCoordinateRegion, collapseContinental: Bool = true) async {
         lastRegion = region
         fetchGeneration += 1
-        await fetch(for: region, generation: fetchGeneration, collapseContinental: collapseContinental)
+        _ = await fetch(for: region, generation: fetchGeneration, collapseContinental: collapseContinental)
+    }
+
+    /// Fetches and upserts cameras; returns remote IDs from a successful response, or nil on failure.
+    /// - Parameter updateSettledRegion: When false (report probes), do not write `lastFetchedRegion`
+    ///   so Place Score Clear settlement is not poisoned by a tiny verification bbox.
+    @discardableResult
+    func fetchReturningRemoteIDs(
+        for region: MKCoordinateRegion,
+        collapseContinental: Bool = true,
+        updateSettledRegion: Bool = true
+    ) async -> Set<String>? {
+        if updateSettledRegion {
+            lastRegion = region
+        }
+        fetchGeneration += 1
+        return await fetch(
+            for: region,
+            generation: fetchGeneration,
+            collapseContinental: collapseContinental,
+            updateSettledRegion: updateSettledRegion
+        )
+    }
+
+    /// Side-channel Overpass probe for report baseline / verification.
+    /// Does not bump fetchGeneration, isLoading, or lastFetchedRegion.
+    func probeCameras(in region: MKCoordinateRegion) async -> Set<String>? {
+        do {
+            let remote = try await client.fetchCameras(in: region)
+            if !remote.isEmpty {
+                upsert(remote.map { $0.makeModel() })
+                loadCached()
+            }
+            return Set(remote.map(\.id))
+        } catch {
+            return nil
+        }
     }
 
     /// True when a successful Overpass fetch covering `coordinate` has finished
@@ -146,11 +184,13 @@ final class CameraRepository {
         )
     }
 
+    @discardableResult
     private func fetch(
         for region: MKCoordinateRegion,
         generation: Int,
-        collapseContinental: Bool = true
-    ) async {
+        collapseContinental: Bool = true,
+        updateSettledRegion: Bool = true
+    ) async -> Set<String>? {
         beginFetch(generation)
         lastError = nil
 
@@ -171,7 +211,7 @@ final class CameraRepository {
             for tile in tiles {
                 guard generation == fetchGeneration else {
                     endFetch(generation)
-                    return
+                    return nil
                 }
                 let remote = try await client.fetchCameras(in: tile)
                 for dto in remote where seen.insert(dto.id).inserted {
@@ -181,17 +221,22 @@ final class CameraRepository {
 
             guard generation == fetchGeneration else {
                 endFetch(generation)
-                return
+                return nil
             }
             upsert(combined.map { $0.makeModel() })
             pruneCache()
             loadCached()
-            lastFetchedRegion = region
+            if updateSettledRegion {
+                lastFetchedRegion = region
+            }
             lastSuccessfulFetchAt = .now
             isServingStale = false
             WidgetBridge.writeNearbySnapshot(from: cameras)
+            endFetch(generation)
+            return seen
         } catch is CancellationError {
-            // ignore — do not mark region settled
+            endFetch(generation)
+            return nil
         } catch {
             if generation == fetchGeneration {
                 lastError = tooLarge
@@ -207,9 +252,9 @@ final class CameraRepository {
                 }
             }
             // Failed fetch must not update lastFetchedRegion (false Clear).
+            endFetch(generation)
+            return nil
         }
-
-        endFetch(generation)
     }
 
     private func beginFetch(_ generation: Int) {
@@ -302,6 +347,22 @@ final class CameraRepository {
         WidgetBridge.writeNearbySnapshot(from: cameras)
     }
 
+    /// Soft-hide a camera after a confirmed removal report.
+    func hideCamera(id: String) {
+        guard let modelContext else {
+            cameras.removeAll { $0.id == id }
+            return
+        }
+        let all = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        if let match = all.first(where: { $0.id == id }) {
+            match.isHidden = true
+            try? modelContext.save()
+        }
+        loadCached()
+        WidgetBridge.writeNearbySnapshot(from: cameras)
+        Task { await publishAlertCandidatesAsync() }
+    }
+
     func filtered(_ filter: CameraFilter) -> [ALPRCamera] {
         switch filter {
         case .all: return cameras
@@ -375,10 +436,14 @@ final class CameraRepository {
                 current.longitude = camera.longitude
                 current.manufacturer = camera.manufacturer
                 current.operatorName = camera.operatorName
-                current.direction = camera.direction
+                // Don't wipe a known direction when a mirror omits the tag.
+                if let direction = camera.direction, !direction.isEmpty {
+                    current.direction = direction
+                }
                 current.cameraName = camera.cameraName
                 current.tagsJSON = camera.tagsJSON
                 current.fetchedAt = camera.fetchedAt
+                // Preserve local soft-hide across refetches.
             } else {
                 modelContext.insert(camera)
                 if byID[camera.id] == nil {

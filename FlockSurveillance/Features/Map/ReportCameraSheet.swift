@@ -1,12 +1,16 @@
 import CoreLocation
+import MapKit
 import SwiftUI
 
 struct ReportCameraSheet: View {
     let coordinate: CLLocationCoordinate2D
     var existingCameraID: String?
     var initialKind: OSMReportKind = .newCamera
+    var onSubmitted: ((PendingReport) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(ReportStore.self) private var reportStore
+    @Environment(CameraRepository.self) private var repository
 
     @State private var kind: OSMReportKind
     @State private var direction = ""
@@ -16,14 +20,21 @@ struct ReportCameraSheet: View {
     @State private var isSubmitting = false
     @State private var submitError: String?
     @State private var didSubmit = false
+    @State private var submittedReport: PendingReport?
 
     private let directions = ["", "N", "NE", "E", "SE", "S", "SW", "W", "NW"]
     private let mounts = ["", "Pole", "Traffic light", "Street lamp", "Overpass", "Building", "Trailer"]
 
-    init(coordinate: CLLocationCoordinate2D, existingCameraID: String? = nil, initialKind: OSMReportKind = .newCamera) {
+    init(
+        coordinate: CLLocationCoordinate2D,
+        existingCameraID: String? = nil,
+        initialKind: OSMReportKind = .newCamera,
+        onSubmitted: ((PendingReport) -> Void)? = nil
+    ) {
         self.coordinate = coordinate
         self.existingCameraID = existingCameraID
         self.initialKind = initialKind
+        self.onSubmitted = onSubmitted
         _kind = State(initialValue: initialKind)
     }
 
@@ -51,7 +62,7 @@ struct ReportCameraSheet: View {
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
 
-            Text("Sends an anonymous note to OpenStreetMap so community mappers can verify and tag it. No account needed.")
+            Text("Sends an anonymous note to OpenStreetMap so community mappers can verify and tag it. We keep a local copy and watch for when it lands on the map.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
 
@@ -159,16 +170,31 @@ struct ReportCameraSheet: View {
                 .foregroundStyle(AppTheme.densityLow)
                 .padding(.top, 24)
 
-            Text("Report sent")
+            Text("Report tracked")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
 
-            Text("Your note is now visible to OpenStreetMap mappers. Once verified and tagged, the camera will appear here and in DeFlock.")
+            Text(
+                kind == .newCamera
+                    ? "Your note is on OpenStreetMap. A pending pin stays on your map until mappers tag the camera — we’ll refresh nearby and notify you when it lands."
+                    : "Your note is on OpenStreetMap. We’ll watch the note and update this report when mappers close it."
+            )
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
 
+            if let url = submittedReport?.osmNoteURL {
+                Link(destination: url) {
+                    Label("View OSM note", systemImage: "arrow.up.right.square")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(AppTheme.accent)
+                }
+            }
+
             Button {
+                if let submittedReport {
+                    onSubmitted?(submittedReport)
+                }
                 dismiss()
             } label: {
                 Text("Done")
@@ -206,8 +232,32 @@ struct ReportCameraSheet: View {
         )
         Task {
             do {
-                try await OSMReportService.shared.submit(report)
+                // Warm nearby Overpass data before snapshotting baseline IDs so
+                // already-mapped cameras aren't missing from an empty local cache.
+                let probeRegion = MKCoordinateRegion(
+                    center: coordinate,
+                    span: MKCoordinateSpan(
+                        latitudeDelta: ReportStore.verifyRegionSpanDegrees,
+                        longitudeDelta: ReportStore.verifyRegionSpanDegrees
+                    )
+                )
+                _ = await repository.probeCameras(in: probeRegion)
+                let nearbyBaseline = repository
+                    .cameras(near: coordinate, radiusMeters: ReportStore.landedProximityMeters)
+                    .map(\.id)
+
+                let noteID = try await OSMReportService.shared.submit(report)
+                guard let row = reportStore.recordSubmission(
+                    report: report,
+                    noteID: noteID,
+                    baselineCameraIDs: nearbyBaseline
+                ) else {
+                    isSubmitting = false
+                    submitError = "Note posted to OpenStreetMap, but local tracking failed. Try reopening the app."
+                    return
+                }
                 isSubmitting = false
+                submittedReport = row
                 withAnimation(.easeInOut(duration: 0.25)) {
                     didSubmit = true
                 }

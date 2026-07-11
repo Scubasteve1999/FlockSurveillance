@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(LocationManager.self) private var locationManager
     @Environment(ProximityRadar.self) private var radar
+    @Environment(ReportStore.self) private var reportStore
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatDefault = true
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
@@ -25,6 +26,7 @@ struct SettingsView: View {
     @State private var homeStatus: String?
     @State private var workStatus: String?
     @State private var didClearCache = false
+    @State private var selectedContribution: PendingReport?
 
     private enum AddressField {
         case home, work
@@ -301,6 +303,66 @@ struct SettingsView: View {
 
                         SectionCard {
                             VStack(alignment: .leading, spacing: 12) {
+                                Text("YOUR CONTRIBUTIONS")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .tracking(0.8)
+                                    .foregroundStyle(AppTheme.mutedForeground)
+
+                                Text("Anonymous OSM notes you submitted from this device. We watch open notes and refresh nearby when a camera lands.")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(AppTheme.mutedForeground)
+
+                                HStack(spacing: 16) {
+                                    contributionStat("Open", reportStore.openCount)
+                                    contributionStat("Landed", reportStore.landedCount)
+                                    contributionStat("Total", reportStore.reports.count)
+                                }
+
+                                if reportStore.reports.isEmpty {
+                                    Text("No reports yet — tap the flag on the map to add coverage.")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(AppTheme.mutedForeground)
+                                } else {
+                                    ForEach(reportStore.reports.prefix(12), id: \.id) { report in
+                                        Button {
+                                            selectedContribution = report
+                                        } label: {
+                                            HStack {
+                                                VStack(alignment: .leading, spacing: 2) {
+                                                    Text(report.kind.rawValue)
+                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .foregroundStyle(AppTheme.foreground)
+                                                    Text(report.status.displayLabel)
+                                                        .font(.system(size: 12, weight: .medium))
+                                                        .foregroundStyle(AppTheme.accent)
+                                                }
+                                                Spacer()
+                                                Image(systemName: "chevron.right")
+                                                    .font(.system(size: 12, weight: .semibold))
+                                                    .foregroundStyle(AppTheme.mutedForeground)
+                                            }
+                                            .padding(.vertical, 6)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+
+                                Button {
+                                    Task {
+                                        await reportStore.verifyOpenReports(repository: repository, force: true)
+                                    }
+                                } label: {
+                                    Label("Check open reports now", systemImage: "arrow.clockwise")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(AppTheme.accent)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(reportStore.openCount == 0)
+                            }
+                        }
+
+                        SectionCard {
+                            VStack(alignment: .leading, spacing: 12) {
                                 Text("DATA")
                                     .font(.system(size: 10, weight: .semibold))
                                     .tracking(0.8)
@@ -368,7 +430,41 @@ struct SettingsView: View {
                     completer.bias(to: location.coordinate)
                 }
             }
+            .sheet(item: $selectedContribution) { report in
+                PendingReportDetailSheet(
+                    report: report,
+                    onCheckAgain: {
+                        Task {
+                            await reportStore.verifyOpenReports(repository: repository, force: true)
+                        }
+                    },
+                    onFocusMap: {
+                        let lat = String(format: "%.5f", report.latitude)
+                        let lon = String(format: "%.5f", report.longitude)
+                        if let url = URL(string: "flocksurveillance://map?lat=\(lat)&lon=\(lon)") {
+                            NotificationCenter.default.post(
+                                name: .flockDeepLink,
+                                object: nil,
+                                userInfo: ["url": url]
+                            )
+                        }
+                    }
+                )
+                .presentationBackground(AppTheme.background)
+            }
         }
+    }
+
+    private func contributionStat(_ label: String, _ value: Int) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("\(value)")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(AppTheme.foreground)
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(AppTheme.mutedForeground)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func quietHourPicker(_ label: String, selection: Binding<Int>) -> some View {

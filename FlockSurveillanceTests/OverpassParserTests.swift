@@ -76,4 +76,31 @@ final class OverpassParserTests: XCTestCase {
             "https://www.openstreetmap.org/node/999"
         )
     }
+
+    func testParsesCameraTypeALPRAndFlockOperator() throws {
+        let json = """
+        {
+          "elements": [
+            {
+              "type": "node",
+              "id": 555,
+              "lat": 33.75,
+              "lon": -84.39,
+              "tags": {
+                "man_made": "surveillance",
+                "camera:type": "ALPR",
+                "operator": "Flock Safety",
+                "camera:direction": "90"
+              }
+            }
+          ]
+        }
+        """.data(using: .utf8)!
+        let cameras = try OverpassParser.cameras(from: json)
+        let camera = try XCTUnwrap(cameras.first)
+        XCTAssertEqual(camera.id, "osm-node-555")
+        XCTAssertEqual(camera.direction, "90")
+        XCTAssertTrue(camera.isFlock)
+        XCTAssertEqual(camera.operatorName, "Flock Safety")
+    }
 }

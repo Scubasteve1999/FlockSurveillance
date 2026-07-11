@@ -26,16 +26,25 @@ struct FlockSurveillanceApp: App {
     @State private var locationManager = LocationManager()
     @State private var radar = ProximityRadar()
     @State private var driveSession = DriveSession.shared
+    @State private var reportStore = ReportStore.shared
     @State private var selectedTab = 0
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @Environment(\.scenePhase) private var scenePhase
 
     private let modelContainer: ModelContainer = {
         do {
             let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             try? FileManager.default.createDirectory(at: support, withIntermediateDirectories: true)
-            let storeURL = support.appendingPathComponent("FlockSurveillance.store")
+            let storeURL = support.appendingPathComponent("FlockSurveillance.v15.store")
             let configuration = ModelConfiguration(url: storeURL)
-            return try ModelContainer(for: ALPRCamera.self, configurations: configuration)
+            do {
+                return try ModelContainer(for: ALPRCamera.self, PendingReport.self, configurations: configuration)
+            } catch {
+                // Only reset the v1.5 store on schema open failure — leave the
+                // legacy 1.4 file untouched so a transient error doesn't wipe history twice.
+                try? FileManager.default.removeItem(at: storeURL)
+                return try ModelContainer(for: ALPRCamera.self, PendingReport.self, configurations: configuration)
+            }
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -56,13 +65,18 @@ struct FlockSurveillanceApp: App {
             .environment(locationManager)
             .environment(radar)
             .environment(driveSession)
+            .environment(reportStore)
             .preferredColorScheme(.dark)
             .onAppear {
                 // Attach after first frame so Enter the map isn't competing with
                 // a full SwiftData load + candidate ranking on the main thread.
                 if hasSeenOnboarding {
                     repository.attach(modelContext: modelContainer.mainContext)
+                    reportStore.attach(modelContext: modelContainer.mainContext)
                     locationManager.start()
+                    Task {
+                        await reportStore.verifyOpenReports(repository: repository)
+                    }
                 }
             }
             .onChange(of: hasSeenOnboarding) { _, seen in
@@ -70,7 +84,16 @@ struct FlockSurveillanceApp: App {
                 Task { @MainActor in
                     await Task.yield()
                     repository.attach(modelContext: modelContainer.mainContext)
+                    reportStore.attach(modelContext: modelContainer.mainContext)
                     locationManager.start()
+                    await reportStore.verifyOpenReports(repository: repository)
+                }
+            }
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active, hasSeenOnboarding else { return }
+                reportStore.attach(modelContext: modelContainer.mainContext)
+                Task {
+                    await reportStore.verifyOpenReports(repository: repository)
                 }
             }
             .onOpenURL { url in

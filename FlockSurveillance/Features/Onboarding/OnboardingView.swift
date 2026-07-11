@@ -162,6 +162,7 @@ struct OnboardingView: View {
         // Enter the map won't re-load. Seeding in the background is fine here
         // because MapKit isn't on screen yet.
         repository.attach(modelContext: modelContext)
+        ReportStore.shared.attach(modelContext: modelContext)
         locationManager.start()
         isLoadingTeaser = true
         teaserScore = nil

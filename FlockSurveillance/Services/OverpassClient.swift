@@ -45,7 +45,12 @@ struct ALPRCameraDTO: Sendable, Equatable {
     let fetchedAt: Date
 
     var isFlock: Bool {
-        (manufacturer ?? "").lowercased().contains("flock")
+        ALPRIdentity.isFlock(
+            manufacturer: manufacturer,
+            operatorName: operatorName,
+            cameraName: cameraName,
+            tagsJSON: tagsJSON
+        )
     }
 
     @MainActor
@@ -101,6 +106,9 @@ enum OverpassParser {
             let tags = element.tags ?? [:]
             let tagsData = (try? JSONEncoder().encode(tags)) ?? Data("{}".utf8)
             let tagsJSON = String(data: tagsData, encoding: .utf8) ?? "{}"
+            let direction = tags["camera:direction"]
+                ?? tags["direction"]
+                ?? tags["camera:bearing"]
 
             cameras.append(
                 ALPRCameraDTO(
@@ -109,7 +117,7 @@ enum OverpassParser {
                     longitude: coordinate.lon,
                     manufacturer: tags["manufacturer"] ?? tags["brand"],
                     operatorName: tags["operator"],
-                    direction: tags["camera:direction"] ?? tags["direction"],
+                    direction: direction,
                     cameraName: tags["name"] ?? tags["ref"],
                     tagsJSON: tagsJSON,
                     fetchedAt: fetchedAt
@@ -172,7 +180,7 @@ actor OverpassClient {
             configuration.waitsForConnectivity = false
             configuration.httpAdditionalHeaders = [
                 "Accept": "application/json",
-                "User-Agent": "FlockSurveillance/1.1 (civic transparency; contact: flocksurveillance.com)"
+                "User-Agent": "FlockSurveillance/1.5 (civic transparency; contact: flocksurveillance.com)"
             ]
             self.session = URLSession(configuration: configuration)
         }
@@ -193,15 +201,24 @@ actor OverpassClient {
             }
         }
 
+        // Case-insensitive ALPR type plus common alternate keys. Overpass uses
+        // POSIX regex with a trailing `,i` flag — not PCRE `(?i)`.
+        // Avoid bare highway=speed_camera (pulls non-ALPR enforcement cams).
         let query = """
         [out:json][timeout:25];
         (
-          node["man_made"="surveillance"]["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
-          node["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
-          way["man_made"="surveillance"]["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
-          way["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
-          relation["man_made"="surveillance"]["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
-          relation["surveillance:type"="ALPR"](\(south),\(west),\(north),\(east));
+          node["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          node["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          node["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          node["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          way["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          way["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          way["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          way["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          relation["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          relation["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          relation["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          relation["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
         );
         out center tags;
         """

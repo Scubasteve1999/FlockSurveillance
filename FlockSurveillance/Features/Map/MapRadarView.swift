@@ -7,6 +7,7 @@ struct MapRadarView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(LocationManager.self) private var locationManager
     @Environment(ProximityRadar.self) private var radar
+    @Environment(ReportStore.self) private var reportStore
     @Environment(\.requestReview) private var requestReview
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
@@ -30,6 +31,7 @@ struct MapRadarView: View {
     @State private var sharePayload: ShareActivityPayload?
     @State private var isPlacingReport = false
     @State private var reportTarget: ReportTarget?
+    @State private var selectedPendingReport: PendingReport?
     @State private var cityRankings: [CityRanking] = []
     /// Recompute Place Score for this coordinate after the matching fetch settles.
     @State private var pendingScoreCoordinate: CLLocationCoordinate2D?
@@ -156,6 +158,9 @@ struct MapRadarView: View {
                 computePlaceScore()
             }
             applyPendingMapFocusIfNeeded()
+            Task {
+                await reportStore.verifyOpenReports(repository: repository)
+            }
         }
         .onChange(of: repository.cameras.count) { _, _ in
             cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
@@ -208,8 +213,21 @@ struct MapRadarView: View {
                 .id(payload.id)
         }
         .sheet(item: $reportTarget) { target in
-            ReportCameraSheet(coordinate: target.coordinate)
-                .presentationBackground(AppTheme.background)
+            ReportCameraSheet(coordinate: target.coordinate) { _ in
+                // Pending pin appears via ReportStore.activeMapReports.
+            }
+            .presentationBackground(AppTheme.background)
+        }
+        .sheet(item: $selectedPendingReport) { report in
+            PendingReportDetailSheet(
+                report: report,
+                onCheckAgain: {
+                    Task {
+                        await reportStore.verifyOpenReports(repository: repository, force: true)
+                    }
+                }
+            )
+            .presentationBackground(AppTheme.background)
         }
     }
 
@@ -256,6 +274,17 @@ struct MapRadarView: View {
                         selectedCluster = cluster
                     } label: {
                         CameraAnnotationView(count: cluster.count, isFlock: cluster.isFlockDominant)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            ForEach(reportStore.activeMapReports, id: \.id) { report in
+                Annotation("", coordinate: report.coordinate, anchor: .center) {
+                    Button {
+                        selectedPendingReport = report
+                    } label: {
+                        PendingReportAnnotationView()
                     }
                     .buttonStyle(.plain)
                 }
@@ -621,6 +650,22 @@ private struct ShareActivityPayload: Identifiable {
 private struct ReportTarget: Identifiable {
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
+}
+
+private struct PendingReportAnnotationView: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .strokeBorder(AppTheme.accent.opacity(0.9), style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                .background(Circle().fill(AppTheme.card.opacity(0.92)))
+                .frame(width: 34, height: 34)
+            Image(systemName: "flag.fill")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(AppTheme.accent)
+        }
+        .shadow(color: .black.opacity(0.35), radius: 3, y: 1)
+        .accessibilityLabel("Pending camera report")
+    }
 }
 
 private struct ActivityShareView: UIViewControllerRepresentable {

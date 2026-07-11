@@ -4,8 +4,9 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.5)
+## Features (v1.6)
 
+- **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
 - **Coverage Engine** — tracked OSM reports with pending map pins, note status checks, and a notification when your camera lands
 - **Your contributions** — Settings list of open / landed reports with “check again” and map focus
 - **Denser Overpass ingest** — alternate ALPR tag schemes (`camera:type`, case-insensitive `surveillance:type`) plus stronger Flock detection from operator/brand/name
@@ -44,7 +45,7 @@ open FlockSurveillance.xcodeproj
 
 Select a Development Team in Signing & Capabilities for the app and widget targets, then run on a simulator or device.
 
-Location permission is required for radar and “use my location” routing. Camera data requires network access to Overpass.
+Location permission is required for radar and “use my location” routing. Camera permission is required only for AR Camera Sight (overlay stays on-device; nothing is recorded). Camera data requires network access to Overpass.
 
 ## Data
 

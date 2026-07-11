@@ -150,7 +150,7 @@ struct LearnArticle: Identifiable {
         LearnArticle(
             eyebrow: "This map",
             title: "Community infrastructure",
-            body: "Flock Surveillance plots ALPR nodes that volunteers have tagged in OpenStreetMap. Coverage is uneven by design: it reflects what people have documented, not a vendor’s private inventory."
+            body: "Flock Surveillance plots ALPR nodes that volunteers have tagged in OpenStreetMap. Coverage is uneven by design: it reflects what people have documented, not a vendor’s private inventory. AR Camera Sight shows those same mapped locations in the street — not a live feed from any camera network."
         ),
         LearnArticle(
             eyebrow: "Reporting",

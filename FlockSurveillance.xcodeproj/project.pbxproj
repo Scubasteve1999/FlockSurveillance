@@ -32,9 +32,12 @@
 		7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083E635F68719ECA057C617B /* RouteExposureView.swift */; };
 		7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637361494637A5B0C42496C5 /* OverpassParserTests.swift */; };
 		7E6AF7448B723066C4DA7C45 /* FlockIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */; };
+		81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */; };
 		83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244AA03B270FF87A615A5168 /* AlertsEngine.swift */; };
+		84010744C819B71E8C39AE52 /* ARGeoMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */; };
 		87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AA373662BC417002454737 /* ProximityRadar.swift */; };
 		8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */; };
+		8D393EDF60B9CA294633DB92 /* ARCameraSightRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C2D5962B3E066B1BE44A71 /* ARCameraSightRepresentable.swift */; };
 		8E559FB9CF76C494A4F0F9D3 /* ReportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */; };
 		90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */; };
 		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
@@ -45,6 +48,7 @@
 		B673CA4757FB5EE3CABC7397 /* CameraDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */; };
 		B7CF5F885EFF99A8FEA919EF /* PendingReportDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */; };
 		C63B431F7CBF224F966ACC0C /* RefreshNearbyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */; };
+		CCD1A26EEC8A89F743A325C7 /* ARGeoMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */; };
 		CE940758D3D077F042A5F7AA /* ReviewPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */; };
 		CFE3323B5D6F07320A658E8A /* DriveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4012CEF579CDF48C3BF98B22 /* DriveSession.swift */; };
 		D47C82795D130D29D3B61ACB /* ShareCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49125D402CAD705C90729FB /* ShareCardRenderer.swift */; };
@@ -96,7 +100,9 @@
 		06CED698D6E1E1F26925C430 /* CameraDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDetailSheet.swift; sourceTree = "<group>"; };
 		083E635F68719ECA057C617B /* RouteExposureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureView.swift; sourceTree = "<group>"; };
 		11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceScoreCard.swift; sourceTree = "<group>"; };
+		12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGeoMathTests.swift; sourceTree = "<group>"; };
 		12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockSurveillanceApp.swift; sourceTree = "<group>"; };
+		19C2D5962B3E066B1BE44A71 /* ARCameraSightRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraSightRepresentable.swift; sourceTree = "<group>"; };
 		1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureService.swift; sourceTree = "<group>"; };
 		244AA03B270FF87A615A5168 /* AlertsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsEngine.swift; sourceTree = "<group>"; };
 		2B68A447A228714091E0BCF1 /* FlockSurveillanceTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlockSurveillanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,6 +112,7 @@
 		3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReportDetailSheet.swift; sourceTree = "<group>"; };
 		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
+		46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGeoMath.swift; sourceTree = "<group>"; };
 		4D4AF090DDE7F0ADE1448325 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
 		546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshNearbyIntent.swift; sourceTree = "<group>"; };
 		593E4E84A26593904B0FAE3A /* FlockSurveillance.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlockSurveillance.entitlements; sourceTree = "<group>"; };
@@ -146,6 +153,7 @@
 		EF94A8C60991DECD85C56617 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraSightView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -171,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
+				12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */,
 				A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
@@ -195,6 +204,15 @@
 				7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */,
 			);
 			path = Intents;
+			sourceTree = "<group>";
+		};
+		21171F29FD2322199AE0E799 /* AR */ = {
+			isa = PBXGroup;
+			children = (
+				19C2D5962B3E066B1BE44A71 /* ARCameraSightRepresentable.swift */,
+				FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */,
+			);
+			path = AR;
 			sourceTree = "<group>";
 		};
 		284529FE2954595964DE5BC0 /* Settings */ = {
@@ -272,6 +290,7 @@
 			children = (
 				244AA03B270FF87A615A5168 /* AlertsEngine.swift */,
 				C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */,
+				46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */,
 				6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */,
 				CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */,
 				4012CEF579CDF48C3BF98B22 /* DriveSession.swift */,
@@ -292,6 +311,7 @@
 		A408EEAB060BA1C0489EF127 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				21171F29FD2322199AE0E799 /* AR */,
 				463D0BFE2F1F23F2D53FFF3D /* Learn */,
 				E163E36B1DA9F6A7A5D35874 /* Map */,
 				8DD72CFA632A2FC4EDEFBD9F /* Onboarding */,
@@ -463,6 +483,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */,
+				8D393EDF60B9CA294633DB92 /* ARCameraSightRepresentable.swift in Sources */,
+				81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */,
+				84010744C819B71E8C39AE52 /* ARGeoMath.swift in Sources */,
 				83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */,
 				9CB65369BA218943953FE432 /* AppLinks.swift in Sources */,
 				ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */,
@@ -508,6 +531,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCD1A26EEC8A89F743A325C7 /* ARGeoMathTests.swift in Sources */,
 				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
@@ -598,7 +622,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -616,7 +640,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -718,7 +742,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -742,7 +766,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

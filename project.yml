@@ -10,8 +10,8 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     TARGETED_DEVICE_FAMILY: "1,2"
-    MARKETING_VERSION: "1.5.0"
-    CURRENT_PROJECT_VERSION: "7"
+    MARKETING_VERSION: "1.6.0"
+    CURRENT_PROJECT_VERSION: "8"
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
     INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
@@ -52,6 +52,7 @@ targets:
               - flocksurveillance
         NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.
         NSLocationAlwaysAndWhenInUseUsageDescription: Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.
+        NSCameraUsageDescription: Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app

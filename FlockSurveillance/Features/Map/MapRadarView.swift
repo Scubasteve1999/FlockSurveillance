@@ -39,6 +39,7 @@ struct MapRadarView: View {
     @State private var pendingAutoShowBurn = false
     /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
     @State private var mapReady = false
+    @State private var showARCameraSight = false
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -229,6 +230,9 @@ struct MapRadarView: View {
             )
             .presentationBackground(AppTheme.background)
         }
+        .fullScreenCover(isPresented: $showARCameraSight) {
+            ARCameraSightView()
+        }
     }
 
     private var shouldShowRankings: Bool {
@@ -364,6 +368,20 @@ struct MapRadarView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
             }
             Spacer()
+            Button {
+                showARCameraSight = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            } label: {
+                Image(systemName: "viewfinder")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.card.opacity(0.92))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+            }
+            .accessibilityLabel("AR Camera Sight")
+
             Button {
                 withAnimation(.easeInOut(duration: 0.25)) {
                     isPlacingReport.toggle()

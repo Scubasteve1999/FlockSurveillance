@@ -203,11 +203,14 @@ final class SharingNetworkStoreTests: XCTestCase {
         }
     }
 
-    func testFailedLoadCanRetry() {
+    func testFailedLoadCanRetry() async {
         let store = SharingNetworkStore()
-        // Simulate failed load state without marking permanently loaded.
-        store.reload()
-        // App bundle in tests includes the resource, so reload should succeed.
+        await store.reload(resourceName: "DoesNotExistSharingNetworkBundle")
+        XCTAssertFalse(store.isLoaded)
+        XCTAssertNotNil(store.loadError)
+        XCTAssertTrue(store.hubs.isEmpty)
+
+        await store.reload()
         XCTAssertTrue(store.isLoaded)
         XCTAssertNil(store.loadError)
         XCTAssertEqual(store.hubs.count, 3)

@@ -34,43 +34,59 @@ struct SharingNetworkView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            AppTheme.background.ignoresSafeArea()
+        GeometryReader { geo in
+            ZStack(alignment: .top) {
+                AppTheme.background.ignoresSafeArea()
 
-            if mapReady {
-                mapContent
-            } else {
-                ProgressView()
-                    .tint(AppTheme.accent)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
+                if mapReady, geo.size.width > 1, geo.size.height > 1 {
+                    mapContent
+                } else {
+                    ProgressView()
+                        .tint(AppTheme.accent)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
 
-            // Top chrome only — no full-height Spacer, so map gestures and
-            // hub chips aren't fighting a pass-through overlay.
-            VStack(spacing: 10) {
-                header
-                hubPicker
+                // Top chrome only — no full-height Spacer, so map gestures and
+                // hub chips aren't fighting a pass-through overlay.
+                VStack(spacing: 10) {
+                    header
+                    hubPicker
+                }
+                .padding(.top, 8)
             }
-            .padding(.top, 8)
+            .onAppear {
+                armMapWhenSized(geo.size)
+            }
+            .onChange(of: geo.size) { _, size in
+                armMapWhenSized(size)
+            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             footer
         }
         .preferredColorScheme(.dark)
-        .onAppear {
-            store.loadIfNeeded()
+        .task {
+            await store.loadIfNeeded()
             if selectedHubID == nil {
                 selectedHubID = store.hubs.first?.id
             }
             fitCamera(to: selectedHub)
+        }
+        .onAppear {
+            // Hard fallback — never leave the spinner up if size callbacks miss.
             Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 100_000_000)
+                try? await Task.sleep(nanoseconds: 150_000_000)
                 mapReady = true
             }
         }
         .onChange(of: selectedPartnerID) { _, partnerID in
             guard let partnerID else { return }
             selectedPartner = reachPoints.first { $0.partner.id == partnerID }?.partner
+        }
+        .onChange(of: store.isLoaded) { _, loaded in
+            guard loaded, selectedHubID == nil else { return }
+            selectedHubID = store.hubs.first?.id
+            fitCamera(to: selectedHub)
         }
         .sheet(item: $selectedPartner) { partner in
             SharingPartnerSheet(
@@ -180,7 +196,13 @@ struct SharingNetworkView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.primary)
                 Button("Try again") {
-                    store.reload()
+                    Task {
+                        await store.reload()
+                        if selectedHubID == nil {
+                            selectedHubID = store.hubs.first?.id
+                        }
+                        fitCamera(to: selectedHub)
+                    }
                 }
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(AppTheme.accent)
@@ -211,6 +233,9 @@ struct SharingNetworkView: View {
     }
 
     private var statusLine: String {
+        if store.isLoading && !store.isLoaded {
+            return "Loading…"
+        }
         guard let hub = selectedHub else {
             return store.loadError == nil ? "Loading…" : "Unavailable"
         }
@@ -220,6 +245,11 @@ struct SharingNetworkView: View {
             return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
         }
         return "\(hub.shortName) · \(points) partners"
+    }
+
+    private func armMapWhenSized(_ size: CGSize) {
+        guard !mapReady, size.width > 1, size.height > 1 else { return }
+        mapReady = true
     }
 
     private func selectHub(_ hub: SharingHub) {

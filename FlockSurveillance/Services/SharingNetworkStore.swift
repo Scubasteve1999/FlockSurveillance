@@ -7,29 +7,41 @@ final class SharingNetworkStore {
     private(set) var bundle: SharingNetworkBundle?
     private(set) var loadError: String?
     private(set) var isLoaded = false
+    private(set) var isLoading = false
 
-    func loadIfNeeded() {
-        guard !isLoaded else { return }
-        reload()
+    func loadIfNeeded() async {
+        guard !isLoaded, !isLoading else { return }
+        await reload()
     }
 
-    /// Force a reload (e.g. after a failed first attempt).
-    func reload() {
+    /// Force a reload (e.g. after a failed first attempt). Decodes off the main actor.
+    func reload(
+        resourceName: String = "SharingNetworkBundle",
+        from resourceBundle: Bundle = .main
+    ) async {
+        isLoading = true
+        loadError = nil
         do {
-            bundle = try Self.loadBundle()
-            loadError = nil
+            let name = resourceName
+            let loaded = try await Task.detached(priority: .userInitiated) {
+                try SharingNetworkStore.loadBundle(from: resourceBundle, resourceName: name)
+            }.value
+            bundle = loaded
             isLoaded = true
+            loadError = nil
         } catch {
             bundle = nil
-            loadError = error.localizedDescription
             isLoaded = false
+            loadError = error.localizedDescription
         }
+        isLoading = false
     }
 
     /// Test / preview helper.
     func applyLoadedBundle(_ bundle: SharingNetworkBundle) {
         self.bundle = bundle
         self.isLoaded = true
+        self.isLoading = false
         self.loadError = nil
     }
 

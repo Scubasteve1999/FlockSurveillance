@@ -56,10 +56,7 @@ final class SharingNetworkStore {
         limit: Int = 250,
         preferring region: MKCoordinateRegion? = nil
     ) -> [SharingArc] {
-        let all = partners(for: hubId).compactMap { partner -> SharingArc? in
-            guard let link = partner.link(for: hubId) else { return nil }
-            return SharingArc(partner: partner, direction: link.direction)
-        }
+        let all = reachPoints(for: hubId)
         if all.count <= limit { return all }
 
         guard let region else {
@@ -86,6 +83,14 @@ final class SharingNetworkStore {
         let remaining = limit - sampled.count
         sampled.append(contentsOf: Self.strideSample(outOfView, limit: remaining))
         return sampled
+    }
+
+    /// Every active partner for a hub (reach points), uncapped.
+    func reachPoints(for hubId: String) -> [SharingArc] {
+        partners(for: hubId).compactMap { partner -> SharingArc? in
+            guard let link = partner.link(for: hubId) else { return nil }
+            return SharingArc(partner: partner, direction: link.direction)
+        }
     }
 
     static func regionFitting(hub: SharingHub, partners: [SharingPartner]) -> MKCoordinateRegion {

@@ -6,6 +6,7 @@ struct SharingNetworkView: View {
     @State private var store = SharingNetworkStore()
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
+    @State private var selectedPartnerID: String?
     @State private var position: MapCameraPosition = .region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 39.8, longitude: -98.5),
@@ -20,11 +21,13 @@ struct SharingNetworkView: View {
         return store.hubs.first { $0.id == selectedHubID } ?? store.hubs.first
     }
 
-    private var partnerCount: Int {
-        guard let hub = selectedHub else { return 0 }
-        return store.partners(for: hub.id).count
+    /// Every partner pin (uncapped) — matches the source “reach point” footprint.
+    private var reachPoints: [SharingArc] {
+        guard let hub = selectedHub else { return [] }
+        return store.reachPoints(for: hub.id)
     }
 
+    /// Polylines stay capped for map performance.
     private var arcs: [SharingArc] {
         guard let hub = selectedHub else { return [] }
         return store.arcs(for: hub.id, limit: 250, preferring: visibleRegion)
@@ -65,6 +68,10 @@ struct SharingNetworkView: View {
                 mapReady = true
             }
         }
+        .onChange(of: selectedPartnerID) { _, partnerID in
+            guard let partnerID else { return }
+            selectedPartner = reachPoints.first { $0.partner.id == partnerID }?.partner
+        }
         .sheet(item: $selectedPartner) { partner in
             SharingPartnerSheet(
                 partner: partner,
@@ -73,13 +80,14 @@ struct SharingNetworkView: View {
             )
             .presentationDetents([.medium, .large])
             .presentationBackground(AppTheme.background)
+            .onDisappear { selectedPartnerID = nil }
         }
     }
 
     private var mapContent: some View {
-        Map(position: $position) {
+        Map(position: $position, selection: $selectedPartnerID) {
             if let hub = selectedHub {
-                Annotation(hub.shortName, coordinate: hub.coordinate) {
+                Annotation(hub.shortName, coordinate: hub.coordinate, anchor: .center) {
                     ZStack {
                         Circle()
                             .fill(AppTheme.primary.opacity(0.25))
@@ -91,24 +99,17 @@ struct SharingNetworkView: View {
                     }
                     .accessibilityLabel(hub.name)
                 }
+                .annotationTitles(.hidden)
 
                 ForEach(arcs) { arc in
                     MapPolyline(geodesicPolyline(from: hub.coordinate, to: arc.partner.coordinate))
-                        .stroke(arcColor(arc.direction), lineWidth: 1.2)
+                        .stroke(arcColor(arc.direction), lineWidth: 1.15)
+                }
 
-                    Annotation("", coordinate: arc.partner.coordinate) {
-                        Button {
-                            selectedPartner = arc.partner
-                        } label: {
-                            Circle()
-                                .fill(arcColor(arc.direction))
-                                .frame(width: 10, height: 10)
-                                .overlay(Circle().stroke(.white.opacity(0.7), lineWidth: 0.8))
-                                .contentShape(Circle().scale(2.2))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(arc.partner.name)
-                    }
+                ForEach(reachPoints) { point in
+                    Marker(point.partner.name, coordinate: point.partner.coordinate)
+                        .tint(markerTint(point.direction))
+                        .tag(point.partner.id)
                 }
             }
         }
@@ -213,15 +214,17 @@ struct SharingNetworkView: View {
         guard let hub = selectedHub else {
             return store.loadError == nil ? "Loading…" : "Unavailable"
         }
-        let shown = arcs.count
-        if partnerCount > shown {
-            return "\(hub.shortName) · \(partnerCount) partners · showing \(shown) arcs"
+        let points = reachPoints.count
+        let shownArcs = arcs.count
+        if points > shownArcs {
+            return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
         }
-        return "\(hub.shortName) · \(partnerCount) partners"
+        return "\(hub.shortName) · \(points) partners"
     }
 
     private func selectHub(_ hub: SharingHub) {
         selectedHubID = hub.id
+        selectedPartnerID = nil
         // Clear stale viewport so the new hub isn't filtered against the previous camera.
         visibleRegion = nil
         fitCamera(to: hub, animated: true)
@@ -249,6 +252,14 @@ struct SharingNetworkView: View {
         case .hubOut: return AppTheme.primary.opacity(0.75)
         case .hubIn: return AppTheme.accent.opacity(0.75)
         case .bidirectional: return Color(red: 0.95, green: 0.72, blue: 0.28).opacity(0.8)
+        }
+    }
+
+    private func markerTint(_ direction: SharingDirection) -> Color {
+        switch direction {
+        case .hubOut: return AppTheme.primary
+        case .hubIn: return AppTheme.accent
+        case .bidirectional: return Color(red: 0.95, green: 0.72, blue: 0.28)
         }
     }
 

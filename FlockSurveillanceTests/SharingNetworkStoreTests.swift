@@ -113,6 +113,7 @@ final class SharingNetworkStoreTests: XCTestCase {
         store.applyLoadedBundle(bundle)
         XCTAssertEqual(store.arcs(for: "waunakee", limit: 5).count, 5)
         XCTAssertEqual(store.partners(for: "waunakee").count, 20)
+        XCTAssertEqual(store.reachPoints(for: "waunakee").count, 20)
     }
 
     func testViewportPreferenceKeepsInViewPartners() throws {

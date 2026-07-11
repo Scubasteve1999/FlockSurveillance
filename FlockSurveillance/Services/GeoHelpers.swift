@@ -113,6 +113,22 @@ enum GeoHelpers {
             && coordinate.longitude >= -180 && coordinate.longitude <= 180
     }
 
+    /// Place Score may trust a Clear grade only after a successful fetch covering
+    /// the pin has finished — not merely because a fetch was scheduled (`lastRegion`).
+    static func placeScoreIsSettled(
+        coordinate: CLLocationCoordinate2D,
+        isLoading: Bool,
+        lastFetchedRegion: MKCoordinateRegion?
+    ) -> Bool {
+        guard !isLoading, let region = lastFetchedRegion else { return false }
+        return Self.region(region, contains: coordinate)
+    }
+
+    /// Publish / burn auto Place Score when we have nearby cameras or a settled Clear.
+    static func shouldCommitPlaceScore(cameraCount: Int, settled: Bool) -> Bool {
+        cameraCount > 0 || settled
+    }
+
     static func isRegionTooLargeForFullFetch(_ region: MKCoordinateRegion) -> Bool {
         dominantSpan(region) > maxTileableSpanDegrees
     }

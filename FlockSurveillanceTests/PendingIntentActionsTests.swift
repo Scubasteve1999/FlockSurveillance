@@ -49,6 +49,16 @@ final class PendingIntentActionsTests: XCTestCase {
         XCTAssertNil(PendingIntentActions.commuteToHome)
     }
 
+    func testCommutePendingCanBeClaimedOnce() {
+        PendingIntentActions.commuteToHome = true
+        let claimed = PendingIntentActions.commuteToHome
+        PendingIntentActions.commuteToHome = nil
+        XCTAssertEqual(claimed, true)
+        XCTAssertNil(PendingIntentActions.commuteToHome)
+        // Second claim sees nothing — prevents double route analysis.
+        XCTAssertNil(PendingIntentActions.commuteToHome)
+    }
+
     func testPlaceScoreDeepLinkUsesCoarsePrecision() throws {
         let score = PlaceScore(
             coordinate: CLLocationCoordinate2D(latitude: 33.74912, longitude: -84.38845),

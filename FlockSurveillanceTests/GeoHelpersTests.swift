@@ -157,4 +157,64 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(GeoHelpers.region(region, contains: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)))
         XCTAssertFalse(GeoHelpers.region(region, contains: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0)))
     }
+
+    func testPlaceScoreNotSettledWhenFetchOnlyScheduled() {
+        let coordinate = CLLocationCoordinate2D(latitude: 25.76, longitude: -80.19)
+        // Mirrors the old bug: lastRegion set at schedule time with isLoading false.
+        XCTAssertFalse(
+            GeoHelpers.placeScoreIsSettled(
+                coordinate: coordinate,
+                isLoading: false,
+                lastFetchedRegion: nil
+            )
+        )
+        XCTAssertFalse(GeoHelpers.shouldCommitPlaceScore(cameraCount: 0, settled: false))
+    }
+
+    func testPlaceScoreSettledOnlyAfterSuccessfulCoveringFetch() {
+        let coordinate = CLLocationCoordinate2D(latitude: 25.76, longitude: -80.19)
+        let miami = MKCoordinateRegion(
+            center: coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
+        )
+        let atlanta = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
+        )
+
+        XCTAssertFalse(
+            GeoHelpers.placeScoreIsSettled(
+                coordinate: coordinate,
+                isLoading: true,
+                lastFetchedRegion: miami
+            )
+        )
+        XCTAssertFalse(
+            GeoHelpers.placeScoreIsSettled(
+                coordinate: coordinate,
+                isLoading: false,
+                lastFetchedRegion: atlanta
+            )
+        )
+        XCTAssertTrue(
+            GeoHelpers.placeScoreIsSettled(
+                coordinate: coordinate,
+                isLoading: false,
+                lastFetchedRegion: miami
+            )
+        )
+        XCTAssertTrue(GeoHelpers.shouldCommitPlaceScore(cameraCount: 0, settled: true))
+        XCTAssertTrue(GeoHelpers.shouldCommitPlaceScore(cameraCount: 3, settled: false))
+    }
+
+    func testFailedFetchMustNotCommitClear() {
+        // After a failed Overpass call: not loading, no successful covering region.
+        let settled = GeoHelpers.placeScoreIsSettled(
+            coordinate: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            isLoading: false,
+            lastFetchedRegion: nil
+        )
+        XCTAssertFalse(settled)
+        XCTAssertFalse(GeoHelpers.shouldCommitPlaceScore(cameraCount: 0, settled: settled))
+    }
 }

@@ -587,15 +587,10 @@ struct RouteExposureView: View {
     }
 
     private func handlePendingCommuteIfNeeded() {
-        guard PendingIntentActions.commuteToHome != nil else { return }
-        // Leave pending until the in-flight analyze finishes (onChange of isRouting retries).
+        // Leave pending while an analysis is in flight (onChange of isRouting retries).
         guard !isRouting else { return }
-        Task { await runCommuteFromPending() }
-    }
-
-    private func runCommuteFromPending() async {
         guard let toHome = PendingIntentActions.commuteToHome else { return }
-        guard !isRouting else { return }
+
         guard WidgetBridge.homeCoordinate() != nil else {
             PendingIntentActions.commuteToHome = nil
             commuteHint = "Set Home in Settings first."
@@ -606,9 +601,10 @@ struct RouteExposureView: View {
             commuteHint = "Set Work in Settings first."
             return
         }
-        // Clear only once we're committed past the routing guard.
+
+        // Claim synchronously so onAppear + notification can't double-start.
         PendingIntentActions.commuteToHome = nil
-        await runCommute(toHome: toHome)
+        Task { await runCommute(toHome: toHome) }
     }
 
     private func runCommute(toHome: Bool) async {

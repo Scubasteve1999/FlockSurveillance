@@ -474,10 +474,11 @@ struct MapRadarView: View {
     }
 
     private func computePlaceScore() {
-        let scoreCoordinate = locationManager.location?.coordinate
+        // Personal / map-center only — never invent Atlanta when nothing is known.
+        guard let scoreCoordinate = locationManager.location?.coordinate
             ?? WidgetBridge.homeCoordinate()
             ?? visibleRegion?.center
-            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+        else { return }
         presentScore(at: scoreCoordinate, scheduleFetch: true)
     }
 
@@ -488,21 +489,25 @@ struct MapRadarView: View {
         else { return }
 
         let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
-        let regionCovers = repository.lastRegion.map { GeoHelpers.region($0, contains: coordinate) } ?? false
-        let settled = !repository.isLoading && !repository.isSeeding && regionCovers
+        let settled = repository.hasSettledFetch(covering: coordinate)
 
         // Kick off once; later calls only refresh / burn when data is ready.
         if pendingScoreCoordinate == nil, placeScore == nil {
-            presentScore(at: coordinate, scheduleFetch: true, burnAutoShowWhenSettled: true)
-        } else if pendingAutoShowBurn {
+            presentScore(
+                at: coordinate,
+                scheduleFetch: true,
+                burnAutoShowWhenSettled: true,
+                publishOptimisticClear: false
+            )
+        } else if pendingAutoShowBurn, score.cameraCount > 0 {
             withAnimation(.easeInOut(duration: 0.2)) {
                 placeScore = score
             }
         }
 
         // Burn only when we have nearby cameras, or a settled fetch for this spot
-        // confirmed a real Clear (not "cache has LA while you're in Miami").
-        if score.cameraCount > 0 || settled {
+        // confirmed a real Clear (not "scheduled region" or failed Overpass).
+        if GeoHelpers.shouldCommitPlaceScore(cameraCount: score.cameraCount, settled: settled) {
             hasAutoShownPlaceScore = true
             pendingAutoShowBurn = false
             withAnimation(.easeInOut(duration: 0.25)) {
@@ -511,6 +516,9 @@ struct MapRadarView: View {
             if settled {
                 pendingScoreCoordinate = nil
             }
+        } else if placeScore?.cameraCount == 0 {
+            // Hide optimistic false Clear while the covering fetch is still pending.
+            placeScore = nil
         }
     }
 
@@ -528,7 +536,8 @@ struct MapRadarView: View {
         at coordinate: CLLocationCoordinate2D,
         scheduleFetch: Bool,
         moveCamera: Bool = false,
-        burnAutoShowWhenSettled: Bool = false
+        burnAutoShowWhenSettled: Bool = false,
+        publishOptimisticClear: Bool = true
     ) {
         let region = MKCoordinateRegion(
             center: coordinate,
@@ -544,8 +553,11 @@ struct MapRadarView: View {
                 visibleRegion = region
             }
         }
-        withAnimation(.easeInOut(duration: 0.25)) {
-            placeScore = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        if publishOptimisticClear || score.cameraCount > 0 {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                placeScore = score
+            }
         }
         if scheduleFetch {
             repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
@@ -556,16 +568,31 @@ struct MapRadarView: View {
     private func refreshPendingScoreIfNeeded(allowClear: Bool = false) {
         guard let coordinate = pendingScoreCoordinate else { return }
         let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let settled = repository.hasSettledFetch(covering: coordinate)
+
+        if score.cameraCount > 0 {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                placeScore = score
+            }
+            if pendingAutoShowBurn {
+                hasAutoShownPlaceScore = true
+                pendingAutoShowBurn = false
+            }
+        }
+
+        // Clear only after a successful covering fetch completes.
+        guard allowClear, settled else {
+            if settled {
+                pendingScoreCoordinate = nil
+            }
+            return
+        }
+
         withAnimation(.easeInOut(duration: 0.2)) {
             placeScore = score
         }
-
-        guard allowClear, !repository.isLoading else { return }
-        guard let last = repository.lastRegion, GeoHelpers.region(last, contains: coordinate) else { return }
-
         pendingScoreCoordinate = nil
         if pendingAutoShowBurn {
-            // Nearby cameras or a settled Clear for this region — safe to burn.
             hasAutoShownPlaceScore = true
             pendingAutoShowBurn = false
         }

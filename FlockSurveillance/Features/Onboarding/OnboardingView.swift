@@ -184,12 +184,11 @@ struct OnboardingView: View {
         let coordinate = teaserCoordinate()
         teaserIsSample = !hasPersonalLocation
         let score = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
-        let regionCovers = repository.lastRegion.map { GeoHelpers.region($0, contains: coordinate) } ?? false
-        let settled = !repository.isLoading && !repository.isSeeding && regionCovers
+        let settled = repository.hasSettledFetch(covering: coordinate)
 
         // Don't publish a Clear grade until we have nearby cameras or a settled
-        // fetch for this coordinate (avoids false "your block looks clear").
-        if score.cameraCount > 0 || settled {
+        // successful fetch for this coordinate (avoids false "your block looks clear").
+        if GeoHelpers.shouldCommitPlaceScore(cameraCount: score.cameraCount, settled: settled) {
             teaserScore = score
             isLoadingTeaser = false
         } else {

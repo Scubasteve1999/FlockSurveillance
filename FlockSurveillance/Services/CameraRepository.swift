@@ -11,6 +11,10 @@ final class CameraRepository {
     private(set) var lastError: String?
     private(set) var coverageHint: String?
     private(set) var lastRegion: MKCoordinateRegion?
+    /// Region of the last *successful* Overpass fetch. Used for Place Score
+    /// settlement — unlike `lastRegion`, this is not set at schedule time and
+    /// is not updated on failure (avoids false Clear).
+    private(set) var lastFetchedRegion: MKCoordinateRegion?
     private(set) var lastSuccessfulFetchAt: Date?
     private(set) var isServingStale = false
     private(set) var isSeeding = false
@@ -20,6 +24,7 @@ final class CameraRepository {
     private var debounceTask: Task<Void, Never>?
     private var seedTask: Task<Void, Never>?
     private var fetchGeneration = 0
+    private var inFlightFetchGenerations = Set<Int>()
 
     private let maxCachedCameras = 12_000
     private let maxAge: TimeInterval = 14 * 24 * 60 * 60
@@ -126,8 +131,19 @@ final class CameraRepository {
     }
 
     func fetch(for region: MKCoordinateRegion, collapseContinental: Bool = true) async {
+        lastRegion = region
         fetchGeneration += 1
         await fetch(for: region, generation: fetchGeneration, collapseContinental: collapseContinental)
+    }
+
+    /// True when a successful Overpass fetch covering `coordinate` has finished
+    /// and nothing is still in flight — safe to trust a Clear Place Score.
+    func hasSettledFetch(covering coordinate: CLLocationCoordinate2D) -> Bool {
+        GeoHelpers.placeScoreIsSettled(
+            coordinate: coordinate,
+            isLoading: isLoading,
+            lastFetchedRegion: lastFetchedRegion
+        )
     }
 
     private func fetch(
@@ -135,7 +151,7 @@ final class CameraRepository {
         generation: Int,
         collapseContinental: Bool = true
     ) async {
-        isLoading = true
+        beginFetch(generation)
         lastError = nil
 
         let tooLarge = collapseContinental && GeoHelpers.isRegionTooLargeForFullFetch(region)
@@ -153,22 +169,29 @@ final class CameraRepository {
             var combined: [ALPRCameraDTO] = []
             var seen = Set<String>()
             for tile in tiles {
-                guard generation == fetchGeneration else { return }
+                guard generation == fetchGeneration else {
+                    endFetch(generation)
+                    return
+                }
                 let remote = try await client.fetchCameras(in: tile)
                 for dto in remote where seen.insert(dto.id).inserted {
                     combined.append(dto)
                 }
             }
 
-            guard generation == fetchGeneration else { return }
+            guard generation == fetchGeneration else {
+                endFetch(generation)
+                return
+            }
             upsert(combined.map { $0.makeModel() })
             pruneCache()
             loadCached()
+            lastFetchedRegion = region
             lastSuccessfulFetchAt = .now
             isServingStale = false
             WidgetBridge.writeNearbySnapshot(from: cameras)
         } catch is CancellationError {
-            // ignore
+            // ignore — do not mark region settled
         } catch {
             if generation == fetchGeneration {
                 lastError = tooLarge
@@ -183,11 +206,20 @@ final class CameraRepository {
                     isServingStale = !cameras.isEmpty
                 }
             }
+            // Failed fetch must not update lastFetchedRegion (false Clear).
         }
 
-        if generation == fetchGeneration {
-            isLoading = false
-        }
+        endFetch(generation)
+    }
+
+    private func beginFetch(_ generation: Int) {
+        inFlightFetchGenerations.insert(generation)
+        isLoading = true
+    }
+
+    private func endFetch(_ generation: Int) {
+        inFlightFetchGenerations.remove(generation)
+        isLoading = !inFlightFetchGenerations.isEmpty
     }
 
     func startSeedIfNeeded() {
@@ -241,6 +273,9 @@ final class CameraRepository {
         isSeeding = false
         guard let modelContext else {
             cameras = []
+            lastSuccessfulFetchAt = nil
+            lastFetchedRegion = nil
+            lastRegion = nil
             AlertCandidateStore.clear()
             WidgetSnapshotStore.clearNearbySnapshot()
             AlertsEngine.shared.clearGeofences()
@@ -252,6 +287,8 @@ final class CameraRepository {
         try? modelContext.save()
         cameras = []
         lastSuccessfulFetchAt = nil
+        lastFetchedRegion = nil
+        lastRegion = nil
         isServingStale = false
         coverageHint = nil
         AlertCandidateStore.clear()

@@ -14,7 +14,6 @@ struct SharingNetworkView: View {
         )
     )
     @State private var visibleRegion: MKCoordinateRegion?
-    @State private var mapReady = false
 
     private var selectedHub: SharingHub? {
         guard let selectedHubID else { return store.hubs.first }
@@ -38,7 +37,9 @@ struct SharingNetworkView: View {
             ZStack(alignment: .top) {
                 AppTheme.background.ignoresSafeArea()
 
-                if mapReady, geo.size.width > 1, geo.size.height > 1 {
+                // MapKit misbehaves when created at a degenerate size, so gate
+                // on live geometry until the container has a real frame.
+                if geo.size.width > 1, geo.size.height > 1 {
                     mapContent
                 } else {
                     ProgressView()
@@ -54,12 +55,6 @@ struct SharingNetworkView: View {
                 }
                 .padding(.top, 8)
             }
-            .onAppear {
-                armMapWhenSized(geo.size)
-            }
-            .onChange(of: geo.size) { _, size in
-                armMapWhenSized(size)
-            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             footer
@@ -67,17 +62,6 @@ struct SharingNetworkView: View {
         .preferredColorScheme(.dark)
         .task {
             await store.loadIfNeeded()
-            if selectedHubID == nil {
-                selectedHubID = store.hubs.first?.id
-            }
-            fitCamera(to: selectedHub)
-        }
-        .onAppear {
-            // Hard fallback — never leave the spinner up if size callbacks miss.
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 150_000_000)
-                mapReady = true
-            }
         }
         .onChange(of: selectedPartnerID) { _, partnerID in
             guard let partnerID else { return }
@@ -196,16 +180,11 @@ struct SharingNetworkView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.primary)
                 Button("Try again") {
-                    Task {
-                        await store.reload()
-                        if selectedHubID == nil {
-                            selectedHubID = store.hubs.first?.id
-                        }
-                        fitCamera(to: selectedHub)
-                    }
+                    Task { await store.reload() }
                 }
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(AppTheme.accent)
+                .disabled(store.isLoading)
             } else {
                 Text("Public records snapshot · not live Flock data")
                     .font(.system(size: 11, weight: .semibold))
@@ -245,11 +224,6 @@ struct SharingNetworkView: View {
             return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
         }
         return "\(hub.shortName) · \(points) partners"
-    }
-
-    private func armMapWhenSized(_ size: CGSize) {
-        guard !mapReady, size.width > 1, size.height > 1 else { return }
-        mapReady = true
     }
 
     private func selectHub(_ hub: SharingHub) {

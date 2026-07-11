@@ -37,8 +37,6 @@ struct MapRadarView: View {
     @State private var pendingScoreCoordinate: CLLocationCoordinate2D?
     /// When true, burn `hasAutoShownPlaceScore` only after pending score settles.
     @State private var pendingAutoShowBurn = false
-    /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
-    @State private var mapReady = false
     @State private var showARCameraSight = false
     @State private var showSharingNetwork = false
 
@@ -87,7 +85,9 @@ struct MapRadarView: View {
             ZStack(alignment: .top) {
                 AppTheme.background.ignoresSafeArea()
 
-                if mapReady, geo.size.width > 1, geo.size.height > 1 {
+                // MapKit hangs if inserted at zero size (CAMetalLayer width=0),
+                // so gate on live geometry until the container has a real frame.
+                if geo.size.width > 1, geo.size.height > 1 {
                     mapContent
                 } else {
                     ProgressView()
@@ -151,12 +151,6 @@ struct MapRadarView: View {
                 }
                 .padding(.top, 8)
             }
-            .onAppear {
-                armMapWhenSized(geo.size)
-            }
-            .onChange(of: geo.size) { _, size in
-                armMapWhenSized(size)
-            }
         }
         .onAppear {
             locationManager.start()
@@ -165,10 +159,9 @@ struct MapRadarView: View {
             radar.watchModeEnabled = watchModeStored
             bootstrapRegion()
             startPulseIfNeeded()
-            // Hard fallback — never leave the spinner up if size callbacks miss.
+            // Delay the auto Place Score until the map has had a beat to settle.
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 150_000_000)
-                mapReady = true
                 maybeAutoShowPlaceScore()
             }
             cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
@@ -325,11 +318,6 @@ struct MapRadarView: View {
             repository.scheduleFetch(for: context.region)
         }
         .ignoresSafeArea()
-    }
-
-    private func armMapWhenSized(_ size: CGSize) {
-        guard !mapReady, size.width > 1, size.height > 1 else { return }
-        mapReady = true
     }
 
     private var reportPlacementBar: some View {

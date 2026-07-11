@@ -10,17 +10,18 @@ final class SharingNetworkStore {
     private(set) var isLoading = false
 
     func loadIfNeeded() async {
-        guard !isLoaded, !isLoading else { return }
+        guard !isLoaded else { return }
         await reload()
     }
 
     /// Force a reload (e.g. after a failed first attempt). Decodes off the main actor.
+    /// Keeps the previous `loadError` visible until this attempt resolves.
     func reload(
         resourceName: String = "SharingNetworkBundle",
         from resourceBundle: Bundle = .main
     ) async {
+        guard !isLoading else { return }
         isLoading = true
-        loadError = nil
         do {
             let name = resourceName
             let loaded = try await Task.detached(priority: .userInitiated) {

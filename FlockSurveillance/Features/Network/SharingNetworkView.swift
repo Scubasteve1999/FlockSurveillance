@@ -15,21 +15,22 @@ struct SharingNetworkView: View {
     )
     @State private var visibleRegion: MKCoordinateRegion?
 
+    /// Rendered pins and polylines both stay capped — an uncapped Marker count (up to
+    /// 1,000+) overwhelms the accessibility tree and makes the sheet's own controls
+    /// (close button, hub chips) unreachable to VoiceOver/UI automation. Kept in sync by
+    /// `refreshArcs()` whenever the hub or visible region changes, rather than recomputed
+    /// on every body evaluation — `store.arcs` rescans and stride-samples the full partner list.
+    @State private var arcs: [SharingArc] = []
+
     private var selectedHub: SharingHub? {
         guard let selectedHubID else { return store.hubs.first }
         return store.hubs.first { $0.id == selectedHubID } ?? store.hubs.first
     }
 
-    /// Every partner pin (uncapped) — matches the source “reach point” footprint.
-    private var reachPoints: [SharingArc] {
-        guard let hub = selectedHub else { return [] }
-        return store.reachPoints(for: hub.id)
-    }
-
-    /// Polylines stay capped for map performance.
-    private var arcs: [SharingArc] {
-        guard let hub = selectedHub else { return [] }
-        return store.arcs(for: hub.id, limit: 250, preferring: visibleRegion)
+    /// Total partner count for the hub, for the status line only — not the rendered list.
+    private var totalPartnerCount: Int {
+        guard let hub = selectedHub else { return 0 }
+        return store.partners(for: hub.id).count
     }
 
     var body: some View {
@@ -37,15 +38,7 @@ struct SharingNetworkView: View {
             ZStack(alignment: .top) {
                 AppTheme.background.ignoresSafeArea()
 
-                // MapKit misbehaves when created at a degenerate size, so gate
-                // on live geometry until the container has a real frame.
-                if geo.size.width > 1, geo.size.height > 1 {
-                    mapContent
-                } else {
-                    ProgressView()
-                        .tint(AppTheme.accent)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+                MapKitSizeGate(size: geo.size) { mapContent }
 
                 // Top chrome only — no full-height Spacer, so map gestures and
                 // hub chips aren't fighting a pass-through overlay.
@@ -65,7 +58,7 @@ struct SharingNetworkView: View {
         }
         .onChange(of: selectedPartnerID) { _, partnerID in
             guard let partnerID else { return }
-            selectedPartner = reachPoints.first { $0.partner.id == partnerID }?.partner
+            selectedPartner = arcs.first { $0.partner.id == partnerID }?.partner
         }
         .onChange(of: store.isLoaded) { _, loaded in
             guard loaded, selectedHubID == nil else { return }
@@ -106,7 +99,7 @@ struct SharingNetworkView: View {
                         .stroke(arcColor(arc.direction), lineWidth: 1.15)
                 }
 
-                ForEach(reachPoints) { point in
+                ForEach(arcs) { point in
                     Marker(point.partner.name, coordinate: point.partner.coordinate)
                         .tint(markerTint(point.direction))
                         .tag(point.partner.id)
@@ -117,6 +110,7 @@ struct SharingNetworkView: View {
         .ignoresSafeArea()
         .onMapCameraChange(frequency: .onEnd) { context in
             visibleRegion = context.region
+            refreshArcs()
         }
     }
 
@@ -218,7 +212,7 @@ struct SharingNetworkView: View {
         guard let hub = selectedHub else {
             return store.loadError == nil ? "Loading…" : "Unavailable"
         }
-        let points = reachPoints.count
+        let points = totalPartnerCount
         let shownArcs = arcs.count
         if points > shownArcs {
             return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
@@ -242,6 +236,7 @@ struct SharingNetworkView: View {
             partners: store.partners(for: hub.id)
         )
         visibleRegion = fitted
+        refreshArcs()
         if animated {
             withAnimation(.easeInOut(duration: 0.35)) {
                 position = .region(fitted)
@@ -249,6 +244,18 @@ struct SharingNetworkView: View {
         } else {
             position = .region(fitted)
         }
+    }
+
+    private func refreshArcs() {
+        guard let hub = selectedHub else {
+            arcs = []
+            return
+        }
+        arcs = store.arcs(
+            for: hub.id,
+            limit: SharingNetworkStore.maxRenderedPartners,
+            preferring: visibleRegion
+        )
     }
 
     private func arcColor(_ direction: SharingDirection) -> Color {

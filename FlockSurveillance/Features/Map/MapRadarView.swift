@@ -85,15 +85,7 @@ struct MapRadarView: View {
             ZStack(alignment: .top) {
                 AppTheme.background.ignoresSafeArea()
 
-                // MapKit hangs if inserted at zero size (CAMetalLayer width=0),
-                // so gate on live geometry until the container has a real frame.
-                if geo.size.width > 1, geo.size.height > 1 {
-                    mapContent
-                } else {
-                    ProgressView()
-                        .tint(AppTheme.accent)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+                MapKitSizeGate(size: geo.size) { mapContent }
 
                 if isPlacingReport {
                     Image(systemName: "plus.viewfinder")

@@ -22,6 +22,7 @@ final class SharingNetworkStore {
     ) async {
         guard !isLoading else { return }
         isLoading = true
+        defer { isLoading = false }
         do {
             let name = resourceName
             let loaded = try await Task.detached(priority: .userInitiated) {
@@ -35,7 +36,6 @@ final class SharingNetworkStore {
             isLoaded = false
             loadError = error.localizedDescription
         }
-        isLoading = false
     }
 
     /// Test / preview helper.
@@ -63,10 +63,19 @@ final class SharingNetworkStore {
         }
     }
 
+    /// Upper bound for partners rendered as map annotations (Markers + polylines) per hub.
+    ///
+    /// This isn't just a polyline-draw-performance knob: SharingNetworkView renders one
+    /// Marker per arc from this same capped list, and an uncapped Marker count (a hub can
+    /// have 1,000+ partners) overwhelms the accessibility tree, making the sheet's own
+    /// controls (close button, hub chips) unreachable to VoiceOver/UI automation. Raising
+    /// this risks silently reintroducing that bug — re-verify accessibility before raising it.
+    static let maxRenderedPartners = 250
+
     /// Prefer partners inside `preferring` when capping arcs, then stride-sample the rest.
     func arcs(
         for hubId: String,
-        limit: Int = 250,
+        limit: Int = maxRenderedPartners,
         preferring region: MKCoordinateRegion? = nil
     ) -> [SharingArc] {
         let all = reachPoints(for: hubId)

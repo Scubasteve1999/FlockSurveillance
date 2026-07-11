@@ -78,6 +78,26 @@ struct StatusBadge: View {
     }
 }
 
+/// Gates MapKit-backed content on a live, non-degenerate size.
+///
+/// MapKit hangs if inserted at zero size (CAMetalLayer width=0), so wrap map content in
+/// this inside a `GeometryReader` and pass `geo.size` — it shows a spinner until the
+/// container has a real frame, which `GeometryReader` guarantees to re-report reactively.
+struct MapKitSizeGate<Content: View>: View {
+    let size: CGSize
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        if size.width > 1, size.height > 1 {
+            content()
+        } else {
+            ProgressView()
+                .tint(AppTheme.accent)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
 struct DataSourcePill: View {
     var body: some View {
         HStack(spacing: 6) {

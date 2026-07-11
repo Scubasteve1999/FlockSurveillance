@@ -42,18 +42,16 @@ struct SharingNetworkView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
 
+            // Top chrome only — no full-height Spacer, so map gestures and
+            // hub chips aren't fighting a pass-through overlay.
             VStack(spacing: 10) {
                 header
-                    .allowsHitTesting(true)
                 hubPicker
-                    .allowsHitTesting(true)
-                Spacer(minLength: 0)
-                    .allowsHitTesting(false)
-                footer
-                    .allowsHitTesting(true)
             }
             .padding(.top, 8)
-            .allowsHitTesting(false)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            footer
         }
         .preferredColorScheme(.dark)
         .onAppear {
@@ -61,14 +59,7 @@ struct SharingNetworkView: View {
             if selectedHubID == nil {
                 selectedHubID = store.hubs.first?.id
             }
-            if let hub = selectedHub {
-                let fitted = SharingNetworkStore.regionFitting(
-                    hub: hub,
-                    partners: store.arcs(for: hub.id, limit: 250).map(\.partner)
-                )
-                position = .region(fitted)
-                visibleRegion = fitted
-            }
+            fitCamera(to: selectedHub)
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 100_000_000)
                 mapReady = true
@@ -161,15 +152,7 @@ struct SharingNetworkView: View {
             HStack(spacing: 8) {
                 ForEach(store.hubs) { hub in
                     Button {
-                        selectedHubID = hub.id
-                        let fitted = SharingNetworkStore.regionFitting(
-                            hub: hub,
-                            partners: store.partners(for: hub.id)
-                        )
-                        visibleRegion = fitted
-                        withAnimation(.easeInOut(duration: 0.35)) {
-                            position = .region(fitted)
-                        }
+                        selectHub(hub)
                     } label: {
                         Text(hub.shortName)
                             .font(.system(size: 13, weight: .semibold))
@@ -181,6 +164,8 @@ struct SharingNetworkView: View {
                             .overlay(Capsule().stroke(AppTheme.border, lineWidth: selectedHub?.id == hub.id ? 0 : 1))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("\(hub.shortName) sharing network")
+                    .accessibilityAddTraits(selectedHub?.id == hub.id ? [.isSelected] : [])
                 }
             }
             .padding(.horizontal, 16)
@@ -221,7 +206,7 @@ struct SharingNetworkView: View {
                 .stroke(AppTheme.border, lineWidth: 1)
         )
         .padding(.horizontal, 16)
-        .padding(.bottom, 20)
+        .padding(.bottom, 8)
     }
 
     private var statusLine: String {
@@ -233,6 +218,30 @@ struct SharingNetworkView: View {
             return "\(hub.shortName) · \(partnerCount) partners · showing \(shown) arcs"
         }
         return "\(hub.shortName) · \(partnerCount) partners"
+    }
+
+    private func selectHub(_ hub: SharingHub) {
+        selectedHubID = hub.id
+        // Clear stale viewport so the new hub isn't filtered against the previous camera.
+        visibleRegion = nil
+        fitCamera(to: hub, animated: true)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func fitCamera(to hub: SharingHub?, animated: Bool = false) {
+        guard let hub else { return }
+        let fitted = SharingNetworkStore.regionFitting(
+            hub: hub,
+            partners: store.partners(for: hub.id)
+        )
+        visibleRegion = fitted
+        if animated {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                position = .region(fitted)
+            }
+        } else {
+            position = .region(fitted)
+        }
     }
 
     private func arcColor(_ direction: SharingDirection) -> Color {

@@ -1,0 +1,9 @@
+enabledWorkflows:
+  - simulator
+  - ui-automation
+platforms:
+  - iOS
+projectPath: /Users/stephenmoore/Projects/FlockSurveillance/FlockSurveillance.xcodeproj
+scheme: FlockSurveillance
+simulatorId: B202D17B-D355-4D3A-8A95-06A0F49DAE14
+simulatorName: iPhone 17 Pro Max

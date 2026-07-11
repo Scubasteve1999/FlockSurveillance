@@ -15,10 +15,17 @@ struct ARCameraSightView: View {
     @State private var selectedDetail: ARSelectedCamera?
     @State private var anchorCoordinate: CLLocationCoordinate2D?
     @State private var lastAnchorLocation: CLLocation?
+    /// Last location used for soft nearby membership refresh (no AR reset).
+    @State private var lastSoftRefreshLocation: CLLocation?
     @State private var isSessionActive = true
     @State private var trackingResetID = UUID()
     /// Cached nearby set — refreshed on anchor / cache / fetch changes, not every body pass.
     @State private var nearbyItems: [NearbyARItem] = []
+
+    /// Soft-refresh which cameras are in range while walking.
+    private let softRefreshMeters: CLLocationDistance = 8
+    /// Only hard-reset AR world origin when GPS has drifted far from the session anchor.
+    private let hardReanchorMeters: CLLocationDistance = 80
 
     private var arSupported: Bool {
         ARWorldTrackingConfiguration.isSupported
@@ -94,10 +101,12 @@ struct ARCameraSightView: View {
             VStack {
                 hud
                 Spacer()
+                    .allowsHitTesting(false)
                 if arSupported, cameraAuth == .authorized, !locationDenied, nearbyItems.isEmpty {
                     emptyBanner
                         .padding(.horizontal, 16)
                         .padding(.bottom, 28)
+                        .allowsHitTesting(false)
                 } else {
                     Text("Positions are approximate · mapped locations only — not a live feed")
                         .font(.system(size: 11, weight: .medium))
@@ -105,6 +114,7 @@ struct ARCameraSightView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                         .padding(.bottom, 20)
+                        .allowsHitTesting(false)
                 }
             }
         }
@@ -114,6 +124,7 @@ struct ARCameraSightView: View {
             refreshCameraAuth()
             requestCameraIfNeeded()
             reanchor(to: locationManager.location, resetTracking: true)
+            lastSoftRefreshLocation = locationManager.location
             fetchNearbyRegion()
             refreshNearby()
             isSessionActive = true
@@ -126,10 +137,7 @@ struct ARCameraSightView: View {
             refreshCameraAuth()
             refreshNearby()
         }
-        .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
-            handleLocationMove()
-        }
-        .onChange(of: locationManager.location?.coordinate.longitude) { _, _ in
+        .onChange(of: locationManager.location?.timestamp) { _, _ in
             handleLocationMove()
         }
         .onChange(of: repository.cameras.count) { _, _ in
@@ -158,7 +166,9 @@ struct ARCameraSightView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
+            .allowsHitTesting(false)
             Spacer()
+                .allowsHitTesting(false)
             Button {
                 isSessionActive = false
                 dismiss()
@@ -262,12 +272,19 @@ struct ARCameraSightView: View {
     }
 
     private func refreshNearby() {
-        guard let origin = anchorCoordinate ?? locationManager.location?.coordinate else {
+        guard let sessionOrigin = anchorCoordinate else {
             nearbyItems = []
             return
         }
-        nearbyItems = ARGeoMath.nearbyCameras(from: repository.cameras, user: origin)
-            .map { NearbyARItem(camera: $0.camera, offset: $0.offset) }
+        // Membership by live GPS; world positions relative to fixed session origin.
+        let liveCoordinate = locationManager.location?.coordinate ?? sessionOrigin
+        nearbyItems = ARGeoMath.nearbyCameras(from: repository.cameras, user: liveCoordinate)
+            .map { item in
+                NearbyARItem(
+                    camera: item.camera,
+                    offset: ARGeoMath.enuOffset(from: sessionOrigin, to: item.camera.coordinate)
+                )
+            }
     }
 
     private func fetchNearbyRegion() {
@@ -281,15 +298,32 @@ struct ARCameraSightView: View {
 
     private func handleLocationMove() {
         guard let location = locationManager.location else { return }
-        if lastAnchorLocation == nil {
+
+        // First fix (cold open often has no GPS on appear).
+        if anchorCoordinate == nil || lastAnchorLocation == nil {
             reanchor(to: location, resetTracking: true)
+            lastSoftRefreshLocation = location
             fetchNearbyRegion()
             refreshNearby()
             return
         }
-        if let last = lastAnchorLocation, location.distance(from: last) >= 5 {
+
+        if let origin = lastAnchorLocation, location.distance(from: origin) >= hardReanchorMeters {
             reanchor(to: location, resetTracking: true)
+            lastSoftRefreshLocation = location
             fetchNearbyRegion()
+            refreshNearby()
+            return
+        }
+
+        if let lastSoft = lastSoftRefreshLocation, location.distance(from: lastSoft) >= softRefreshMeters {
+            lastSoftRefreshLocation = location
+            refreshNearby()
+            if location.distance(from: lastSoft) >= 40 {
+                fetchNearbyRegion()
+            }
+        } else if lastSoftRefreshLocation == nil {
+            lastSoftRefreshLocation = location
             refreshNearby()
         }
     }

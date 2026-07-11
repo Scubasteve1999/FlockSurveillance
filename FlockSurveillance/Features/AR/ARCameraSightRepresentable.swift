@@ -61,6 +61,7 @@ struct ARCameraSightRepresentable: UIViewRepresentable {
         var trackingResetID = UUID()
         private var sessionStarted = false
         private var lastSyncedIDs: [String] = []
+        private var lastLabelByID: [String: String] = [:]
 
         init(onSelectCameraID: @escaping (String) -> Void) {
             self.onSelectCameraID = onSelectCameraID
@@ -92,8 +93,10 @@ struct ARCameraSightRepresentable: UIViewRepresentable {
             if ids != lastSyncedIDs {
                 root.children.removeAll()
                 lastSyncedIDs = ids
+                lastLabelByID = [:]
                 for annotation in annotations {
                     root.addChild(makeEntity(for: annotation))
+                    lastLabelByID[annotation.id] = annotation.distanceLabel
                 }
                 return
             }
@@ -101,11 +104,13 @@ struct ARCameraSightRepresentable: UIViewRepresentable {
             for annotation in annotations {
                 guard let entity = root.children.first(where: { $0.name == annotation.id }) else { continue }
                 entity.position = annotation.position
-                if let label = entity.findEntity(named: "label") as? ModelEntity {
+                if lastLabelByID[annotation.id] != annotation.distanceLabel,
+                   let label = entity.findEntity(named: "label") as? ModelEntity {
                     label.model = Self.makeLabelModel(
                         text: annotation.distanceLabel,
                         color: annotation.uiColor
                     )
+                    lastLabelByID[annotation.id] = annotation.distanceLabel
                 }
                 syncFOV(on: entity, annotation: annotation)
             }

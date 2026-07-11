@@ -16,6 +16,7 @@
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
 		174F1CA65DBFA4D7E22EE914 /* CoverageConfidenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7376FDA6828759C4914606 /* CoverageConfidenceTests.swift */; };
 		1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */; };
+		1DD0D794EEDD429D9107BC24 /* SharingNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */; };
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
 		3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
@@ -29,6 +30,7 @@
 		52E36171496623748B17B062 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */; };
 		62F771913D5D78E558642B56 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */; };
+		763A2154160FF47D2B081656 /* SharingNetworkBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */; };
 		78D3ED0E79E02A4762E4B55C /* DriveLiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */; };
 		7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083E635F68719ECA057C617B /* RouteExposureView.swift */; };
 		7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637361494637A5B0C42496C5 /* OverpassParserTests.swift */; };
@@ -36,11 +38,14 @@
 		81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */; };
 		83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 244AA03B270FF87A615A5168 /* AlertsEngine.swift */; };
 		84010744C819B71E8C39AE52 /* ARGeoMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */; };
+		8454946CF2C905D5D0B3778B /* SharingNetworkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */; };
 		87C06613ACDDA8E8EAF0A479 /* ProximityRadar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AA373662BC417002454737 /* ProximityRadar.swift */; };
 		8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */; };
 		8D393EDF60B9CA294633DB92 /* ARCameraSightRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C2D5962B3E066B1BE44A71 /* ARCameraSightRepresentable.swift */; };
 		8E559FB9CF76C494A4F0F9D3 /* ReportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */; };
 		90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */; };
+		937327EE32AD817F4CDB0C5E /* SharingNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F177CDDA111785B0070E83EC /* SharingNetworkModels.swift */; };
+		9577161272A5F6E59BC03B66 /* SharingNetworkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */; };
 		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
 		AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */; };
 		B22450893821AAC205D17413 /* DriveLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6307ACB080E1B65CDAB1DF /* DriveLiveActivityWidget.swift */; };
@@ -112,6 +117,7 @@
 		2DA709B0872A9F478764A4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NearbyCamerasWidget.entitlements; sourceTree = "<group>"; };
+		3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStore.swift; sourceTree = "<group>"; };
 		3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReportDetailSheet.swift; sourceTree = "<group>"; };
 		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
@@ -123,6 +129,7 @@
 		5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		637361494637A5B0C42496C5 /* OverpassParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassParserTests.swift; sourceTree = "<group>"; };
 		67D1FF1994351D264823D5DB /* OSMReportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSMReportService.swift; sourceTree = "<group>"; };
+		6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SharingNetworkBundle.json; sourceTree = "<group>"; };
 		6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRepository.swift; sourceTree = "<group>"; };
 		6AC739360F96B00B18FF118D /* GeoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpers.swift; sourceTree = "<group>"; };
 		7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockIntents.swift; sourceTree = "<group>"; };
@@ -148,6 +155,7 @@
 		CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentActionsTests.swift; sourceTree = "<group>"; };
 		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
+		D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStoreTests.swift; sourceTree = "<group>"; };
 		D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeView.swift; sourceTree = "<group>"; };
 		D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidget.swift; sourceTree = "<group>"; };
 		D9C7E3BD8E8A9BD287C40FCB /* ReportCameraSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportCameraSheet.swift; sourceTree = "<group>"; };
@@ -155,6 +163,8 @@
 		EE6307ACB080E1B65CDAB1DF /* DriveLiveActivityWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityWidget.swift; sourceTree = "<group>"; };
 		EEFC7E8DF7567DB8501A2A37 /* CoverageConfidence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverageConfidence.swift; sourceTree = "<group>"; };
 		EF94A8C60991DECD85C56617 /* AppLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinks.swift; sourceTree = "<group>"; };
+		F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkView.swift; sourceTree = "<group>"; };
+		F177CDDA111785B0070E83EC /* SharingNetworkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkModels.swift; sourceTree = "<group>"; };
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraSightView.swift; sourceTree = "<group>"; };
@@ -179,6 +189,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		075B6499ABF82D2BC58C28E0 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		0B1D16367074D3BA3423FA49 /* FlockSurveillanceTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -189,6 +207,7 @@
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
+				D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */,
 			);
 			path = FlockSurveillanceTests;
 			sourceTree = "<group>";
@@ -236,6 +255,7 @@
 				A408EEAB060BA1C0489EF127 /* Features */,
 				17EBC72C050693725DF555D7 /* Intents */,
 				6CAF10939076AFC689035941 /* Models */,
+				B5366AD1420620E239410081 /* Resources */,
 				984D76A961D7287B33E84FFB /* Services */,
 				1059DB41CEE11F492065269C /* Theme */,
 				BAFBB64F66A54D0AB0341497 /* Assets.xcassets */,
@@ -278,6 +298,7 @@
 			children = (
 				F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */,
 				839B34D71A068F6E097C63DE /* PendingReport.swift */,
+				F177CDDA111785B0070E83EC /* SharingNetworkModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -309,6 +330,7 @@
 				C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */,
 				8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */,
 				1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */,
+				3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */,
 				BCCC130CE261175F0E1588FD /* WidgetBridge.swift */,
 			);
 			path = Services;
@@ -320,11 +342,20 @@
 				21171F29FD2322199AE0E799 /* AR */,
 				463D0BFE2F1F23F2D53FFF3D /* Learn */,
 				E163E36B1DA9F6A7A5D35874 /* Map */,
+				075B6499ABF82D2BC58C28E0 /* Network */,
 				8DD72CFA632A2FC4EDEFBD9F /* Onboarding */,
 				001E8A1BFF530D54A3010F84 /* Route */,
 				284529FE2954595964DE5BC0 /* Settings */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		B5366AD1420620E239410081 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		BE724EEC300674EEDA62B441 = {
@@ -478,6 +509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */,
+				763A2154160FF47D2B081656 /* SharingNetworkBundle.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,6 +561,9 @@
 				7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */,
 				AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */,
 				D47C82795D130D29D3B61ACB /* ShareCardRenderer.swift in Sources */,
+				937327EE32AD817F4CDB0C5E /* SharingNetworkModels.swift in Sources */,
+				8454946CF2C905D5D0B3778B /* SharingNetworkStore.swift in Sources */,
+				1DD0D794EEDD429D9107BC24 /* SharingNetworkView.swift in Sources */,
 				4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */,
 				3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */,
 			);
@@ -545,6 +580,7 @@
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
 				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,
+				9577161272A5F6E59BC03B66 /* SharingNetworkStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,7 +666,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -648,7 +684,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.7.0;
+				MARKETING_VERSION = 1.8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -750,7 +786,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -774,7 +810,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.7.0;
+				MARKETING_VERSION = 1.8.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

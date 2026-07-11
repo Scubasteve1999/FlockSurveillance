@@ -4,8 +4,9 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.7)
+## Features (v1.8)
 
+- **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
 - **Coverage Confidence** — radar instrument shows fetch state, facing %, and freshness; ghost pins soft-clear after a successful OSM refresh
 - **Surveillance Radar Shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
 - **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
@@ -28,7 +29,7 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 - **Drive Mode** — Start Drive HUD with next camera distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
 - **Camera Intel 2.0** — OSM tags, copy coords, OpenStreetMap deep link, distance from you
 - **Settings** — haptics/heat/filter defaults, Set Home + Work, contributions, clear cache
-- **Learn** — short explainers + metro rankings + links to EFF, OSM tagging, DeFlock
+- **Learn** — short explainers + metro rankings + Sharing Network CTA + links to EFF, OSM tagging, DeFlock Dane
 - **Widget** — cameras within 1 mile of Home; tap opens `flocksurveillance://map`
 
 ## Requirements
@@ -58,6 +59,16 @@ node["man_made"="surveillance"]["surveillance:type"="ALPR"]
 ```
 
 Coverage reflects what volunteers have mapped. It is incomplete by nature.
+
+### Sharing Network bundle
+
+Agency sharing links ship as an on-device snapshot derived from [DeFlock Dane `dataset.json`](https://deflockdane.org/shared-networks/dataset.json) (Waunakee / Middleton / Grand Chute FOIA releases). Refresh with:
+
+```bash
+python3 Scripts/build_sharing_network_bundle.py
+```
+
+That writes `FlockSurveillance/Resources/SharingNetworkBundle.json`. Relationships are agency-to-agency links from public records — not which cameras feed which agency, and not a complete national graph.
 
 ## Brand / domain
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LearnView: View {
     @Environment(CameraRepository.self) private var repository
+    @State private var showSharingNetwork = false
     private let articles: [LearnArticle] = LearnArticle.all
 
     private var cityRankings: [CityRanking] {
@@ -72,6 +73,28 @@ struct LearnView: View {
                                         .font(.system(size: 14, weight: .medium))
                                         .foregroundStyle(AppTheme.mutedForeground)
                                         .fixedSize(horizontal: false, vertical: true)
+
+                                    if article.id == LearnArticle.sharingNetworkArticleID {
+                                        Button {
+                                            showSharingNetwork = true
+                                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                        } label: {
+                                            HStack(spacing: 8) {
+                                                Image(systemName: "point.3.connected.trianglepath.dotted")
+                                                Text("Open sharing network map")
+                                                    .fontWeight(.semibold)
+                                            }
+                                            .font(.system(size: 14))
+                                            .foregroundStyle(AppTheme.background)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 12)
+                                            .background(AppTheme.primary)
+                                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                        }
+                                        .buttonStyle(.plain)
+                                        .padding(.top, 4)
+                                        .accessibilityHint("Shows FOIA-documented agency sharing links from DeFlock Dane")
+                                    }
                                 }
                             }
                         }
@@ -94,10 +117,14 @@ struct LearnView: View {
                                     title: "DeFlock project",
                                     url: AppLinks.deFlockProject
                                 )
+                                linkRow(
+                                    title: "DeFlock Dane shared networks",
+                                    url: URL(string: "https://deflockdane.org/shared-networks/")!
+                                )
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)
@@ -106,6 +133,9 @@ struct LearnView: View {
                 }
             }
             .navigationBarHidden(true)
+            .fullScreenCover(isPresented: $showSharingNetwork) {
+                SharingNetworkView()
+            }
         }
     }
 
@@ -125,34 +155,47 @@ struct LearnView: View {
     }
 }
 
-struct LearnArticle: Identifiable {
-    let id = UUID()
+private struct LearnArticle: Identifiable {
+    let id: String
     let eyebrow: String
     let title: String
     let body: String
 
+    static let sharingNetworkArticleID = "sharing-network"
+
     static let all: [LearnArticle] = [
         LearnArticle(
+            id: "more-than-plate",
             eyebrow: "What ALPRs capture",
             title: "More than a plate",
             body: "Automated license plate readers photograph vehicles as they pass. Systems often store plate text, timestamp, location, and vehicle attributes such as color, make, and accessories. That creates a searchable trail of where cars have been."
         ),
         LearnArticle(
+            id: "networks",
             eyebrow: "Networks",
             title: "Why sharing changes everything",
             body: "A single camera is a local sensor. A networked database lets agencies search across cities and states. The civic question is not only whether a camera exists, but who can query the history it feeds."
         ),
         LearnArticle(
+            id: sharingNetworkArticleID,
+            eyebrow: "FOIA sharing",
+            title: "See who they share with",
+            body: "Public records from Wisconsin hubs (Waunakee, Middleton, Grand Chute) list thousands of partner agencies. Sharing Network draws those disclosed links as a hub-and-spoke map — agency-to-agency relationships from FOIA, not which cameras feed which agency, and not a complete national graph. Snapshot attributed to DeFlock Dane; no Flock vendor APIs."
+        ),
+        LearnArticle(
+            id: "retention",
             eyebrow: "Retention",
             title: "Time is a policy choice",
             body: "How long plate reads are kept varies by contract and jurisdiction. Shorter retention limits retrospective tracking; longer retention expands it. Transparency about retention is part of democratic oversight."
         ),
         LearnArticle(
+            id: "this-map",
             eyebrow: "This map",
             title: "Community infrastructure",
             body: "Flock Surveillance plots ALPR nodes that volunteers have tagged in OpenStreetMap. Coverage is uneven by design: it reflects what people have documented, not a vendor’s private inventory. The radar shows fetch confidence (facing % and freshness), and soft-clears pins after a successful refresh no longer returns them. AR Camera Sight shows those same mapped locations in the street — not a live feed from any camera network."
         ),
         LearnArticle(
+            id: "reporting",
             eyebrow: "Reporting",
             title: "How camera reports work",
             body: "Tap the flag on the map to report an unmapped camera, or flag a mapped one that changed. Your report is posted as an anonymous public note on OpenStreetMap and tracked on this device. We refresh nearby Overpass data and update the pending pin when mappers tag it — usually within days — then notify you when it lands."

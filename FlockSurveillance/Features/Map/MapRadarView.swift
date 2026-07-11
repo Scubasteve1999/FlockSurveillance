@@ -40,6 +40,7 @@ struct MapRadarView: View {
     /// MapKit hangs if inserted at zero size (CAMetalLayer width=0). Wait for layout.
     @State private var mapReady = false
     @State private var showARCameraSight = false
+    @State private var showSharingNetwork = false
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -250,6 +251,9 @@ struct MapRadarView: View {
         .fullScreenCover(isPresented: $showARCameraSight) {
             ARCameraSightView()
         }
+        .fullScreenCover(isPresented: $showSharingNetwork) {
+            SharingNetworkView()
+        }
     }
 
     private var shouldShowRankings: Bool {
@@ -392,6 +396,14 @@ struct MapRadarView: View {
                     label: "AR Camera Sight"
                 ) {
                     showARCameraSight = true
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }
+                headerRailButton(
+                    systemName: "point.3.connected.trianglepath.dotted",
+                    tint: AppTheme.accent,
+                    label: "Sharing network"
+                ) {
+                    showSharingNetwork = true
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 headerRailButton(

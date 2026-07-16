@@ -40,6 +40,25 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// Continuous GPS (with the blue background indicator) only while Drive Mode
+    /// is active so Live Activity can refresh with the app backgrounded. AlertsEngine
+    /// uses a separate manager and keeps `allowsBackgroundLocationUpdates` off.
+    func setDriveTrackingEnabled(_ enabled: Bool) {
+        guard manager.authorizationStatus == .authorizedWhenInUse
+            || manager.authorizationStatus == .authorizedAlways
+        else {
+            manager.allowsBackgroundLocationUpdates = false
+            manager.showsBackgroundLocationIndicator = false
+            return
+        }
+        manager.allowsBackgroundLocationUpdates = enabled
+        manager.showsBackgroundLocationIndicator = enabled
+        manager.pausesLocationUpdatesAutomatically = !enabled
+        if enabled {
+            manager.startUpdatingLocation()
+        }
+    }
+
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         // Capture Sendable values only; hop to MainActor and use self.manager there.
         let status = manager.authorizationStatus

@@ -87,11 +87,6 @@ struct DriveModeView: View {
                 arrowAngle += delta
             }
         }
-        .onDisappear {
-            if driveSession.isActive {
-                driveSession.stop()
-            }
-        }
     }
 
     private var currentRelativeBearing: Double? {

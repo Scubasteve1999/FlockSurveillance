@@ -1,3 +1,4 @@
+import ActivityKit
 import MapKit
 import SwiftUI
 
@@ -22,6 +23,7 @@ struct RouteExposureView: View {
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDriveMode = false
     @State private var commuteHint: String?
+    @State private var liveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
 
     private enum ActiveField {
         case origin, destination
@@ -44,6 +46,9 @@ struct RouteExposureView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         brandBlock
+                        if driveSession.isActive, !showDriveMode {
+                            activeDriveCard
+                        }
                         commuteCard
                         searchCard
                         if let analysis, let selectedResult {
@@ -74,6 +79,7 @@ struct RouteExposureView: View {
                     .id(payload.id)
             }
             .onAppear {
+                liveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
                 }
@@ -104,6 +110,65 @@ struct RouteExposureView: View {
             .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
+                }
+            }
+        }
+    }
+
+    private var activeDriveCard: some View {
+        SectionCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("DRIVE IN PROGRESS")
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(0.8)
+                            .foregroundStyle(AppTheme.primary)
+                        Text(
+                            driveSession.nextHit.map { hit in
+                                let distance = driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
+                                return "\(distance) to \(hit.isFlock ? "Flock" : "next") camera"
+                            } ?? "Corridor clear"
+                        )
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(AppTheme.foreground)
+                    }
+                    Spacer()
+                    Text("\(driveSession.camerasRemaining) left")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
+
+                HStack(spacing: 10) {
+                    Button {
+                        showDriveMode = true
+                    } label: {
+                        Label("Resume Drive", systemImage: "car.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .foregroundStyle(AppTheme.background)
+                            .background(AppTheme.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        driveSession.stop()
+                    } label: {
+                        Text("End Drive")
+                            .font(.system(size: 14, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .foregroundStyle(AppTheme.foreground)
+                            .background(AppTheme.cardTop)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .stroke(AppTheme.border, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -338,10 +403,17 @@ struct RouteExposureView: View {
                 }
 
                 Button {
-                    driveSession.start(from: result)
-                    showDriveMode = true
+                    if driveSession.isActive {
+                        showDriveMode = true
+                    } else {
+                        driveSession.start(from: result)
+                        showDriveMode = true
+                    }
                 } label: {
-                    Label("Start Drive", systemImage: "car.fill")
+                    Label(
+                        driveSession.isActive ? "Resume Drive" : "Start Drive",
+                        systemImage: "car.fill"
+                    )
                         .font(.system(size: 14, weight: .bold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -351,7 +423,11 @@ struct RouteExposureView: View {
                 }
                 .buttonStyle(.plain)
 
-                Text("Live Activity will show on your Lock Screen while you drive.")
+                Text(
+                    liveActivitiesEnabled
+                        ? "Live Activity will show on your Lock Screen while you drive."
+                        : "Enable Live Activities in Settings to see the drive countdown on your Lock Screen."
+                )
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
 

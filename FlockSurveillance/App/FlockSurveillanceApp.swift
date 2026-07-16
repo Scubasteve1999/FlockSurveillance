@@ -96,6 +96,22 @@ struct FlockSurveillanceApp: App {
                     await reportStore.verifyOpenReports(repository: repository)
                 }
             }
+            .onChange(of: driveSession.isActive) { _, active in
+                locationManager.setDriveTrackingEnabled(active)
+                if active {
+                    driveSession.update(
+                        userLocation: locationManager.location,
+                        hapticsEnabled: radar.hapticsEnabled
+                    )
+                }
+            }
+            .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+                guard driveSession.isActive else { return }
+                driveSession.update(
+                    userLocation: locationManager.location,
+                    hapticsEnabled: radar.hapticsEnabled
+                )
+            }
             .onOpenURL { url in
                 handleDeepLink(url)
             }

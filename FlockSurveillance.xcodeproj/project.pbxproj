@@ -20,6 +20,7 @@
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
 		3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
+		3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEE58D61678DEC0AEF52530 /* DriveSessionTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
@@ -148,6 +149,7 @@
 		B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveActivityAttributes.swift; sourceTree = "<group>"; };
 		BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		BAEE58D61678DEC0AEF52530 /* DriveSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSessionTests.swift; sourceTree = "<group>"; };
 		BAFBB64F66A54D0AB0341497 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BCCC130CE261175F0E1588FD /* WidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridge.swift; sourceTree = "<group>"; };
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
 				12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */,
 				1D7376FDA6828759C4914606 /* CoverageConfidenceTests.swift */,
+				BAEE58D61678DEC0AEF52530 /* DriveSessionTests.swift */,
 				A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
@@ -576,6 +579,7 @@
 				CCD1A26EEC8A89F743A325C7 /* ARGeoMathTests.swift in Sources */,
 				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				174F1CA65DBFA4D7E22EE914 /* CoverageConfidenceTests.swift in Sources */,
+				3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */,
 				90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
 				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,

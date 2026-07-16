@@ -38,19 +38,28 @@ final class DriveSession {
     private var lastPulseDistance: CLLocationDistance = .greatestFiniteMagnitude
 
     func start(from result: RouteExposureResult) {
-        route = result.route
-        hits = result.cameras.map {
-            DriveHit(
-                id: $0.camera.id,
-                coordinate: $0.camera.coordinate,
-                title: $0.camera.displayTitle,
-                manufacturer: $0.camera.displayManufacturer,
-                isFlock: $0.camera.isFlock,
-                metersFromStart: $0.metersFromStart
-            )
-        }
+        start(
+            hits: result.cameras.map {
+                DriveHit(
+                    id: $0.camera.id,
+                    coordinate: $0.camera.coordinate,
+                    title: $0.camera.displayTitle,
+                    manufacturer: $0.camera.displayManufacturer,
+                    isFlock: $0.camera.isFlock,
+                    metersFromStart: $0.metersFromStart
+                )
+            },
+            exposureLabel: result.exposureScore,
+            route: result.route
+        )
+    }
+
+    /// Starts a drive with prebuilt hits. Used by production via `start(from:)` and by tests.
+    func start(hits: [DriveHit], exposureLabel: String, route: MKRoute? = nil) {
+        self.route = route
+        self.hits = hits
         passedIDs = []
-        exposureLabel = result.exposureScore
+        self.exposureLabel = exposureLabel
         isActive = true
         lastPulseDistance = .greatestFiniteMagnitude
         // The Drive HUD already surfaces approaches; don't double-notify.

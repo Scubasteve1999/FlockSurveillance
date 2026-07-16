@@ -208,8 +208,9 @@ final class CameraRepository {
         do {
             var combined: [ALPRCameraDTO] = []
             var seen = Set<String>()
-            // Include empty tiles: OverpassClient already confirmed [] across mirrors.
+            // Include empty tiles: OverpassClient only returns [] after multi-mirror consensus.
             // CoverageConfidence refuses dense empty clears; sparse voids can soft-clear.
+            // `seen` protects cameras upserted from a neighbor tile on a shared edge.
             var tileResults: [(region: MKCoordinateRegion, ids: Set<String>)] = []
             for tile in tiles {
                 guard generation == fetchGeneration else {
@@ -234,7 +235,11 @@ final class CameraRepository {
             upsert(combined.map { $0.makeModel() })
             if updateSettledRegion, !tooLarge {
                 for tileResult in tileResults {
-                    markAbsentFromOSM(remoteIDs: tileResult.ids, in: [tileResult.region])
+                    markAbsentFromOSM(
+                        remoteIDs: tileResult.ids,
+                        in: [tileResult.region],
+                        protecting: seen
+                    )
                 }
             }
             pruneCache()
@@ -471,13 +476,19 @@ final class CameraRepository {
 
     /// Soft-mark cameras inside successfully covered tiles that OSM no longer returned.
     /// Empty `remoteIDs` is allowed — sparse-void trust lives in CoverageConfidence.
-    private func markAbsentFromOSM(remoteIDs: Set<String>, in regions: [MKCoordinateRegion]) {
+    /// `protecting` holds IDs returned anywhere in this fetch batch (neighbor-tile edges).
+    private func markAbsentFromOSM(
+        remoteIDs: Set<String>,
+        in regions: [MKCoordinateRegion],
+        protecting protectedIDs: Set<String> = []
+    ) {
         guard let modelContext, !regions.isEmpty else { return }
         let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         let absent = CoverageConfidence.idsToMarkAbsent(
             cached: existing.map { ($0.id, $0.coordinate) },
             remoteIDs: remoteIDs,
-            regions: regions
+            regions: regions,
+            excluding: protectedIDs
         )
         guard !absent.isEmpty else { return }
         for camera in existing where absent.contains(camera.id) {

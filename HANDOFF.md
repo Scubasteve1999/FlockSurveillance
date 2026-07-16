@@ -1,285 +1,146 @@
-# Session Handoff — Sharing Network / Map fixes
+# Claude Code Handoff — Product direction thinking
 
-**Date:** 2026-07-11
-**Branch:** main (uncommitted working tree changes — nothing committed this session)
-**Status:** All fixes verified in simulator; build clean; all 66 tests pass. Not yet committed.
+**Date:** 2026-07-15  
+**Repo:** https://github.com/Scubasteve1999/FlockSurveillance (public)  
+**Branch context:** `main` has recent feature PRs merged (#1–#5). Open docs PR: [#6](https://github.com/Scubasteve1999/FlockSurveillance/pull/6) (ASO paste pack + draft sim captures) — merge or ignore; not blocking product thinking.  
+**Mode for this handoff:** **Think first. Do not implement code unless the human explicitly asks after the thinking pass.**
 
-## What this session was
+---
 
-A review of the Sharing Network map surface (`SharingNetworkView`) and the shared `MapRadarView`
-turned up 5 issues, all fixed and manually re-verified in the simulator. Summary below, full diff
-at the bottom.
+## Why this handoff exists
 
-## Fixes
+The product owner wants a **thinking pass** on whether this app is still the right thing to build.
 
-1. **Named the render cap instead of a bare literal.**
-   `SharingNetworkStore.maxRenderedPartners = 250` replaces the bare `250` that was duplicated
-   between the store's default parameter and the view's call site. The doc comment on the
-   constant explains it's now an **accessibility ceiling**, not just a polyline-perf knob — see
-   point 3 below for why that matters if anyone considers raising it.
-   Files: [SharingNetworkStore.swift](FlockSurveillance/Services/SharingNetworkStore.swift),
-   [SharingNetworkView.swift](FlockSurveillance/Features/Network/SharingNetworkView.swift)
+In the latest Cursor session they asked for:
 
-2. **`isLoading` could get stuck `true`.**
-   `SharingNetworkStore.reload()` now resets `isLoading` via `defer`, so any future early-return
-   added to that method can't leave the loading state stuck on.
-   File: [SharingNetworkStore.swift](FlockSurveillance/Services/SharingNetworkStore.swift)
+1. **Live camera feeds** from ALPR / Flock cameras  
+2. **Notifications when “the camera pings them”** (real plate-read events)
 
-3. **Uncapped `reachPoints` was rendering 1,000+ Markers and hanging the UI.**
-   This was the main bug. `SharingNetworkView` had a `reachPoints` computed property that
-   fetched *every* partner (uncapped) just to drive the `ForEach` of Markers and the status-line
-   count — while a separate `arcs` property (capped at 250) drew the polylines. A hub with
-   1,000+ partners meant 1,000+ Markers, which overwhelmed the accessibility tree and made the
-   sheet's own controls (close button, hub chips) unreachable to VoiceOver/UI automation — this
-   is what caused the close-button hang.
-   Fix: both Markers and polylines now render from the same capped `arcs` list. The status line
-   still reports the true total via a new lightweight `totalPartnerCount` (a plain `.count`,
-   no array materialization).
-   File: [SharingNetworkView.swift](FlockSurveillance/Features/Network/SharingNetworkView.swift)
+Cursor correctly refused both as product/legal boundaries:
 
-4. **`arcs` was recomputed from scratch on every body evaluation.**
-   It was a computed property that called `store.arcs(...)` (a full rescan + stride-sample of
-   the partner list) — up to 4x per render pass. It's now `@State`, refreshed once via
-   `refreshArcs()` only when the hub or visible region actually changes (hub switch, map camera
-   settle, initial fit).
-   File: [SharingNetworkView.swift](FlockSurveillance/Features/Network/SharingNetworkView.swift)
+- Live Flock/ALPR vendor video and plate-hit streams are **private vendor / agency systems**. No public API. Unauthorized access is off-limits.  
+- The app **cannot** observe when a camera reads a plate. It can only know **phone GPS near a mapped OSM pin**.  
+- “Bending the rules” / scraping / reverse-engineering vendor systems was declined and should stay declined.
 
-5. **Duplicated MapKit zero-size gate.**
-   Both `MapRadarView` and `SharingNetworkView` had their own copy of the "don't insert MapKit
-   at zero size, it hangs (CAMetalLayer width=0)" gate. Extracted to a shared
-   `MapKitSizeGate` view in AppTheme.swift, used by both.
-   Files: [AppTheme.swift](FlockSurveillance/Theme/AppTheme.swift),
-   [MapRadarView.swift](FlockSurveillance/Features/Map/MapRadarView.swift),
-   [SharingNetworkView.swift](FlockSurveillance/Features/Network/SharingNetworkView.swift)
+Owner reaction (paraphrased): *“damn then this isn’t what I want.”*
 
-## Verification performed
+**Your job:** Help them think through options — double down on civic transparency mapping, pivot the product thesis, kill/park the project, or split into a different app idea that is still legal and shippable. Produce a clear recommendation with tradeoffs. **Do not** propose illegal or deceptive “we know when they scanned you” features.
 
-- Full build succeeds.
-- All 66 existing tests pass.
-- Manual simulator pass: close button on the Sharing Network sheet now resolves instantly
-  (previously hung); switching hubs works correctly (e.g. Grand Chute shows "223 partners" with
-  no redundant arc count shown, since 223 < the 250 cap so all partners are rendered as arcs).
+---
 
-## Not done / open items
+## What this app actually is today
 
-- Nothing was deferred from the review — all 5 findings were fixed.
-- Changes are **uncommitted**. `git status` also shows an untracked `.xcodebuildmcp/` directory
-  (unrelated — MCP tooling config, not part of this change).
-- No new tests were added specifically for these fixes (existing suite was the regression net).
-  If picking this up in Cursor, consider whether the accessibility-tree/Marker-count issue in
-  fix 3 warrants a dedicated UI test — the existing 66 didn't catch it because it's a scale
-  issue (real partner counts hit 1,000+, test fixtures likely don't).
+**Flock Surveillance** — civic transparency iOS app (SwiftUI, iOS 17+, Xcode 16+).
 
-## Full diff
+Answers: **how watched is your life right now?**
 
-```diff
-diff --git a/FlockSurveillance/Features/Map/MapRadarView.swift b/FlockSurveillance/Features/Map/MapRadarView.swift
-index e68d886..9a281f7 100644
---- a/FlockSurveillance/Features/Map/MapRadarView.swift
-+++ b/FlockSurveillance/Features/Map/MapRadarView.swift
-@@ -85,15 +85,7 @@ struct MapRadarView: View {
-             ZStack(alignment: .top) {
-                 AppTheme.background.ignoresSafeArea()
- 
--                // MapKit hangs if inserted at zero size (CAMetalLayer width=0),
--                // so gate on live geometry until the container has a real frame.
--                if geo.size.width > 1, geo.size.height > 1 {
--                    mapContent
--                } else {
--                    ProgressView()
--                        .tint(AppTheme.accent)
--                        .frame(maxWidth: .infinity, maxHeight: .infinity)
--                }
-+                MapKitSizeGate(size: geo.size) { mapContent }
- 
-                 if isPlacingReport {
-                     Image(systemName: "plus.viewfinder")
-diff --git a/FlockSurveillance/Features/Network/SharingNetworkView.swift b/FlockSurveillance/Features/Network/SharingNetworkView.swift
-index 73a4bd0..2f1f473 100644
---- a/FlockSurveillance/Features/Network/SharingNetworkView.swift
-+++ b/FlockSurveillance/Features/Network/SharingNetworkView.swift
-@@ -15,21 +15,22 @@ struct SharingNetworkView: View {
-     )
-     @State private var visibleRegion: MKCoordinateRegion?
- 
-+    /// Rendered pins and polylines both stay capped — an uncapped Marker count (up to
-+    /// 1,000+) overwhelms the accessibility tree and makes the sheet's own controls
-+    /// (close button, hub chips) unreachable to VoiceOver/UI automation. Kept in sync by
-+    /// `refreshArcs()` whenever the hub or visible region changes, rather than recomputed
-+    /// on every body evaluation — `store.arcs` rescans and stride-samples the full partner list.
-+    @State private var arcs: [SharingArc] = []
-+
-     private var selectedHub: SharingHub? {
-         guard let selectedHubID else { return store.hubs.first }
-         return store.hubs.first { $0.id == selectedHubID } ?? store.hubs.first
-     }
- 
--    /// Every partner pin (uncapped) — matches the source "reach point" footprint.
--    private var reachPoints: [SharingArc] {
--        guard let hub = selectedHub else { return [] }
--        return store.reachPoints(for: hub.id)
--    }
--
--    /// Polylines stay capped for map performance.
--    private var arcs: [SharingArc] {
--        guard let hub = selectedHub else { return [] }
--        return store.arcs(for: hub.id, limit: 250, preferring: visibleRegion)
-+    /// Total partner count for the hub, for the status line only — not the rendered list.
-+    private var totalPartnerCount: Int {
-+        guard let hub = selectedHub else { return 0 }
-+        return store.partners(for: hub.id).count
-     }
- 
-     var body: some View {
-@@ -37,15 +38,7 @@ struct SharingNetworkView: View {
-             ZStack(alignment: .top) {
-                 AppTheme.background.ignoresSafeArea()
- 
--                // MapKit misbehaves when created at a degenerate size, so gate
--                // on live geometry until the container has a real frame.
--                if geo.size.width > 1, geo.size.height > 1 {
--                    mapContent
--                } else {
--                    ProgressView()
--                        .tint(AppTheme.accent)
--                        .frame(maxWidth: .infinity, maxHeight: .infinity)
--                }
-+                MapKitSizeGate(size: geo.size) { mapContent }
- 
-                 // Top chrome only — no full-height Spacer, so map gestures and
-                 // hub chips aren't fighting a pass-through overlay.
-@@ -65,7 +58,7 @@ struct SharingNetworkView: View {
-         }
-         .onChange(of: selectedPartnerID) { _, partnerID in
-             guard let partnerID else { return }
--            selectedPartner = reachPoints.first { $0.partner.id == partnerID }?.partner
-+            selectedPartner = arcs.first { $0.partner.id == partnerID }?.partner
-         }
-         .onChange(of: store.isLoaded) { _, loaded in
-             guard loaded, selectedHubID == nil else { return }
-@@ -106,7 +99,7 @@ struct SharingNetworkView: View {
-                         .stroke(arcColor(arc.direction), lineWidth: 1.15)
-                 }
- 
--                ForEach(reachPoints) { point in
-+                ForEach(arcs) { point in
-                     Marker(point.partner.name, coordinate: point.partner.coordinate)
-                         .tint(markerTint(point.direction))
-                         .tag(point.partner.id)
-@@ -117,6 +110,7 @@ struct SharingNetworkView: View {
-         .ignoresSafeArea()
-         .onMapCameraChange(frequency: .onEnd) { context in
-             visibleRegion = context.region
-+            refreshArcs()
-         }
-     }
- 
-@@ -218,7 +212,7 @@ struct SharingNetworkView: View {
-         guard let hub = selectedHub else {
-             return store.loadError == nil ? "Loading…" : "Unavailable"
-         }
--        let points = reachPoints.count
-+        let points = totalPartnerCount
-         let shownArcs = arcs.count
-         if points > shownArcs {
-             return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
-@@ -242,6 +236,7 @@ struct SharingNetworkView: View {
-             partners: store.partners(for: hub.id)
-         )
-         visibleRegion = fitted
-+        refreshArcs()
-         if animated {
-             withAnimation(.easeInOut(duration: 0.35)) {
-                 position = .region(fitted)
-@@ -251,6 +246,18 @@ struct SharingNetworkView: View {
-         }
-     }
- 
-+    private func refreshArcs() {
-+        guard let hub = selectedHub else {
-+            arcs = []
-+            return
-+        }
-+        arcs = store.arcs(
-+            for: hub.id,
-+            limit: SharingNetworkStore.maxRenderedPartners,
-+            preferring: visibleRegion
-+        )
-+    }
-+
-     private func arcColor(_ direction: SharingDirection) -> Color {
-         switch direction {
-         case .hubOut: return AppTheme.primary.opacity(0.75)
-diff --git a/FlockSurveillance/Services/SharingNetworkStore.swift b/FlockSurveillance/Services/SharingNetworkStore.swift
-index af0c4b2..7d8cde8 100644
---- a/FlockSurveillance/Services/SharingNetworkStore.swift
-+++ b/FlockSurveillance/Services/SharingNetworkStore.swift
-@@ -22,6 +22,7 @@ final class SharingNetworkStore {
-     ) async {
-         guard !isLoading else { return }
-         isLoading = true
-+        defer { isLoading = false }
-         do {
-             let name = resourceName
-             let loaded = try await Task.detached(priority: .userInitiated) {
-@@ -35,7 +36,6 @@ final class SharingNetworkStore {
-             isLoaded = false
-             loadError = error.localizedDescription
-         }
--        isLoading = false
-     }
- 
-     /// Test / preview helper.
-@@ -63,10 +63,19 @@ final class SharingNetworkStore {
-         }
-     }
- 
-+    /// Upper bound for partners rendered as map annotations (Markers + polylines) per hub.
-+    ///
-+    /// This isn't just a polyline-draw-performance knob: SharingNetworkView renders one
-+    /// Marker per arc from this same capped list, and an uncapped Marker count (a hub can
-+    /// have 1,000+ partners) overwhelms the accessibility tree, making the sheet's own
-+    /// controls (close button, hub chips) unreachable to VoiceOver/UI automation. Raising
-+    /// this risks silently reintroducing that bug — re-verify accessibility before raising it.
-+    static let maxRenderedPartners = 250
-+
-     /// Prefer partners inside `preferring` when capping arcs, then stride-sample the rest.
-     func arcs(
-         for hubId: String,
--        limit: Int = 250,
-+        limit: Int = maxRenderedPartners,
-         preferring region: MKCoordinateRegion? = nil
-     ) -> [SharingArc] {
-         let all = reachPoints(for: hubId)
-diff --git a/FlockSurveillance/Theme/AppTheme.swift b/FlockSurveillance/Theme/AppTheme.swift
-index 4a59949..d7c5891 100644
---- a/FlockSurveillance/Theme/AppTheme.swift
-+++ b/FlockSurveillance/Theme/AppTheme.swift
-@@ -78,6 +78,26 @@ struct StatusBadge: View {
-     }
- }
- 
-+/// Gates MapKit-backed content on a live, non-degenerate size.
-+///
-+/// MapKit hangs if inserted at zero size (CAMetalLayer width=0), so wrap map content in
-+/// this inside a `GeometryReader` and pass `geo.size` — it shows a spinner until the
-+/// container has a real frame, which `GeometryReader` guarantees to re-report reactively.
-+struct MapKitSizeGate<Content: View>: View {
-+    let size: CGSize
-+    @ViewBuilder var content: () -> Content
-+
-+    var body: some View {
-+        if size.width > 1, size.height > 1 {
-+            content()
-+        } else {
-+            ProgressView()
-+                .tint(AppTheme.accent)
-+                .frame(maxWidth: .infinity, maxHeight: .infinity)
-+        }
-+    }
-+}
-+
- struct DataSourcePill: View {
-     var body: some View {
-         HStack(spacing: 6) {
-```
+| Does | Does not |
+|------|----------|
+| Map community-documented ALPR locations from OpenStreetMap / Overpass | Use Flock Safety (or any vendor) private APIs |
+| Bundled FOIA Sharing Network (DeFlock Dane hub↔partner graph) | Show which cameras feed which agency |
+| Place Score, AR overlay of *mapped pins* on the phone camera, routes, Drive Mode + Live Activity | Live video from ALPR cameras |
+| Geofenced **proximity** alerts near mapped pins | Notify on real plate reads |
+| On-device location; “Data Not Collected” positioning | Transmit location to developer servers |
+
+Brand: flocksurveillance.com · Not affiliated with Flock Safety · Positioned as civic transparency, **not** a radar detector (App Review sensitivity).
+
+### Hard product constraints (do not regress if you later code)
+
+- **Drive Mode:** Dismissing HUD must not end session; only End Drive stops Live Activity.  
+- **Coverage soft-clear:** Empty tiles soft-clear only if sparse (1–3 pins) + ≥2 Overpass mirrors empty; protect batch `seen` IDs.  
+- **Sharing Network:** Cap rendered Markers/arcs at 250; search list may be uncapped.  
+- **CarPlay:** Code exists; **do not** add scene manifest / entitlement to Info.plist until Apple grants `com.apple.developer.carplay-driving-task`.
+
+Skill with more detail: [`.cursor/skills/flocksurveillance-ios/SKILL.md`](.cursor/skills/flocksurveillance-ios/SKILL.md)
+
+---
+
+## What’s already shipped (recent)
+
+| PR | What |
+|----|------|
+| #1 | Export compliance `ITSAppUsesNonExemptEncryption: false` + arc-cap scale test |
+| #2 | Drive Mode / Live Activity survival (HUD dismiss ≠ end drive) |
+| #3 | Coverage empty-tile soft-clear + Bugbot hardenings |
+| #4 / #5 | Sharing Network partner search + clear focus pin on other Marker select |
+| #6 (open) | ASO paste pack + draft sim captures under `docs/aso-captures/` |
+
+CI: public repo, `macos-15` Actions green on `main` when last checked.
+
+---
+
+## Honest capability map (for the thinking pass)
+
+| User wish | Feasible? | Notes |
+|-----------|-----------|--------|
+| Live ALPR / Flock camera video | **No** | Private systems; out of scope forever for this product line |
+| Notify when plate is read | **No** | No public hit stream |
+| Notify when *phone* near mapped camera | **Yes** | Already exists (`AlertsEngine` geofences); can polish |
+| Phone camera + AR pins on street | **Yes** | Already exists; not vendor feed |
+| Public *municipal traffic* cams near ALPRs | **Maybe** | Different data source, city-by-city, not ALPR video; legal only where openly published |
+| Stronger “how watched” / FOIA / sharing graph | **Yes** | Fits current thesis |
+| CarPlay Drive HUD | **Blocked** | Waiting on Apple entitlement |
+
+---
+
+## Questions to answer in the thinking pass
+
+Work through these and write findings back (Notion, this file’s “Findings” section, or chat — ask the human where they want it).
+
+1. **Thesis fit**  
+   Is “map where cameras are from public data” still valuable to *this* owner if they personally want plate-hit / live-feed magic? Or is that a fatal product–desire mismatch?
+
+2. **Audience**  
+   Who is the real user: privacy-curious drivers, journalists/activists, local organizers, general App Store browsers? Does the current feature set serve them?
+
+3. **Pivot options (legal only)**  
+   Rank and critique, e.g.:
+   - Double down: denser OSM coverage, better alerts, share cards, city rankings, FOIA tooling  
+   - Adjacent: public traffic-cam layer (explicitly not ALPR feeds)  
+   - Education: stronger Learn / EFF / “what ALPRs can and can’t do”  
+   - New product: something else entirely (not this repo’s constraints)  
+   - Park / archive the app and stop investing  
+
+4. **Positioning risk**  
+   If marketing ever overclaims (“know when you’re scanned”), App Review + trust + legal risk. How should store copy and in-app language stay honest?
+
+5. **Next 2-week bet**  
+   If they continue: one concrete, shippable bet that is *not* live feeds or plate pings. If they don’t: a clean wind-down checklist.
+
+6. **What not to explore**  
+   Vendor API reverse engineering, fake “scan detected” heuristics sold as real hits, anything that requires unauthorized access to LE/vendor systems.
+
+---
+
+## Suggested Claude Code workflow
+
+1. Read this handoff + `README.md` + `docs/ASO.md` (marketing promises) + Learn copy in `LearnView.swift`.  
+2. Skim feature surface from README “Features (v1.8)” — don’t deep-dive every service unless needed for a pivot idea.  
+3. Produce a short **decision memo** (not a giant essay):
+   - Verdict: continue / pivot / park  
+   - Top 3 reasons  
+   - If continue: next feature bet + why  
+   - If pivot: new thesis in one paragraph + what to keep/kill from the codebase  
+   - Explicit “won’t build” list  
+4. Stop for human reaction before writing code or opening PRs.
+
+---
+
+## Key paths (if you need them later)
+
+| Area | Path |
+|------|------|
+| App entry | `FlockSurveillance/App/FlockSurveillanceApp.swift` |
+| Map / radar | `FlockSurveillance/Features/Map/` |
+| Alerts (proximity) | `FlockSurveillance/Services/AlertsEngine.swift` |
+| Drive / Live Activity | `FlockSurveillance/Services/DriveSession.swift`, `DriveLiveActivityController.swift` |
+| Sharing Network | `FlockSurveillance/Services/SharingNetworkStore.swift` |
+| Learn / positioning copy | `FlockSurveillance/Features/Learn/LearnView.swift` |
+| ASO | `docs/ASO.md` |
+| FOIA bundle refresh | `Scripts/build_sharing_network_bundle.py` |
+
+---
+
+## Findings
+
+_(Claude Code: append your decision memo below after the thinking pass.)_

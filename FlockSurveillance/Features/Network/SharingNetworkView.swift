@@ -1,5 +1,6 @@
 import MapKit
 import SwiftUI
+import UIKit
 
 struct SharingNetworkView: View {
     @Environment(\.dismiss) private var dismiss
@@ -7,6 +8,8 @@ struct SharingNetworkView: View {
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
     @State private var selectedPartnerID: String?
+    @State private var focusedPartner: SharingPartner?
+    @State private var showPartnerSearch = false
     @State private var position: MapCameraPosition = .region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 39.8, longitude: -98.5),
@@ -31,6 +34,11 @@ struct SharingNetworkView: View {
     private var totalPartnerCount: Int {
         guard let hub = selectedHub else { return 0 }
         return store.partners(for: hub.id).count
+    }
+
+    private var focusIsOffSample: Bool {
+        guard let focusedPartner else { return false }
+        return !arcs.contains { $0.partner.id == focusedPartner.id }
     }
 
     var body: some View {
@@ -58,7 +66,11 @@ struct SharingNetworkView: View {
         }
         .onChange(of: selectedPartnerID) { _, partnerID in
             guard let partnerID else { return }
-            selectedPartner = arcs.first { $0.partner.id == partnerID }?.partner
+            if let fromArcs = arcs.first(where: { $0.partner.id == partnerID })?.partner {
+                selectedPartner = fromArcs
+            } else if focusedPartner?.id == partnerID {
+                selectedPartner = focusedPartner
+            }
         }
         .onChange(of: store.isLoaded) { _, loaded in
             guard loaded, selectedHubID == nil else { return }
@@ -74,6 +86,20 @@ struct SharingNetworkView: View {
             .presentationDetents([.medium, .large])
             .presentationBackground(AppTheme.background)
             .onDisappear { selectedPartnerID = nil }
+        }
+        .sheet(isPresented: $showPartnerSearch) {
+            if let hub = selectedHub {
+                SharingPartnerSearchSheet(
+                    store: store,
+                    hub: hub,
+                    totalPartnerCount: totalPartnerCount
+                ) { partner in
+                    showPartnerSearch = false
+                    focusPartner(partner)
+                }
+                .presentationDetents([.medium, .large])
+                .presentationBackground(AppTheme.background)
+            }
         }
     }
 
@@ -104,6 +130,16 @@ struct SharingNetworkView: View {
                         .tint(markerTint(point.direction))
                         .tag(point.partner.id)
                 }
+
+                // One extra pin for a search hit outside the 250-arc sample — never uncapped.
+                if focusIsOffSample, let focused = focusedPartner,
+                   let link = focused.link(for: hub.id) {
+                    MapPolyline(geodesicPolyline(from: hub.coordinate, to: focused.coordinate))
+                        .stroke(arcColor(link.direction), lineWidth: 1.35)
+                    Marker(focused.name, coordinate: focused.coordinate)
+                        .tint(markerTint(link.direction))
+                        .tag(focused.id)
+                }
             }
         }
         .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
@@ -126,6 +162,19 @@ struct SharingNetworkView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
             }
             Spacer()
+            Button {
+                showPartnerSearch = true
+            } label: {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(AppTheme.foreground)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.card.opacity(0.92))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+            }
+            .accessibilityLabel("Find partners")
+            .disabled(selectedHub == nil || !store.isLoaded)
             Button {
                 dismiss()
             } label: {
@@ -223,9 +272,26 @@ struct SharingNetworkView: View {
     private func selectHub(_ hub: SharingHub) {
         selectedHubID = hub.id
         selectedPartnerID = nil
+        focusedPartner = nil
         // Clear stale viewport so the new hub isn't filtered against the previous camera.
         visibleRegion = nil
         fitCamera(to: hub, animated: true)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func focusPartner(_ partner: SharingPartner) {
+        focusedPartner = partner
+        selectedPartnerID = partner.id
+        selectedPartner = partner
+        let region = MKCoordinateRegion(
+            center: partner.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 4, longitudeDelta: 4)
+        )
+        visibleRegion = region
+        refreshArcs()
+        withAnimation(.easeInOut(duration: 0.35)) {
+            position = .region(region)
+        }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
@@ -280,6 +346,77 @@ struct SharingNetworkView: View {
     ) -> MKGeodesicPolyline {
         var coordinates = [start, end]
         return MKGeodesicPolyline(coordinates: &coordinates, count: coordinates.count)
+    }
+}
+
+private struct SharingPartnerSearchSheet: View {
+    let store: SharingNetworkStore
+    let hub: SharingHub
+    let totalPartnerCount: Int
+    let onSelect: (SharingPartner) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+
+    private var matches: [SharingPartner] {
+        store.matchingPartners(for: hub.id, query: query)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    ContentUnavailableView(
+                        "Find partners",
+                        systemImage: "magnifyingglass",
+                        description: Text("Type an agency name or state — searches all \(totalPartnerCount) partners for \(hub.shortName).")
+                    )
+                } else if matches.isEmpty {
+                    ContentUnavailableView(
+                        "No partners match",
+                        systemImage: "slash.circle",
+                        description: Text("Try another name or two-letter state.")
+                    )
+                } else {
+                    List(matches) { partner in
+                        Button {
+                            onSelect(partner)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(partner.name)
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(AppTheme.foreground)
+                                    .multilineTextAlignment(.leading)
+                                HStack(spacing: 8) {
+                                    Text(partner.state)
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(AppTheme.accent)
+                                    if let link = partner.link(for: hub.id) {
+                                        Text(link.direction.label)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundStyle(AppTheme.mutedForeground)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .listRowBackground(AppTheme.card)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .background(AppTheme.background)
+            .navigationTitle("Find partners")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $query, prompt: "Agency or state")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                        .foregroundStyle(AppTheme.accent)
+                }
+            }
+        }
     }
 }
 

@@ -35,7 +35,7 @@ final class CoverageConfidenceTests: XCTestCase {
         XCTAssertTrue(absent.isEmpty)
     }
 
-    func testIdsToMarkAbsentSkipsEmptyRemote() {
+    func testIdsToMarkAbsentClearsSparseEmptyRemote() {
         let region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
             span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
@@ -49,7 +49,54 @@ final class CoverageConfidenceTests: XCTestCase {
             remoteIDs: [],
             region: region
         )
+        XCTAssertEqual(absent, ["a", "b"])
+        XCTAssertTrue(CoverageConfidence.shouldTrustAbsentDiff(remoteCount: 0, cachedInCoverage: 2))
+        XCTAssertFalse(CoverageConfidence.shouldTrustAbsentDiff(remoteCount: 0, cachedInCoverage: 0))
+    }
+
+    func testIdsToMarkAbsentProtectsBatchReturnedEdgeCameras() {
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        )
+        let cached: [(id: String, coordinate: CLLocationCoordinate2D)] = [
+            ("edgeFromNeighbor", CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)),
+            ("staleOnlyHere", CLLocationCoordinate2D(latitude: 33.751, longitude: -84.391))
+        ]
+        let absent = CoverageConfidence.idsToMarkAbsent(
+            cached: cached,
+            remoteIDs: [],
+            region: region,
+            excluding: ["edgeFromNeighbor"]
+        )
+        XCTAssertEqual(absent, ["staleOnlyHere"])
+    }
+
+    func testOverpassRequiresMultiMirrorEmptyConsensus() {
+        XCTAssertFalse(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 0))
+        XCTAssertFalse(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 1))
+        XCTAssertTrue(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 2))
+        XCTAssertTrue(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 3))
+    }
+
+    func testIdsToMarkAbsentSkipsDenseEmptyRemote() {
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2)
+        )
+        let cached: [(id: String, coordinate: CLLocationCoordinate2D)] = (0..<4).map { index in
+            (
+                "d\(index)",
+                CLLocationCoordinate2D(latitude: 33.75 + Double(index) * 0.001, longitude: -84.39)
+            )
+        }
+        let absent = CoverageConfidence.idsToMarkAbsent(
+            cached: cached,
+            remoteIDs: [],
+            region: region
+        )
         XCTAssertTrue(absent.isEmpty)
+        XCTAssertFalse(CoverageConfidence.shouldTrustAbsentDiff(remoteCount: 0, cachedInCoverage: 10))
     }
 
     func testIdsToMarkAbsentOnlyInsideQueriedTiles() {

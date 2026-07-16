@@ -208,7 +208,10 @@ final class CameraRepository {
         do {
             var combined: [ALPRCameraDTO] = []
             var seen = Set<String>()
-            var nonEmptyTiles: [(region: MKCoordinateRegion, ids: Set<String>)] = []
+            // Include empty tiles: OverpassClient only returns [] after multi-mirror consensus.
+            // CoverageConfidence refuses dense empty clears; sparse voids can soft-clear.
+            // `seen` protects cameras upserted from a neighbor tile on a shared edge.
+            var tileResults: [(region: MKCoordinateRegion, ids: Set<String>)] = []
             for tile in tiles {
                 guard generation == fetchGeneration else {
                     endFetch(generation)
@@ -222,11 +225,7 @@ final class CameraRepository {
                         combined.append(dto)
                     }
                 }
-                // Only trust absent diffs for tiles that returned cameras — empty
-                // tiles may be incomplete mirrors, not true OSM voids.
-                if !tileIDs.isEmpty {
-                    nonEmptyTiles.append((tile, tileIDs))
-                }
+                tileResults.append((tile, tileIDs))
             }
 
             guard generation == fetchGeneration else {
@@ -235,8 +234,12 @@ final class CameraRepository {
             }
             upsert(combined.map { $0.makeModel() })
             if updateSettledRegion, !tooLarge {
-                for tileResult in nonEmptyTiles {
-                    markAbsentFromOSM(remoteIDs: tileResult.ids, in: [tileResult.region])
+                for tileResult in tileResults {
+                    markAbsentFromOSM(
+                        remoteIDs: tileResult.ids,
+                        in: [tileResult.region],
+                        protecting: seen
+                    )
                 }
             }
             pruneCache()
@@ -472,13 +475,20 @@ final class CameraRepository {
     }
 
     /// Soft-mark cameras inside successfully covered tiles that OSM no longer returned.
-    private func markAbsentFromOSM(remoteIDs: Set<String>, in regions: [MKCoordinateRegion]) {
-        guard let modelContext, !remoteIDs.isEmpty, !regions.isEmpty else { return }
+    /// Empty `remoteIDs` is allowed — sparse-void trust lives in CoverageConfidence.
+    /// `protecting` holds IDs returned anywhere in this fetch batch (neighbor-tile edges).
+    private func markAbsentFromOSM(
+        remoteIDs: Set<String>,
+        in regions: [MKCoordinateRegion],
+        protecting protectedIDs: Set<String> = []
+    ) {
+        guard let modelContext, !regions.isEmpty else { return }
         let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
         let absent = CoverageConfidence.idsToMarkAbsent(
             cached: existing.map { ($0.id, $0.coordinate) },
             remoteIDs: remoteIDs,
-            regions: regions
+            regions: regions,
+            excluding: protectedIDs
         )
         guard !absent.isEmpty else { return }
         for camera in existing where absent.contains(camera.id) {

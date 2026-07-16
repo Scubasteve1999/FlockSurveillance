@@ -225,12 +225,14 @@ actor OverpassClient {
 
         var lastError: Error = OverpassError.invalidURL
         var emptyResult: [ALPRCameraDTO]?
+        var emptyMirrorCount = 0
 
         for endpoint in endpoints {
             do {
                 let cameras = try await perform(query: query, endpoint: endpoint)
                 // Incomplete mirrors can return [] while others have data — keep looking.
                 if cameras.isEmpty {
+                    emptyMirrorCount += 1
                     emptyResult = cameras
                     continue
                 }
@@ -243,11 +245,18 @@ actor OverpassClient {
             }
         }
 
-        if let emptyResult {
+        // Require multi-mirror empty consensus before treating a tile as a true void.
+        // A single empty + errors elsewhere is not enough to soft-clear cache.
+        if let emptyResult, Self.acceptsConfirmedEmpty(emptyMirrorCount: emptyMirrorCount) {
             lastFetchAt = Date()
             return emptyResult
         }
         throw lastError
+    }
+
+    /// Empty Overpass responses are only trusted after at least two mirrors agree.
+    static func acceptsConfirmedEmpty(emptyMirrorCount: Int) -> Bool {
+        emptyMirrorCount >= 2
     }
 
     private func perform(query: String, endpoint: String) async throws -> [ALPRCameraDTO] {

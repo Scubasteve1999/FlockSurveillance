@@ -198,7 +198,7 @@ private struct LearnArticle: Identifiable {
             id: "sensor-atlas",
             eyebrow: "Sensor Atlas",
             title: "Traffic cams are not ALPRs",
-            body: "Toggle Traffic cams on the map to see municipal WisDOT traffic CCTV locations (Madison and Milwaukee snapshot). When a public still image URL exists, you can open it — traveler information only. These are not license-plate readers, not Flock Safety cameras, and they never feed proximity alerts. Proximity alerts only mean your phone is near a mapped OSM ALPR pin."
+            body: "Toggle Traffic cams on the map to see municipal WisDOT traffic CCTV locations (Madison and Milwaukee snapshot). Opening a pin may load a traveler still from WisDOT hosts only — your device contacts that host; the app does not collect the image. These are not license-plate readers, not Flock Safety cameras, not live ALPR feeds, and they never feed proximity alerts. Proximity alerts only mean your phone is near a mapped OSM ALPR pin."
         ),
         LearnArticle(
             id: "reporting",

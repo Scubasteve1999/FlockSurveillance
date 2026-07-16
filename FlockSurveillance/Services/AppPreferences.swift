@@ -4,6 +4,8 @@ enum AppPreferenceKey {
     static let hapticsEnabled = "prefs.hapticsEnabled"
     static let showHeatDefault = "prefs.showHeatDefault"
     static let showSensorAtlas = "prefs.showSensorAtlas"
+    /// User turned Traffic cams off while inside a covered metro — don't auto-on again.
+    static let sensorAtlasAutoSuppressed = "prefs.sensorAtlasAutoSuppressed"
     static let defaultFilter = "prefs.defaultFilter"
     static let watchModeEnabled = "prefs.watchModeEnabled"
     static let alertsEnabled = "prefs.alertsEnabled"
@@ -31,10 +33,15 @@ enum AppPreferences {
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showHeatDefault) }
     }
 
-    /// Sensor Atlas (municipal traffic cams) layer. Off by default so ALPR map stays primary.
+    /// Sensor Atlas (municipal traffic cams) layer. Off by default unless auto-enabled in-metro.
     static var showSensorAtlas: Bool {
         get { UserDefaults.standard.bool(forKey: AppPreferenceKey.showSensorAtlas) }
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showSensorAtlas) }
+    }
+
+    static var sensorAtlasAutoSuppressed: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.sensorAtlasAutoSuppressed) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.sensorAtlasAutoSuppressed) }
     }
 
     static var defaultFilter: CameraFilter {

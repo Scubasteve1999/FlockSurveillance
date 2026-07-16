@@ -134,12 +134,12 @@ Style: device frames on near-black (#0F1217) background, orange (#F26B47) captio
 
 | Question | Answer |
 |---|---|
-| Data collected | **None** — select "Data Not Collected" |
+| Data collected | **None by the developer** — select "Data Not Collected" if ASC still fits (no developer analytics, accounts, or server). Re-check if Apple treats optional third-party image loads as collected data. |
 | Location | Used on-device only; never transmitted to developer servers |
 | Camera | Used on-device for AR overlay only; video is not recorded or uploaded |
-| Third-party | Overpass/OSM queries contain map bounding boxes only, no identifiers |
+| Third-party | (1) Overpass/OSM: map bounding boxes only, no user identifiers. (2) **Optional:** when the user opens a Sensor Atlas traffic-cam detail, a traveler still may load from allowlisted WisDOT hosts (`content.dot.wi.gov`, `www.dot.wi.gov`) — device IP reaches that host; not ALPR, not Flock, not developer-collected. |
 
-"Data Not Collected" badge is a major conversion asset for this audience — feature it in the description too.
+Feature the on-device / no-developer-tracking story in the description. Do **not** claim “no network” if Sensor Atlas stills are shipped.
 
 ## Review-prompt strategy (implemented in code)
 
@@ -153,4 +153,4 @@ Style: device frames on near-black (#0F1217) background, orange (#F26B47) captio
 
 ## App Review notes (paste into the review-notes field)
 
-> Flock Surveillance displays community-documented ALPR camera locations from OpenStreetMap (the same public dataset as deflock.me). Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. It is a civic-transparency tool: it does not detect police, defeat enforcement, or use any vendor's private APIs. Coverage Confidence soft-clears pins after a successful Overpass refresh no longer returns them. AR Camera Sight overlays mapped OSM locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications only; location data never leaves the device.
+> Flock Surveillance displays community-documented ALPR camera locations from OpenStreetMap (the same public dataset as deflock.me). Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. It is a civic-transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. Coverage Confidence soft-clears pins after a successful Overpass refresh no longer returns them. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications when the phone is near mapped OSM ALPR pins (not plate-read detection); location data never leaves the device to developer servers.

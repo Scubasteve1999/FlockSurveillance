@@ -6,7 +6,7 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 
 ## Features (v1.8)
 
-- **Sensor Atlas** — optional map layer for municipal traffic CCTV (Madison + Milwaukee snapshot from WisDOT / WisTransPortal). Still images when linked. Explicitly **not ALPR / not Flock**. Does not feed proximity alerts.
+- **Sensor Atlas** — municipal traffic CCTV layer (Madison + Milwaukee WisDOT snapshot). Auto-enables when you’re in those metros (dismissible; respects manual off). Tap a gold pin for a hero still + “not ALPR” frame. Does not feed proximity alerts.
 - **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
 - **Watched-zone proximity** — geofenced alerts and radar HUD when your phone is near mapped OSM ALPR pins (honest “near mapped pins” copy — not plate-read detection)
 - **Coverage Confidence** — radar instrument shows fetch state, facing %, and freshness; ghost pins soft-clear after a successful OSM refresh

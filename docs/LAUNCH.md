@@ -10,7 +10,7 @@ Source of truth for copy and capture order: [ASO.md](ASO.md).
 
 - [ ] Confirm `main` CI green  
 - [ ] Archive / TestFlight build from current `MARKETING_VERSION`  
-- [ ] Privacy nutrition label: **Data Not Collected** (see ASO.md)  
+- [ ] Privacy nutrition label per [ASO.md](ASO.md) (disclose optional WisDOT still fetches for Sensor Atlas)  
 - [ ] Paste App Store Connect pack from ASO.md (name, subtitle, keywords, promo, description, what’s new)  
 - [ ] Paste App Review notes from ASO.md  
 

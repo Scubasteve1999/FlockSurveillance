@@ -12,6 +12,7 @@ struct MapRadarView: View {
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
     @AppStorage(AppPreferenceKey.showSensorAtlas) private var showSensorAtlasStored = false
+    @AppStorage(AppPreferenceKey.sensorAtlasAutoSuppressed) private var sensorAtlasAutoSuppressed = false
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.watchModeEnabled) private var watchModeStored = false
     @AppStorage(AppPreferenceKey.hasAutoShownPlaceScore) private var hasAutoShownPlaceScore = false
@@ -29,6 +30,8 @@ struct MapRadarView: View {
     @State private var showHeat = AppPreferences.showHeatDefault
     @State private var showSensorAtlas = AppPreferences.showSensorAtlas
     @State private var sensorAtlasStore = SensorAtlasStore()
+    /// Hold the shared engine so SwiftUI observes corridor enter/exit for the HUD.
+    @State private var alertsEngine = AlertsEngine.shared
     @State private var pulsePhase = false
     @State private var placeScore: PlaceScore?
     @State private var placeScoreRadius: CLLocationDistance = 1609.34
@@ -43,6 +46,9 @@ struct MapRadarView: View {
     @State private var pendingAutoShowBurn = false
     @State private var showARCameraSight = false
     @State private var showSharingNetwork = false
+    /// Banner after auto-enabling Traffic cams in Madison / Milwaukee.
+    @State private var sensorAtlasBanner: String?
+    @State private var isAutoTogglingSensorAtlas = false
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -69,7 +75,7 @@ struct MapRadarView: View {
     /// Foreground proximity to a mapped ALPR pin and/or active corridor geofence state.
     private var inWatchedZone: Bool {
         let nearPin = (nearest?.meters ?? .infinity) <= AlertsEngine.regionRadius
-        return nearPin || AlertsEngine.shared.isInsideWatchedZone
+        return nearPin || alertsEngine.isInsideWatchedZone
     }
 
     private var visibleSensors: [PublicSensor] {
@@ -113,6 +119,22 @@ struct MapRadarView: View {
                 VStack(spacing: 12) {
                     brandHeader
                     filterBar
+                    if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
+                        Text(atlasError)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(AppTheme.primary)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    if let sensorAtlasBanner {
+                        SensorAtlasBanner(text: sensorAtlasBanner) {
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                self.sensorAtlasBanner = nil
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                     if locationDenied {
                         LocationDeniedBanner()
                     }
@@ -169,6 +191,7 @@ struct MapRadarView: View {
             sensorAtlasStore.loadIfNeeded()
             bootstrapRegion()
             startPulseIfNeeded()
+            maybeAutoEnableSensorAtlas()
             // Delay the auto Place Score until the map has had a beat to settle.
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 150_000_000)
@@ -208,6 +231,7 @@ struct MapRadarView: View {
                 bootstrapRegion()
             }
             maybeAutoShowPlaceScore()
+            maybeAutoEnableSensorAtlas()
         }
         .onChange(of: radar.watchModeEnabled) { _, enabled in
             watchModeStored = enabled
@@ -218,7 +242,21 @@ struct MapRadarView: View {
         }
         .onChange(of: showSensorAtlas) { _, value in
             showSensorAtlasStored = value
-            if value { sensorAtlasStore.loadIfNeeded() }
+            if value {
+                sensorAtlasStore.loadIfNeeded()
+                if !isAutoTogglingSensorAtlas {
+                    // Manual on clears suppression so future metros can auto-on again.
+                    sensorAtlasAutoSuppressed = false
+                }
+            } else if !isAutoTogglingSensorAtlas {
+                // Manual off inside a covered metro — don't keep re-enabling.
+                if let coordinate = locationManager.location?.coordinate,
+                   SensorAtlasCoverage.contains(coordinate) {
+                    sensorAtlasAutoSuppressed = true
+                }
+                sensorAtlasBanner = nil
+            }
+            isAutoTogglingSensorAtlas = false
         }
         .onChange(of: filter) { _, value in
             defaultFilterRaw = value.rawValue
@@ -235,7 +273,7 @@ struct MapRadarView: View {
                 .presentationBackground(AppTheme.background)
         }
         .sheet(item: $selectedSensor) { sensor in
-            SensorDetailSheet(sensor: sensor)
+            SensorDetailSheet(sensor: sensor, attribution: sensorAtlasStore.attribution)
                 .presentationBackground(AppTheme.background)
         }
         .sheet(item: $sharePayload) { payload in
@@ -452,16 +490,6 @@ struct MapRadarView: View {
                     }
                 }
                 headerRailButton(
-                    systemName: showSensorAtlas ? "video.fill" : "video",
-                    tint: showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.mutedForeground,
-                    label: showSensorAtlas ? "Hide Sensor Atlas traffic cameras" : "Show Sensor Atlas traffic cameras"
-                ) {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        showSensorAtlas.toggle()
-                    }
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                }
-                headerRailButton(
                     systemName: "location.fill",
                     tint: AppTheme.accent,
                     label: "Center on my location"
@@ -518,6 +546,7 @@ struct MapRadarView: View {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     showSensorAtlas.toggle()
                 }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Text("Traffic cams")
                     .font(.system(size: 13, weight: .semibold))
@@ -576,6 +605,29 @@ struct MapRadarView: View {
             visibleRegion = region
             position = .region(region)
             repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
+        }
+    }
+
+    /// In Madison / Milwaukee, turn Traffic cams on by default once — unless the user opted out.
+    private func maybeAutoEnableSensorAtlas() {
+        guard !showSensorAtlas, !sensorAtlasAutoSuppressed else { return }
+        guard let coordinate = locationManager.location?.coordinate,
+              let metro = SensorAtlasCoverage.metro(containing: coordinate)
+        else { return }
+        sensorAtlasStore.loadIfNeeded()
+        isAutoTogglingSensorAtlas = true
+        withAnimation(.easeInOut(duration: 0.25)) {
+            showSensorAtlas = true
+            sensorAtlasBanner = "\(metro.name) traffic cams on — public WisDOT CCTV, not ALPR. Tap a gold pin."
+        }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 6_000_000_000)
+            withAnimation(.easeOut(duration: 0.25)) {
+                if sensorAtlasBanner?.contains(metro.name) == true {
+                    sensorAtlasBanner = nil
+                }
+            }
         }
     }
 
@@ -724,6 +776,40 @@ struct MapRadarView: View {
             sharePayload = ShareActivityPayload(items: items)
             ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
         }
+    }
+}
+
+private struct SensorAtlasBanner: View {
+    let text: String
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "video.fill")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(AppTheme.background)
+                .padding(8)
+                .background(AppTheme.trafficSensorMarker, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            Text(text)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(AppTheme.foreground)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss")
+        }
+        .padding(12)
+        .background(AppTheme.card.opacity(0.96), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.trafficSensorMarker.opacity(0.45), lineWidth: 1)
+        )
     }
 }
 

@@ -14,18 +14,47 @@ struct PublicSensor: Identifiable, Hashable, Sendable, Codable {
     let kind: String
     let disclaimer: String
 
+    /// Hosts permitted for traveler still fetches (Sensor Atlas detail only).
+    static let allowedImageHosts: Set<String> = [
+        "content.dot.wi.gov",
+        "www.dot.wi.gov",
+    ]
+
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 
+    var displayName: String {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? id : trimmed
+    }
+
+    var displayHighway: String? {
+        let trimmed = highway.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    /// Resolved still URL if the host is allowlisted; otherwise nil (no fetch).
     var resolvedImageURL: URL? {
         guard let raw = imageURL?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
             return nil
         }
-        if raw.hasPrefix("http://") || raw.hasPrefix("https://") {
-            return URL(string: raw)
+        if raw.lowercased().contains("pull.web") {
+            return nil
         }
-        return URL(string: "https://\(raw)")
+        let absolute: String
+        if raw.hasPrefix("http://") || raw.hasPrefix("https://") {
+            absolute = raw
+        } else {
+            absolute = "https://\(raw)"
+        }
+        guard let url = URL(string: absolute), let host = url.host?.lowercased() else {
+            return nil
+        }
+        guard Self.allowedImageHosts.contains(host) else {
+            return nil
+        }
+        return url
     }
 }
 

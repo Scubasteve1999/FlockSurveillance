@@ -76,20 +76,23 @@ struct CoverageConfidence: Equatable {
     }
 
     /// Refuse absent diffs when the remote set looks like a truncated mirror vs known density.
+    /// Empty remotes (confirmed across Overpass mirrors) are trusted only for sparse tiles.
     static func shouldTrustAbsentDiff(remoteCount: Int, cachedInCoverage: Int) -> Bool {
-        guard remoteCount > 0 else { return false }
+        if remoteCount == 0 {
+            return cachedInCoverage >= 1 && cachedInCoverage <= 3
+        }
         if cachedInCoverage <= 3 { return true }
         return remoteCount * 2 >= cachedInCoverage
     }
 
     /// Cached cameras inside any of `regions` whose IDs were not in the successful remote set.
-    /// Returns empty when `remoteIDs` is empty or the remote set looks incomplete vs cache.
+    /// Returns empty when the remote set looks incomplete vs cache (including dense empty tiles).
     static func idsToMarkAbsent(
         cached: [(id: String, coordinate: CLLocationCoordinate2D)],
         remoteIDs: Set<String>,
         regions: [MKCoordinateRegion]
     ) -> Set<String> {
-        guard !remoteIDs.isEmpty, !regions.isEmpty else { return [] }
+        guard !regions.isEmpty else { return [] }
         let inCoverage = cached.filter { candidate in
             regions.contains { GeoHelpers.region($0, contains: candidate.coordinate) }
         }

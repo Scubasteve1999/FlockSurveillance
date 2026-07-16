@@ -203,6 +203,41 @@ final class SharingNetworkStoreTests: XCTestCase {
         }
     }
 
+    /// Regression for the Sharing Network accessibility hang: the view renders one Marker
+    /// per arc from `arcs(for:)` (default limit = `maxRenderedPartners`). Uncapped hubs
+    /// (1,000+ partners) overwhelmed VoiceOver / UI automation. Keep the default cap.
+    func testDefaultArcCapProtectsAccessibilityAtHubScale() throws {
+        let bundle = try SharingNetworkStore.loadBundle(from: .main)
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(bundle)
+
+        let cap = SharingNetworkStore.maxRenderedPartners
+        var sawOversizedHub = false
+
+        for hub in bundle.hubs {
+            let reach = store.reachPoints(for: hub.id)
+            let arcs = store.arcs(for: hub.id)
+            XCTAssertEqual(
+                arcs.count,
+                min(reach.count, cap),
+                "\(hub.id): rendered arcs must equal min(reach, maxRenderedPartners)"
+            )
+            XCTAssertLessThanOrEqual(
+                arcs.count,
+                cap,
+                "\(hub.id): Marker/polyline list must stay at or under accessibility cap"
+            )
+            if reach.count > cap {
+                sawOversizedHub = true
+            }
+        }
+
+        XCTAssertTrue(
+            sawOversizedHub,
+            "Shipped bundle should include at least one hub above the render cap so this stays a scale regression"
+        )
+    }
+
     func testFailedLoadCanRetry() async {
         let store = SharingNetworkStore()
         await store.reload(resourceName: "DoesNotExistSharingNetworkBundle")

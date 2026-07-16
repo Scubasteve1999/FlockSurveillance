@@ -68,6 +68,10 @@ struct SharingNetworkView: View {
             guard let partnerID else { return }
             if let fromArcs = arcs.first(where: { $0.partner.id == partnerID })?.partner {
                 selectedPartner = fromArcs
+                // Drop search focus overlay when the user picks a different map pin.
+                if focusedPartner?.id != partnerID {
+                    focusedPartner = nil
+                }
             } else if focusedPartner?.id == partnerID {
                 selectedPartner = focusedPartner
             }

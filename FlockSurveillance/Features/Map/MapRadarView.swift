@@ -131,6 +131,7 @@ struct MapRadarView: View {
                         visibleCount: camerasInView.count,
                         nearestMeters: nearest?.meters,
                         nearestLabel: nearest.map { $0.camera.displayManufacturer },
+                        inWatchedZone: (nearest?.meters ?? .infinity) <= AlertsEngine.regionRadius,
                         densityLabel: AppTheme.densityLabel(count: camerasInView.count),
                         confidence: coverageConfidence,
                         coverageHint: repository.coverageHint,

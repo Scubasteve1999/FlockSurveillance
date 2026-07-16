@@ -36,6 +36,8 @@ struct RadarHUD: View {
     let visibleCount: Int
     let nearestMeters: CLLocationDistance?
     let nearestLabel: String?
+    /// Nearest mapped camera is within alert-geofence range — "watched right now".
+    let inWatchedZone: Bool
     let densityLabel: String
     let confidence: CoverageConfidence
     let coverageHint: String?
@@ -44,6 +46,7 @@ struct RadarHUD: View {
     let onToggleWatch: () -> Void
 
     @State private var ringProgress: CGFloat = 0
+    @State private var zonePulse = false
 
     private var densityColor: Color {
         AppTheme.densityColor(count: visibleCount)
@@ -75,7 +78,12 @@ struct RadarHUD: View {
                         .frame(width: 88, height: 88)
                         .rotationEffect(.degrees(-90))
 
-                    if watchModeEnabled {
+                    if inWatchedZone {
+                        Circle()
+                            .stroke(AppTheme.primary.opacity(zonePulse ? 0.2 : 0.8), lineWidth: 2)
+                            .frame(width: 102, height: 102)
+                            .scaleEffect(zonePulse ? 1.08 : 1.0)
+                    } else if watchModeEnabled {
                         Circle()
                             .stroke(AppTheme.primary.opacity(0.55), lineWidth: 2)
                             .frame(width: 102, height: 102)
@@ -87,20 +95,32 @@ struct RadarHUD: View {
                             .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundStyle(AppTheme.foreground)
                             .contentTransition(.numericText())
-                        Text(watchModeEnabled ? "LIVE" : "VIEW")
+                        Text(inWatchedZone ? "ZONE" : (watchModeEnabled ? "LIVE" : "VIEW"))
                             .font(.system(size: 9, weight: .bold))
                             .tracking(0.8)
-                            .foregroundStyle(watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
+                            .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
                     }
                 }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("\(visibleCount) cameras in view, \(densityLabel) density")
+                .accessibilityLabel(
+                    inWatchedZone
+                        ? "In a watched zone. \(visibleCount) cameras in view, \(densityLabel) density"
+                        : "\(visibleCount) cameras in view, \(densityLabel) density"
+                )
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR")
-                        .font(.system(size: 10, weight: .semibold))
-                        .tracking(0.8)
-                        .foregroundStyle(watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
+                    HStack(spacing: 5) {
+                        if inWatchedZone {
+                            Circle()
+                                .fill(AppTheme.primary)
+                                .frame(width: 6, height: 6)
+                                .opacity(zonePulse ? 0.25 : 1)
+                        }
+                        Text(inWatchedZone ? "IN A WATCHED ZONE" : (watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR"))
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(0.8)
+                            .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
+                    }
 
                     StatusBadge(text: densityLabel, color: densityColor)
 
@@ -175,6 +195,9 @@ struct RadarHUD: View {
             withAnimation(.easeOut(duration: 0.7)) {
                 ringProgress = targetRing
             }
+            if inWatchedZone {
+                updateZonePulse(true)
+            }
         }
         .onChange(of: visibleCount) { _, _ in
             withAnimation(.easeInOut(duration: 0.45)) {
@@ -184,6 +207,25 @@ struct RadarHUD: View {
         .onChange(of: watchModeEnabled) { _, enabled in
             if enabled {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            }
+        }
+        .onChange(of: inWatchedZone) { _, inside in
+            if inside {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            }
+            updateZonePulse(inside)
+        }
+    }
+
+    private func updateZonePulse(_ active: Bool) {
+        if active {
+            zonePulse = false
+            withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+                zonePulse = true
+            }
+        } else {
+            withAnimation(.easeOut(duration: 0.3)) {
+                zonePulse = false
             }
         }
     }

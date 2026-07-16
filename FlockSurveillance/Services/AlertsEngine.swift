@@ -87,18 +87,25 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
 
     /// iOS hard-caps region monitoring at 20 regions per app.
     static let maxRegions = 20
-    static let regionRadius: CLLocationDistance = 150
+    nonisolated static let regionRadius: CLLocationDistance = 150
     static let cooldown: TimeInterval = 30 * 60
     /// Core Location region identifiers are short; keep titles bounded.
     nonisolated static let maxTitleLength = 40
     private static let lastAlertKey = "alerts.lastAlertAt"
     private nonisolated static let regionPrefix = "alpr."
+    private static let zoneExitNotificationID = "alpr-zone-exit"
 
     @ObservationIgnored private let manager = CLLocationManager()
     private(set) var authorizationStatus: CLAuthorizationStatus
 
     /// Set while Drive Mode is active — the HUD already covers approach warnings.
     var isSuppressed = false
+
+    /// Corridor state for the "watched zone" experience: which alert geofences
+    /// the user is currently inside, persisted across background relaunches.
+    private(set) var watchedZone = WatchedZoneStore.read()
+
+    var isInsideWatchedZone: Bool { watchedZone.isInside }
 
     /// True after an explicit user action asked for Always; cleared once Always
     /// is granted or the user lands on denied/restricted. Prevents re-prompting
@@ -201,11 +208,20 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
     /// notifications cannot fire for deleted cameras.
     func clearGeofences() {
         clearMonitoredRegions()
+        resetWatchedZone()
     }
 
     private func stopAll() {
         manager.stopMonitoringSignificantLocationChanges()
         clearMonitoredRegions()
+        resetWatchedZone()
+    }
+
+    private func resetWatchedZone() {
+        watchedZone.reset()
+        WatchedZoneStore.write(watchedZone)
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [Self.zoneExitNotificationID])
     }
 
     private func clearMonitoredRegions() {
@@ -287,8 +303,16 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
                 )
             )
             region.notifyOnEntry = true
-            region.notifyOnExit = false
+            region.notifyOnExit = true
             manager.startMonitoring(for: region)
+        }
+
+        // Dropped regions never deliver their exit callback once monitoring
+        // stops, so prune corridor state against the freshly seeded set.
+        let event = watchedZone.reconcile(monitoredIDs: Set(candidates.map(\.id)))
+        WatchedZoneStore.write(watchedZone)
+        if case .exitPending(let passedCount) = event {
+            scheduleZoneExitSummary(passedCount: passedCount)
         }
     }
 
@@ -312,27 +336,77 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Notification delivery
 
-    private func fireAlert(regionIdentifier: String) {
+    /// Region radius in feet, rounded to a friendly 50 ft step for copy.
+    nonisolated static var approxRadiusFeet: Int {
+        Int((regionRadius * 3.28084 / 50).rounded() * 50)
+    }
+
+    private func handleRegionEnter(identifier: String) {
+        let parsed = Self.parseRegionIdentifier(identifier)
+        let event = watchedZone.enter(cameraID: parsed.cameraID)
+        WatchedZoneStore.write(watchedZone)
+        guard let event else { return }
+
+        // Back inside before the linger window elapsed — same corridor, so the
+        // pending "left the zone" summary must not fire.
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [Self.zoneExitNotificationID])
+
         guard AppPreferences.alertsEnabled, !isSuppressed, !isQuietHours() else { return }
+        guard !isInCooldown(cameraID: parsed.cameraID) else { return }
 
-        let parsed = Self.parseRegionIdentifier(regionIdentifier)
-        let cameraID = parsed.cameraID
-        let isFlock = parsed.isFlock
-        let title = parsed.title ?? (isFlock ? "Flock ALPR" : "ALPR camera")
-
-        guard !isInCooldown(cameraID: cameraID) else { return }
-        recordAlert(cameraID: cameraID)
-
+        let title = parsed.title ?? (parsed.isFlock ? "Flock ALPR" : "ALPR camera")
         let content = UNMutableNotificationContent()
-        content.title = isFlock ? "Flock ALPR ahead" : "ALPR camera ahead"
-        content.body = "\(title) within \(Int(Self.regionRadius)) m of you."
+        switch event {
+        case .enteredZone:
+            content.title = "Entering a watched zone"
+            content.body = "\(title) within ~\(Self.approxRadiusFeet) ft — you're in a mapped ALPR corridor."
+        case .anotherCamera(let passedCount):
+            content.title = "Still in the watched zone"
+            content.body = "\(title) ahead — mapped camera \(passedCount) on this stretch."
+        case .resumedZone, .exitPending:
+            return
+        }
+        recordAlert(cameraID: parsed.cameraID)
         content.sound = .default
         content.userInfo = ["deepLink": "flocksurveillance://map"]
 
         let request = UNNotificationRequest(
-            identifier: "alpr-alert-\(cameraID)",
+            identifier: "alpr-alert-\(parsed.cameraID)",
             content: content,
             trigger: nil
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    private func handleRegionExit(identifier: String) {
+        let parsed = Self.parseRegionIdentifier(identifier)
+        let event = watchedZone.exit(cameraID: parsed.cameraID)
+        WatchedZoneStore.write(watchedZone)
+        guard case .exitPending(let passedCount) = event else { return }
+        scheduleZoneExitSummary(passedCount: passedCount)
+    }
+
+    /// Schedules the corridor summary after the linger window; a re-entry
+    /// within the window cancels it, merging brief gaps into one corridor.
+    private func scheduleZoneExitSummary(passedCount: Int) {
+        guard AppPreferences.alertsEnabled, !isSuppressed, !isQuietHours(), passedCount > 0 else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Left the watched zone"
+        content.body = passedCount == 1
+            ? "You passed 1 mapped ALPR camera on that stretch."
+            : "You passed \(passedCount) mapped ALPR cameras on that stretch."
+        content.sound = .default
+        content.userInfo = ["deepLink": "flocksurveillance://map"]
+
+        let request = UNNotificationRequest(
+            identifier: Self.zoneExitNotificationID,
+            content: content,
+            trigger: UNTimeIntervalNotificationTrigger(
+                timeInterval: WatchedZoneTracker.lingerInterval,
+                repeats: false
+            )
         )
         UNUserNotificationCenter.current().add(request)
     }
@@ -417,7 +491,15 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let identifier = region.identifier
         guard identifier.hasPrefix(Self.regionPrefix) else { return }
         Task { @MainActor in
-            self.fireAlert(regionIdentifier: identifier)
+            self.handleRegionEnter(identifier: identifier)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        let identifier = region.identifier
+        guard identifier.hasPrefix(Self.regionPrefix) else { return }
+        Task { @MainActor in
+            self.handleRegionExit(identifier: identifier)
         }
     }
 

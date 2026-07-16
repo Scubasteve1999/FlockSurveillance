@@ -21,6 +21,8 @@
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
 		3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEE58D61678DEC0AEF52530 /* DriveSessionTests.swift */; };
+		39F2D5BAEFB927FE385ABA94 /* WatchedZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC82521CA35252739669DF77 /* WatchedZone.swift */; };
+		3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
@@ -138,6 +140,7 @@
 		839B34D71A068F6E097C63DE /* PendingReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReport.swift; sourceTree = "<group>"; };
 		8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPrompter.swift; sourceTree = "<group>"; };
 		87AA373662BC417002454737 /* ProximityRadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityRadar.swift; sourceTree = "<group>"; };
+		8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZoneTests.swift; sourceTree = "<group>"; };
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpersTests.swift; sourceTree = "<group>"; };
 		A49125D402CAD705C90729FB /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
@@ -170,6 +173,7 @@
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraSightView.swift; sourceTree = "<group>"; };
+		FC82521CA35252739669DF77 /* WatchedZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZone.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -211,6 +215,7 @@
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
 				D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */,
+				8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */,
 			);
 			path = FlockSurveillanceTests;
 			sourceTree = "<group>";
@@ -334,6 +339,7 @@
 				8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */,
 				1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */,
 				3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */,
+				FC82521CA35252739669DF77 /* WatchedZone.swift */,
 				BCCC130CE261175F0E1588FD /* WidgetBridge.swift */,
 			);
 			path = Services;
@@ -567,6 +573,7 @@
 				937327EE32AD817F4CDB0C5E /* SharingNetworkModels.swift in Sources */,
 				8454946CF2C905D5D0B3778B /* SharingNetworkStore.swift in Sources */,
 				1DD0D794EEDD429D9107BC24 /* SharingNetworkView.swift in Sources */,
+				39F2D5BAEFB927FE385ABA94 /* WatchedZone.swift in Sources */,
 				4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */,
 				3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */,
 			);
@@ -585,6 +592,7 @@
 				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,
 				9577161272A5F6E59BC03B66 /* SharingNetworkStoreTests.swift in Sources */,
+				3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -95,7 +95,7 @@ struct RadarHUD: View {
                             .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundStyle(AppTheme.foreground)
                             .contentTransition(.numericText())
-                        Text(inWatchedZone ? "ZONE" : (watchModeEnabled ? "LIVE" : "VIEW"))
+                        Text(inWatchedZone ? "NEAR" : (watchModeEnabled ? "LIVE" : "VIEW"))
                             .font(.system(size: 9, weight: .bold))
                             .tracking(0.8)
                             .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
@@ -104,7 +104,7 @@ struct RadarHUD: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(
                     inWatchedZone
-                        ? "In a watched zone. \(visibleCount) cameras in view, \(densityLabel) density"
+                        ? "Near mapped ALPR pins. \(visibleCount) cameras in view, \(densityLabel) density. Not a plate-read alert."
                         : "\(visibleCount) cameras in view, \(densityLabel) density"
                 )
 
@@ -116,13 +116,20 @@ struct RadarHUD: View {
                                 .frame(width: 6, height: 6)
                                 .opacity(zonePulse ? 0.25 : 1)
                         }
-                        Text(inWatchedZone ? "IN A WATCHED ZONE" : (watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR"))
+                        Text(inWatchedZone ? WatchedZoneCopy.hudActiveLabel : (watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR"))
                             .font(.system(size: 10, weight: .semibold))
                             .tracking(0.8)
                             .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
                     }
 
                     StatusBadge(text: densityLabel, color: densityColor)
+
+                    if inWatchedZone {
+                        Text(WatchedZoneCopy.hudActiveSubtitle)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(AppTheme.mutedForeground)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
 
                     if let nearestMeters {
                         Text("Lock \(ProximityRadar.formatDistance(nearestMeters))")

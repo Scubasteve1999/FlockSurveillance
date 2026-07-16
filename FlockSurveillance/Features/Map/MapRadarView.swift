@@ -11,6 +11,7 @@ struct MapRadarView: View {
     @Environment(\.requestReview) private var requestReview
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
+    @AppStorage(AppPreferenceKey.showSensorAtlas) private var showSensorAtlasStored = false
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.watchModeEnabled) private var watchModeStored = false
     @AppStorage(AppPreferenceKey.hasAutoShownPlaceScore) private var hasAutoShownPlaceScore = false
@@ -24,7 +25,10 @@ struct MapRadarView: View {
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var filter: CameraFilter = AppPreferences.defaultFilter
     @State private var selectedCluster: CameraCluster?
+    @State private var selectedSensor: PublicSensor?
     @State private var showHeat = AppPreferences.showHeatDefault
+    @State private var showSensorAtlas = AppPreferences.showSensorAtlas
+    @State private var sensorAtlasStore = SensorAtlasStore()
     @State private var pulsePhase = false
     @State private var placeScore: PlaceScore?
     @State private var placeScoreRadius: CLLocationDistance = 1609.34
@@ -60,6 +64,17 @@ struct MapRadarView: View {
     private var nearest: (camera: ALPRCamera, meters: CLLocationDistance)? {
         guard let coordinate = locationManager.location?.coordinate else { return nil }
         return repository.nearest(to: coordinate, filter: filter)
+    }
+
+    /// Foreground proximity to a mapped ALPR pin and/or active corridor geofence state.
+    private var inWatchedZone: Bool {
+        let nearPin = (nearest?.meters ?? .infinity) <= AlertsEngine.regionRadius
+        return nearPin || AlertsEngine.shared.isInsideWatchedZone
+    }
+
+    private var visibleSensors: [PublicSensor] {
+        guard showSensorAtlas, let visibleRegion else { return [] }
+        return sensorAtlasStore.sensors(in: visibleRegion)
     }
 
     private var coverageConfidence: CoverageConfidence {
@@ -131,7 +146,7 @@ struct MapRadarView: View {
                         visibleCount: camerasInView.count,
                         nearestMeters: nearest?.meters,
                         nearestLabel: nearest.map { $0.camera.displayManufacturer },
-                        inWatchedZone: (nearest?.meters ?? .infinity) <= AlertsEngine.regionRadius,
+                        inWatchedZone: inWatchedZone,
                         densityLabel: AppTheme.densityLabel(count: camerasInView.count),
                         confidence: coverageConfidence,
                         coverageHint: repository.coverageHint,
@@ -148,8 +163,10 @@ struct MapRadarView: View {
         .onAppear {
             locationManager.start()
             showHeat = showHeatStored
+            showSensorAtlas = showSensorAtlasStored
             filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
             radar.watchModeEnabled = watchModeStored
+            sensorAtlasStore.loadIfNeeded()
             bootstrapRegion()
             startPulseIfNeeded()
             // Delay the auto Place Score until the map has had a beat to settle.
@@ -199,6 +216,10 @@ struct MapRadarView: View {
         .onChange(of: showHeat) { _, value in
             showHeatStored = value
         }
+        .onChange(of: showSensorAtlas) { _, value in
+            showSensorAtlasStored = value
+            if value { sensorAtlasStore.loadIfNeeded() }
+        }
         .onChange(of: filter) { _, value in
             defaultFilterRaw = value.rawValue
         }
@@ -211,6 +232,10 @@ struct MapRadarView: View {
         }
         .sheet(item: $selectedCluster) { cluster in
             CameraDetailSheet(cameras: cluster.cameras, userLocation: locationManager.location)
+                .presentationBackground(AppTheme.background)
+        }
+        .sheet(item: $selectedSensor) { sensor in
+            SensorDetailSheet(sensor: sensor)
                 .presentationBackground(AppTheme.background)
         }
         .sheet(item: $sharePayload) { payload in
@@ -298,6 +323,19 @@ struct MapRadarView: View {
                         PendingReportAnnotationView()
                     }
                     .buttonStyle(.plain)
+                }
+            }
+
+            if showSensorAtlas {
+                ForEach(visibleSensors) { sensor in
+                    Annotation("", coordinate: sensor.coordinate, anchor: .center) {
+                        Button {
+                            selectedSensor = sensor
+                        } label: {
+                            SensorAnnotationView()
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             }
         }
@@ -414,6 +452,16 @@ struct MapRadarView: View {
                     }
                 }
                 headerRailButton(
+                    systemName: showSensorAtlas ? "video.fill" : "video",
+                    tint: showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.mutedForeground,
+                    label: showSensorAtlas ? "Hide Sensor Atlas traffic cameras" : "Show Sensor Atlas traffic cameras"
+                ) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        showSensorAtlas.toggle()
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }
+                headerRailButton(
                     systemName: "location.fill",
                     tint: AppTheme.accent,
                     label: "Center on my location"
@@ -466,6 +514,22 @@ struct MapRadarView: View {
                 }
                 .buttonStyle(.plain)
             }
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showSensorAtlas.toggle()
+                }
+            } label: {
+                Text("Traffic cams")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(showSensorAtlas ? AppTheme.background : AppTheme.foreground)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.card.opacity(0.92))
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(AppTheme.border, lineWidth: showSensorAtlas ? 0 : 1))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(showSensorAtlas ? "Hide municipal traffic cameras" : "Show municipal traffic cameras")
             Spacer()
             Toggle(isOn: Binding(
                 get: { radar.hapticsEnabled },

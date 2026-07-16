@@ -359,11 +359,17 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         let content = UNMutableNotificationContent()
         switch event {
         case .enteredZone:
-            content.title = "Entering a watched zone"
-            content.body = "\(title) within ~\(Self.approxRadiusFeet) ft — you're in a mapped ALPR corridor."
+            content.title = WatchedZoneCopy.enteringTitle
+            content.body = WatchedZoneCopy.enteringBody(
+                cameraTitle: title,
+                radiusFeet: Self.approxRadiusFeet
+            )
         case .anotherCamera(let passedCount):
-            content.title = "Still in the watched zone"
-            content.body = "\(title) ahead — mapped camera \(passedCount) on this stretch."
+            content.title = WatchedZoneCopy.stillInsideTitle
+            content.body = WatchedZoneCopy.anotherCameraBody(
+                cameraTitle: title,
+                passedCount: passedCount
+            )
         case .resumedZone, .exitPending:
             return
         }
@@ -393,10 +399,8 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         guard AppPreferences.alertsEnabled, !isSuppressed, !isQuietHours(), passedCount > 0 else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = "Left the watched zone"
-        content.body = passedCount == 1
-            ? "You passed 1 mapped ALPR camera on that stretch."
-            : "You passed \(passedCount) mapped ALPR cameras on that stretch."
+        content.title = WatchedZoneCopy.leftTitle
+        content.body = WatchedZoneCopy.leftBody(passedCount: passedCount)
         content.sound = .default
         content.userInfo = ["deepLink": "flocksurveillance://map"]
 

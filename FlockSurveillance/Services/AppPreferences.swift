@@ -3,6 +3,7 @@ import Foundation
 enum AppPreferenceKey {
     static let hapticsEnabled = "prefs.hapticsEnabled"
     static let showHeatDefault = "prefs.showHeatDefault"
+    static let showSensorAtlas = "prefs.showSensorAtlas"
     static let defaultFilter = "prefs.defaultFilter"
     static let watchModeEnabled = "prefs.watchModeEnabled"
     static let alertsEnabled = "prefs.alertsEnabled"
@@ -28,6 +29,12 @@ enum AppPreferences {
             return UserDefaults.standard.bool(forKey: AppPreferenceKey.showHeatDefault)
         }
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showHeatDefault) }
+    }
+
+    /// Sensor Atlas (municipal traffic cams) layer. Off by default so ALPR map stays primary.
+    static var showSensorAtlas: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.showSensorAtlas) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showSensorAtlas) }
     }
 
     static var defaultFilter: CameraFilter {

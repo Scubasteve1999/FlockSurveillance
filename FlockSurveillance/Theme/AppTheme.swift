@@ -17,6 +17,8 @@ enum AppTheme {
 
     static let flockMarker = Color(red: 0.95, green: 0.42, blue: 0.28)
     static let otherMarker = Color(red: 0.35, green: 0.78, blue: 0.86)
+    /// Municipal traffic CCTV (Sensor Atlas) — distinct from ALPR markers.
+    static let trafficSensorMarker = Color(red: 0.98, green: 0.78, blue: 0.28)
 
     static let cornerRadius: CGFloat = 16
     static let cardPadding: CGFloat = 16

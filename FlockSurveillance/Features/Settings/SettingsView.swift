@@ -112,7 +112,10 @@ struct SettingsView: View {
                                         Task { await alertsEngine.setEnabled(enabled) }
                                     }
                                 )) {
-                                    labelRow("ALPR proximity alerts", "Get notified near cameras, even with the app closed")
+                                    labelRow(
+                                        "ALPR proximity alerts",
+                                        "Notify when your phone is near mapped OSM pins — not plate-read alerts"
+                                    )
                                 }
                                 .tint(AppTheme.accent)
 

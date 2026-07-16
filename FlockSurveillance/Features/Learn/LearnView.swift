@@ -124,7 +124,7 @@ struct LearnView: View {
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. Sensor Atlas overlays municipal traffic CCTV from public WisDOT inventory (not ALPR). It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)
@@ -193,6 +193,12 @@ private struct LearnArticle: Identifiable {
             eyebrow: "This map",
             title: "Community infrastructure",
             body: "Flock Surveillance plots ALPR nodes that volunteers have tagged in OpenStreetMap. Coverage is uneven by design: it reflects what people have documented, not a vendor’s private inventory. The radar shows fetch confidence (facing % and freshness), and soft-clears pins after a successful refresh no longer returns them. AR Camera Sight shows those same mapped locations in the street — not a live feed from any camera network."
+        ),
+        LearnArticle(
+            id: "sensor-atlas",
+            eyebrow: "Sensor Atlas",
+            title: "Traffic cams are not ALPRs",
+            body: "Toggle Traffic cams on the map to see municipal WisDOT traffic CCTV locations (Madison and Milwaukee snapshot). When a public still image URL exists, you can open it — traveler information only. These are not license-plate readers, not Flock Safety cameras, and they never feed proximity alerts. Proximity alerts only mean your phone is near a mapped OSM ALPR pin."
         ),
         LearnArticle(
             id: "reporting",

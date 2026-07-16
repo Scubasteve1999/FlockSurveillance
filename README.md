@@ -6,7 +6,9 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 
 ## Features (v1.8)
 
+- **Sensor Atlas** — optional map layer for municipal traffic CCTV (Madison + Milwaukee snapshot from WisDOT / WisTransPortal). Still images when linked. Explicitly **not ALPR / not Flock**. Does not feed proximity alerts.
 - **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
+- **Watched-zone proximity** — geofenced alerts and radar HUD when your phone is near mapped OSM ALPR pins (honest “near mapped pins” copy — not plate-read detection)
 - **Coverage Confidence** — radar instrument shows fetch state, facing %, and freshness; ghost pins soft-clear after a successful OSM refresh
 - **Surveillance Radar Shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
 - **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
@@ -69,6 +71,10 @@ python3 Scripts/build_sharing_network_bundle.py
 ```
 
 That writes `FlockSurveillance/Resources/SharingNetworkBundle.json`. Relationships are agency-to-agency links from public records — not which cameras feed which agency, and not a complete national graph.
+
+## App Store launch
+
+Independent checklist (screenshots + App Store Connect): [`docs/LAUNCH.md`](docs/LAUNCH.md).
 
 ## Brand / domain
 

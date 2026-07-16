@@ -116,6 +116,93 @@ final class SharingNetworkStoreTests: XCTestCase {
         XCTAssertEqual(store.reachPoints(for: "waunakee").count, 20)
     }
 
+    func testMatchingPartnersSearchesNameStateAndEntityType() throws {
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":3,"partnerCount":2
+          }],
+          "partners":[
+            {
+              "id":"1","name":"Alpha PD","state":"IL","entityType":"municipal_police",
+              "latitude":40.0,"longitude":-89.0,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}]
+            },
+            {
+              "id":"2","name":"Beta Sheriff","state":"OH","entityType":"county_sheriff",
+              "latitude":40.5,"longitude":-82.0,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"bidirectional","inactive":false}]
+            },
+            {
+              "id":"3","name":"Ghost PD","state":"WI","entityType":"municipal_police",
+              "latitude":43.0,"longitude":-89.0,"inactive":true,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}]
+            }
+          ],
+          "stats":{"partnerCount":3,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+
+        XCTAssertTrue(store.matchingPartners(for: "waunakee", query: "   ").isEmpty)
+        XCTAssertEqual(store.matchingPartners(for: "waunakee", query: "alpha").map(\.id), ["1"])
+        XCTAssertEqual(store.matchingPartners(for: "waunakee", query: "oh").map(\.id), ["2"])
+        XCTAssertEqual(
+            store.matchingPartners(for: "waunakee", query: "county sheriff").map(\.id),
+            ["2"]
+        )
+        // Inactive partners stay out of search (same as map).
+        XCTAssertTrue(store.matchingPartners(for: "waunakee", query: "ghost").isEmpty)
+    }
+
+    func testMatchingPartnersRespectsLimitAndSort() throws {
+        let partners = (0..<10).map { index in
+            """
+            {
+              "id":"\(index)",
+              "name":"Agency \(String(format: "%02d", 9 - index))",
+              "state":"WI",
+              "entityType":"municipal_police",
+              "latitude":43.0,"longitude":-89.0,"inactive":false,
+              "membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}]
+            }
+            """
+        }.joined(separator: ",")
+
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":10,"partnerCount":10
+          }],
+          "partners":[\(partners)],
+          "stats":{"partnerCount":10,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+        let matches = store.matchingPartners(for: "waunakee", query: "agency", limit: 3)
+        XCTAssertEqual(matches.count, 3)
+        XCTAssertEqual(matches.map(\.name), ["Agency 00", "Agency 01", "Agency 02"])
+    }
+
     func testViewportPreferenceKeepsInViewPartners() throws {
         let partners = [
             partnerJSON(id: "near", lat: 43.2, lon: -89.5),

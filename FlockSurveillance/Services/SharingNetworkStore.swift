@@ -63,6 +63,30 @@ final class SharingNetworkStore {
         }
     }
 
+    /// Full-list search for the Find partners sheet — uncapped source, capped results.
+    /// Does not affect map Marker rendering (`maxRenderedPartners`).
+    func matchingPartners(
+        for hubId: String,
+        query: String,
+        limit: Int = 100
+    ) -> [SharingPartner] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, limit > 0 else { return [] }
+        let needle = trimmed.lowercased()
+        return partners(for: hubId)
+            .filter { partner in
+                if partner.name.lowercased().contains(needle) { return true }
+                if partner.state.lowercased().contains(needle) { return true }
+                let entity = partner.entityType
+                    .replacingOccurrences(of: "_", with: " ")
+                    .lowercased()
+                return entity.contains(needle)
+            }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .prefix(limit)
+            .map { $0 }
+    }
+
     /// Upper bound for partners rendered as map annotations (Markers + polylines) per hub.
     ///
     /// This isn't just a polyline-draw-performance knob: SharingNetworkView renders one

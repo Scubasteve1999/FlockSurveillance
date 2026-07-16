@@ -12,7 +12,6 @@ struct MapRadarView: View {
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
     @AppStorage(AppPreferenceKey.showSensorAtlas) private var showSensorAtlasStored = false
-    @AppStorage(AppPreferenceKey.sensorAtlasAutoSuppressed) private var sensorAtlasAutoSuppressed = false
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.watchModeEnabled) private var watchModeStored = false
     @AppStorage(AppPreferenceKey.hasAutoShownPlaceScore) private var hasAutoShownPlaceScore = false
@@ -49,6 +48,9 @@ struct MapRadarView: View {
     /// Banner after auto-enabling Traffic cams in Madison / Milwaukee.
     @State private var sensorAtlasBanner: String?
     @State private var isAutoTogglingSensorAtlas = false
+    /// Prevents re-entrant auto-enable before `onChange` clears the toggle flag.
+    @State private var sensorAtlasAutoEnableInFlight = false
+    @State private var sensorAtlasBannerDismissTask: Task<Void, Never>?
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -207,6 +209,10 @@ struct MapRadarView: View {
                 await reportStore.verifyOpenReports(repository: repository)
             }
         }
+        .onDisappear {
+            sensorAtlasBannerDismissTask?.cancel()
+            sensorAtlasBannerDismissTask = nil
+        }
         .onChange(of: repository.cameras.count) { _, _ in
             cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
             maybeAutoShowPlaceScore()
@@ -226,7 +232,7 @@ struct MapRadarView: View {
         .onChange(of: nearest?.meters) { _, meters in
             radar.update(userLocation: locationManager.location, nearestMeters: meters)
         }
-        .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+        .onChange(of: SensorAtlasAutoPolicy.locationKey(locationManager.location?.coordinate)) { _, _ in
             if visibleRegion == nil {
                 bootstrapRegion()
             }
@@ -245,18 +251,25 @@ struct MapRadarView: View {
             if value {
                 sensorAtlasStore.loadIfNeeded()
                 if !isAutoTogglingSensorAtlas {
-                    // Manual on clears suppression so future metros can auto-on again.
-                    sensorAtlasAutoSuppressed = false
+                    // Manual on clears all metro suppressions so other cities can auto-on.
+                    AppPreferences.sensorAtlasSuppressedMetros =
+                        SensorAtlasAutoPolicy.suppressedAfterManualOn(
+                            current: AppPreferences.sensorAtlasSuppressedMetros
+                        )
                 }
             } else if !isAutoTogglingSensorAtlas {
-                // Manual off inside a covered metro — don't keep re-enabling.
-                if let coordinate = locationManager.location?.coordinate,
-                   SensorAtlasCoverage.contains(coordinate) {
-                    sensorAtlasAutoSuppressed = true
-                }
+                // Manual off suppresses only the metro you're in.
+                AppPreferences.sensorAtlasSuppressedMetros =
+                    SensorAtlasAutoPolicy.suppressedAfterManualOff(
+                        current: AppPreferences.sensorAtlasSuppressedMetros,
+                        coordinate: locationManager.location?.coordinate
+                    )
                 sensorAtlasBanner = nil
+                sensorAtlasBannerDismissTask?.cancel()
+                sensorAtlasBannerDismissTask = nil
             }
             isAutoTogglingSensorAtlas = false
+            sensorAtlasAutoEnableInFlight = false
         }
         .onChange(of: filter) { _, value in
             defaultFilterRaw = value.rawValue
@@ -608,12 +621,16 @@ struct MapRadarView: View {
         }
     }
 
-    /// In Madison / Milwaukee, turn Traffic cams on by default once — unless the user opted out.
+    /// In Madison / Milwaukee, turn Traffic cams on by default — unless that metro was opted out.
     private func maybeAutoEnableSensorAtlas() {
-        guard !showSensorAtlas, !sensorAtlasAutoSuppressed else { return }
-        guard let coordinate = locationManager.location?.coordinate,
-              let metro = SensorAtlasCoverage.metro(containing: coordinate)
-        else { return }
+        guard !sensorAtlasAutoEnableInFlight else { return }
+        guard let metro = SensorAtlasAutoPolicy.shouldAutoEnable(
+            layerAlreadyOn: showSensorAtlas,
+            suppressedMetroNames: AppPreferences.sensorAtlasSuppressedMetros,
+            coordinate: locationManager.location?.coordinate
+        ) else { return }
+
+        sensorAtlasAutoEnableInFlight = true
         sensorAtlasStore.loadIfNeeded()
         isAutoTogglingSensorAtlas = true
         withAnimation(.easeInOut(duration: 0.25)) {
@@ -621,10 +638,14 @@ struct MapRadarView: View {
             sensorAtlasBanner = "\(metro.name) traffic cams on — public WisDOT CCTV, not ALPR. Tap a gold pin."
         }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        Task { @MainActor in
+
+        sensorAtlasBannerDismissTask?.cancel()
+        let metroName = metro.name
+        sensorAtlasBannerDismissTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 6_000_000_000)
+            guard !Task.isCancelled else { return }
             withAnimation(.easeOut(duration: 0.25)) {
-                if sensorAtlasBanner?.contains(metro.name) == true {
+                if sensorAtlasBanner?.contains(metroName) == true {
                     sensorAtlasBanner = nil
                 }
             }

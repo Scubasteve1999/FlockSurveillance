@@ -143,4 +143,20 @@ final class SensorAtlasStoreTests: XCTestCase {
         )
         XCTAssertNil(sensor.resolvedImageURL)
     }
+
+    func testCleartextHTTPRejectedEvenOnAllowlistedHost() {
+        let sensor = PublicSensor(
+            id: "x",
+            name: "X",
+            highway: "",
+            latitude: 0,
+            longitude: 0,
+            source: "t",
+            city: "t",
+            imageURL: "http://content.dot.wi.gov/travel/cameras/cam1.jpg",
+            kind: "municipal_traffic",
+            disclaimer: "Municipal traffic camera — not ALPR, not Flock Safety"
+        )
+        XCTAssertNil(sensor.resolvedImageURL)
+    }
 }

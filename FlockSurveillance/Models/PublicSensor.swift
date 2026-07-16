@@ -34,7 +34,7 @@ struct PublicSensor: Identifiable, Hashable, Sendable, Codable {
         return trimmed.isEmpty ? nil : trimmed
     }
 
-    /// Resolved still URL if the host is allowlisted; otherwise nil (no fetch).
+    /// Resolved still URL if HTTPS + allowlisted host; otherwise nil (no fetch).
     var resolvedImageURL: URL? {
         guard let raw = imageURL?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
             return nil
@@ -42,13 +42,15 @@ struct PublicSensor: Identifiable, Hashable, Sendable, Codable {
         if raw.lowercased().contains("pull.web") {
             return nil
         }
-        let absolute: String
-        if raw.hasPrefix("http://") || raw.hasPrefix("https://") {
-            absolute = raw
-        } else {
-            absolute = "https://\(raw)"
+        // Reject explicit cleartext; schemeless hosts are upgraded to https.
+        if raw.lowercased().hasPrefix("http://") {
+            return nil
         }
-        guard let url = URL(string: absolute), let host = url.host?.lowercased() else {
+        let absolute = raw.hasPrefix("https://") ? raw : "https://\(raw)"
+        guard let url = URL(string: absolute),
+              url.scheme?.lowercased() == "https",
+              let host = url.host?.lowercased()
+        else {
             return nil
         }
         guard Self.allowedImageHosts.contains(host) else {

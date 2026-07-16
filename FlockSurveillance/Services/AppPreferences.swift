@@ -4,8 +4,10 @@ enum AppPreferenceKey {
     static let hapticsEnabled = "prefs.hapticsEnabled"
     static let showHeatDefault = "prefs.showHeatDefault"
     static let showSensorAtlas = "prefs.showSensorAtlas"
-    /// User turned Traffic cams off while inside a covered metro — don't auto-on again.
-    static let sensorAtlasAutoSuppressed = "prefs.sensorAtlasAutoSuppressed"
+    /// Metro names where the user manually turned Traffic cams off (per-city suppress).
+    static let sensorAtlasSuppressedMetros = "prefs.sensorAtlasSuppressedMetros"
+    /// Legacy global suppress flag — migrated once into `sensorAtlasSuppressedMetros`.
+    static let sensorAtlasAutoSuppressedLegacy = "prefs.sensorAtlasAutoSuppressed"
     static let defaultFilter = "prefs.defaultFilter"
     static let watchModeEnabled = "prefs.watchModeEnabled"
     static let alertsEnabled = "prefs.alertsEnabled"
@@ -39,9 +41,37 @@ enum AppPreferences {
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showSensorAtlas) }
     }
 
-    static var sensorAtlasAutoSuppressed: Bool {
-        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.sensorAtlasAutoSuppressed) }
-        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.sensorAtlasAutoSuppressed) }
+    /// Metros where Traffic cams auto-enable is suppressed after a manual off.
+    static var sensorAtlasSuppressedMetros: Set<String> {
+        get {
+            migrateLegacySensorAtlasSuppressIfNeeded()
+            let names = UserDefaults.standard.stringArray(
+                forKey: AppPreferenceKey.sensorAtlasSuppressedMetros
+            ) ?? []
+            return Set(names)
+        }
+        set {
+            UserDefaults.standard.set(
+                Array(newValue).sorted(),
+                forKey: AppPreferenceKey.sensorAtlasSuppressedMetros
+            )
+        }
+    }
+
+    /// One-shot: old global bool → suppress every known metro name.
+    private static func migrateLegacySensorAtlasSuppressIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: AppPreferenceKey.sensorAtlasAutoSuppressedLegacy) != nil else {
+            return
+        }
+        if defaults.bool(forKey: AppPreferenceKey.sensorAtlasAutoSuppressedLegacy) {
+            let all = Set(SensorAtlasCoverage.metros.map(\.name))
+            let existing = Set(
+                defaults.stringArray(forKey: AppPreferenceKey.sensorAtlasSuppressedMetros) ?? []
+            )
+            defaults.set(Array(existing.union(all)).sorted(), forKey: AppPreferenceKey.sensorAtlasSuppressedMetros)
+        }
+        defaults.removeObject(forKey: AppPreferenceKey.sensorAtlasAutoSuppressedLegacy)
     }
 
     static var defaultFilter: CameraFilter {

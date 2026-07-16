@@ -38,6 +38,7 @@
 		52E36171496623748B17B062 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */; };
 		62F771913D5D78E558642B56 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */; };
+		6EC536BC9AA600A7956AB4E2 /* SensorAtlasAutoPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */; };
 		723F3920CC4F5A1D41AFFD65 /* SensorAtlasBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 38E4546BCC022F9ACAB3B832 /* SensorAtlasBundle.json */; };
 		763A2154160FF47D2B081656 /* SharingNetworkBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */; };
 		786462527AEEA37C8E95B58F /* SensorAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC127AE1BE845A788CF3FF21 /* SensorAnnotationView.swift */; };
@@ -79,6 +80,7 @@
 		E38C4EF05F3E19AFD9D025A1 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA709B0872A9F478764A4CA /* LocationManager.swift */; };
 		E7ADB8087407111D5DA58BB8 /* RefreshNearbyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */; };
 		ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */; };
+		F2DCECB5D5040B8C00428E1E /* SensorAtlasAutoPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */; };
 		F67177DA7F2B4400E75DDE7B /* DriveModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */; };
 		F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */; };
 		FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC739360F96B00B18FF118D /* GeoHelpers.swift */; };
@@ -154,9 +156,11 @@
 		80049F39BDDD220E4F7AC048 /* MapRadarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRadarView.swift; sourceTree = "<group>"; };
 		839B34D71A068F6E097C63DE /* PendingReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReport.swift; sourceTree = "<group>"; };
 		8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPrompter.swift; sourceTree = "<group>"; };
+		87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasAutoPolicy.swift; sourceTree = "<group>"; };
 		87AA373662BC417002454737 /* ProximityRadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityRadar.swift; sourceTree = "<group>"; };
 		8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZoneTests.swift; sourceTree = "<group>"; };
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasAutoPolicyTests.swift; sourceTree = "<group>"; };
 		A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpersTests.swift; sourceTree = "<group>"; };
 		A49125D402CAD705C90729FB /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
 		A4B0B4143401454EFDFBD3EA /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
@@ -232,6 +236,7 @@
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
+				93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */,
 				EEB7D63F1267C1CA4224E1F5 /* SensorAtlasCoverageTests.swift */,
 				B0F2E86763F4036F86E6CD4D /* SensorAtlasStoreTests.swift */,
 				D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */,
@@ -359,6 +364,7 @@
 				C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */,
 				8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */,
 				1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */,
+				87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */,
 				35311040ACCE7081A5FF43E2 /* SensorAtlasCoverage.swift */,
 				7C373293D13ED5DA5B5271D6 /* SensorAtlasStore.swift */,
 				3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */,
@@ -598,6 +604,7 @@
 				498357A2C1FCB27578F991E3 /* RouteExposureService.swift in Sources */,
 				7D1162589701FAD2379F4A37 /* RouteExposureView.swift in Sources */,
 				786462527AEEA37C8E95B58F /* SensorAnnotationView.swift in Sources */,
+				F2DCECB5D5040B8C00428E1E /* SensorAtlasAutoPolicy.swift in Sources */,
 				43F99A4D1BAAB1B1313D0B24 /* SensorAtlasCoverage.swift in Sources */,
 				2422FD84647A699EBB159978 /* SensorAtlasStore.swift in Sources */,
 				AE12A36D58869D04BFE846B9 /* SensorDetailSheet.swift in Sources */,
@@ -625,6 +632,7 @@
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
 				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,
+				6EC536BC9AA600A7956AB4E2 /* SensorAtlasAutoPolicyTests.swift in Sources */,
 				248C77EA26A3AF98FF6EB85E /* SensorAtlasCoverageTests.swift in Sources */,
 				16E8FB4AE99ACCA55811AB1D /* SensorAtlasStoreTests.swift in Sources */,
 				9577161272A5F6E59BC03B66 /* SharingNetworkStoreTests.swift in Sources */,

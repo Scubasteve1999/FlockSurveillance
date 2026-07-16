@@ -20,7 +20,7 @@ Notes:
 
 ## Promotional text (170 chars, editable without review)
 
-> NEW: Sharing Network — see FOIA-documented agency partners as a national hub-and-spoke map. Public records only. No Flock vendor APIs.
+> NEW: Sharing Network — FOIA hub-and-spoke map plus partner search. Public records only. No Flock vendor APIs.
 
 ## Description opener (first 3 lines matter most)
 
@@ -29,6 +29,93 @@ Notes:
 > Built on OpenStreetMap community data plus a DeFlock Dane FOIA snapshot. No accounts. No tracking. Your location never leaves your device.
 
 Then feature bullets in this order: Sharing Network Map, Coverage Confidence + Radar Shell, AR Camera Sight, Instant Place Score dial, Share cards, Safest drive Home↔Work, Map + FOV cones, Background alerts, Coverage reporting loop, City rankings, Widgets/Siri.
+
+## App Store Connect paste pack
+
+Copy these into App Store Connect → app version → App Information / Previews and Screenshots.
+
+### Name (30)
+
+```
+Flock Surveillance: ALPR Map
+```
+
+### Subtitle (30)
+
+```
+How watched is your life?
+```
+
+### Keywords (100)
+
+```
+alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,speed camera,tracker
+```
+
+### Promotional Text (170)
+
+```
+NEW: Sharing Network — FOIA hub-and-spoke map plus partner search. Public records only. No Flock vendor APIs.
+```
+
+### Description (full)
+
+```
+How watched is your life right now? Open the app and get a personal grade for your block on a coverage dial — then raise your phone to see mapped cameras in AR, or open Sharing Network to see who FOIA-disclosed hubs share with.
+
+Built on OpenStreetMap community data plus a DeFlock Dane FOIA snapshot. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
+
+• Sharing Network Map — FOIA hub-and-spoke partners; search any agency beyond the map sample
+• Coverage Confidence — fetch state, facing %, freshness; soft-clears stale pins after a trusted OSM refresh
+• AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
+• Instant Place Score — grade your block in seconds; share Instagram-ready cards
+• Safest Drive Home ↔ Work — compare routes by mapped camera exposure
+• Drive Mode — live countdown HUD + Lock Screen Live Activity while you drive
+• Map + FOV cones — clusters, Flock filter, optional approach haptics
+• Background alerts — optional geofenced notifications near mapped cameras
+• Community reporting — flag unmapped cameras as anonymous OSM notes
+• City rankings, widgets, and Siri Shortcuts
+
+Not affiliated with Flock Safety. Civic transparency mapping — not a radar detector.
+```
+
+### What's New (this release)
+
+```
+• Find any Sharing Network partner by name or state (beyond the map’s 250-arc sample)
+• Drive Mode stays alive when you dismiss the HUD — Live Activity keeps updating until End Drive
+• Honest coverage soft-clear for confirmed-empty sparse Overpass tiles
+• Export compliance flag for smoother App Store uploads
+```
+
+## Screenshot capture checklist
+
+Capture order matches the storyboard above. Prefer **iPhone 16 Pro Max / 6.7"** simulator (or shipping 6.7" device). Dark appearance. Location set near a dense mapped metro (e.g. Madison WI or Atlanta) for map frames.
+
+| # | Screen | How to get there | Caption | Notes |
+|---|--------|------------------|---------|-------|
+| 1 | Sharing Network | Map → Sharing Network control, or Learn → Sharing Network CTA; pick **Waunakee** | See who they share with | Offline OK (bundled FOIA). Optional: open Find partners briefly for a second crop |
+| 2 | Radar HUD | Map tab, after a successful viewport fetch | Fetched. Facing. Honest. | Wait until instrument shows Fetched, not Loading |
+| 3 | Place Score dial | Map → How Watched? / Place Score | Your block, graded in seconds | Settled score after covering fetch |
+| 4 | Place Score share PNG | Share from Place Score → save image | Share how watched you are | Prefer `ShareCardRenderer` output, not a UI screenshot |
+| 5 | AR Camera Sight | Map → AR | Point at the street — see the cameras | **Physical device outdoors** near mapped pins; sim is weak |
+| 6 | Map + FOV | Map with Flock filter off, FOV cones visible | See every mapped camera | Zoom so several cones read |
+| 7 | Safest Drive | Route tab → set Home/Work → Home→Work | One-tap safest drive | Show alternatives card if available |
+| 8 | Drive Mode | Start Drive from a route result | Live countdown while you drive | Device for Dynamic Island; sim can show HUD only |
+
+**Export style:** device frames on `#0F1217`, captions in `#F26B47`. Keep chrome consistent across the set.
+
+**Skip / defer:** CarPlay until entitlement ships.
+
+### Draft simulator captures
+
+Low-res reference JPEGs from the iPhone 17 simulator live in [`docs/aso-captures/`](aso-captures/). Use them for layout/caption planning only — **not** for App Store upload (need full-resolution 6.7" frames + device frames).
+
+| File | Storyboard # |
+|------|----------------|
+| `01-sharing-network.jpg` | 1 |
+| `02-radar-map.jpg` | 2 |
+| `03-place-score.jpg` | 3 |
 
 ## Screenshot storyboard (6.7" set, in order)
 

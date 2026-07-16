@@ -33,6 +33,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

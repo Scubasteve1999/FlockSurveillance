@@ -38,6 +38,9 @@ targets:
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
+        # App uses only standard HTTPS (Overpass/OSM) — exempt from export
+        # compliance. Declaring it here skips the encryption question per upload.
+        ITSAppUsesNonExemptEncryption: false
         NSSupportsLiveActivities: true
         # Significant-change + region monitoring need the location background mode.
         UIBackgroundModes:

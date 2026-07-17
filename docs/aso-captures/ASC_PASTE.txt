@@ -77,4 +77,4 @@ Still need device: 05-ar-camera, 08-drive-mode
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.8.0 / CURRENT_PROJECT_VERSION 10
+MARKETING_VERSION 1.8.0 / CURRENT_PROJECT_VERSION 11

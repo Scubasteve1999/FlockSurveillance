@@ -86,13 +86,16 @@ final class DriveSession {
         Task { await DriveLiveActivityController.shared.update(session: self) }
 
         guard hapticsEnabled, let metersToNext else { return }
-        let thresholds: [CLLocationDistance] = [400, 200, 100, 50]
+        let thresholds: [CLLocationDistance] = [500, 300, 150, 75, 40]
         for threshold in thresholds {
             if metersToNext <= threshold, lastPulseDistance > threshold {
-                let style: UIImpactFeedbackGenerator.FeedbackStyle = threshold <= 100 ? .heavy : .medium
+                let style: UIImpactFeedbackGenerator.FeedbackStyle = threshold <= 75 ? .heavy : .medium
                 let generator = UIImpactFeedbackGenerator(style: style)
                 generator.prepare()
-                generator.impactOccurred(intensity: threshold <= 100 ? 1.0 : 0.75)
+                generator.impactOccurred(intensity: threshold <= 75 ? 1.0 : 0.75)
+                if threshold <= 40 {
+                    OverwatchAudio.stingIfEnteringCritical(previous: .high, current: .critical)
+                }
                 break
             }
         }

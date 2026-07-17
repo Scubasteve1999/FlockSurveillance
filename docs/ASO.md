@@ -82,10 +82,10 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ### What's New (this release)
 
 ```
+• Sensor Atlas — optional WisDOT traffic cams for Madison & Milwaukee (not ALPR; not Flock)
+• Honest watched-zone copy — alerts mean near mapped ALPR pins, not plate reads
 • Find any Sharing Network partner by name or state (beyond the map’s 250-arc sample)
-• Drive Mode stays alive when you dismiss the HUD — Live Activity keeps updating until End Drive
-• Honest coverage soft-clear for confirmed-empty sparse Overpass tiles
-• Export compliance flag for smoother App Store uploads
+• Drive Mode stays alive when you dismiss the HUD — Live Activity until End Drive
 ```
 
 ## Screenshot capture checklist

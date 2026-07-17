@@ -120,30 +120,30 @@ struct RouteExposureView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("DRIVE IN PROGRESS")
-                            .font(.system(size: 10, weight: .semibold))
+                        Text("OVERWATCH · DRIVE LIVE")
+                            .font(.system(size: 10, weight: .black, design: .monospaced))
                             .tracking(0.8)
                             .foregroundStyle(AppTheme.primary)
                         Text(
                             driveSession.nextHit.map { hit in
                                 let distance = driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
-                                return "\(distance) to \(hit.isFlock ? "Flock" : "next") camera"
+                                return "LOCK \(distance) · \(hit.isFlock ? "Flock" : "mapped") pin"
                             } ?? "Corridor clear"
                         )
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(AppTheme.foreground)
                     }
                     Spacer()
-                    Text("\(driveSession.camerasRemaining) left")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(AppTheme.mutedForeground)
+                    Text("\(driveSession.camerasRemaining) AHEAD")
+                        .font(.system(size: 12, weight: .black, design: .monospaced))
+                        .foregroundStyle(AppTheme.accent)
                 }
 
                 HStack(spacing: 10) {
                     Button {
                         showDriveMode = true
                     } label: {
-                        Label("Resume Drive", systemImage: "car.fill")
+                        Label("Resume Overwatch", systemImage: "car.fill")
                             .font(.system(size: 14, weight: .bold))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -156,8 +156,8 @@ struct RouteExposureView: View {
                     Button {
                         driveSession.stop()
                     } label: {
-                        Text("End Drive")
-                            .font(.system(size: 14, weight: .semibold))
+                        Text("END DRIVE")
+                            .font(.system(size: 13, weight: .black, design: .monospaced))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
                             .foregroundStyle(AppTheme.foreground)
@@ -176,14 +176,14 @@ struct RouteExposureView: View {
 
     private var brandBlock: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("FLOCK SURVEILLANCE")
-                .font(.system(size: 12, weight: .bold))
+            Text("OVERWATCH · ROUTE")
+                .font(.system(size: 12, weight: .black, design: .monospaced))
                 .tracking(1.2)
                 .foregroundStyle(AppTheme.primary)
             Text("Safest Drive")
-                .font(.system(size: 28, weight: .bold))
+                .font(.system(size: 28, weight: .black))
                 .foregroundStyle(AppTheme.foreground)
-            Text("One tap for Home ↔ Work, or search any trip. We pick the route with the fewest mapped cameras.")
+            Text("One tap for Home ↔ Work, or search any trip. We pick the corridor with the fewest mapped ALPR pins.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
         }
@@ -411,7 +411,7 @@ struct RouteExposureView: View {
                     }
                 } label: {
                     Label(
-                        driveSession.isActive ? "Resume Drive" : "Start Drive",
+                        driveSession.isActive ? "Resume Overwatch" : "Start Overwatch Drive",
                         systemImage: "car.fill"
                     )
                         .font(.system(size: 14, weight: .bold))

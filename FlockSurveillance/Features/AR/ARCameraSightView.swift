@@ -155,17 +155,41 @@ struct ARCameraSightView: View {
         }
     }
 
+    private var arLevel: SurveillanceLevel {
+        SurveillanceLevel.compute(
+            visibleCount: nearbyItems.count,
+            nearestMeters: nearestMeters,
+            inWatchedZone: (nearestMeters ?? .infinity) <= AlertsEngine.regionRadius
+        )
+    }
+
     private var hud: some View {
         HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("SEE WHO'S WATCHING")
-                    .font(.system(size: 13, weight: .bold))
-                    .tracking(1.1)
-                    .foregroundStyle(AppTheme.foreground)
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(arLevel.color)
+                        .frame(width: 7, height: 7)
+                        .shadow(color: arLevel.color.opacity(0.8), radius: 4)
+                    Text("OVERWATCH · AR SIGHT")
+                        .font(.system(size: 11, weight: .black, design: .monospaced))
+                        .tracking(1.0)
+                        .foregroundStyle(arLevel.color)
+                }
                 Text(hudSubtitle)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.foreground)
+                Text("Mapped OSM pins only — not a live feed")
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
+            .padding(12)
+            .background(AppTheme.card.opacity(0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(arLevel.color.opacity(0.4), lineWidth: 1)
+            )
             .allowsHitTesting(false)
             Spacer()
                 .allowsHitTesting(false)
@@ -192,10 +216,10 @@ struct ARCameraSightView: View {
         if cameraDenied || locationDenied { return "Permissions required" }
         let count = nearbyItems.count
         if count == 0 {
-            return "No mapped cameras within 400 m"
+            return "No mapped pins within 400 m"
         }
         let nearest = nearestMeters.map(ProximityRadar.formatDistance) ?? "—"
-        return "\(count) in range · nearest \(nearest)"
+        return "\(count) IN RANGE · LOCK \(nearest) · \(arLevel.chip)"
     }
 
     private var emptyBanner: some View {

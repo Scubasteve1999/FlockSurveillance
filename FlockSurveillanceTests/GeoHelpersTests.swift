@@ -149,6 +149,23 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertGreaterThan(rankings.first?.cameraCount ?? 0, rankings[1].cameraCount)
     }
 
+    func testMidSouthSeedsFirstForLocalDensity() {
+        let names = GeoHelpers.seedMetros.map(\.name)
+        XCTAssertEqual(names.first, "Memphis")
+        XCTAssertTrue(names.contains("Olive Branch"))
+        XCTAssertTrue(names.contains("Southaven"))
+        XCTAssertTrue(names.contains("Germantown"))
+        // Mid-South should outrank distant national metros in seed order.
+        let memphisIdx = names.firstIndex(of: "Memphis")!
+        let laIdx = names.firstIndex(of: "Los Angeles")!
+        XCTAssertLessThan(memphisIdx, laIdx)
+    }
+
+    func testMemphisCoordinateIsMidSouth() {
+        XCTAssertEqual(GeoHelpers.memphisCoordinate.latitude, 35.1495, accuracy: 0.001)
+        XCTAssertEqual(GeoHelpers.oliveBranchCoordinate.latitude, 34.9618, accuracy: 0.001)
+    }
+
     func testRegionContainsCoordinate() {
         let region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),

@@ -295,38 +295,69 @@ enum GeoHelpers {
         )
     }
 
-    /// Major US metros to warm the local cache so zoomed-out maps aren't a single-city island.
-    static let seedMetros: [(name: String, coordinate: CLLocationCoordinate2D)] = [
-        ("Los Angeles", CLLocationCoordinate2D(latitude: 34.0522, longitude: -118.2437)),
-        ("New York", CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060)),
-        ("Chicago", CLLocationCoordinate2D(latitude: 41.8781, longitude: -87.6298)),
-        ("Houston", CLLocationCoordinate2D(latitude: 29.7604, longitude: -95.3698)),
-        ("Phoenix", CLLocationCoordinate2D(latitude: 33.4484, longitude: -112.0740)),
-        ("Philadelphia", CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)),
-        ("Dallas", CLLocationCoordinate2D(latitude: 32.7767, longitude: -96.7970)),
-        ("San Francisco", CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)),
-        ("Seattle", CLLocationCoordinate2D(latitude: 47.6062, longitude: -122.3321)),
-        ("Denver", CLLocationCoordinate2D(latitude: 39.7392, longitude: -104.9903)),
-        ("Washington DC", CLLocationCoordinate2D(latitude: 38.9072, longitude: -77.0369)),
-        ("Boston", CLLocationCoordinate2D(latitude: 42.3601, longitude: -71.0589)),
-        ("Atlanta", CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)),
-        ("Miami", CLLocationCoordinate2D(latitude: 25.7617, longitude: -80.1918)),
-        ("Detroit", CLLocationCoordinate2D(latitude: 42.3314, longitude: -83.0458)),
-        ("Minneapolis", CLLocationCoordinate2D(latitude: 44.9778, longitude: -93.2650)),
-        ("Las Vegas", CLLocationCoordinate2D(latitude: 36.1699, longitude: -115.1398)),
-        ("Portland", CLLocationCoordinate2D(latitude: 45.5152, longitude: -122.6784)),
-        ("Charlotte", CLLocationCoordinate2D(latitude: 35.2271, longitude: -80.8431)),
-        ("Nashville", CLLocationCoordinate2D(latitude: 36.1627, longitude: -86.7816)),
-        ("Austin", CLLocationCoordinate2D(latitude: 30.2672, longitude: -97.7431)),
-        ("San Diego", CLLocationCoordinate2D(latitude: 32.7157, longitude: -117.1611)),
-        ("Orlando", CLLocationCoordinate2D(latitude: 28.5383, longitude: -81.3792)),
-        ("Kansas City", CLLocationCoordinate2D(latitude: 39.0997, longitude: -94.5786))
+    /// Downtown Memphis — Mid-South fallback when GPS/Home are unknown.
+    static let memphisCoordinate = CLLocationCoordinate2D(latitude: 35.1495, longitude: -90.0490)
+
+    /// Olive Branch / DeSoto County (Stephen's home market).
+    static let oliveBranchCoordinate = CLLocationCoordinate2D(latitude: 34.9618, longitude: -89.8295)
+
+    /// Mid-South tiles seed first so Memphis/DeSoto feels dense before national warm-up.
+    private static let midSouthSeedMetros: [(name: String, coordinate: CLLocationCoordinate2D)] = [
+        ("Memphis", memphisCoordinate),
+        ("Olive Branch", oliveBranchCoordinate),
+        ("Southaven", CLLocationCoordinate2D(latitude: 34.9890, longitude: -90.0126)),
+        ("Germantown", CLLocationCoordinate2D(latitude: 35.0868, longitude: -89.8101)),
+        ("Bartlett", CLLocationCoordinate2D(latitude: 35.2045, longitude: -89.8740)),
+        ("Collierville", CLLocationCoordinate2D(latitude: 35.0420, longitude: -89.6645)),
+        ("West Memphis", CLLocationCoordinate2D(latitude: 35.1465, longitude: -90.1845)),
+        ("Horn Lake", CLLocationCoordinate2D(latitude: 34.9554, longitude: -90.0348)),
+        ("Cordova", CLLocationCoordinate2D(latitude: 35.1556, longitude: -89.7762)),
+        ("Hernando", CLLocationCoordinate2D(latitude: 34.8237, longitude: -89.9937))
     ]
 
+    /// Major US metros to warm the local cache so zoomed-out maps aren't a single-city island.
+    /// Mid-South tiles are first so local density wins the early seed budget.
+    static let seedMetros: [(name: String, coordinate: CLLocationCoordinate2D)] =
+        midSouthSeedMetros + [
+            ("Nashville", CLLocationCoordinate2D(latitude: 36.1627, longitude: -86.7816)),
+            ("Atlanta", CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)),
+            ("Little Rock", CLLocationCoordinate2D(latitude: 34.7465, longitude: -92.2896)),
+            ("Birmingham", CLLocationCoordinate2D(latitude: 33.5186, longitude: -86.8104)),
+            ("Jackson MS", CLLocationCoordinate2D(latitude: 32.2988, longitude: -90.1848)),
+            ("Los Angeles", CLLocationCoordinate2D(latitude: 34.0522, longitude: -118.2437)),
+            ("New York", CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060)),
+            ("Chicago", CLLocationCoordinate2D(latitude: 41.8781, longitude: -87.6298)),
+            ("Houston", CLLocationCoordinate2D(latitude: 29.7604, longitude: -95.3698)),
+            ("Phoenix", CLLocationCoordinate2D(latitude: 33.4484, longitude: -112.0740)),
+            ("Philadelphia", CLLocationCoordinate2D(latitude: 39.9526, longitude: -75.1652)),
+            ("Dallas", CLLocationCoordinate2D(latitude: 32.7767, longitude: -96.7970)),
+            ("San Francisco", CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)),
+            ("Seattle", CLLocationCoordinate2D(latitude: 47.6062, longitude: -122.3321)),
+            ("Denver", CLLocationCoordinate2D(latitude: 39.7392, longitude: -104.9903)),
+            ("Washington DC", CLLocationCoordinate2D(latitude: 38.9072, longitude: -77.0369)),
+            ("Boston", CLLocationCoordinate2D(latitude: 42.3601, longitude: -71.0589)),
+            ("Miami", CLLocationCoordinate2D(latitude: 25.7617, longitude: -80.1918)),
+            ("Detroit", CLLocationCoordinate2D(latitude: 42.3314, longitude: -83.0458)),
+            ("Minneapolis", CLLocationCoordinate2D(latitude: 44.9778, longitude: -93.2650)),
+            ("Las Vegas", CLLocationCoordinate2D(latitude: 36.1699, longitude: -115.1398)),
+            ("Portland", CLLocationCoordinate2D(latitude: 45.5152, longitude: -122.6784)),
+            ("Charlotte", CLLocationCoordinate2D(latitude: 35.2271, longitude: -80.8431)),
+            ("Austin", CLLocationCoordinate2D(latitude: 30.2672, longitude: -97.7431)),
+            ("San Diego", CLLocationCoordinate2D(latitude: 32.7157, longitude: -117.1611)),
+            ("Orlando", CLLocationCoordinate2D(latitude: 28.5383, longitude: -81.3792)),
+            ("Kansas City", CLLocationCoordinate2D(latitude: 39.0997, longitude: -94.5786))
+        ]
+
     static func seedRegion(for coordinate: CLLocationCoordinate2D) -> MKCoordinateRegion {
-        MKCoordinateRegion(
+        // Slightly tighter Mid-South tiles stack denser without over-fetching.
+        let isMidSouth = midSouthSeedMetros.contains {
+            abs($0.coordinate.latitude - coordinate.latitude) < 0.02
+                && abs($0.coordinate.longitude - coordinate.longitude) < 0.02
+        }
+        let delta: CLLocationDegrees = isMidSouth ? 0.18 : 0.28
+        return MKCoordinateRegion(
             center: coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 0.28, longitudeDelta: 0.28)
+            span: MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
         )
     }
 
@@ -399,12 +430,12 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
 
     var shareText: String {
         """
-        Flock Surveillance
+        FLOCK SURVEILLANCE · OVERWATCH
         \(headline)
         \(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)
-        Density: \(String(format: "%.1f", densityPerSquareMile)) per sq mi
+        Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)
         How watched is your life right now?
-        Approximate map link opens the same block.
+        Mapped OSM pins — not a vendor feed.
         flocksurveillance.com
         """
     }

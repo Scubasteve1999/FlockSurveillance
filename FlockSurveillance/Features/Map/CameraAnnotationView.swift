@@ -13,21 +13,22 @@ struct CameraAnnotationView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(color.opacity(0.22))
-                .frame(width: count > 1 ? 44 : 34, height: count > 1 ? 44 : 34)
+                .fill(color.opacity(0.28))
+                .frame(width: count > 1 ? 48 : 38, height: count > 1 ? 48 : 38)
+                .blur(radius: 0.5)
             Circle()
                 .fill(color)
                 .frame(width: count > 1 ? 28 : 18, height: count > 1 ? 28 : 18)
                 .overlay(
-                    Circle().stroke(Color.white.opacity(0.85), lineWidth: 1.5)
+                    Circle().stroke(Color.white.opacity(0.9), lineWidth: 1.5)
                 )
             if count > 1 {
                 Text("\(count)")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 11, weight: .black))
                     .foregroundStyle(.white)
             }
         }
-        .shadow(color: color.opacity(0.45), radius: 6, y: 2)
+        .shadow(color: color.opacity(0.7), radius: 10, y: 0)
         .accessibilityLabel(count > 1 ? "\(count) ALPR cameras" : "ALPR camera")
     }
 }
@@ -47,82 +48,61 @@ struct RadarHUD: View {
 
     @State private var ringProgress: CGFloat = 0
     @State private var zonePulse = false
+    @State private var sweepAngle: Double = 0
 
-    private var densityColor: Color {
-        AppTheme.densityColor(count: visibleCount)
+    private var level: SurveillanceLevel {
+        SurveillanceLevel.compute(
+            visibleCount: visibleCount,
+            nearestMeters: nearestMeters,
+            inWatchedZone: inWatchedZone
+        )
     }
 
-    private var targetRing: CGFloat {
-        switch visibleCount {
-        case 0: return 0.08
-        case 1...4: return 0.32
-        case 5...14: return 0.62
-        default: return 0.92
-        }
+    private var levelColor: Color { level.color }
+
+    private var targetRing: CGFloat { level.dialFill }
+
+    private var modeLabel: String {
+        if inWatchedZone { return WatchedZoneCopy.hudActiveLabel }
+        if watchModeEnabled { return "OVERWATCH LIVE" }
+        return "OVERWATCH"
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 16) {
-                ZStack {
-                    Circle()
-                        .stroke(AppTheme.border, lineWidth: 8)
-                        .frame(width: 88, height: 88)
+            HStack(alignment: .center, spacing: 14) {
+                tacticalDial
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(
+                        inWatchedZone
+                            ? "Watched zone. \(visibleCount) cameras in view, \(level.title). Phone near mapped ALPR pins, not a plate-read alert."
+                            : "\(visibleCount) cameras in view, \(level.title)"
+                    )
 
-                    Circle()
-                        .trim(from: 0, to: ringProgress)
-                        .stroke(
-                            densityColor,
-                            style: StrokeStyle(lineWidth: 8, lineCap: .round)
-                        )
-                        .frame(width: 88, height: 88)
-                        .rotationEffect(.degrees(-90))
-
-                    if inWatchedZone {
-                        Circle()
-                            .stroke(AppTheme.primary.opacity(zonePulse ? 0.2 : 0.8), lineWidth: 2)
-                            .frame(width: 102, height: 102)
-                            .scaleEffect(zonePulse ? 1.08 : 1.0)
-                    } else if watchModeEnabled {
-                        Circle()
-                            .stroke(AppTheme.primary.opacity(0.55), lineWidth: 2)
-                            .frame(width: 102, height: 102)
-                            .opacity(0.9)
-                    }
-
-                    VStack(spacing: 0) {
-                        Text("\(visibleCount)")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundStyle(AppTheme.foreground)
-                            .contentTransition(.numericText())
-                        Text(inWatchedZone ? "NEAR" : (watchModeEnabled ? "LIVE" : "VIEW"))
-                            .font(.system(size: 9, weight: .bold))
-                            .tracking(0.8)
-                            .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
-                    }
-                }
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel(
-                    inWatchedZone
-                        ? "Near mapped ALPR pins. \(visibleCount) cameras in view, \(densityLabel) density. Not a plate-read alert."
-                        : "\(visibleCount) cameras in view, \(densityLabel) density"
-                )
-
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 5) {
-                        if inWatchedZone {
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(spacing: 6) {
+                        if inWatchedZone || watchModeEnabled {
                             Circle()
-                                .fill(AppTheme.primary)
-                                .frame(width: 6, height: 6)
-                                .opacity(zonePulse ? 0.25 : 1)
+                                .fill(levelColor)
+                                .frame(width: 7, height: 7)
+                                .opacity(zonePulse ? 0.2 : 1)
+                                .shadow(color: levelColor.opacity(0.9), radius: zonePulse ? 6 : 2)
                         }
-                        Text(inWatchedZone ? WatchedZoneCopy.hudActiveLabel : (watchModeEnabled ? "LIVE WATCH" : "PROXIMITY RADAR"))
-                            .font(.system(size: 10, weight: .semibold))
-                            .tracking(0.8)
-                            .foregroundStyle(inWatchedZone || watchModeEnabled ? AppTheme.primary : AppTheme.mutedForeground)
+                        Text(modeLabel)
+                            .font(.system(size: 10, weight: .heavy))
+                            .tracking(1.1)
+                            .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)
                     }
 
-                    StatusBadge(text: densityLabel, color: densityColor)
+                    HStack(spacing: 6) {
+                        StatusBadge(text: level.chip, color: levelColor)
+                        StatusBadge(text: densityLabel, color: AppTheme.densityColor(count: visibleCount))
+                    }
+
+                    Text(level.title)
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(AppTheme.foreground)
+                        .contentTransition(.opacity)
 
                     if inWatchedZone {
                         Text(WatchedZoneCopy.hudActiveSubtitle)
@@ -132,18 +112,24 @@ struct RadarHUD: View {
                     }
 
                     if let nearestMeters {
-                        Text("Lock \(ProximityRadar.formatDistance(nearestMeters))")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(AppTheme.accent)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("LOCK")
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .foregroundStyle(AppTheme.mutedForeground)
+                            Text(ProximityRadar.formatDistance(nearestMeters))
+                                .font(.system(size: 20, weight: .black, design: .rounded))
+                                .foregroundStyle(AppTheme.accent)
+                                .contentTransition(.numericText())
+                        }
                         if let nearestLabel {
                             Text(nearestLabel)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(AppTheme.mutedForeground)
                                 .lineLimit(1)
                         }
                     } else {
-                        Text("No nearby lock")
-                            .font(.system(size: 14, weight: .semibold))
+                        Text("NO LOCK")
+                            .font(.system(size: 13, weight: .bold, design: .monospaced))
                             .foregroundStyle(AppTheme.mutedForeground)
                     }
                 }
@@ -151,24 +137,68 @@ struct RadarHUD: View {
                 Spacer(minLength: 0)
 
                 Button(action: onToggleWatch) {
-                    Text(watchModeEnabled ? "Watching" : "Watch")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(watchModeEnabled ? AppTheme.primary : AppTheme.card)
-                        .clipShape(Capsule())
-                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: watchModeEnabled ? 0 : 1))
+                    VStack(spacing: 3) {
+                        Image(systemName: watchModeEnabled ? "dot.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right")
+                            .font(.system(size: 14, weight: .bold))
+                        Text(watchModeEnabled ? "LIVE" : "ARM")
+                            .font(.system(size: 10, weight: .black))
+                            .tracking(0.6)
+                    }
+                    .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
+                    .frame(width: 56, height: 56)
+                    .background(
+                        watchModeEnabled
+                            ? AnyShapeStyle(LinearGradient(
+                                colors: [AppTheme.primary, AppTheme.critical],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            : AnyShapeStyle(AppTheme.card)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(
+                                watchModeEnabled ? AppTheme.primary.opacity(0.0) : AppTheme.border,
+                                lineWidth: 1
+                            )
+                    )
+                    .shadow(color: watchModeEnabled ? AppTheme.primary.opacity(0.55) : .clear, radius: 10, y: 0)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(watchModeEnabled ? "Disable watch mode" : "Enable watch mode")
+                .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Arm overwatch mode")
             }
+
+            // Threat meter bar
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(AppTheme.border.opacity(0.5))
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    AppTheme.densityLow,
+                                    AppTheme.densityMedium,
+                                    AppTheme.primary,
+                                    AppTheme.critical
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: max(8, geo.size.width * targetRing))
+                        .shadow(color: levelColor.opacity(0.6), radius: 6, y: 0)
+                }
+            }
+            .frame(height: 5)
+            .clipShape(Capsule())
 
             Text(confidence.instrumentLine)
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.75)
 
             if let coverageHint {
                 Text(coverageHint)
@@ -187,22 +217,46 @@ struct RadarHUD: View {
             HStack {
                 DataSourcePill()
                 Spacer()
-                Text("Lower-camera drives on Route")
-                    .font(.system(size: 11, weight: .medium))
+                Text("ROUTE · lower-cam drives")
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
         }
         .padding(14)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                levelColor.opacity(inWatchedZone ? 0.18 : 0.06),
+                                AppTheme.card.opacity(0.85),
+                                AppTheme.cardBottom.opacity(0.95)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+        }
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                .stroke(AppTheme.border, lineWidth: 1)
+                .stroke(
+                    inWatchedZone
+                        ? levelColor.opacity(zonePulse ? 0.35 : 0.95)
+                        : AppTheme.border,
+                    lineWidth: inWatchedZone ? 1.5 : 1
+                )
         )
+        .shadow(color: inWatchedZone ? levelColor.opacity(0.35) : .black.opacity(0.4), radius: inWatchedZone ? 16 : 8, y: 4)
         .onAppear {
             withAnimation(.easeOut(duration: 0.7)) {
                 ringProgress = targetRing
             }
-            if inWatchedZone {
+            startSweep()
+            if inWatchedZone || watchModeEnabled {
                 updateZonePulse(true)
             }
         }
@@ -211,30 +265,151 @@ struct RadarHUD: View {
                 ringProgress = targetRing
             }
         }
-        .onChange(of: watchModeEnabled) { _, enabled in
-            if enabled {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        .onChange(of: nearestMeters) { _, _ in
+            withAnimation(.easeInOut(duration: 0.35)) {
+                ringProgress = targetRing
             }
         }
         .onChange(of: inWatchedZone) { _, inside in
-            if inside {
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            withAnimation(.easeInOut(duration: 0.35)) {
+                ringProgress = targetRing
             }
-            updateZonePulse(inside)
+            if inside {
+                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
+            }
+            updateZonePulse(inside || watchModeEnabled)
+        }
+        .onChange(of: watchModeEnabled) { _, enabled in
+            if enabled {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                OverwatchAudio.armClick()
+            }
+            updateZonePulse(enabled || inWatchedZone)
+        }
+        .onChange(of: level) { previous, current in
+            OverwatchAudio.stingIfEnteringCritical(previous: previous, current: current)
+        }
+    }
+
+    private var tacticalDial: some View {
+        ZStack {
+            // Outer glow when hot
+            if level >= .high {
+                Circle()
+                    .fill(levelColor.opacity(zonePulse ? 0.22 : 0.08))
+                    .frame(width: 118, height: 118)
+                    .blur(radius: 8)
+            }
+
+            // Track
+            Circle()
+                .stroke(AppTheme.border.opacity(0.7), lineWidth: 9)
+                .frame(width: 92, height: 92)
+
+            // Threat arc
+            Circle()
+                .trim(from: 0, to: ringProgress)
+                .stroke(
+                    AngularGradient(
+                        colors: [
+                            AppTheme.densityLow,
+                            AppTheme.densityMedium,
+                            AppTheme.primary,
+                            AppTheme.critical
+                        ],
+                        center: .center,
+                        startAngle: .degrees(-90),
+                        endAngle: .degrees(270)
+                    ),
+                    style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                )
+                .frame(width: 92, height: 92)
+                .rotationEffect(.degrees(-90))
+                .shadow(color: levelColor.opacity(0.55), radius: 6, y: 0)
+
+            // Radar sweep (overwatch / zone)
+            if watchModeEnabled || inWatchedZone {
+                Circle()
+                    .trim(from: 0, to: 0.18)
+                    .stroke(
+                        levelColor.opacity(0.85),
+                        style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
+                    )
+                    .frame(width: 108, height: 108)
+                    .rotationEffect(.degrees(sweepAngle))
+                    .opacity(0.9)
+            }
+
+            if inWatchedZone {
+                Circle()
+                    .stroke(levelColor.opacity(zonePulse ? 0.15 : 0.9), lineWidth: 2)
+                    .frame(width: 108, height: 108)
+                    .scaleEffect(zonePulse ? 1.1 : 1.0)
+            }
+
+            VStack(spacing: 1) {
+                Text("\(visibleCount)")
+                    .font(.system(size: 30, weight: .black, design: .rounded))
+                    .foregroundStyle(AppTheme.foreground)
+                    .contentTransition(.numericText())
+                Text(inWatchedZone ? "HOT" : (watchModeEnabled ? "LIVE" : "VIEW"))
+                    .font(.system(size: 9, weight: .black))
+                    .tracking(1.2)
+                    .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)
+            }
+        }
+        .frame(width: 118, height: 118)
+    }
+
+    private func startSweep() {
+        withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
+            sweepAngle = 360
         }
     }
 
     private func updateZonePulse(_ active: Bool) {
         if active {
             zonePulse = false
-            withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+            withAnimation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true)) {
                 zonePulse = true
             }
         } else {
-            withAnimation(.easeOut(duration: 0.3)) {
+            withAnimation(.easeOut(duration: 0.25)) {
                 zonePulse = false
             }
         }
+    }
+}
+
+/// Full-bleed edge vignette when you're inside a watched corridor.
+struct WatchedZoneEdgeAlert: View {
+    let level: SurveillanceLevel
+    @State private var pulse = false
+
+    var body: some View {
+        let c = level.color
+        RoundedRectangle(cornerRadius: 0)
+            .strokeBorder(
+                LinearGradient(
+                    colors: [
+                        c.opacity(pulse ? 0.85 : 0.35),
+                        c.opacity(0.05),
+                        c.opacity(pulse ? 0.75 : 0.25)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ),
+                lineWidth: 4
+            )
+            .shadow(color: c.opacity(pulse ? 0.55 : 0.2), radius: 18, y: 0)
+            .allowsHitTesting(false)
+            .ignoresSafeArea()
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
+                    pulse = true
+                }
+            }
     }
 }
 

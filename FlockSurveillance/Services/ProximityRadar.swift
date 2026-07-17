@@ -27,11 +27,24 @@ final class ProximityRadar {
             updateWatchCadence(nearestMeters: nearestMeters)
         }
 
-        let thresholds: [CLLocationDistance] = [400, 200, 100, 50]
+        // Tighter rings + harder hits as you close the pin.
+        let thresholds: [CLLocationDistance] = [500, 300, 150, 75, 40]
         for threshold in thresholds {
             if nearestMeters <= threshold, lastPulseDistance > threshold {
-                generator.prepare()
-                generator.impactOccurred(intensity: threshold <= 100 ? 1.0 : 0.7)
+                let intensity: CGFloat
+                switch threshold {
+                case ...40: intensity = 1.0
+                case ...75: intensity = 0.95
+                case ...150: intensity = 0.8
+                default: intensity = 0.55
+                }
+                if threshold <= 75 {
+                    heavyGenerator.prepare()
+                    heavyGenerator.impactOccurred(intensity: intensity)
+                } else {
+                    generator.prepare()
+                    generator.impactOccurred(intensity: intensity)
+                }
                 break
             }
         }
@@ -41,10 +54,11 @@ final class ProximityRadar {
     private func updateWatchCadence(nearestMeters: CLLocationDistance) {
         let interval: TimeInterval
         switch nearestMeters {
-        case ..<50: interval = 1.2
-        case ..<100: interval = 2.0
-        case ..<200: interval = 3.5
-        case ..<400: interval = 5.0
+        case ..<40: interval = 0.7
+        case ..<75: interval = 1.1
+        case ..<150: interval = 1.8
+        case ..<300: interval = 2.8
+        case ..<500: interval = 4.0
         default: return
         }
 
@@ -52,7 +66,7 @@ final class ProximityRadar {
         guard now.timeIntervalSince(lastWatchPulseAt) >= interval else { return }
         lastWatchPulseAt = now
         heavyGenerator.prepare()
-        heavyGenerator.impactOccurred(intensity: nearestMeters < 100 ? 1.0 : 0.65)
+        heavyGenerator.impactOccurred(intensity: nearestMeters < 75 ? 1.0 : 0.7)
     }
 
     static func formatDistance(_ meters: CLLocationDistance) -> String {

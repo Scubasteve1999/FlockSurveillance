@@ -7,6 +7,9 @@ struct OnboardingView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(\.modelContext) private var modelContext
 
+    /// Cold open → instrumented pages (score hard-cut lands on features).
+    @State private var showColdOpen = true
+    @State private var coldLine = 0
     @State private var page = 0
     @State private var didRequestLocation = false
     @State private var didEnableAlerts = false
@@ -18,23 +21,147 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            backdrop
+            if showColdOpen {
+                coldOpen
+                    .transition(.opacity)
+                    .zIndex(2)
+            } else {
+                backdrop
 
-            VStack(spacing: 0) {
-                TabView(selection: $page) {
-                    missionPage.tag(0)
-                    featuresPage.tag(1)
-                    permissionsPage.tag(2)
+                VStack(spacing: 0) {
+                    TabView(selection: $page) {
+                        missionPage.tag(0)
+                        featuresPage.tag(1)
+                        permissionsPage.tag(2)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+
+                    pageDots
+                        .padding(.bottom, 10)
+
+                    footer
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 36)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-
-                pageDots
-                    .padding(.bottom, 10)
-
-                footer
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 36)
+                .transition(.opacity)
             }
+        }
+        .onAppear {
+            // Warm cache during the cold open so Place Score is ready on cut.
+            prepareTeaser()
+            runColdOpenSequence()
+        }
+    }
+
+    // MARK: - Cold open
+
+    private var coldOpen: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            // Thin scanline grid
+            GeometryReader { geo in
+                Path { path in
+                    let step: CGFloat = 48
+                    for y in stride(from: 0, through: geo.size.height, by: step) {
+                        path.move(to: CGPoint(x: 0, y: y))
+                        path.addLine(to: CGPoint(x: geo.size.width, y: y))
+                    }
+                }
+                .stroke(AppTheme.primary.opacity(0.06), lineWidth: 1)
+            }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+
+            VStack(spacing: 18) {
+                Spacer()
+
+                if coldLine >= 1 {
+                    Text("YOU ARE")
+                        .font(.system(size: 18, weight: .bold, design: .monospaced))
+                        .tracking(6)
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+
+                if coldLine >= 2 {
+                    Text("BEING MAPPED")
+                        .font(.system(size: 34, weight: .black))
+                        .tracking(1.5)
+                        .foregroundStyle(AppTheme.primary)
+                        .shadow(color: AppTheme.primary.opacity(0.55), radius: 16, y: 0)
+                        .multilineTextAlignment(.center)
+                        .transition(.opacity.combined(with: .scale(scale: 0.92)))
+                }
+
+                if coldLine >= 3 {
+                    Rectangle()
+                        .fill(AppTheme.critical)
+                        .frame(width: 120, height: 2)
+                        .shadow(color: AppTheme.critical.opacity(0.8), radius: 6)
+                        .transition(.scale)
+
+                    Text("OPENSTREETMAP · PUBLIC RECORD · NOT A VENDOR FEED")
+                        .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                        .tracking(0.8)
+                        .foregroundStyle(AppTheme.accent)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .transition(.opacity)
+                }
+
+                Spacer()
+
+                if coldLine >= 3 {
+                    Text("TAP TO SKIP")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground.opacity(0.7))
+                        .padding(.bottom, 40)
+                        .transition(.opacity)
+                }
+            }
+            .padding(.horizontal, 28)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            finishColdOpen()
+        }
+        .accessibilityLabel("You are being mapped. Tap to continue.")
+    }
+
+    private func runColdOpenSequence() {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard showColdOpen else { return }
+            withAnimation(.easeOut(duration: 0.35)) { coldLine = 1 }
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.5)
+
+            try? await Task.sleep(nanoseconds: 550_000_000)
+            guard showColdOpen else { return }
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) { coldLine = 2 }
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 0.9)
+            OverwatchAudio.armClick()
+
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            guard showColdOpen else { return }
+            withAnimation(.easeOut(duration: 0.3)) { coldLine = 3 }
+
+            try? await Task.sleep(nanoseconds: 900_000_000)
+            guard showColdOpen else { return }
+            finishColdOpen()
+        }
+    }
+
+    private func finishColdOpen() {
+        guard showColdOpen else { return }
+        // Hard cut — land on Place Score page (features), not soft fade into mission.
+        page = 1
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+        // No animation on the cut — intentional.
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            showColdOpen = false
         }
     }
 
@@ -51,9 +178,10 @@ struct OnboardingView: View {
                 .background(AppTheme.card.opacity(0.9))
                 .clipShape(Circle())
                 .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+                .shadow(color: AppTheme.primary.opacity(0.35), radius: 16, y: 0)
 
             Text("FLOCK SURVEILLANCE")
-                .font(.system(size: 32, weight: .bold))
+                .font(.system(size: 28, weight: .black))
                 .tracking(1.4)
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
@@ -78,13 +206,18 @@ struct OnboardingView: View {
         VStack(spacing: 18) {
             Spacer()
 
+            Text("HOW WATCHED?")
+                .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                .tracking(2)
+                .foregroundStyle(AppTheme.accent)
+
             Text("How watched is your life?")
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 24, weight: .black))
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
 
             Text(teaserIsSample
-                 ? "Sample grade for Atlanta — enable location next for your block."
+                 ? "Memphis metro preview — enable location next for your block."
                  : "A personal grade for where you are — no jargon, no signup.")
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
@@ -97,12 +230,21 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
             } else if let teaserScore {
+                let level = SurveillanceLevel.compute(
+                    visibleCount: teaserScore.cameraCount,
+                    nearestMeters: nil,
+                    inWatchedZone: teaserScore.cameraCount >= 5
+                )
                 VStack(alignment: .leading, spacing: 12) {
-                    if teaserIsSample {
-                        Text("ATLANTA PREVIEW")
-                            .font(.system(size: 10, weight: .bold))
-                            .tracking(0.8)
-                            .foregroundStyle(AppTheme.accent)
+                    HStack {
+                        if teaserIsSample {
+                            Text("MEMPHIS PREVIEW")
+                                .font(.system(size: 10, weight: .black, design: .monospaced))
+                                .tracking(0.8)
+                                .foregroundStyle(AppTheme.accent)
+                        }
+                        Spacer()
+                        StatusBadge(text: level.chip, color: level.color)
                     }
 
                     Text(teaserScore.headline)
@@ -110,14 +252,24 @@ struct OnboardingView: View {
                         .foregroundStyle(AppTheme.foreground)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(teaserScore.grade)
-                            .font(.system(size: 36, weight: .black))
-                            .foregroundStyle(AppTheme.primary)
-                        Spacer()
-                        Text(teaserScore.cameraCountLabel)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(AppTheme.accent)
+                    HStack(alignment: .center, spacing: 16) {
+                        WatchednessDial(
+                            grade: teaserScore.grade,
+                            cameraCount: teaserScore.cameraCount,
+                            size: 110,
+                            animate: true
+                        )
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(teaserScore.grade.uppercased())
+                                .font(.system(size: 28, weight: .black))
+                                .foregroundStyle(level.color)
+                            Text(teaserScore.cameraCountLabel)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(AppTheme.accent)
+                            Text(level.title)
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .foregroundStyle(AppTheme.mutedForeground)
+                        }
                     }
 
                     Text("\(teaserScore.cameraCountLabel) within a mile · \(teaserScore.flockPercent)% Flock")
@@ -126,15 +278,16 @@ struct OnboardingView: View {
                 }
                 .padding(18)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(AppTheme.card.opacity(0.85))
+                .background(AppTheme.card.opacity(0.9))
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                        .stroke(AppTheme.border, lineWidth: 1)
+                        .stroke(level.color.opacity(0.45), lineWidth: 1.5)
                 )
+                .shadow(color: level.color.opacity(0.2), radius: 16, y: 0)
             }
 
-            Text("Share a card. Tap once for the safest drive home. See which metros are most mapped.")
+            Text("Share a war-room card. Arm Overwatch. Take the lower-cam drive home.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
@@ -142,7 +295,6 @@ struct OnboardingView: View {
             Spacer()
         }
         .padding(.horizontal, 24)
-        .onAppear { prepareTeaser() }
         .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
             refreshTeaserScore()
         }
@@ -177,7 +329,8 @@ struct OnboardingView: View {
     private func teaserCoordinate() -> CLLocationCoordinate2D {
         locationManager.location?.coordinate
             ?? WidgetBridge.homeCoordinate()
-            ?? CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
+            // Memphis metro — denser local preview for DeSoto / Mid-South.
+            ?? GeoHelpers.memphisCoordinate
     }
 
     private func refreshTeaserScore() {
@@ -202,6 +355,11 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             Spacer()
 
+            Text("ARM YOUR GEAR")
+                .font(.system(size: 12, weight: .heavy, design: .monospaced))
+                .tracking(2)
+                .foregroundStyle(AppTheme.accent)
+
             Text("Make it yours")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
@@ -215,7 +373,7 @@ struct OnboardingView: View {
             permissionCard(
                 icon: "location.fill",
                 title: "Location",
-                detail: "Centers the map on you and powers proximity radar.",
+                detail: "Centers the map on you and powers Overwatch proximity.",
                 actionLabel: didRequestLocation ? "Requested" : "Enable location",
                 isDone: didRequestLocation
             ) {
@@ -273,8 +431,8 @@ struct OnboardingView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.08, green: 0.09, blue: 0.12),
-                    Color(red: 0.12, green: 0.08, blue: 0.07),
+                    Color(red: 0.04, green: 0.05, blue: 0.08),
+                    Color(red: 0.10, green: 0.05, blue: 0.05),
                     AppTheme.background
                 ],
                 startPoint: .topLeading,
@@ -329,15 +487,24 @@ struct OnboardingView: View {
                     // hierarchy freezes the UI on iPad (and often iPhone).
                     hasSeenOnboarding = true
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    OverwatchAudio.armClick()
                 }
             } label: {
-                Text(page < 2 ? "Continue" : "Enter the map")
-                    .font(.system(size: 16, weight: .bold))
+                Text(page < 2 ? "CONTINUE" : "ENTER THE MAP")
+                    .font(.system(size: 15, weight: .black, design: .monospaced))
+                    .tracking(1.0)
                     .foregroundStyle(AppTheme.background)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(AppTheme.primary)
+                    .background(
+                        LinearGradient(
+                            colors: [AppTheme.primary, AppTheme.critical.opacity(0.9)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .shadow(color: AppTheme.primary.opacity(0.4), radius: 12, y: 0)
             }
             .buttonStyle(.plain)
 

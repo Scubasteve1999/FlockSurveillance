@@ -13,6 +13,19 @@ struct DriveModeView: View {
     /// Accumulated rotation so the arrow takes the short way across north
     /// (359° -> 1° must not spin the long way around).
     @State private var arrowAngle: Double = 0
+    @State private var pulse = false
+
+    private var driveLevel: SurveillanceLevel {
+        SurveillanceLevel.compute(
+            visibleCount: driveSession.camerasRemaining,
+            nearestMeters: driveSession.metersToNext,
+            inWatchedZone: (driveSession.metersToNext ?? .infinity) <= AlertsEngine.regionRadius
+        )
+    }
+
+    private var inHotApproach: Bool {
+        (driveSession.metersToNext ?? .infinity) <= 100
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -20,7 +33,14 @@ struct DriveModeView: View {
                 UserAnnotation()
                 if let route = driveSession.route {
                     MapPolyline(route.polyline)
-                        .stroke(AppTheme.accent, lineWidth: 5)
+                        .stroke(
+                            LinearGradient(
+                                colors: [AppTheme.accent, AppTheme.primary],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ),
+                            lineWidth: 5
+                        )
                 }
                 ForEach(driveSession.hits) { hit in
                     Annotation("", coordinate: hit.coordinate) {
@@ -35,6 +55,10 @@ struct DriveModeView: View {
             .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll, showsTraffic: true))
             .ignoresSafeArea()
 
+            if inHotApproach {
+                WatchedZoneEdgeAlert(level: driveLevel)
+            }
+
             VStack(spacing: 12) {
                 driveHUD
                 Spacer()
@@ -43,13 +67,21 @@ struct DriveModeView: View {
                     ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
                     dismiss()
                 } label: {
-                    Text("End Drive")
-                        .font(.system(size: 16, weight: .bold))
+                    Text("END DRIVE")
+                        .font(.system(size: 15, weight: .black, design: .monospaced))
+                        .tracking(1.2)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
+                        .padding(.vertical, 15)
                         .foregroundStyle(AppTheme.background)
-                        .background(AppTheme.primary)
-                        .clipShape(Capsule())
+                        .background(
+                            LinearGradient(
+                                colors: [AppTheme.primary, AppTheme.critical],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .shadow(color: AppTheme.primary.opacity(0.45), radius: 12, y: 0)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
@@ -62,6 +94,9 @@ struct DriveModeView: View {
             if let route = driveSession.route,
                let rect = GeoHelpers.mapRect(covering: route.polyline.coordinates) {
                 mapPosition = .rect(rect)
+            }
+            withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
+                pulse = true
             }
         }
         .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
@@ -87,6 +122,9 @@ struct DriveModeView: View {
                 arrowAngle += delta
             }
         }
+        .onChange(of: driveLevel) { previous, current in
+            OverwatchAudio.stingIfEnteringCritical(previous: previous, current: current)
+        }
     }
 
     private var currentRelativeBearing: Double? {
@@ -103,24 +141,38 @@ struct DriveModeView: View {
     }
 
     private var driveHUD: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("DRIVE MODE")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(0.8)
-                    .foregroundStyle(AppTheme.primary)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(driveLevel.color)
+                    .frame(width: 7, height: 7)
+                    .opacity(pulse ? 0.25 : 1)
+                    .shadow(color: driveLevel.color.opacity(0.8), radius: 4)
+                Text("OVERWATCH · DRIVE")
+                    .font(.system(size: 10, weight: .heavy, design: .monospaced))
+                    .tracking(1.1)
+                    .foregroundStyle(driveLevel.color)
                 Spacer()
-                StatusBadge(text: driveSession.exposureLabel, color: AppTheme.densityColor(count: driveSession.hits.count))
+                StatusBadge(text: driveLevel.chip, color: driveLevel.color)
+                StatusBadge(
+                    text: driveSession.exposureLabel.uppercased(),
+                    color: AppTheme.densityColor(count: driveSession.hits.count)
+                )
             }
 
             if let next = driveSession.nextHit {
-                Text(next.isFlock ? "Next Flock camera" : "Next camera")
-                    .font(.system(size: 13, weight: .medium))
+                Text(next.isFlock ? "NEXT FLOCK PIN" : "NEXT MAPPED PIN")
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
-                HStack(spacing: 10) {
+
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text("LOCK")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground)
                     Text(driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—")
-                        .font(.system(size: 34, weight: .bold))
-                        .foregroundStyle(AppTheme.foreground)
+                        .font(.system(size: 36, weight: .black, design: .rounded))
+                        .foregroundStyle(inHotApproach ? AppTheme.critical : AppTheme.foreground)
+                        .contentTransition(.numericText())
                     if relativeBearing(to: next) != nil {
                         Image(systemName: "location.north.fill")
                             .font(.system(size: 18, weight: .semibold))
@@ -129,29 +181,82 @@ struct DriveModeView: View {
                             .accessibilityLabel("Direction to next camera")
                     }
                 }
+
                 Text(next.title)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(AppTheme.accent)
                     .lineLimit(1)
+
+                if inHotApproach {
+                    Text("HOT APPROACH — mapped pin only, not a plate read")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(AppTheme.critical.opacity(0.9))
+                }
             } else {
-                Text("Corridor clear")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(AppTheme.foreground)
+                Text("CORRIDOR CLEAR")
+                    .font(.system(size: 26, weight: .black, design: .rounded))
+                    .foregroundStyle(AppTheme.densityLow)
                 Text("No remaining mapped cameras on this drive.")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
 
-            Text("\(driveSession.camerasRemaining) cameras remaining")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(AppTheme.mutedForeground)
+            // Remaining meter
+            GeometryReader { geo in
+                let total = max(driveSession.hits.count, 1)
+                let remaining = driveSession.camerasRemaining
+                let fill = CGFloat(remaining) / CGFloat(total)
+                ZStack(alignment: .leading) {
+                    Capsule().fill(AppTheme.border.opacity(0.5))
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [AppTheme.accent, driveLevel.color],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: max(6, geo.size.width * fill))
+                }
+            }
+            .frame(height: 5)
+
+            HStack {
+                Text("\(driveSession.camerasRemaining) GRID AHEAD")
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                Spacer()
+                Text(driveLevel.title)
+                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                    .foregroundStyle(driveLevel.color)
+            }
         }
         .padding(16)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                driveLevel.color.opacity(inHotApproach ? 0.2 : 0.08),
+                                AppTheme.card.opacity(0.9)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+        }
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                .stroke(AppTheme.border, lineWidth: 1)
+                .stroke(
+                    inHotApproach ? driveLevel.color.opacity(pulse ? 0.4 : 0.95) : AppTheme.border,
+                    lineWidth: inHotApproach ? 1.5 : 1
+                )
         )
+        .shadow(color: inHotApproach ? driveLevel.color.opacity(0.35) : .clear, radius: 14, y: 0)
         .padding(.horizontal, 16)
     }
 }

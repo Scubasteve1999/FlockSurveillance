@@ -18,10 +18,13 @@ struct MapRadarView: View {
 
     @State private var position: MapCameraPosition = .region(
         MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880),
+            center: GeoHelpers.memphisCoordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
         )
     )
+    @State private var lastSurveillanceLevel: SurveillanceLevel?
+    @State private var showBootBanner = true
+    @State private var lastInWatchedZone = false
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var filter: CameraFilter = AppPreferences.defaultFilter
     @State private var selectedCluster: CameraCluster?
@@ -103,177 +106,32 @@ struct MapRadarView: View {
         )
     }
 
+    private var surveillanceLevel: SurveillanceLevel {
+        SurveillanceLevel.compute(
+            visibleCount: camerasInView.count,
+            nearestMeters: nearest?.meters,
+            inWatchedZone: inWatchedZone
+        )
+    }
+
     var body: some View {
         GeometryReader { geo in
-            ZStack(alignment: .top) {
-                AppTheme.background.ignoresSafeArea()
-
-                MapKitSizeGate(size: geo.size) { mapContent }
-
-                if isPlacingReport {
-                    Image(systemName: "plus.viewfinder")
-                        .font(.system(size: 34, weight: .light))
-                        .foregroundStyle(AppTheme.primary)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .allowsHitTesting(false)
-                }
-
-                VStack(spacing: 12) {
-                    brandHeader
-                    filterBar
-                    if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
-                        Text(atlasError)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(AppTheme.primary)
-                            .padding(.horizontal, 16)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    if let sensorAtlasBanner {
-                        SensorAtlasBanner(text: sensorAtlasBanner) {
-                            withAnimation(.easeOut(duration: 0.2)) {
-                                self.sensorAtlasBanner = nil
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                    }
-                    if locationDenied {
-                        LocationDeniedBanner()
-                    }
-                    Spacer()
-                    if isPlacingReport {
-                        reportPlacementBar
-                            .padding(.horizontal, 16)
-                    }
-                    if !cityRankings.isEmpty, shouldShowRankings {
-                        CityRankingsStrip(rankings: cityRankings) { city in
-                            focusAndScore(coordinate: city.coordinate)
-                        }
-                            .padding(.horizontal, 16)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                    if let placeScore {
-                        PlaceScoreCard(
-                            score: placeScore,
-                            selectedRadiusMeters: placeScoreRadius,
-                            onSelectRadius: { meters in
-                                placeScoreRadius = meters
-                                computePlaceScore()
-                            },
-                            onShare: { sharePlaceScore(placeScore) },
-                            onClose: { self.placeScore = nil }
-                        )
-                        .padding(.horizontal, 16)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-                    RadarHUD(
-                        visibleCount: camerasInView.count,
-                        nearestMeters: nearest?.meters,
-                        nearestLabel: nearest.map { $0.camera.displayManufacturer },
-                        inWatchedZone: inWatchedZone,
-                        densityLabel: AppTheme.densityLabel(count: camerasInView.count),
-                        confidence: coverageConfidence,
-                        coverageHint: repository.coverageHint,
-                        errorMessage: repository.lastError,
-                        watchModeEnabled: radar.watchModeEnabled,
-                        onToggleWatch: toggleWatchMode
-                    )
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-                }
-                .padding(.top, 8)
-            }
+            mapStack(size: geo.size)
         }
-        .onAppear {
-            locationManager.start()
-            showHeat = showHeatStored
-            showSensorAtlas = showSensorAtlasStored
-            filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
-            radar.watchModeEnabled = watchModeStored
-            sensorAtlasStore.loadIfNeeded()
-            bootstrapRegion()
-            startPulseIfNeeded()
-            maybeAutoEnableSensorAtlas()
-            // Delay the auto Place Score until the map has had a beat to settle.
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 150_000_000)
-                maybeAutoShowPlaceScore()
-            }
-            cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
-            if PendingIntentActions.placeScoreRequested {
-                PendingIntentActions.placeScoreRequested = false
-                computePlaceScore()
-            }
-            applyPendingMapFocusIfNeeded()
-            Task {
-                await reportStore.verifyOpenReports(repository: repository)
-            }
-        }
-        .onDisappear {
-            sensorAtlasBannerDismissTask?.cancel()
-            sensorAtlasBannerDismissTask = nil
-        }
-        .onChange(of: repository.cameras.count) { _, _ in
-            cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
-            maybeAutoShowPlaceScore()
-            refreshPendingScoreIfNeeded()
-        }
-        .onChange(of: repository.isLoading) { _, loading in
-            if !loading {
-                refreshPendingScoreIfNeeded(allowClear: true)
-            }
-        }
-        .onChange(of: repository.isSeeding) { _, seeding in
-            if !seeding {
-                maybeAutoShowPlaceScore()
-                refreshPendingScoreIfNeeded(allowClear: true)
-            }
-        }
-        .onChange(of: nearest?.meters) { _, meters in
-            radar.update(userLocation: locationManager.location, nearestMeters: meters)
-        }
+        .onAppear(perform: handleAppear)
+        .onDisappear(perform: handleDisappear)
+        .onChange(of: repository.cameras.count) { _, _ in handleCamerasCountChange() }
+        .onChange(of: repository.isLoading) { _, loading in handleLoadingChange(loading) }
+        .onChange(of: repository.isSeeding) { _, seeding in handleSeedingChange(seeding) }
+        .onChange(of: nearest?.meters) { _, meters in handleNearestMetersChange(meters) }
+        .onChange(of: inWatchedZone) { _, _ in handleWatchedZoneChange() }
         .onChange(of: SensorAtlasAutoPolicy.locationKey(locationManager.location?.coordinate)) { _, _ in
-            if visibleRegion == nil {
-                bootstrapRegion()
-            }
-            maybeAutoShowPlaceScore()
-            maybeAutoEnableSensorAtlas()
+            handleLocationKeyChange()
         }
-        .onChange(of: radar.watchModeEnabled) { _, enabled in
-            watchModeStored = enabled
-            startPulseIfNeeded()
-        }
-        .onChange(of: showHeat) { _, value in
-            showHeatStored = value
-        }
-        .onChange(of: showSensorAtlas) { _, value in
-            showSensorAtlasStored = value
-            if value {
-                sensorAtlasStore.loadIfNeeded()
-                if !isAutoTogglingSensorAtlas {
-                    // Manual on clears all metro suppressions so other cities can auto-on.
-                    AppPreferences.sensorAtlasSuppressedMetros =
-                        SensorAtlasAutoPolicy.suppressedAfterManualOn(
-                            current: AppPreferences.sensorAtlasSuppressedMetros
-                        )
-                }
-            } else if !isAutoTogglingSensorAtlas {
-                // Manual off suppresses only the metro you're in.
-                AppPreferences.sensorAtlasSuppressedMetros =
-                    SensorAtlasAutoPolicy.suppressedAfterManualOff(
-                        current: AppPreferences.sensorAtlasSuppressedMetros,
-                        coordinate: locationManager.location?.coordinate
-                    )
-                sensorAtlasBanner = nil
-                sensorAtlasBannerDismissTask?.cancel()
-                sensorAtlasBannerDismissTask = nil
-            }
-            isAutoTogglingSensorAtlas = false
-            sensorAtlasAutoEnableInFlight = false
-        }
-        .onChange(of: filter) { _, value in
-            defaultFilterRaw = value.rawValue
-        }
+        .onChange(of: radar.watchModeEnabled) { _, enabled in handleWatchModeChange(enabled) }
+        .onChange(of: showHeat) { _, value in showHeatStored = value }
+        .onChange(of: showSensorAtlas) { _, value in handleSensorAtlasToggle(value) }
+        .onChange(of: filter) { _, value in defaultFilterRaw = value.rawValue }
         .onReceive(NotificationCenter.default.publisher(for: .flockPlaceScore)) { _ in
             PendingIntentActions.placeScoreRequested = false
             computePlaceScore()
@@ -294,10 +152,8 @@ struct MapRadarView: View {
                 .id(payload.id)
         }
         .sheet(item: $reportTarget) { target in
-            ReportCameraSheet(coordinate: target.coordinate) { _ in
-                // Pending pin appears via ReportStore.activeMapReports.
-            }
-            .presentationBackground(AppTheme.background)
+            ReportCameraSheet(coordinate: target.coordinate) { _ in }
+                .presentationBackground(AppTheme.background)
         }
         .sheet(item: $selectedPendingReport) { report in
             PendingReportDetailSheet(
@@ -318,6 +174,224 @@ struct MapRadarView: View {
         }
     }
 
+    @ViewBuilder
+    private func mapStack(size: CGSize) -> some View {
+        ZStack(alignment: .top) {
+            AppTheme.background.ignoresSafeArea()
+            MapKitSizeGate(size: size) { mapContent }
+            if inWatchedZone || surveillanceLevel >= .high {
+                OverwatchScanlines(intensity: surveillanceLevel == .critical ? 0.18 : 0.1)
+                    .transition(.opacity)
+            }
+            if inWatchedZone {
+                WatchedZoneEdgeAlert(level: surveillanceLevel)
+                    .transition(.opacity)
+            }
+            if isPlacingReport {
+                Image(systemName: "plus.viewfinder")
+                    .font(.system(size: 34, weight: .light))
+                    .foregroundStyle(AppTheme.primary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .allowsHitTesting(false)
+            }
+            mapChrome
+        }
+    }
+
+    private var mapChrome: some View {
+        VStack(spacing: 10) {
+            if showBootBanner {
+                OverwatchBootBanner(
+                    visibleCount: camerasInView.count,
+                    level: surveillanceLevel
+                ) {
+                    showBootBanner = false
+                }
+            }
+            OverwatchThreatTicker(
+                visibleCount: camerasInView.count,
+                nearestMeters: nearest?.meters,
+                level: surveillanceLevel,
+                inWatchedZone: inWatchedZone
+            )
+            brandHeader
+            filterBar
+            if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
+                Text(atlasError)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.primary)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if let sensorAtlasBanner {
+                SensorAtlasBanner(text: sensorAtlasBanner) {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        self.sensorAtlasBanner = nil
+                    }
+                }
+                .padding(.horizontal, 16)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+            if locationDenied {
+                LocationDeniedBanner()
+            }
+            Spacer()
+            if isPlacingReport {
+                reportPlacementBar
+                    .padding(.horizontal, 16)
+            }
+            if !cityRankings.isEmpty, shouldShowRankings {
+                CityRankingsStrip(rankings: cityRankings) { city in
+                    focusAndScore(coordinate: city.coordinate)
+                }
+                .padding(.horizontal, 16)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+            if let placeScore {
+                PlaceScoreCard(
+                    score: placeScore,
+                    selectedRadiusMeters: placeScoreRadius,
+                    onSelectRadius: { meters in
+                        placeScoreRadius = meters
+                        computePlaceScore()
+                    },
+                    onShare: { sharePlaceScore(placeScore) },
+                    onClose: { self.placeScore = nil }
+                )
+                .padding(.horizontal, 16)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+            RadarHUD(
+                visibleCount: camerasInView.count,
+                nearestMeters: nearest?.meters,
+                nearestLabel: nearest.map { $0.camera.displayManufacturer },
+                inWatchedZone: inWatchedZone,
+                densityLabel: AppTheme.densityLabel(count: camerasInView.count),
+                confidence: coverageConfidence,
+                coverageHint: repository.coverageHint,
+                errorMessage: repository.lastError,
+                watchModeEnabled: radar.watchModeEnabled,
+                onToggleWatch: toggleWatchMode
+            )
+            .padding(.horizontal, 16)
+            .padding(.bottom, 8)
+        }
+        .padding(.top, 8)
+    }
+
+    private func handleAppear() {
+        locationManager.start()
+        showHeat = showHeatStored
+        showSensorAtlas = showSensorAtlasStored
+        filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
+        radar.watchModeEnabled = watchModeStored
+        sensorAtlasStore.loadIfNeeded()
+        bootstrapRegion()
+        startPulseIfNeeded()
+        maybeAutoEnableSensorAtlas()
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            maybeAutoShowPlaceScore()
+        }
+        cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
+        if PendingIntentActions.placeScoreRequested {
+            PendingIntentActions.placeScoreRequested = false
+            computePlaceScore()
+        }
+        applyPendingMapFocusIfNeeded()
+        Task {
+            await reportStore.verifyOpenReports(repository: repository)
+        }
+        lastInWatchedZone = inWatchedZone
+        noteSurveillanceLevel()
+    }
+
+    private func handleDisappear() {
+        sensorAtlasBannerDismissTask?.cancel()
+        sensorAtlasBannerDismissTask = nil
+    }
+
+    private func handleCamerasCountChange() {
+        cityRankings = GeoHelpers.cityRankings(from: repository.cameras)
+        maybeAutoShowPlaceScore()
+        refreshPendingScoreIfNeeded()
+        noteSurveillanceLevel()
+    }
+
+    private func handleLoadingChange(_ loading: Bool) {
+        if !loading {
+            refreshPendingScoreIfNeeded(allowClear: true)
+        }
+    }
+
+    private func handleSeedingChange(_ seeding: Bool) {
+        if !seeding {
+            maybeAutoShowPlaceScore()
+            refreshPendingScoreIfNeeded(allowClear: true)
+        }
+    }
+
+    private func handleNearestMetersChange(_ meters: CLLocationDistance?) {
+        radar.update(userLocation: locationManager.location, nearestMeters: meters)
+        noteSurveillanceLevel()
+    }
+
+    private func handleWatchedZoneChange() {
+        let inside = inWatchedZone
+        if inside, !lastInWatchedZone {
+            OverwatchAudio.zoneEnter()
+        } else if !inside, lastInWatchedZone {
+            OverwatchAudio.zoneExit()
+        }
+        lastInWatchedZone = inside
+        noteSurveillanceLevel()
+        startPulseIfNeeded()
+    }
+
+    private func handleLocationKeyChange() {
+        if visibleRegion == nil {
+            bootstrapRegion()
+        }
+        maybeAutoShowPlaceScore()
+        maybeAutoEnableSensorAtlas()
+    }
+
+    private func handleWatchModeChange(_ enabled: Bool) {
+        watchModeStored = enabled
+        if enabled { OverwatchAudio.armClick() }
+        startPulseIfNeeded()
+    }
+
+    private func handleSensorAtlasToggle(_ value: Bool) {
+        showSensorAtlasStored = value
+        if value {
+            sensorAtlasStore.loadIfNeeded()
+            if !isAutoTogglingSensorAtlas {
+                AppPreferences.sensorAtlasSuppressedMetros =
+                    SensorAtlasAutoPolicy.suppressedAfterManualOn(
+                        current: AppPreferences.sensorAtlasSuppressedMetros
+                    )
+            }
+        } else if !isAutoTogglingSensorAtlas {
+            AppPreferences.sensorAtlasSuppressedMetros =
+                SensorAtlasAutoPolicy.suppressedAfterManualOff(
+                    current: AppPreferences.sensorAtlasSuppressedMetros,
+                    coordinate: locationManager.location?.coordinate
+                )
+            sensorAtlasBanner = nil
+            sensorAtlasBannerDismissTask?.cancel()
+            sensorAtlasBannerDismissTask = nil
+        }
+        isAutoTogglingSensorAtlas = false
+        sensorAtlasAutoEnableInFlight = false
+    }
+
+    private func noteSurveillanceLevel() {
+        let next = surveillanceLevel
+        OverwatchAudio.stingIfEnteringCritical(previous: lastSurveillanceLevel, current: next)
+        lastSurveillanceLevel = next
+    }
+
     private var shouldShowRankings: Bool {
         guard let region = visibleRegion else { return true }
         return GeoHelpers.dominantSpan(region) > 0.35 && placeScore == nil
@@ -327,11 +401,19 @@ struct MapRadarView: View {
         Map(position: $position) {
             UserAnnotation()
 
-            if radar.watchModeEnabled, let nearest, let user = locationManager.location?.coordinate {
+            if radar.watchModeEnabled || inWatchedZone,
+               let nearest,
+               let user = locationManager.location?.coordinate {
+                let hot = inWatchedZone
                 MapCircle(center: user, radius: max(nearest.meters, 25))
-                    .foregroundStyle(AppTheme.primary.opacity(pulsePhase ? 0.18 : 0.08))
+                    .foregroundStyle(
+                        (hot ? AppTheme.critical : AppTheme.primary)
+                            .opacity(pulsePhase ? (hot ? 0.28 : 0.18) : (hot ? 0.12 : 0.08))
+                    )
                 MapCircle(center: user, radius: max(nearest.meters * 0.55, 18))
-                    .foregroundStyle(AppTheme.accent.opacity(pulsePhase ? 0.16 : 0.06))
+                    .foregroundStyle(
+                        AppTheme.accent.opacity(pulsePhase ? (hot ? 0.22 : 0.16) : 0.06)
+                    )
             }
 
             if showHeat {
@@ -449,14 +531,22 @@ struct MapRadarView: View {
 
     private var brandHeader: some View {
         HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("FLOCK SURVEILLANCE")
-                    .font(.system(size: 13, weight: .bold))
-                    .tracking(1.2)
-                    .foregroundStyle(AppTheme.foreground)
-                Text("How watched is your life right now?")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(AppTheme.mutedForeground)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text("FLOCK SURVEILLANCE")
+                        .font(.system(size: 12, weight: .black))
+                        .tracking(1.4)
+                        .foregroundStyle(AppTheme.foreground)
+                    if inWatchedZone {
+                        Text("· \(surveillanceLevel.chip)")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .foregroundStyle(surveillanceLevel.color)
+                            .shadow(color: surveillanceLevel.color.opacity(0.6), radius: 4, y: 0)
+                    }
+                }
+                Text(inWatchedZone ? "YOU ARE IN THE GRID" : "How watched is your life right now?")
+                    .font(.system(size: 12, weight: inWatchedZone ? .bold : .medium))
+                    .foregroundStyle(inWatchedZone ? surveillanceLevel.color : AppTheme.mutedForeground)
             }
             Spacer(minLength: 8)
             HStack(spacing: 0) {
@@ -596,8 +686,12 @@ struct MapRadarView: View {
     }
 
     private func startPulseIfNeeded() {
-        guard radar.watchModeEnabled else { return }
-        withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+        guard radar.watchModeEnabled || inWatchedZone else {
+            pulsePhase = false
+            return
+        }
+        pulsePhase = false
+        withAnimation(.easeInOut(duration: inWatchedZone ? 0.85 : 1.2).repeatForever(autoreverses: true)) {
             pulsePhase = true
         }
     }
@@ -612,7 +706,7 @@ struct MapRadarView: View {
             repository.scheduleFetch(for: region, delayNanoseconds: 100_000_000)
         } else if visibleRegion == nil {
             let region = MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880),
+                center: GeoHelpers.memphisCoordinate,
                 span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
             )
             visibleRegion = region

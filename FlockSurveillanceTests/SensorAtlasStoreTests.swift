@@ -120,12 +120,13 @@ final class SensorAtlasStoreTests: XCTestCase {
 
     func testWatchedZoneCopyNeverClaimsPlateRead() {
         let body = WatchedZoneCopy.enteringBody(cameraTitle: "Main St", radiusFeet: 500)
-        XCTAssertTrue(body.contains("mapped"))
+        XCTAssertTrue(body.lowercased().contains("mapped"))
         XCTAssertTrue(body.contains("not a plate-read"))
         XCTAssertFalse(body.lowercased().contains("scanned your plate"))
-        XCTAssertEqual(WatchedZoneCopy.hudActiveLabel, "NEAR MAPPED PINS")
-        XCTAssertTrue(WatchedZoneCopy.leftBody(passedCount: 2).contains("passed near"))
-        XCTAssertTrue(WatchedZoneCopy.enteringTitle.lowercased().contains("mapped alpr"))
+        XCTAssertEqual(WatchedZoneCopy.hudActiveLabel, "WATCHED ZONE")
+        XCTAssertTrue(WatchedZoneCopy.leftBody(passedCount: 2).contains("cleared"))
+        XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("mapped"))
+        XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("not plate"))
     }
 
     func testAllowlistBlocksForeignHosts() {

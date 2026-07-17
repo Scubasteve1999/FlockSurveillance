@@ -289,7 +289,7 @@ final class CameraRepository {
         guard !isSeeding, cameras.count < seedMinimumCacheCount else { return }
         seedTask?.cancel()
         isSeeding = true
-        coverageHint = "Loading major metro areas…"
+        coverageHint = "Seeding Memphis / DeSoto + major metros…"
 
         seedTask = Task { [weak self] in
             guard let self else { return }

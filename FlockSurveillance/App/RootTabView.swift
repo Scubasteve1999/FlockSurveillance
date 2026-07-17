@@ -15,7 +15,7 @@ struct RootTabView: View {
                 }
             }
             .tabItem {
-                Label("Map", systemImage: "dot.radiowaves.left.and.right")
+                Label("MAP", systemImage: "dot.radiowaves.left.and.right")
             }
             .tag(0)
 
@@ -27,19 +27,19 @@ struct RootTabView: View {
                 }
             }
             .tabItem {
-                Label("Route", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                Label("ROUTE", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
             }
             .tag(1)
 
             LearnView()
                 .tabItem {
-                    Label("Learn", systemImage: "book.closed.fill")
+                    Label("INTEL", systemImage: "book.closed.fill")
                 }
                 .tag(2)
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
+                    Label("GEAR", systemImage: "gearshape.fill")
                 }
                 .tag(3)
         }

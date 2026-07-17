@@ -16,7 +16,7 @@ final class DriveLiveActivityController {
         await end()
 
         let state = contentState(from: session)
-        let attributes = DriveActivityAttributes(routeSummary: "ALPR Drive Mode")
+        let attributes = DriveActivityAttributes(routeSummary: "Overwatch Drive")
         do {
             activity = try Activity.request(attributes: attributes, content: .init(state: state, staleDate: nil))
         } catch {
@@ -33,7 +33,7 @@ final class DriveLiveActivityController {
     func end() async {
         guard let activity else { return }
         let finalState = DriveActivityAttributes.ContentState(
-            nextLabel: "Drive ended",
+            nextLabel: "Drive ended · corridor clear",
             distanceLabel: "—",
             remaining: 0,
             exposureLabel: sessionExposureFallback
@@ -42,16 +42,17 @@ final class DriveLiveActivityController {
         await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
     }
 
-    private var sessionExposureFallback: String { "Clear" }
+    private var sessionExposureFallback: String { "CLEAR" }
 
     private func contentState(from session: DriveSession) -> DriveActivityAttributes.ContentState {
-        let next = session.nextHit.map { $0.isFlock ? "Flock ALPR" : $0.manufacturer } ?? "No more ALPRs"
+        let next = session.nextHit.map { $0.isFlock ? "Next Flock pin" : "Next mapped pin" }
+            ?? "Corridor clear"
         let distance = session.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
         return DriveActivityAttributes.ContentState(
             nextLabel: next,
             distanceLabel: distance,
             remaining: session.camerasRemaining,
-            exposureLabel: session.exposureLabel
+            exposureLabel: session.exposureLabel.uppercased()
         )
     }
 }

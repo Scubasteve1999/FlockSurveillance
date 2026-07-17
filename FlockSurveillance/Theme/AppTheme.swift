@@ -1,24 +1,29 @@
 import SwiftUI
 
 enum AppTheme {
-    static let background = Color(red: 0.06, green: 0.07, blue: 0.09)
-    static let foreground = Color(red: 0.94, green: 0.95, blue: 0.97)
-    static let primary = Color(red: 0.95, green: 0.42, blue: 0.28)
-    static let accent = Color(red: 0.35, green: 0.78, blue: 0.86)
-    static let mutedForeground = Color(red: 0.62, green: 0.66, blue: 0.72)
-    static let border = Color.white.opacity(0.12)
-    static let card = Color(red: 0.11, green: 0.13, blue: 0.16)
-    static let cardTop = Color(red: 0.14, green: 0.16, blue: 0.20)
-    static let cardBottom = Color(red: 0.09, green: 0.10, blue: 0.13)
+    /// Near-black ops console.
+    static let background = Color(red: 0.03, green: 0.035, blue: 0.05)
+    static let foreground = Color(red: 0.96, green: 0.97, blue: 0.99)
+    /// Hot coral — primary alert / Flock pin energy.
+    static let primary = Color(red: 1.0, green: 0.32, blue: 0.22)
+    /// Cold cyan HUD instrument.
+    static let accent = Color(red: 0.18, green: 0.92, blue: 0.88)
+    static let mutedForeground = Color(red: 0.55, green: 0.60, blue: 0.68)
+    static let border = Color.white.opacity(0.14)
+    static let card = Color(red: 0.07, green: 0.09, blue: 0.12)
+    static let cardTop = Color(red: 0.10, green: 0.12, blue: 0.16)
+    static let cardBottom = Color(red: 0.05, green: 0.06, blue: 0.09)
 
-    static let densityLow = Color(red: 0.35, green: 0.78, blue: 0.55)
-    static let densityMedium = Color(red: 0.95, green: 0.72, blue: 0.28)
-    static let densityHigh = Color(red: 0.95, green: 0.42, blue: 0.28)
+    static let densityLow = Color(red: 0.22, green: 0.92, blue: 0.55)
+    static let densityMedium = Color(red: 1.0, green: 0.72, blue: 0.18)
+    static let densityHigh = Color(red: 1.0, green: 0.32, blue: 0.22)
+    /// Beyond dense — hot zone pulse.
+    static let critical = Color(red: 1.0, green: 0.12, blue: 0.28)
 
-    static let flockMarker = Color(red: 0.95, green: 0.42, blue: 0.28)
-    static let otherMarker = Color(red: 0.35, green: 0.78, blue: 0.86)
+    static let flockMarker = Color(red: 1.0, green: 0.32, blue: 0.22)
+    static let otherMarker = Color(red: 0.18, green: 0.92, blue: 0.88)
     /// Municipal traffic CCTV (Sensor Atlas) — distinct from ALPR markers.
-    static let trafficSensorMarker = Color(red: 0.98, green: 0.78, blue: 0.28)
+    static let trafficSensorMarker = Color(red: 1.0, green: 0.82, blue: 0.22)
 
     static let cornerRadius: CGFloat = 16
     static let cardPadding: CGFloat = 16
@@ -27,7 +32,8 @@ enum AppTheme {
         switch count {
         case 0...4: return densityLow
         case 5...14: return densityMedium
-        default: return densityHigh
+        case 15...29: return densityHigh
+        default: return critical
         }
     }
 
@@ -36,7 +42,8 @@ enum AppTheme {
         case 0: return "Clear"
         case 1...4: return "Low"
         case 5...14: return "Moderate"
-        default: return "Dense"
+        case 15...29: return "Dense"
+        default: return "Saturated"
         }
     }
 }

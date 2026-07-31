@@ -1,42 +1,56 @@
 #!/usr/bin/env python3
-"""Compose 3D-framed ASO marketing screenshots on #0F1217 with #F26B47 captions.
+"""Compose App Store marketing frames (6.9" / 1320x2868) from raw simulator captures.
 
-No numpy required — uses a mild rotate + scale for depth, plus a phone bezel.
+Structure per frame: coral eyebrow, two-line headline, muted subhead, then a
+straight-on device cropped by the bottom edge. Palette tracks AppTheme.swift.
+
+    python3 Scripts/frame_aso_screenshots.py            # all frames
+    python3 Scripts/frame_aso_screenshots.py 01 06      # only these stems
 """
 
 from __future__ import annotations
 
-import argparse
+import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-BG = (15, 18, 23)  # #0F1217
-CAPTION = (242, 107, 71)  # #F26B47
-BEZEL = (28, 30, 34)
-BEZEL_EDGE = (55, 58, 64)
+ROOT = Path(__file__).resolve().parent.parent
+RAW = ROOT / "docs" / "aso-captures" / "raw"
+OUT = ROOT / "docs" / "aso-captures" / "appstore"
 
-# App Store 6.7" portrait marketing canvas
-CANVAS = (1290, 2796)
+CANVAS = (1320, 2868)  # iPhone 6.9" portrait
 
-# Legacy backup framer — App Store upload path is Figma (1320×2868).
-# Stems match docs/ASO.md drive-first storyboard.
+# AppTheme.swift
+FOREGROUND = (245, 247, 252)
+MUTED = (140, 153, 173)
+CORAL = (255, 82, 56)
+CYAN = (46, 235, 224)
+BG_TOP = (18, 22, 29)
+BG_BOTTOM = (8, 9, 16)
+BEZEL = (24, 26, 32)
+
+# stem, headline lines, subhead, accent glow
 FRAMES = [
-    ("01-drive-mode", "How watched is this road"),
-    ("02-safest-drive", "Pick the quieter route"),
-    ("03-radar-hud", "Near mapped pins — honest"),
-    ("04-place-score", "Your block, graded"),
-    ("05-share-card", "Share how watched you are"),
-    ("06-map-fov", "See every mapped camera"),
-    ("07-ar-camera", "Point at the street"),
-    ("08-sharing-network", "See who they share with"),
+    ("01-drive-mode", ["How watched is", "this road?"],
+     "Live HUD and Lock Screen Activity while you drive", CORAL),
+    ("02-safest-drive", ["Pick the", "quieter route"],
+     "Compare drives by mapped ALPR exposure", CYAN),
+    ("03-radar-hud", ["Near mapped pins.", "Nothing more."],
+     "Honest alerts — never plate reads", CORAL),
+    ("04-place-score", ["Your block,", "graded"],
+     "Grade where you live in seconds", CORAL),
+    ("06-map-fov", ["See every", "mapped camera"],
+     "Clusters, filters, and coverage confidence", CYAN),
+    ("08-sharing-network", ["See who", "they share with"],
+     "Hub-and-spoke partners from public FOIA records", CORAL),
 ]
 
 
-def load_font(size: int) -> ImageFont.ImageFont:
+def font(name: str, size: int) -> ImageFont.FreeTypeFont:
     for path in (
-        "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-        "/Library/Fonts/Arial Bold.ttf",
+        f"/System/Library/Fonts/Supplemental/{name}.ttf",
+        f"/Library/Fonts/{name}.ttf",
         "/System/Library/Fonts/SFNS.ttf",
     ):
         try:
@@ -46,131 +60,103 @@ def load_font(size: int) -> ImageFont.ImageFont:
     return ImageFont.load_default()
 
 
-def rounded_screen(shot: Image.Image, size: tuple[int, int], radius: int) -> Image.Image:
-    screen = ImageOps.fit(shot.convert("RGBA"), size, method=Image.Resampling.LANCZOS)
-    mask = Image.new("L", size, 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius, fill=255)
-    out = Image.new("RGBA", size, (0, 0, 0, 0))
-    out.paste(screen, (0, 0), mask)
-    return out
+def background(accent: tuple[int, int, int]) -> Image.Image:
+    w, h = CANVAS
+    bg = Image.new("RGB", CANVAS, BG_BOTTOM)
+    draw = ImageDraw.Draw(bg)
+    for y in range(h):
+        t = y / h
+        draw.line(
+            [(0, y), (w, y)],
+            fill=tuple(int(BG_TOP[i] + (BG_BOTTOM[i] - BG_TOP[i]) * t) for i in range(3)),
+        )
+    # soft accent bloom behind the device shoulder
+    glow = Image.new("RGB", CANVAS, (0, 0, 0))
+    ImageDraw.Draw(glow).ellipse((w // 2 - 620, 620, w // 2 + 620, 1700), fill=accent)
+    glow = glow.filter(ImageFilter.GaussianBlur(260))
+    return Image.blend(bg, Image.blend(bg, glow, 0.5), 0.22)
 
 
-def make_phone(shot: Image.Image, body: tuple[int, int] = (780, 1600)) -> Image.Image:
-    bw, bh = body
-    pad = 28
-    radius = 78
-    screen_size = (bw - pad * 2, bh - pad * 2 - 18)
-    screen = rounded_screen(shot, screen_size, radius=62)
-
-    phone = Image.new("RGBA", (bw + 80, bh + 100), (0, 0, 0, 0))
-
-    shadow = Image.new("RGBA", phone.size, (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).rounded_rectangle(
-        (40, 48, 40 + bw, 48 + bh),
-        radius=radius + 8,
-        fill=(0, 0, 0, 150),
-    )
-    shadow = shadow.filter(ImageFilter.GaussianBlur(32))
-    phone = Image.alpha_composite(phone, shadow)
-
-    draw = ImageDraw.Draw(phone)
-    ox, oy = 30, 20
-    draw.rounded_rectangle(
-        (ox, oy, ox + bw, oy + bh),
-        radius=radius,
-        fill=BEZEL,
-        outline=BEZEL_EDGE,
-        width=3,
-    )
-    draw.line((ox + 5, oy + 100, ox + 5, oy + bh - 100), fill=(78, 82, 90, 200), width=3)
-    draw.line((ox + bw - 5, oy + 120, ox + bw - 5, oy + bh - 120), fill=(18, 18, 20, 220), width=3)
-
-    island_w, island_h = 148, 44
-    ix = ox + (bw - island_w) // 2
-    iy = oy + 28
-    draw.rounded_rectangle((ix, iy, ix + island_w, iy + island_h), radius=22, fill=(8, 8, 10))
-
-    phone.paste(screen, (ox + pad, oy + pad + 12), screen)
-    return phone
+def centered(draw: ImageDraw.ImageDraw, y: int, text: str, f, fill, tracking: int = 0) -> int:
+    if tracking:
+        widths = [draw.textlength(ch, font=f) + tracking for ch in text]
+        x = (CANVAS[0] - (sum(widths) - tracking)) / 2
+        for ch, adv in zip(text, widths):
+            draw.text((x, y), ch, font=f, fill=fill)
+            x += adv
+    else:
+        draw.text((CANVAS[0] / 2, y), text, font=f, fill=fill, anchor="ma")
+    box = draw.textbbox((0, 0), text or "X", font=f)
+    return y + (box[3] - box[1]) + box[1]
 
 
-def tilt_3d(img: Image.Image, degrees: float = -7.5) -> Image.Image:
-    """Mild yaw via rotate + slight horizontal compress for a 3D read."""
-    tilted = img.rotate(degrees, resample=Image.Resampling.BICUBIC, expand=True)
-    # Compress width a touch after rotate to sell perspective
-    w, h = tilted.size
-    return tilted.resize((max(1, int(w * 0.92)), h), Image.Resampling.LANCZOS)
+def device(shot: Image.Image, screen_w: int = 968) -> Image.Image:
+    ratio = shot.height / shot.width
+    screen = shot.resize((screen_w, int(screen_w * ratio)), Image.Resampling.LANCZOS)
 
-
-def wrap_caption(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:
-    words = text.split()
-    lines: list[str] = []
-    current = ""
-    for word in words:
-        trial = f"{current} {word}".strip()
-        if draw.textlength(trial, font=font) <= max_width:
-            current = trial
-        else:
-            if current:
-                lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
-    return lines
-
-
-def compose(shot_path: Path, caption: str, out_path: Path) -> None:
-    shot = Image.open(shot_path).convert("RGBA")
-    phone = tilt_3d(make_phone(shot))
-
-    canvas = Image.new("RGB", CANVAS, BG)
-    max_phone_h = int(CANVAS[1] * 0.74)
-    max_phone_w = int(CANVAS[0] * 0.84)
-    scale = min(max_phone_w / phone.width, max_phone_h / phone.height)
-    phone_r = phone.resize(
-        (max(1, int(phone.width * scale)), max(1, int(phone.height * scale))),
-        Image.Resampling.LANCZOS,
+    pad, radius = 15, 74
+    body = Image.new("RGBA", (screen.width + pad * 2, screen.height + pad * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(body).rounded_rectangle(
+        (0, 0, body.width - 1, body.height - 1), radius=radius + pad, fill=BEZEL + (255,)
     )
 
-    px = (CANVAS[0] - phone_r.width) // 2
-    py = int(CANVAS[1] * 0.20)
-    canvas.paste(phone_r, (px, py), phone_r)
+    mask = Image.new("L", screen.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0, 0, screen.width - 1, screen.height - 1), radius=radius, fill=255
+    )
+    body.paste(screen.convert("RGBA"), (pad, pad), mask)
+    return body
 
+
+def compose(stem: str, lines: list[str], subhead: str, accent) -> Path | None:
+    src = RAW / f"{stem}.png"
+    if not src.exists():
+        print(f"  skip {stem} — no raw capture")
+        return None
+
+    canvas = background(accent)
     draw = ImageDraw.Draw(canvas)
-    font = load_font(64)
-    lines = wrap_caption(draw, caption, font, max_width=int(CANVAS[0] * 0.88))
-    y = 100
-    for line in lines:
-        tw = draw.textlength(line, font=font)
-        draw.text(((CANVAS[0] - tw) / 2, y), line, font=font, fill=CAPTION)
-        y += 78
 
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(out_path, format="PNG", optimize=True)
-    print(f"wrote {out_path} ({canvas.size[0]}x{canvas.size[1]})")
+    eyebrow = font("Arial Bold", 30)
+    headline = font("Arial Black", 86)
+    sub = font("Arial", 38)
+
+    y = 168
+    centered(draw, y, "OVERWATCH", eyebrow, CORAL, tracking=9)
+    y += 88
+    for line in lines:
+        centered(draw, y, line, headline, FOREGROUND)
+        y += 106
+    y += 22
+    centered(draw, y, subhead, sub, MUTED)
+
+    phone = device(Image.open(src))
+    x = (CANVAS[0] - phone.width) // 2
+    top = 700
+
+    shadow = Image.new("RGBA", CANVAS, (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).rounded_rectangle(
+        (x + 16, top + 26, x + phone.width - 16, CANVAS[1]), radius=96, fill=(0, 0, 0, 190)
+    )
+    canvas.paste(
+        Image.alpha_composite(canvas.convert("RGBA"), shadow.filter(ImageFilter.GaussianBlur(48))).convert("RGB"),
+        (0, 0),
+    )
+    canvas.paste(phone, (x, top), phone)
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    dest = OUT / f"{stem}.png"
+    canvas.save(dest)
+    print(f"  wrote {dest.relative_to(ROOT)}  {canvas.width}x{canvas.height}")
+    return dest
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--raw-dir", type=Path, default=Path("docs/aso-captures/raw"))
-    parser.add_argument("--out-dir", type=Path, default=Path("docs/aso-captures/framed"))
-    args = parser.parse_args()
-
-    for stem, caption in FRAMES:
-        src = None
-        for ext in (".png", ".jpg", ".jpeg"):
-            candidate = args.raw_dir / f"{stem}{ext}"
-            if candidate.exists():
-                src = candidate
-                break
-        if src is None:
-            legacy = args.raw_dir.parent / f"{stem}.jpg"
-            if legacy.exists():
-                src = legacy
-        if src is None:
-            print(f"skip missing {stem}")
+    wanted = sys.argv[1:]
+    for stem, lines, subhead, accent in FRAMES:
+        if wanted and not any(stem.startswith(w) for w in wanted):
             continue
-        compose(src, caption, args.out_dir / f"{stem}.png")
+        compose(stem, lines, subhead, accent)
 
 
 if __name__ == "__main__":

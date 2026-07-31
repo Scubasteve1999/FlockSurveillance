@@ -46,6 +46,7 @@ struct RadarHUD: View {
     let watchModeEnabled: Bool
     let onToggleWatch: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var ringProgress: CGFloat = 0
     @State private var zonePulse = false
     @State private var sweepAngle: Double = 0
@@ -68,6 +69,10 @@ struct RadarHUD: View {
         return "OVERWATCH"
     }
 
+    private var visibleCountLabel: String {
+        visibleCount == 1 ? "1 camera" : "\(visibleCount) cameras"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 14) {
@@ -75,8 +80,8 @@ struct RadarHUD: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
                         inWatchedZone
-                            ? "Watched zone. \(visibleCount) cameras in view, \(level.title). Phone near mapped ALPR pins, not a plate-read alert."
-                            : "\(visibleCount) cameras in view, \(level.title)"
+                            ? "Watched zone. \(visibleCountLabel) in view, \(level.title). Phone near mapped ALPR pins, not a plate-read alert."
+                            : "\(visibleCountLabel) in view, \(level.title)"
                     )
 
                 VStack(alignment: .leading, spacing: 7) {
@@ -363,6 +368,10 @@ struct RadarHUD: View {
     }
 
     private func startSweep() {
+        guard !reduceMotion else {
+            sweepAngle = 45
+            return
+        }
         withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
             sweepAngle = 360
         }
@@ -370,6 +379,10 @@ struct RadarHUD: View {
 
     private func updateZonePulse(_ active: Bool) {
         if active {
+            if reduceMotion {
+                zonePulse = true
+                return
+            }
             zonePulse = false
             withAnimation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true)) {
                 zonePulse = true
@@ -385,6 +398,7 @@ struct RadarHUD: View {
 /// Full-bleed edge vignette when you're inside a watched corridor.
 struct WatchedZoneEdgeAlert: View {
     let level: SurveillanceLevel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pulse = false
 
     var body: some View {
@@ -406,8 +420,12 @@ struct WatchedZoneEdgeAlert: View {
             .allowsHitTesting(false)
             .ignoresSafeArea()
             .onAppear {
-                withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
+                if reduceMotion {
                     pulse = true
+                } else {
+                    withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
+                        pulse = true
+                    }
                 }
             }
     }

@@ -16,18 +16,11 @@ struct LearnView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("FLOCK SURVEILLANCE")
-                                .font(.system(size: 12, weight: .bold))
-                                .tracking(1.2)
-                                .foregroundStyle(AppTheme.primary)
-                            Text("Learn")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(AppTheme.foreground)
-                            Text("Short, sharp context on ALPRs, networks, and why maps matter.")
-                                .font(.system(size: 15, weight: .medium))
-                                .foregroundStyle(AppTheme.mutedForeground)
-                        }
+                        OverwatchPageHeader(
+                            eyebrow: "OVERWATCH · INTEL",
+                            title: "Learn",
+                            subtitle: "Short, sharp context on ALPRs, networks, and why maps matter."
+                        )
 
                         if !cityRankings.isEmpty {
                             SectionCard {
@@ -75,7 +68,7 @@ struct LearnView: View {
                                         .fixedSize(horizontal: false, vertical: true)
 
                                     if article.id == LearnArticle.sharingNetworkArticleID {
-                                        Button {
+                                        OverwatchPrimaryButton {
                                             showSharingNetwork = true
                                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                         } label: {
@@ -85,13 +78,7 @@ struct LearnView: View {
                                                     .fontWeight(.semibold)
                                             }
                                             .font(.system(size: 14))
-                                            .foregroundStyle(AppTheme.background)
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 12)
-                                            .background(AppTheme.primary)
-                                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                         }
-                                        .buttonStyle(.plain)
                                         .padding(.top, 4)
                                         .accessibilityHint("Shows FOIA-documented agency sharing links from DeFlock Dane")
                                     }

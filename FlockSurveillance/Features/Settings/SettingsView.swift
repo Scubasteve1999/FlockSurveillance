@@ -51,18 +51,11 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("FLOCK SURVEILLANCE")
-                                .font(.system(size: 12, weight: .bold))
-                                .tracking(1.2)
-                                .foregroundStyle(AppTheme.primary)
-                            Text("Settings")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(AppTheme.foreground)
-                            Text("Tune radar, Home & Work for commute, and local cache.")
-                                .font(.system(size: 15, weight: .medium))
-                                .foregroundStyle(AppTheme.mutedForeground)
-                        }
+                        OverwatchPageHeader(
+                            eyebrow: "OVERWATCH · GEAR",
+                            title: "Settings",
+                            subtitle: "Tune radar, Home & Work for commute, and local cache."
+                        )
 
                         SectionCard {
                             VStack(alignment: .leading, spacing: 14) {
@@ -371,7 +364,7 @@ struct SettingsView: View {
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
 
-                                Text("\(repository.cameras.count) cameras cached locally")
+                                Text("\(repository.cameras.count == 1 ? "1 camera" : "\(repository.cameras.count) cameras") cached locally")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundStyle(AppTheme.foreground)
 

@@ -26,6 +26,8 @@ enum AppTheme {
     static let trafficSensorMarker = Color(red: 1.0, green: 0.82, blue: 0.22)
 
     static let cornerRadius: CGFloat = 16
+    /// Primary / secondary CTA corners (Drive, Route, etc.).
+    static let buttonCornerRadius: CGFloat = 12
     static let cardPadding: CGFloat = 16
 
     static func densityColor(count: Int) -> Color {
@@ -121,5 +123,61 @@ struct DataSourcePill: View {
         .background(AppTheme.card.opacity(0.9))
         .clipShape(Capsule())
         .overlay(Capsule().stroke(AppTheme.border, lineWidth: 1))
+    }
+}
+
+// MARK: - Overwatch CTAs
+
+/// Coral → critical fill CTA used for primary drive / route actions.
+struct OverwatchPrimaryButton<Label: View>: View {
+    var verticalPadding: CGFloat = 12
+    var useGradient: Bool = false
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+
+    var body: some View {
+        Button(action: action) {
+            label()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, verticalPadding)
+                .foregroundStyle(AppTheme.background)
+                .background {
+                    if useGradient {
+                        LinearGradient(
+                            colors: [AppTheme.primary, AppTheme.critical],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    } else {
+                        AppTheme.primary
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
+                .shadow(color: useGradient ? AppTheme.primary.opacity(0.45) : .clear, radius: 12, y: 0)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Card-top bordered CTA for secondary actions (Hide, share, Work→Home).
+struct OverwatchSecondaryButton<Label: View>: View {
+    var verticalPadding: CGFloat = 12
+    let action: () -> Void
+    @ViewBuilder var label: () -> Label
+
+    var body: some View {
+        Button(action: action) {
+            label()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, verticalPadding)
+                .foregroundStyle(AppTheme.foreground)
+                .background(AppTheme.cardTop.opacity(0.92))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
+                        .stroke(AppTheme.border, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }

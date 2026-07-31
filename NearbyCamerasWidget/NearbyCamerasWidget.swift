@@ -65,6 +65,10 @@ struct NearbyCamerasWidgetView: View {
         }
     }
 
+    private var pinCountLabel: String {
+        entry.count == 1 ? "1 pin" : "\(entry.count) pins"
+    }
+
     var body: some View {
         switch family {
         case .accessoryCircular:
@@ -72,7 +76,7 @@ struct NearbyCamerasWidgetView: View {
         case .accessoryRectangular:
             accessoryRectangular
         case .accessoryInline:
-            Text(entry.hasHome ? "\(entry.count) pins · \(levelChip)" : "Set Home · Overwatch")
+            Text(entry.hasHome ? "\(pinCountLabel) · \(levelChip)" : "Set Home · Overwatch")
                 .widgetURL(URL(string: "flocksurveillance://map"))
         default:
             systemView
@@ -99,7 +103,7 @@ struct NearbyCamerasWidgetView: View {
                 .font(.system(size: 10, weight: .black))
                 .tracking(0.5)
             if entry.hasHome {
-                Text("\(entry.count) PINS · \(levelChip)")
+                Text("\(pinCountLabel.uppercased()) · \(levelChip)")
                     .font(.system(size: 13, weight: .bold))
                 if let nearest = entry.nearestMeters {
                     Text("LOCK \(format(nearest))")

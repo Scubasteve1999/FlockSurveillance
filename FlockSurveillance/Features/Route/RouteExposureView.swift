@@ -140,53 +140,32 @@ struct RouteExposureView: View {
                 }
 
                 HStack(spacing: 10) {
-                    Button {
+                    OverwatchPrimaryButton {
                         showDriveMode = true
                     } label: {
                         Label("Resume Overwatch", systemImage: "car.fill")
                             .font(.system(size: 14, weight: .bold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .foregroundStyle(AppTheme.background)
-                            .background(AppTheme.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
-                    .buttonStyle(.plain)
+                    .accessibilityHint("Reopens the drive HUD. Live Activity is already running.")
 
-                    Button {
+                    OverwatchSecondaryButton {
                         driveSession.stop()
                     } label: {
                         Text("END DRIVE")
                             .font(.system(size: 13, weight: .black, design: .monospaced))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .foregroundStyle(AppTheme.foreground)
-                            .background(AppTheme.cardTop)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .stroke(AppTheme.border, lineWidth: 1)
-                            )
                     }
-                    .buttonStyle(.plain)
+                    .accessibilityHint("Ends the drive session and dismisses the Live Activity.")
                 }
             }
         }
     }
 
     private var brandBlock: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("OVERWATCH · ROUTE")
-                .font(.system(size: 12, weight: .black, design: .monospaced))
-                .tracking(1.2)
-                .foregroundStyle(AppTheme.primary)
-            Text("Safest Drive")
-                .font(.system(size: 28, weight: .black))
-                .foregroundStyle(AppTheme.foreground)
-            Text("One tap for Home ↔ Work, or search any trip. We pick the corridor with the fewest mapped ALPR pins.")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(AppTheme.mutedForeground)
-        }
+        OverwatchPageHeader(
+            eyebrow: "OVERWATCH · ROUTE",
+            title: "Safest Drive",
+            subtitle: "One tap for Home ↔ Work, or search any trip. We pick the corridor with the fewest mapped ALPR pins."
+        )
     }
 
     private var commuteCard: some View {
@@ -198,36 +177,20 @@ struct RouteExposureView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
 
                 HStack(spacing: 10) {
-                    Button {
+                    OverwatchPrimaryButton(verticalPadding: 14) {
                         Task { await runCommute(toHome: false) }
                     } label: {
                         Label("Home → Work", systemImage: "briefcase.fill")
                             .font(.system(size: 14, weight: .bold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .foregroundStyle(AppTheme.background)
-                            .background(AppTheme.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
-                    .buttonStyle(.plain)
                     .disabled(isRouting)
 
-                    Button {
+                    OverwatchSecondaryButton(verticalPadding: 14) {
                         Task { await runCommute(toHome: true) }
                     } label: {
                         Label("Work → Home", systemImage: "house.fill")
                             .font(.system(size: 14, weight: .bold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .foregroundStyle(AppTheme.foreground)
-                            .background(AppTheme.cardTop)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .stroke(AppTheme.border, lineWidth: 1)
-                            )
                     }
-                    .buttonStyle(.plain)
                     .disabled(isRouting)
                 }
 
@@ -283,17 +246,14 @@ struct RouteExposureView: View {
 
                     Spacer()
 
-                    Button {
+                    OverwatchPrimaryButton(verticalPadding: 10) {
                         Task { await runExposure() }
                     } label: {
                         Text("Analyze")
                             .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(AppTheme.background)
-                            .padding(.horizontal, 18)
-                            .padding(.vertical, 10)
-                            .background(AppTheme.primary)
-                            .clipShape(Capsule())
+                            .padding(.horizontal, 8)
                     }
+                    .frame(width: 120)
                     .disabled(isRouting)
                 }
             }
@@ -343,7 +303,7 @@ struct RouteExposureView: View {
                                         StatusBadge(text: "Best", color: AppTheme.accent)
                                     }
                                 }
-                                Text("\(option.cameraCount) cameras · \(String(format: "%.1f mi", option.distance / 1609.34))")
+                                Text("\(option.cameraCount == 1 ? "1 camera" : "\(option.cameraCount) cameras") · \(String(format: "%.1f mi", option.distance / 1609.34))")
                                     .font(.system(size: 12, weight: .medium))
                                     .foregroundStyle(AppTheme.mutedForeground)
                             }
@@ -385,7 +345,7 @@ struct RouteExposureView: View {
                             .font(.system(size: 10, weight: .semibold))
                             .tracking(0.8)
                             .foregroundStyle(AppTheme.mutedForeground)
-                        Text("\(result.cameraCount) cameras")
+                        Text(result.cameraCount == 1 ? "1 camera" : "\(result.cameraCount) cameras")
                             .font(.system(size: 26, weight: .bold))
                             .foregroundStyle(AppTheme.foreground)
                     }
@@ -402,7 +362,7 @@ struct RouteExposureView: View {
                     metric("Watchedness", result.exposureScore)
                 }
 
-                Button {
+                OverwatchPrimaryButton {
                     if driveSession.isActive {
                         showDriveMode = true
                     } else {
@@ -414,14 +374,8 @@ struct RouteExposureView: View {
                         driveSession.isActive ? "Resume Overwatch" : "Start Overwatch Drive",
                         systemImage: "car.fill"
                     )
-                        .font(.system(size: 14, weight: .bold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .foregroundStyle(AppTheme.background)
-                        .background(AppTheme.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .font(.system(size: 14, weight: .bold))
                 }
-                .buttonStyle(.plain)
 
                 Text(
                     liveActivitiesEnabled
@@ -431,22 +385,12 @@ struct RouteExposureView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
 
-                Button {
+                OverwatchSecondaryButton {
                     shareDriveReport(result)
                 } label: {
                     Label("Share drive report", systemImage: "square.and.arrow.up")
                         .font(.system(size: 14, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .foregroundStyle(AppTheme.foreground)
-                        .background(AppTheme.cardTop)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(AppTheme.border, lineWidth: 1)
-                        )
                 }
-                .buttonStyle(.plain)
             }
         }
     }

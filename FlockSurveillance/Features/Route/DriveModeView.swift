@@ -8,6 +8,7 @@ struct DriveModeView: View {
     @Environment(ProximityRadar.self) private var radar
     @Environment(\.dismiss) private var dismiss
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var mapPosition: MapCameraPosition = .userLocation(fallback: .automatic)
     /// Accumulated rotation so the arrow takes the short way across north
@@ -62,26 +63,27 @@ struct DriveModeView: View {
             VStack(spacing: 12) {
                 driveHUD
                 Spacer()
-                Button {
-                    driveSession.stop()
-                    ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
-                    dismiss()
-                } label: {
-                    Text("END DRIVE")
-                        .font(.system(size: 15, weight: .black, design: .monospaced))
-                        .tracking(1.2)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .foregroundStyle(AppTheme.background)
-                        .background(
-                            LinearGradient(
-                                colors: [AppTheme.primary, AppTheme.critical],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                        .shadow(color: AppTheme.primary.opacity(0.45), radius: 12, y: 0)
+                // Hide dismisses HUD only — Live Activity / DriveSession keep running.
+                // END DRIVE is the sole stop path (product constraint).
+                HStack(spacing: 10) {
+                    OverwatchSecondaryButton(verticalPadding: 15) {
+                        dismiss()
+                    } label: {
+                        Text("Hide Overwatch")
+                            .font(.system(size: 14, weight: .bold))
+                    }
+                    .accessibilityHint("Closes the drive HUD. Live Activity keeps running until End Drive.")
+
+                    OverwatchPrimaryButton(verticalPadding: 15, useGradient: true) {
+                        driveSession.stop()
+                        ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
+                        dismiss()
+                    } label: {
+                        Text("END DRIVE")
+                            .font(.system(size: 14, weight: .black, design: .monospaced))
+                            .tracking(1.0)
+                    }
+                    .accessibilityHint("Ends the drive session and dismisses the Live Activity.")
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
@@ -95,8 +97,12 @@ struct DriveModeView: View {
                let rect = GeoHelpers.mapRect(covering: route.polyline.coordinates) {
                 mapPosition = .rect(rect)
             }
-            withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
-                pulse = true
+            if reduceMotion {
+                pulse = false
+            } else {
+                withAnimation(.easeInOut(duration: 0.85).repeatForever(autoreverses: true)) {
+                    pulse = true
+                }
             }
         }
         .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in

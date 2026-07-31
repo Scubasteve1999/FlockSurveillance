@@ -9,6 +9,7 @@ struct MapRadarView: View {
     @Environment(ProximityRadar.self) private var radar
     @Environment(ReportStore.self) private var reportStore
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
     @AppStorage(AppPreferenceKey.showSensorAtlas) private var showSensorAtlasStored = false
@@ -54,6 +55,8 @@ struct MapRadarView: View {
     /// Prevents re-entrant auto-enable before `onChange` clears the toggle flag.
     @State private var sensorAtlasAutoEnableInFlight = false
     @State private var sensorAtlasBannerDismissTask: Task<Void, Never>?
+    /// City rankings strip is opt-in so Map first paint stays one status band + tools.
+    @State private var showCityRankings = false
 
     private var locationDenied: Bool {
         let status = locationManager.authorizationStatus
@@ -214,7 +217,7 @@ struct MapRadarView: View {
                 level: surveillanceLevel,
                 inWatchedZone: inWatchedZone
             )
-            brandHeader
+            toolRail
             filterBar
             if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
                 Text(atlasError)
@@ -240,7 +243,7 @@ struct MapRadarView: View {
                 reportPlacementBar
                     .padding(.horizontal, 16)
             }
-            if !cityRankings.isEmpty, shouldShowRankings {
+            if !cityRankings.isEmpty, showCityRankings, placeScore == nil {
                 CityRankingsStrip(rankings: cityRankings) { city in
                     focusAndScore(coordinate: city.coordinate)
                 }
@@ -392,11 +395,6 @@ struct MapRadarView: View {
         lastSurveillanceLevel = next
     }
 
-    private var shouldShowRankings: Bool {
-        guard let region = visibleRegion else { return true }
-        return GeoHelpers.dominantSpan(region) > 0.35 && placeScore == nil
-    }
-
     private var mapContent: some View {
         Map(position: $position) {
             UserAnnotation()
@@ -529,26 +527,10 @@ struct MapRadarView: View {
             .map { $0 }
     }
 
-    private var brandHeader: some View {
-        HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Text("FLOCK SURVEILLANCE")
-                        .font(.system(size: 12, weight: .black))
-                        .tracking(1.4)
-                        .foregroundStyle(AppTheme.foreground)
-                    if inWatchedZone {
-                        Text("· \(surveillanceLevel.chip)")
-                            .font(.system(size: 11, weight: .black, design: .monospaced))
-                            .foregroundStyle(surveillanceLevel.color)
-                            .shadow(color: surveillanceLevel.color.opacity(0.6), radius: 4, y: 0)
-                    }
-                }
-                Text(inWatchedZone ? "YOU ARE IN THE GRID" : "How watched is your life right now?")
-                    .font(.system(size: 12, weight: inWatchedZone ? .bold : .medium))
-                    .foregroundStyle(inWatchedZone ? surveillanceLevel.color : AppTheme.mutedForeground)
-            }
-            Spacer(minLength: 8)
+    /// Compact tool rail only — threat ticker carries status; no second brand band.
+    private var toolRail: some View {
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
             HStack(spacing: 0) {
                 headerRailButton(
                     systemName: "viewfinder",
@@ -662,6 +644,27 @@ struct MapRadarView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(showSensorAtlas ? "Hide municipal traffic cameras" : "Show municipal traffic cameras")
+
+            if !cityRankings.isEmpty {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showCityRankings.toggle()
+                        if showCityRankings { placeScore = nil }
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    Text("METROS")
+                        .font(.system(size: 12, weight: .black, design: .monospaced))
+                        .foregroundStyle(showCityRankings ? AppTheme.background : AppTheme.foreground)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(showCityRankings ? AppTheme.accent : AppTheme.card.opacity(0.92))
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: showCityRankings ? 0 : 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(showCityRankings ? "Hide city rankings" : "Show city rankings")
+            }
             Spacer()
             Toggle(isOn: Binding(
                 get: { radar.hapticsEnabled },
@@ -691,6 +694,10 @@ struct MapRadarView: View {
             return
         }
         pulsePhase = false
+        if reduceMotion {
+            pulsePhase = true
+            return
+        }
         withAnimation(.easeInOut(duration: inWatchedZone ? 0.85 : 1.2).repeatForever(autoreverses: true)) {
             pulsePhase = true
         }

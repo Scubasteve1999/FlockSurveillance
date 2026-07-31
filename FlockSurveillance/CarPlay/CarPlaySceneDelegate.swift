@@ -65,7 +65,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             items = [
                 CPInformationItem(title: "Next ALPR", detail: nextLabel),
                 CPInformationItem(title: "Distance", detail: distance),
-                CPInformationItem(title: "Remaining", detail: "\(session.camerasRemaining) cameras"),
+                CPInformationItem(title: "Remaining", detail: session.camerasRemaining == 1 ? "1 camera" : "\(session.camerasRemaining) cameras"),
                 CPInformationItem(title: "Exposure", detail: session.exposureLabel)
             ]
         } else {

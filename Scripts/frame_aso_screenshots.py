@@ -19,15 +19,17 @@ BEZEL_EDGE = (55, 58, 64)
 # App Store 6.7" portrait marketing canvas
 CANVAS = (1290, 2796)
 
+# Legacy backup framer — App Store upload path is Figma (1320×2868).
+# Stems match docs/ASO.md drive-first storyboard.
 FRAMES = [
-    ("01-sharing-network", "See who they share with"),
-    ("02-radar-map", "Fetched. Facing. Honest."),
-    ("03-place-score", "Your block, graded in seconds"),
-    ("04-share-card", "Share how watched you are"),
-    ("05-ar-camera", "Point at the street — see the cameras"),
+    ("01-drive-mode", "How watched is this road"),
+    ("02-safest-drive", "Pick the quieter route"),
+    ("03-radar-hud", "Near mapped pins — honest"),
+    ("04-place-score", "Your block, graded"),
+    ("05-share-card", "Share how watched you are"),
     ("06-map-fov", "See every mapped camera"),
-    ("07-safest-drive", "One-tap safest drive"),
-    ("08-drive-mode", "Live countdown while you drive"),
+    ("07-ar-camera", "Point at the street"),
+    ("08-sharing-network", "See who they share with"),
 ]
 
 

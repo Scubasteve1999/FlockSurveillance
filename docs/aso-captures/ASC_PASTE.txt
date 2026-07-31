@@ -1,5 +1,6 @@
 Flock Surveillance — App Store Connect paste pack (v1.8.0)
 Source: docs/ASO.md — paste into ASC → version → App Information / Review.
+Positioning: drive-first (how watched is this road) vs DeFlock map+report.
 
 ================================================================================
 NAME (30)
@@ -9,7 +10,7 @@ Flock Surveillance: ALPR Map
 ================================================================================
 SUBTITLE (30)
 ================================================================================
-How watched is your life?
+How watched is this road?
 
 ================================================================================
 KEYWORDS (100)
@@ -19,23 +20,22 @@ alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,sp
 ================================================================================
 PROMOTIONAL TEXT (170)
 ================================================================================
-NEW: Sharing Network — FOIA hub-and-spoke map plus partner search. Public records only. No Flock vendor APIs.
+NEW: Drive Mode + Live Activity — how watched is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
 
 ================================================================================
 DESCRIPTION
 ================================================================================
-How watched is your life right now? Open the app and get a personal grade for your block on a coverage dial — then raise your phone to see mapped cameras in AR, or open Sharing Network to see who FOIA-disclosed hubs share with.
+How watched is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by camera exposure, or grade your block with Place Score.
 
-Built on OpenStreetMap community data plus a DeFlock Dane FOIA snapshot. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
+Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
 
-• Sharing Network Map — FOIA hub-and-spoke partners; search any agency beyond the map sample
-• Coverage Confidence — fetch state, facing %, freshness; soft-clears stale pins after a trusted OSM refresh
-• AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
+• Drive Mode — live countdown HUD + Lock Screen / Dynamic Island Live Activity while you drive
+• Safest Drive Home ↔ Work — compare routes by mapped camera exposure; share a drive report
+• Watched-zone radar — optional geofenced alerts when your phone is near mapped OSM pins (not plate reads)
 • Instant Place Score — grade your block in seconds; share Instagram-ready cards
-• Safest Drive Home ↔ Work — compare routes by mapped camera exposure
-• Drive Mode — live countdown HUD + Lock Screen Live Activity while you drive
-• Map + FOV cones — clusters, Flock filter, optional approach haptics
-• Background alerts — optional geofenced notifications near mapped cameras
+• AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
+• Map + FOV cones — clusters, Flock filter, Coverage Confidence, optional approach haptics
+• Sharing Network — FOIA hub-and-spoke partners from public records; search any agency beyond the map sample
 • Community reporting — flag unmapped cameras as anonymous OSM notes
 • City rankings, widgets, and Siri Shortcuts
 
@@ -44,35 +44,43 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ================================================================================
 WHAT'S NEW
 ================================================================================
-• Sensor Atlas — optional WisDOT traffic cams for Madison & Milwaukee (not ALPR; not Flock)
+• Drive Mode + Live Activity — how watched is this road while you drive (mapped pins, not plate reads)
+• Hide Overwatch — close the HUD; Live Activity keeps running until End Drive
 • Honest watched-zone copy — alerts mean near mapped ALPR pins, not plate reads
-• Find any Sharing Network partner by name or state (beyond the map’s 250-arc sample)
-• Drive Mode stays alive when you dismiss the HUD — Live Activity until End Drive
+• Sensor Atlas — optional WisDOT traffic cams for Madison & Milwaukee (not ALPR; not Flock)
 
 ================================================================================
 PRIVACY NUTRITION LABEL
 ================================================================================
 Data collected: Data Not Collected (no developer analytics/accounts/servers).
-Location: on-device only; never sent to developer servers.
+Location: on-device only; map, Drive Mode, optional geofenced alerts; never sent to developer.
 Camera: AR overlay only; not recorded/uploaded.
-Third-party: Overpass/OSM bbox queries; optional WisDOT stills from content.dot.wi.gov / www.dot.wi.gov when opening a Sensor Atlas detail.
+Third-party: Overpass/OSM bbox queries (no user IDs); optional WisDOT stills from content.dot.wi.gov / www.dot.wi.gov when opening a Sensor Atlas detail (user-initiated; not ALPR/Flock).
 
 ================================================================================
 APP REVIEW NOTES
 ================================================================================
-Flock Surveillance displays community-documented ALPR camera locations from OpenStreetMap (the same public dataset as deflock.me). Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. It is a civic-transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. Coverage Confidence soft-clears pins after a successful Overpass refresh no longer returns them. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications when the phone is near mapped OSM ALPR pins (not plate-read detection); location data never leaves the device to developer servers.
+Flock Surveillance helps drivers understand mapped ALPR exposure on the road: Drive Mode HUD, Live Activity, and route comparison use community-documented camera locations from OpenStreetMap (the same public dataset as deflock.me). Alerts and Live Activity mean the phone is near a mapped OSM pin — not that a plate was read. Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Those pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. Civic transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications; location data never leaves the device to developer servers.
 
 ================================================================================
-SCREENSHOTS (upload framed/*.png — 1290×2796)
+SCREENSHOTS (Figma export — 1320×2868)
 ================================================================================
-docs/aso-captures/framed/
-  01-sharing-network.png
-  02-radar-map.png
-  03-place-score.png
-  04-share-card.png
-  06-map-fov.png
-  07-safest-drive.png
-Still need device: 05-ar-camera, 08-drive-mode
+Source of truth: https://www.figma.com/design/rJp6KGfLHbxRHWyHvSExrC
+Export to: docs/aso-captures/figma-export/
+Gap: 07-ar-camera still needs physical-device raw before final export.
+Drive Mode HUD raw: docs/aso-captures/raw/01-drive-mode.png (sim; optional Island reshoot).
+
+  01-drive-mode.png          How watched is this road
+  02-safest-drive.png        Pick the quieter route
+  03-radar-hud.png           Near mapped pins — honest
+  04-place-score.png         Your block, graded
+  05-share-card.png          Share how watched you are
+  06-map-fov.png             See every mapped camera
+  07-ar-camera.png           Point at the street          (needs device raw)
+  08-sharing-network.png     See who they share with
+
+Raw UI for Figma upload: docs/aso-captures/raw/<stem>.png
+Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 
 ================================================================================
 VERSION

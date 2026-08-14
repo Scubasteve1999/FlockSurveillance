@@ -122,6 +122,7 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(score.flockPercent, 50)
         XCTAssertTrue(score.headline.lowercased().contains("watched"))
         XCTAssertTrue(score.shareText.contains("cameras"))
+        XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
     }
 
     func testCityRankingsSortsByCount() {

@@ -72,9 +72,9 @@ python3 Scripts/build_sharing_network_bundle.py
 
 That writes `FlockSurveillance/Resources/SharingNetworkBundle.json`. Relationships are agency-to-agency links from public records — not which cameras feed which agency, and not a complete national graph.
 
-## App Store launch
+## App Store
 
-Independent checklist (screenshots + App Store Connect): [`docs/LAUNCH.md`](docs/LAUNCH.md).
+Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.8.0). Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).
 
 ## Brand / domain
 

@@ -684,6 +684,7 @@ struct RouteExposureView: View {
         Alternatives scored: \(optionCount)
         Fewer cameras. Same destination.
         flocksurveillance.com
+        \(AppLinks.appStore.absoluteString)
         """
     }
 }

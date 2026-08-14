@@ -437,6 +437,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         How watched is your life right now?
         Mapped OSM pins — not a vendor feed.
         flocksurveillance.com
+        \(AppLinks.appStore.absoluteString)
         """
     }
 

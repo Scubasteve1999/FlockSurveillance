@@ -171,9 +171,14 @@ private struct PlaceScoreShareCard: View {
                             .foregroundStyle(AppTheme.mutedForeground)
                     }
                     Spacer()
-                    Text("flocksurveillance.com")
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.55))
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("flocksurveillance.com")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.55))
+                        Text("App Store")
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.4))
+                    }
                 }
             }
             .padding(24)
@@ -333,7 +338,7 @@ private struct DriveReportShareCard: View {
                     Text("FEWER CAMERAS. SAME DESTINATION.")
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
-                    Text("flocksurveillance.com · OSM community data")
+                    Text("flocksurveillance.com · App Store · OSM community data")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }

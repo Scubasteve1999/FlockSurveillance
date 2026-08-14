@@ -1,5 +1,7 @@
 # App Store Optimization — Flock Surveillance v1.8
 
+**Live listing:** [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) · Apple ID `6789356933`
+
 **Positioning:** DeFlock owns “see cameras + report.” Flock Surveillance owns **“how watched is this road right now, while I’m driving.”** Map, Sharing Network, and Sensor Atlas are infrastructure — not the lead story.
 
 **Framed screenshots:** Figma is the source of truth (SpotterCast pattern). See [Screenshot storyboard](#screenshot-storyboard-69-set-in-order). Python [`Scripts/frame_aso_screenshots.py`](../Scripts/frame_aso_screenshots.py) is legacy/backup only.

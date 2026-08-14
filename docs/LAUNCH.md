@@ -1,58 +1,92 @@
-# Flock Surveillance — App Store submission
+# Flock Surveillance — App Store
 
-**Goal: submit.** Everything is done except the six steps below. Copy lives in [ASO.md](ASO.md);
-the paste-ready version is [aso-captures/ASC_PASTE.txt](aso-captures/ASC_PASTE.txt).
+**Shipped.** v1.8.0 (build 11) is live.
+
+- Listing: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933)
+- Apple ID: `6789356933`
+- Copy / ASO pack: [ASO.md](ASO.md) · paste pack: [aso-captures/ASC_PASTE.txt](aso-captures/ASC_PASTE.txt)
 
 **Positioning:** Drive Mode / Live Activity / route exposure first. Map + Sharing Network are
 infrastructure.
 
 ---
 
-## Six steps
+## 1.8.0 submission (done)
 
-1. **Screenshots** — drag the seven PNGs from `docs/aso-captures/raw/` into the **6.9"** iPhone
-   slot. They are already 1320×2868 with a clean 9:41 status bar. Upload as-is.
-2. **Text metadata** — paste name, subtitle, keywords, promo text, description, and what's new
-   from `ASC_PASTE.txt`.
-3. **App Review notes** — paste from the same file. This one matters: it tells the reviewer this is
-   OSM civic data, not a vendor feed and not a radar detector.
-4. **Privacy nutrition label** — Data Not Collected, plus the optional WisDOT stills disclosure.
-5. **Build** — Xcode → Archive → upload → attach build 11 to the version.
-6. **Submit.**
+1. Screenshots — seven 6.9" PNGs from `docs/aso-captures/raw/`
+2. Text metadata — name, subtitle, keywords, promo, description, what's new from `ASC_PASTE.txt`
+3. App Review notes — OSM civic data, not a vendor feed, not a radar detector
+4. Privacy nutrition label — Data Not Collected, plus optional WisDOT stills disclosure
+5. Build 11 attached to 1.8.0
+6. Submitted and approved 2026-08-13
 
-## Screenshots — no Figma required
+## Screenshots (1.8.1)
 
-Apple requires at least one 6.9" screenshot and allows up to ten. **Seven is a complete
-submission.** Marketing frames with headline text are a convention, not a requirement — plain
-screenshots are accepted. Skip the Figma composition step for this release.
+Apple requires at least one 6.9" screenshot and allows up to ten. **Seven shipped.** Marketing
+frames with headline text are a convention, not a requirement.
 
 | # | Stem | Status |
 |---|------|--------|
-| 1 | `01-drive-mode` | Ready |
-| 2 | `02-safest-drive` | Ready |
-| 3 | `03-radar-hud` | Ready |
-| 4 | `04-place-score` | Ready |
-| 5 | `05-share-card` | Ready — `ShareCardRenderer` output at 1170×1560, not a device capture |
-| 6 | `06-map-fov` | Ready — no FOV cones; Memphis OSM pins carry no `direction` tag |
-| 7 | `07-ar-camera` | **Missing — ship without it.** Needs a real device outdoors in daylight near a mapped pin. Do not fake it. Add in 1.8.1. |
+| 1 | `01-drive-mode` | Shipped |
+| 2 | `02-safest-drive` | Shipped |
+| 3 | `03-radar-hud` | Shipped |
+| 4 | `04-place-score` | Shipped |
+| 5 | `05-share-card` | Shipped — `ShareCardRenderer` output at 1170×1560, not a device capture |
+| 6 | `06-map-fov` | Shipped — no FOV cones; Memphis OSM pins carry no `direction` tag |
+| 7 | `07-ar-camera` | **Missing.** Needs a real device outdoors in daylight near a mapped pin. Do not fake it. Add in 1.8.1. |
 
 Superseded captures from an older numbering scheme are in `raw/_legacy-scheme/`. If marketing
 frames are ever wanted, they belong in `figma-export/`; source of truth is the
 [Figma file](https://www.figma.com/design/rJp6KGfLHbxRHWyHvSExrC). Ignore the Python-framed
 `framed/` directory.
 
-## Do not do before submitting
+## Still out of scope
 
-- Any new feature, refactor, or copy polish
 - Expanding Sensor Atlas beyond the Madison/Milwaukee WisDOT snapshot
 - FOIA Radar, Stop Card, Ordinance Watch (parked)
 - Requesting the CarPlay entitlement or adding the scene manifest to `Info.plist`
 - Live ALPR / vendor feeds or plate-hit notifications — not a scope call, not possible
 
-## After submit
+## 1.8.1 backlog
 
-- Watch review for positioning language: "civic transparency," not radar detector.
-- If rejected for overclaiming, tighten copy. Do not add fake scan features.
-- Backlog: AR screenshot; Overpass/OSM User-Agent still says `1.5`; `MapRadarView` split;
-  SwiftData `fatalError` harden; remaining pluralization in `CityRankingsStrip` and
-  `SharingNetworkView`.
+- AR screenshot (`07-ar-camera`)
+- Overpass/OSM User-Agent still says `1.5`
+- `MapRadarView` split
+- SwiftData `fatalError` harden
+- Remaining pluralization in `CityRankingsStrip` and `SharingNetworkView`
+
+If a later review flags overclaiming, tighten copy. Do not add fake scan features.
+Copy stays "civic transparency" / "near mapped pins," never radar-detector language.
+
+## Reach — paste tonight
+
+Store URL: https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933
+
+### X post (attach Live Activity Lock Screen shot)
+
+```
+How watched is this road while you drive?
+
+Flock Surveillance: Drive Mode + Lock Screen Live Activity near mapped ALPR pins from OpenStreetMap.
+
+Mapped pins, not plate reads. No Flock vendor APIs. Not affiliated with Flock Safety.
+
+https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933
+```
+
+First reply if useful:
+
+```
+Mapped OSM pins only. The app cannot see plate reads. Civic transparency — not a radar detector.
+```
+
+### flocksurveillance.com Store button
+
+Paste into the site builder (site is not in this repo):
+
+```html
+<a href="https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933"
+   style="display:inline-block;padding:14px 22px;border-radius:12px;background:#F26B47;color:#fff;font:700 16px/1.2 system-ui,sans-serif;text-decoration:none">
+  Get on the App Store
+</a>
+```

@@ -51,9 +51,14 @@ frames are ever wanted, they belong in `figma-export/`; source of truth is the
 
 Audit hardenings on `main`: Drive Mode Live Activity generation guard, honest Place Score
 headlines, Overpass empty-consensus, Home/viewport alert candidates, Sensor Atlas manual-off.
+
+## 1.8.2 (build 13)
+
+Sharing Network geocodes FOIA names to Census county/place and drills nation → state →
+county → agency. Pins are inferred from the name, not a FOIA address. 250-marker cap held.
 What's New: [ASO.md](ASO.md) · paste pack: [aso-captures/ASC_PASTE.txt](aso-captures/ASC_PASTE.txt).
 
-## 1.8.1 backlog
+## 1.8.2 backlog
 
 - AR screenshot (`07-ar-camera`)
 - Overpass/OSM User-Agent still says `1.5`

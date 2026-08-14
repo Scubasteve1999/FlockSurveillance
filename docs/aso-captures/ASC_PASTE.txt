@@ -1,4 +1,4 @@
-Flock Surveillance — App Store Connect paste pack (v1.8.1)
+Flock Surveillance — App Store Connect paste pack (v1.8.2)
 Source: docs/ASO.md — paste into ASC → version → App Information / Review.
 Positioning: drive-first (how watched is this road) vs DeFlock map+report.
 
@@ -35,7 +35,7 @@ Built on OpenStreetMap community data (the same public dataset as DeFlock) plus 
 • Instant Place Score — grade your block in seconds; share Instagram-ready cards
 • AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
 • Map + FOV cones — clusters, Flock filter, Coverage Confidence, optional approach haptics
-• Sharing Network — FOIA hub-and-spoke partners from public records; search any agency beyond the map sample
+• Sharing Network — FOIA partners mapped by inferred county from the agency name; search any agency beyond the map pins
 • Community reporting — flag unmapped cameras as anonymous OSM notes
 • City rankings, widgets, and Siri Shortcuts
 
@@ -44,6 +44,7 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ================================================================================
 WHAT'S NEW
 ================================================================================
+• Sharing Network maps FOIA partners by inferred county from the agency name — not fake pins or live camera feeds
 • Place Score says “Your block” only for GPS or Home — map previews say “This area”
 • End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
 • Alerts follow Home and the city on your map, not only the first city you cached
@@ -60,7 +61,7 @@ Third-party: Overpass/OSM bbox queries (no user IDs); optional WisDOT stills fro
 ================================================================================
 APP REVIEW NOTES
 ================================================================================
-Flock Surveillance helps drivers understand mapped ALPR exposure on the road: Drive Mode HUD, Live Activity, and route comparison use community-documented camera locations from OpenStreetMap (the same public dataset as deflock.me). Alerts and Live Activity mean the phone is near a mapped OSM pin — not that a plate was read. Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Those pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. Civic transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications; location data never leaves the device to developer servers.
+Flock Surveillance helps drivers understand mapped ALPR exposure on the road: Drive Mode HUD, Live Activity, and route comparison use community-documented camera locations from OpenStreetMap (the same public dataset as deflock.me). Alerts and Live Activity mean the phone is near a mapped OSM pin — not that a plate was read. Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device, mapped by inferred Census county/place from the agency name — not a FOIA address, not live vendor data, and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Those pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. Civic transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications; location data never leaves the device to developer servers.
 
 ================================================================================
 SCREENSHOTS (Figma export — 1320×2868)
@@ -85,4 +86,4 @@ Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.8.1 / CURRENT_PROJECT_VERSION 12
+MARKETING_VERSION 1.8.2 / CURRENT_PROJECT_VERSION 13

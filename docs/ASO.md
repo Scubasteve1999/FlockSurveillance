@@ -89,10 +89,10 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ### What's New (this release)
 
 ```
-• Drive Mode + Live Activity — how watched is this road while you drive (mapped pins, not plate reads)
-• Hide Overwatch — close the HUD; Live Activity keeps running until End Drive
-• Honest watched-zone copy — alerts mean near mapped ALPR pins, not plate reads
-• Sensor Atlas — optional WisDOT traffic cams for Madison & Milwaukee (not ALPR; not Flock)
+• Place Score says “Your block” only for GPS or Home — map previews say “This area”
+• End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
+• Alerts follow Home and the city on your map, not only the first city you cached
+• Traffic cams stay off if you turned them off before location was available
 ```
 
 ## Screenshot capture checklist

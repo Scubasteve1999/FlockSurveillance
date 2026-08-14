@@ -248,4 +248,12 @@ final class AlertsAndReportTests: XCTestCase {
         )
         XCTAssertEqual(selected.map(\.id), ["atl-0"])
     }
+
+    func testCandidateSignatureSkipsUnchangedReseed() {
+        let first = ["a", "b", "c"]
+        XCTAssertTrue(AlertCandidateStore.shouldReplace(previousSignature: nil, nextSignature: first))
+        XCTAssertFalse(AlertCandidateStore.shouldReplace(previousSignature: first, nextSignature: first))
+        XCTAssertTrue(AlertCandidateStore.shouldReplace(previousSignature: first, nextSignature: ["a", "c", "b"]))
+        XCTAssertTrue(AlertCandidateStore.shouldReplace(previousSignature: first, nextSignature: ["a", "b"]))
+    }
 }

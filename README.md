@@ -74,7 +74,7 @@ That writes `FlockSurveillance/Resources/SharingNetworkBundle.json`. Relationshi
 
 ## App Store
 
-Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.8.0). Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).
+Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.8.0). 1.8.1 is the next store build. Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).
 
 ## Brand / domain
 

@@ -103,14 +103,39 @@ enum AlertCandidateStore {
     /// Serial queue keeps writes ordered (rapid loadCached calls must not let an
     /// older snapshot win) and reads consistent with in-flight writes.
     private static let queue = DispatchQueue(label: "com.flocksurveillance.alertCandidates", qos: .utility)
+    /// Last persisted ID order — skip disk + geofence reseed when a map pan
+    /// republishes the same candidate set. Only touched inside `queue`.
+    private final class SignatureBox: @unchecked Sendable {
+        var value: [String]?
+    }
+    private static let lastWrittenSignature = SignatureBox()
 
     private static var fileURL: URL {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         return support.appendingPathComponent("AlertCandidates.json")
     }
 
+    /// True when the ranked ID list changed (or this is the first write this process).
+    static func shouldReplace(previousSignature: [String]?, nextSignature: [String]) -> Bool {
+        previousSignature != nextSignature
+    }
+
+    /// Writes pre-encoded JSON only when `signature` differs from the last write.
+    /// Returns true when the file changed and geofences should reseed.
+    static func replaceEncodedIfChanged(_ data: Data, signature: [String]) -> Bool {
+        queue.sync {
+            guard shouldReplace(previousSignature: lastWrittenSignature.value, nextSignature: signature) else {
+                return false
+            }
+            lastWrittenSignature.value = signature
+            try? data.write(to: fileURL, options: .atomic)
+            return true
+        }
+    }
+
     static func write(_ candidates: [AlertCandidate]) {
         queue.sync {
+            lastWrittenSignature.value = candidates.map(\.id)
             guard let data = try? JSONEncoder().encode(candidates) else { return }
             try? data.write(to: fileURL, options: .atomic)
         }

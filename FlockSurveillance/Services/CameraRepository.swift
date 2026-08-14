@@ -74,13 +74,15 @@ final class CameraRepository {
         let regionCenter = lastRegion?.center
         let fallback = CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
 
-        let result = await Task.detached(priority: .utility) { () -> (candidates: [AlertCandidate], points: [WidgetSnapshotStore.CameraPoint]) in
+        let result = await Task.detached(priority: .utility) { () -> (data: Data?, signature: [String], points: [WidgetSnapshotStore.CameraPoint]) in
             let candidates = AlertCandidateRanking.select(
                 from: snapshot,
                 home: home,
                 viewport: regionCenter,
                 fallback: fallback
             )
+            let signature = candidates.map(\.id)
+            let data = try? JSONEncoder().encode(candidates)
 
             let widgetAnchor = home ?? regionCenter ?? fallback
             let homeOrigin = CLLocation(latitude: widgetAnchor.latitude, longitude: widgetAnchor.longitude)
@@ -94,12 +96,19 @@ final class CameraRepository {
                 .prefix(1_000)
                 .map { WidgetSnapshotStore.CameraPoint(latitude: $0.row.latitude, longitude: $0.row.longitude) }
 
-            return (Array(candidates), Array(widgetPoints))
+            return (data, signature, Array(widgetPoints))
         }.value
 
-        AlertCandidateStore.write(result.candidates)
+        let candidatesChanged: Bool
+        if let data = result.data {
+            candidatesChanged = AlertCandidateStore.replaceEncodedIfChanged(data, signature: result.signature)
+        } else {
+            candidatesChanged = false
+        }
         WidgetSnapshotStore.writeCameraPoints(result.points)
-        if AppPreferences.alertsEnabled {
+        // Reseed only when the ranked set actually changed (Home / new metro),
+        // not on every map-pan Overpass fetch.
+        if candidatesChanged, AppPreferences.alertsEnabled {
             AlertsEngine.shared.reseedFromLastKnownLocation()
         }
     }

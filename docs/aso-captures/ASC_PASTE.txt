@@ -1,4 +1,4 @@
-Flock Surveillance — App Store Connect paste pack (v1.8.0)
+Flock Surveillance — App Store Connect paste pack (v1.8.1)
 Source: docs/ASO.md — paste into ASC → version → App Information / Review.
 Positioning: drive-first (how watched is this road) vs DeFlock map+report.
 
@@ -44,10 +44,10 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ================================================================================
 WHAT'S NEW
 ================================================================================
-• Drive Mode + Live Activity — how watched is this road while you drive (mapped pins, not plate reads)
-• Hide Overwatch — close the HUD; Live Activity keeps running until End Drive
-• Honest watched-zone copy — alerts mean near mapped ALPR pins, not plate reads
-• Sensor Atlas — optional WisDOT traffic cams for Madison & Milwaukee (not ALPR; not Flock)
+• Place Score says “Your block” only for GPS or Home — map previews say “This area”
+• End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
+• Alerts follow Home and the city on your map, not only the first city you cached
+• Traffic cams stay off if you turned them off before location was available
 
 ================================================================================
 PRIVACY NUTRITION LABEL
@@ -85,4 +85,4 @@ Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.8.0 / CURRENT_PROJECT_VERSION 11
+MARKETING_VERSION 1.8.1 / CURRENT_PROJECT_VERSION 12

@@ -47,12 +47,17 @@ frames are ever wanted, they belong in `figma-export/`; source of truth is the
 - Requesting the CarPlay entitlement or adding the scene manifest to `Info.plist`
 - Live ALPR / vendor feeds or plate-hit notifications — not a scope call, not possible
 
+## 1.8.1 (build 12)
+
+Audit hardenings on `main`: Drive Mode Live Activity generation guard, honest Place Score
+headlines, Overpass empty-consensus, Home/viewport alert candidates, Sensor Atlas manual-off.
+What's New: [ASO.md](ASO.md) · paste pack: [aso-captures/ASC_PASTE.txt](aso-captures/ASC_PASTE.txt).
+
 ## 1.8.1 backlog
 
 - AR screenshot (`07-ar-camera`)
 - Overpass/OSM User-Agent still says `1.5`
 - `MapRadarView` split
-- SwiftData `fatalError` harden
 - Remaining pluralization in `CityRankingsStrip` and `SharingNetworkView`
 
 If a later review flags overclaiming, tighten copy. Do not add fake scan features.

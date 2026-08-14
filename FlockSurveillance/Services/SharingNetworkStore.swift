@@ -87,14 +87,59 @@ final class SharingNetworkStore {
             .map { $0 }
     }
 
-    /// Upper bound for partners rendered as map annotations (Markers + polylines) per hub.
+    /// Upper bound for map annotations (state pins + spokes) per hub.
     ///
-    /// This isn't just a polyline-draw-performance knob: SharingNetworkView renders one
-    /// Marker per arc from this same capped list, and an uncapped Marker count (a hub can
-    /// have 1,000+ partners) overwhelms the accessibility tree, making the sheet's own
-    /// controls (close button, hub chips) unreachable to VoiceOver/UI automation. Raising
-    /// this risks silently reintroducing that bug — re-verify accessibility before raising it.
+    /// The state map is ~41 markers, well under this. Keep the cap so a future
+    /// partner-pin path cannot reintroduce the VoiceOver hang (1,000+ Markers).
+    /// Do not raise without an accessibility re-check.
     static let maxRenderedPartners = 250
+
+    /// Active partners grouped by state, pinned at honest state centroids.
+    func stateGroups(for hubId: String) -> [SharingStateGroup] {
+        Self.makeStateGroups(partners: partners(for: hubId), hubId: hubId)
+    }
+
+    static func makeStateGroups(partners: [SharingPartner], hubId: String) -> [SharingStateGroup] {
+        var buckets: [String: [SharingPartner]] = [:]
+        for partner in partners {
+            let key = partner.state.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+            let state = key.isEmpty ? "UNKNOWN" : key
+            buckets[state, default: []].append(partner)
+        }
+        return buckets.map { state, members in
+            let sorted = members.sorted {
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
+            var hubOut = 0
+            var hubIn = 0
+            var bidirectional = 0
+            for partner in sorted {
+                switch partner.link(for: hubId)?.direction {
+                case .hubOut: hubOut += 1
+                case .hubIn: hubIn += 1
+                case .bidirectional: bidirectional += 1
+                case nil: break
+                }
+            }
+            let point = SharingStateGeography.coordinate(for: state)
+            return SharingStateGroup(
+                state: state,
+                name: SharingStateGeography.displayName(for: state),
+                latitude: point.latitude,
+                longitude: point.longitude,
+                partners: sorted,
+                hubOut: hubOut,
+                hubIn: hubIn,
+                bidirectional: bidirectional
+            )
+        }
+        .sorted { lhs, rhs in
+            if lhs.partnerCount != rhs.partnerCount {
+                return lhs.partnerCount > rhs.partnerCount
+            }
+            return lhs.state < rhs.state
+        }
+    }
 
     /// Prefer partners inside `preferring` when capping arcs, then stride-sample the rest.
     func arcs(
@@ -140,15 +185,19 @@ final class SharingNetworkStore {
     }
 
     static func regionFitting(hub: SharingHub, partners: [SharingPartner]) -> MKCoordinateRegion {
+        regionFitting(hub: hub, stateGroups: makeStateGroups(partners: partners, hubId: hub.id))
+    }
+
+    static func regionFitting(hub: SharingHub, stateGroups: [SharingStateGroup]) -> MKCoordinateRegion {
         var minLat = hub.latitude
         var maxLat = hub.latitude
         var minLon = hub.longitude
         var maxLon = hub.longitude
-        for partner in partners {
-            minLat = min(minLat, partner.latitude)
-            maxLat = max(maxLat, partner.latitude)
-            minLon = min(minLon, partner.longitude)
-            maxLon = max(maxLon, partner.longitude)
+        for group in stateGroups {
+            minLat = min(minLat, group.latitude)
+            maxLat = max(maxLat, group.latitude)
+            minLon = min(minLon, group.longitude)
+            maxLon = max(maxLon, group.longitude)
         }
         let latPad = max((maxLat - minLat) * 0.18, 0.6)
         let lonPad = max((maxLon - minLon) * 0.18, 0.6)

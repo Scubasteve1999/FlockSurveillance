@@ -4,11 +4,12 @@ import UIKit
 
 struct SharingNetworkView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store = SharingNetworkStore()
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
-    @State private var selectedPartnerID: String?
-    @State private var focusedPartner: SharingPartner?
+    @State private var selectedStateGroup: SharingStateGroup?
+    @State private var selectedStateID: String?
     @State private var showPartnerSearch = false
     @State private var position: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -16,29 +17,16 @@ struct SharingNetworkView: View {
             span: MKCoordinateSpan(latitudeDelta: 35, longitudeDelta: 50)
         )
     )
-    @State private var visibleRegion: MKCoordinateRegion?
-
-    /// Rendered pins and polylines both stay capped — an uncapped Marker count (up to
-    /// 1,000+) overwhelms the accessibility tree and makes the sheet's own controls
-    /// (close button, hub chips) unreachable to VoiceOver/UI automation. Kept in sync by
-    /// `refreshArcs()` whenever the hub or visible region changes, rather than recomputed
-    /// on every body evaluation — `store.arcs` rescans and stride-samples the full partner list.
-    @State private var arcs: [SharingArc] = []
+    @State private var stateGroups: [SharingStateGroup] = []
 
     private var selectedHub: SharingHub? {
         guard let selectedHubID else { return store.hubs.first }
         return store.hubs.first { $0.id == selectedHubID } ?? store.hubs.first
     }
 
-    /// Total partner count for the hub, for the status line only — not the rendered list.
     private var totalPartnerCount: Int {
         guard let hub = selectedHub else { return 0 }
         return store.partners(for: hub.id).count
-    }
-
-    private var focusIsOffSample: Bool {
-        guard let focusedPartner else { return false }
-        return !arcs.contains { $0.partner.id == focusedPartner.id }
     }
 
     var body: some View {
@@ -48,11 +36,10 @@ struct SharingNetworkView: View {
 
                 MapKitSizeGate(size: geo.size) { mapContent }
 
-                // Top chrome only — no full-height Spacer, so map gestures and
-                // hub chips aren't fighting a pass-through overlay.
                 VStack(spacing: 10) {
                     header
                     hubPicker
+                    legend
                 }
                 .padding(.top, 8)
             }
@@ -64,22 +51,23 @@ struct SharingNetworkView: View {
         .task {
             await store.loadIfNeeded()
         }
-        .onChange(of: selectedPartnerID) { _, partnerID in
-            guard let partnerID else { return }
-            if let fromArcs = arcs.first(where: { $0.partner.id == partnerID })?.partner {
-                selectedPartner = fromArcs
-                // Drop search focus overlay when the user picks a different map pin.
-                if focusedPartner?.id != partnerID {
-                    focusedPartner = nil
-                }
-            } else if focusedPartner?.id == partnerID {
-                selectedPartner = focusedPartner
-            }
+        .onChange(of: selectedStateID) { _, stateID in
+            guard let stateID else { return }
+            selectedStateGroup = stateGroups.first { $0.state == stateID }
         }
         .onChange(of: store.isLoaded) { _, loaded in
             guard loaded, selectedHubID == nil else { return }
             selectedHubID = store.hubs.first?.id
+            refreshStateGroups()
             fitCamera(to: selectedHub)
+        }
+        .sheet(item: $selectedStateGroup) { group in
+            if let hub = selectedHub {
+                SharingStateSheet(group: group, hub: hub, attribution: store.attribution)
+                    .presentationDetents([.medium, .large])
+                    .presentationBackground(AppTheme.background)
+                    .onDisappear { selectedStateID = nil }
+            }
         }
         .sheet(item: $selectedPartner) { partner in
             SharingPartnerSheet(
@@ -89,7 +77,6 @@ struct SharingNetworkView: View {
             )
             .presentationDetents([.medium, .large])
             .presentationBackground(AppTheme.background)
-            .onDisappear { selectedPartnerID = nil }
         }
         .sheet(isPresented: $showPartnerSearch) {
             if let hub = selectedHub {
@@ -108,7 +95,7 @@ struct SharingNetworkView: View {
     }
 
     private var mapContent: some View {
-        Map(position: $position, selection: $selectedPartnerID) {
+        Map(position: $position, selection: $selectedStateID) {
             if let hub = selectedHub {
                 Annotation(hub.shortName, coordinate: hub.coordinate, anchor: .center) {
                     ZStack {
@@ -124,34 +111,20 @@ struct SharingNetworkView: View {
                 }
                 .annotationTitles(.hidden)
 
-                ForEach(arcs) { arc in
-                    MapPolyline(geodesicPolyline(from: hub.coordinate, to: arc.partner.coordinate))
-                        .stroke(arcColor(arc.direction), lineWidth: 1.15)
+                ForEach(stateGroups) { group in
+                    MapPolyline(geodesicPolyline(from: hub.coordinate, to: group.coordinate))
+                        .stroke(arcColor(group.dominantDirection), lineWidth: 1.15)
                 }
 
-                ForEach(arcs) { point in
-                    Marker(point.partner.name, coordinate: point.partner.coordinate)
-                        .tint(markerTint(point.direction))
-                        .tag(point.partner.id)
-                }
-
-                // One extra pin for a search hit outside the 250-arc sample — never uncapped.
-                if focusIsOffSample, let focused = focusedPartner,
-                   let link = focused.link(for: hub.id) {
-                    MapPolyline(geodesicPolyline(from: hub.coordinate, to: focused.coordinate))
-                        .stroke(arcColor(link.direction), lineWidth: 1.35)
-                    Marker(focused.name, coordinate: focused.coordinate)
-                        .tint(markerTint(link.direction))
-                        .tag(focused.id)
+                ForEach(stateGroups) { group in
+                    Marker(group.markerTitle, coordinate: group.coordinate)
+                        .tint(markerTint(group.dominantDirection))
+                        .tag(group.state)
                 }
             }
         }
         .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
         .ignoresSafeArea()
-        .onMapCameraChange(frequency: .onEnd) { context in
-            visibleRegion = context.region
-            refreshArcs()
-        }
     }
 
     private var header: some View {
@@ -162,8 +135,14 @@ struct SharingNetworkView: View {
                     .tracking(1.1)
                     .foregroundStyle(AppTheme.foreground)
                 Text(statusLine)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(AppTheme.mutedForeground)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(AppTheme.foreground)
+                    .fixedSize(horizontal: false, vertical: true)
+                if store.isLoaded, selectedHub != nil {
+                    Text("Sample of a public FOIA snapshot — not live Flock data")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
             }
             Spacer()
             Button {
@@ -220,6 +199,30 @@ struct SharingNetworkView: View {
         }
     }
 
+    private var legend: some View {
+        HStack(spacing: 10) {
+            legendItem(color: AppTheme.primary, text: "Hub shares out")
+            legendItem(color: AppTheme.accent, text: "Partner shares in")
+            legendItem(color: AppTheme.sharingBidirectional, text: "Both")
+        }
+        .padding(.horizontal, 16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Hub shares with partner, partner shares with hub, or bidirectional")
+    }
+
+    private func legendItem(color: Color, text: String) -> some View {
+        HStack(spacing: 5) {
+            Circle()
+                .fill(color)
+                .frame(width: 7, height: 7)
+            Text(text)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(AppTheme.mutedForeground)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+    }
+
     private var footer: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let error = store.loadError {
@@ -233,15 +236,8 @@ struct SharingNetworkView: View {
                 .foregroundStyle(AppTheme.accent)
                 .disabled(store.isLoading)
             } else {
-                Text("Public records snapshot · not live Flock data")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(AppTheme.mutedForeground)
-                Text(store.attribution?.note ?? "Agency sharing links from FOIA releases — not which cameras feed which agency.")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(AppTheme.mutedForeground)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("Partner pins are approximate (state-level), not exact agency addresses.")
-                    .font(.system(size: 11, weight: .medium))
+                Text("Agency-to-agency FOIA links, mapped by state — not which cameras feed which agency.")
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -265,88 +261,71 @@ struct SharingNetworkView: View {
         guard let hub = selectedHub else {
             return store.loadError == nil ? "Loading…" : "Unavailable"
         }
-        let points = totalPartnerCount
-        let shownArcs = arcs.count
-        if points > shownArcs {
-            return "\(hub.shortName) · \(points) partners · \(shownArcs) arcs"
-        }
-        return "\(hub.shortName) · \(points) partners"
+        let agencies = totalPartnerCount
+        let states = stateGroups.count
+        let agencyWord = agencies == 1 ? "agency" : "agencies"
+        let stateWord = states == 1 ? "state" : "states"
+        return "\(hub.shortName) shares with \(agencies) \(agencyWord) in \(states) \(stateWord)"
     }
 
     private func selectHub(_ hub: SharingHub) {
         selectedHubID = hub.id
-        selectedPartnerID = nil
-        focusedPartner = nil
-        // Clear stale viewport so the new hub isn't filtered against the previous camera.
-        visibleRegion = nil
+        selectedPartner = nil
+        selectedStateID = nil
+        selectedStateGroup = nil
+        refreshStateGroups()
         fitCamera(to: hub, animated: true)
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
     private func focusPartner(_ partner: SharingPartner) {
-        focusedPartner = partner
-        selectedPartnerID = partner.id
+        selectedStateID = nil
+        selectedStateGroup = nil
         selectedPartner = partner
-        let region = MKCoordinateRegion(
-            center: partner.coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 4, longitudeDelta: 4)
-        )
-        visibleRegion = region
-        refreshArcs()
-        withAnimation(.easeInOut(duration: 0.35)) {
-            position = .region(region)
+        if let group = stateGroups.first(where: { $0.state == partner.state.uppercased() }) {
+            let region = MKCoordinateRegion(
+                center: group.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 8, longitudeDelta: 8)
+            )
+            moveCamera(to: region, animated: true)
         }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
     private func fitCamera(to hub: SharingHub?, animated: Bool = false) {
         guard let hub else { return }
-        let fitted = SharingNetworkStore.regionFitting(
-            hub: hub,
-            partners: store.partners(for: hub.id)
-        )
-        visibleRegion = fitted
-        refreshArcs()
-        if animated {
+        let fitted = SharingNetworkStore.regionFitting(hub: hub, stateGroups: stateGroups)
+        moveCamera(to: fitted, animated: animated)
+    }
+
+    private func moveCamera(to region: MKCoordinateRegion, animated: Bool) {
+        if animated, !reduceMotion {
             withAnimation(.easeInOut(duration: 0.35)) {
-                position = .region(fitted)
+                position = .region(region)
             }
         } else {
-            position = .region(fitted)
+            position = .region(region)
         }
     }
 
-    private func refreshArcs() {
+    private func refreshStateGroups() {
         guard let hub = selectedHub else {
-            arcs = []
+            stateGroups = []
             return
         }
         let cap = SharingNetworkStore.maxRenderedPartners
-        var next = store.arcs(
-            for: hub.id,
-            limit: cap,
-            preferring: visibleRegion
-        )
-        // Off-sample search focus adds one Marker — keep total ≤ cap.
-        if let focused = focusedPartner, !next.contains(where: { $0.partner.id == focused.id }) {
-            next = Array(next.prefix(max(cap - 1, 0)))
-        }
-        arcs = next
+        stateGroups = Array(store.stateGroups(for: hub.id).prefix(cap))
     }
 
     private func arcColor(_ direction: SharingDirection) -> Color {
-        switch direction {
-        case .hubOut: return AppTheme.primary.opacity(0.75)
-        case .hubIn: return AppTheme.accent.opacity(0.75)
-        case .bidirectional: return Color(red: 0.95, green: 0.72, blue: 0.28).opacity(0.8)
-        }
+        markerTint(direction).opacity(0.75)
     }
 
     private func markerTint(_ direction: SharingDirection) -> Color {
         switch direction {
         case .hubOut: return AppTheme.primary
         case .hubIn: return AppTheme.accent
-        case .bidirectional: return Color(red: 0.95, green: 0.72, blue: 0.28)
+        case .bidirectional: return AppTheme.sharingBidirectional
         }
     }
 
@@ -356,6 +335,80 @@ struct SharingNetworkView: View {
     ) -> MKGeodesicPolyline {
         var coordinates = [start, end]
         return MKGeodesicPolyline(coordinates: &coordinates, count: coordinates.count)
+    }
+}
+
+private struct SharingStateSheet: View {
+    let group: SharingStateGroup
+    let hub: SharingHub
+    let attribution: SharingAttribution?
+
+    @State private var selectedPartner: SharingPartner?
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(group.name)
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundStyle(AppTheme.foreground)
+                        Text(countSummary)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(AppTheme.mutedForeground)
+                    }
+                    .listRowBackground(AppTheme.card)
+                }
+
+                Section {
+                    ForEach(group.partners) { partner in
+                        Button {
+                            selectedPartner = partner
+                        } label: {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(partner.name)
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(AppTheme.foreground)
+                                    .multilineTextAlignment(.leading)
+                                if let link = partner.link(for: hub.id) {
+                                    Text(link.direction.label)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundStyle(AppTheme.mutedForeground)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .listRowBackground(AppTheme.card)
+                    }
+                } header: {
+                    Text("Agencies")
+                        .foregroundStyle(AppTheme.mutedForeground)
+                }
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(AppTheme.background)
+            .navigationTitle(group.state)
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $selectedPartner) { partner in
+                SharingPartnerSheet(
+                    partner: partner,
+                    hub: hub,
+                    attribution: attribution
+                )
+                .presentationDetents([.medium, .large])
+                .presentationBackground(AppTheme.background)
+            }
+        }
+    }
+
+    private var countSummary: String {
+        let total = group.partnerCount == 1 ? "1 agency" : "\(group.partnerCount) agencies"
+        var parts = [total]
+        if group.hubOut > 0 { parts.append("\(group.hubOut) hub shares out") }
+        if group.hubIn > 0 { parts.append("\(group.hubIn) partner shares in") }
+        if group.bidirectional > 0 { parts.append("\(group.bidirectional) both") }
+        return parts.joined(separator: " · ")
     }
 }
 
@@ -482,7 +535,7 @@ private struct SharingPartnerSheet: View {
                             Text(attribution?.note ?? "")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(AppTheme.mutedForeground)
-                            Text("Map position is approximate (state-level centroid), not an exact agency address.")
+                            Text("Listed on the map under \(SharingStateGeography.displayName(for: partner.state)) — FOIA files do not include an agency address.")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(AppTheme.mutedForeground)
                             if let urlString = attribution?.url, let url = URL(string: urlString) {

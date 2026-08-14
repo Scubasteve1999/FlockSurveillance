@@ -265,11 +265,15 @@ final class SharingNetworkStoreTests: XCTestCase {
                 hubLinks: [SharingHubLink(hubId: "grand-chute", direction: .hubOut, inactive: false)]
             )
         ]
-        let region = SharingNetworkStore.regionFitting(hub: hub, partners: partners)
+        let groups = SharingNetworkStore.makeStateGroups(partners: partners, hubId: hub.id)
+        XCTAssertEqual(groups.map(\.state), ["WI"])
+        let region = SharingNetworkStore.regionFitting(hub: hub, stateGroups: groups)
+        let wisconsin = SharingStateGeography.coordinate(for: "WI")
         XCTAssertLessThan(region.span.latitudeDelta, 10)
         XCTAssertLessThan(region.span.longitudeDelta, 10)
-        XCTAssertEqual(region.center.latitude, 44.15, accuracy: 0.01)
-        XCTAssertEqual(region.center.longitude, -88.5, accuracy: 0.01)
+        XCTAssertEqual(region.center.latitude, (hub.latitude + wisconsin.latitude) / 2, accuracy: 0.05)
+        XCTAssertEqual(region.center.longitude, (hub.longitude + wisconsin.longitude) / 2, accuracy: 0.05)
+        XCTAssertFalse(GeoHelpers.region(region, contains: CLLocationCoordinate2D(latitude: 31.05, longitude: -97.56)))
     }
 
     func testShippedBundleDecodesWithThreeHubs() throws {
@@ -323,6 +327,76 @@ final class SharingNetworkStoreTests: XCTestCase {
             sawOversizedHub,
             "Shipped bundle should include at least one hub above the render cap so this stays a scale regression"
         )
+    }
+
+    func testStateGroupsSumToActivePartnerCount() throws {
+        let bundle = try SharingNetworkStore.loadBundle(from: .main)
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(bundle)
+
+        for hub in bundle.hubs {
+            let groups = store.stateGroups(for: hub.id)
+            let summed = groups.reduce(0) { $0 + $1.partnerCount }
+            XCTAssertEqual(summed, hub.partnerCount, "\(hub.id): state counts must sum to active partners")
+            XCTAssertLessThanOrEqual(groups.count, 51, "\(hub.id): unique states must stay at or under 51")
+            XCTAssertLessThanOrEqual(
+                groups.count,
+                SharingNetworkStore.maxRenderedPartners,
+                "\(hub.id): state markers must stay under the accessibility cap"
+            )
+            XCTAssertFalse(groups.isEmpty, "\(hub.id) should have at least one state")
+        }
+    }
+
+    func testStateGroupDirectionTotalsMatchPartners() throws {
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":3,"partnerCount":3
+          }],
+          "partners":[
+            {
+              "id":"1","name":"Alpha PD","state":"TX","entityType":"municipal_police",
+              "latitude":31.0,"longitude":-97.0,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}]
+            },
+            {
+              "id":"2","name":"Beta PD","state":"TX","entityType":"municipal_police",
+              "latitude":31.1,"longitude":-97.1,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubIn","inactive":false}]
+            },
+            {
+              "id":"3","name":"Gamma PD","state":"TX","entityType":"municipal_police",
+              "latitude":31.2,"longitude":-97.2,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"bidirectional","inactive":false}]
+            }
+          ],
+          "stats":{"partnerCount":3,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+        let groups = store.stateGroups(for: "waunakee")
+        XCTAssertEqual(groups.count, 1)
+        let texas = try XCTUnwrap(groups.first)
+        XCTAssertEqual(texas.state, "TX")
+        XCTAssertEqual(texas.name, "Texas")
+        XCTAssertEqual(texas.partnerCount, 3)
+        XCTAssertEqual(texas.hubOut, 1)
+        XCTAssertEqual(texas.hubIn, 1)
+        XCTAssertEqual(texas.bidirectional, 1)
+        XCTAssertEqual(texas.partners.map(\.name), ["Alpha PD", "Beta PD", "Gamma PD"])
+        let centroid = SharingStateGeography.coordinate(for: "TX")
+        XCTAssertEqual(texas.latitude, centroid.latitude, accuracy: 0.0001)
+        XCTAssertEqual(texas.longitude, centroid.longitude, accuracy: 0.0001)
     }
 
     func testFailedLoadCanRetry() async {

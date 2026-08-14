@@ -24,6 +24,8 @@ enum AppTheme {
     static let otherMarker = Color(red: 0.18, green: 0.92, blue: 0.88)
     /// Municipal traffic CCTV (Sensor Atlas) — distinct from ALPR markers.
     static let trafficSensorMarker = Color(red: 1.0, green: 0.82, blue: 0.22)
+    /// Sharing Network bidirectional links (hub ↔ partner).
+    static let sharingBidirectional = Color(red: 0.95, green: 0.72, blue: 0.28)
 
     static let cornerRadius: CGFloat = 16
     /// Primary / secondary CTA corners (Drive, Route, etc.).

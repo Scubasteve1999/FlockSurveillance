@@ -45,6 +45,7 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 WHAT'S NEW
 ================================================================================
 • Sharing Network maps FOIA partners by inferred county from the agency name — not fake pins or live camera feeds
+• Keyboard dismisses from search and address fields (Done, scroll, or picking a result)
 • Place Score says “Your block” only for GPS or Home — map previews say “This area”
 • End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
 • Alerts follow Home and the city on your map, not only the first city you cached
@@ -86,4 +87,4 @@ Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.8.2 / CURRENT_PROJECT_VERSION 13
+MARKETING_VERSION 1.8.2 / CURRENT_PROJECT_VERSION 14

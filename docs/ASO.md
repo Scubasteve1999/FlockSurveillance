@@ -90,6 +90,7 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 
 ```
 • Sharing Network maps FOIA partners by inferred county from the agency name — not fake pins or live camera feeds
+• Keyboard dismisses from search and address fields (Done, scroll, or picking a result)
 • Place Score says “Your block” only for GPS or Home — map previews say “This area”
 • End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
 • Alerts follow Home and the city on your map, not only the first city you cached

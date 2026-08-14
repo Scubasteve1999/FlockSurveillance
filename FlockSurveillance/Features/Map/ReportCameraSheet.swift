@@ -21,6 +21,7 @@ struct ReportCameraSheet: View {
     @State private var submitError: String?
     @State private var didSubmit = false
     @State private var submittedReport: PendingReport?
+    @FocusState private var notesFocused: Bool
 
     private let directions = ["", "N", "NE", "E", "SE", "S", "SW", "W", "NW"]
     private let mounts = ["", "Pole", "Traffic light", "Street lamp", "Overpass", "Building", "Trailer"]
@@ -51,6 +52,11 @@ struct ReportCameraSheet: View {
                 .padding(20)
             }
             .background(AppTheme.background.ignoresSafeArea())
+            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar {
+                notesFocused = false
+                KeyboardDismiss.resign()
+            }
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -112,6 +118,7 @@ struct ReportCameraSheet: View {
                         fieldLabel("Operator or brand guess (optional)")
                         TextField("e.g. Flock Safety, Motorola", text: $operatorGuess)
                             .textFieldStyle(.plain)
+                            .focused($notesFocused)
                             .padding(12)
                             .background(AppTheme.background.opacity(0.55))
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -123,6 +130,7 @@ struct ReportCameraSheet: View {
                         TextField("What did you see?", text: $notes, axis: .vertical)
                             .lineLimit(3...5)
                             .textFieldStyle(.plain)
+                            .focused($notesFocused)
                             .padding(12)
                             .background(AppTheme.background.opacity(0.55))
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -219,6 +227,8 @@ struct ReportCameraSheet: View {
     }
 
     private func submit() {
+        notesFocused = false
+        KeyboardDismiss.resign()
         isSubmitting = true
         submitError = nil
         let report = OSMCameraReport(

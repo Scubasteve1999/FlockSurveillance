@@ -16,6 +16,7 @@
 		0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */; };
 		1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */; };
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
+		1415B0516182E38E2674E520 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E0E918A2741433F40B4681 /* KeyboardDismiss.swift */; };
 		166F21FDA500EDC98D3947D7 /* SurveillanceLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */; };
 		16E8FB4AE99ACCA55811AB1D /* SensorAtlasStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F2E86763F4036F86E6CD4D /* SensorAtlasStoreTests.swift */; };
 		174F1CA65DBFA4D7E22EE914 /* CoverageConfidenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7376FDA6828759C4914606 /* CoverageConfidenceTests.swift */; };
@@ -151,6 +152,7 @@
 		5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicSensor.swift; sourceTree = "<group>"; };
 		5CE7601E92A7F1F36F2ACA42 /* NearbyCamerasWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidgetBundle.swift; sourceTree = "<group>"; };
 		5F6C208DB8E9DAABCA38F24E /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		60E0E918A2741433F40B4681 /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		637361494637A5B0C42496C5 /* OverpassParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassParserTests.swift; sourceTree = "<group>"; };
 		67D1FF1994351D264823D5DB /* OSMReportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSMReportService.swift; sourceTree = "<group>"; };
 		6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SharingNetworkBundle.json; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 			children = (
 				EF94A8C60991DECD85C56617 /* AppLinks.swift */,
 				A4B0B4143401454EFDFBD3EA /* AppTheme.swift */,
+				60E0E918A2741433F40B4681 /* KeyboardDismiss.swift */,
 				BF0844EAE1991FA51BC19FA1 /* OverwatchChrome.swift */,
 				A49125D402CAD705C90729FB /* ShareCardRenderer.swift */,
 			);
@@ -599,6 +602,7 @@
 				7E6AF7448B723066C4DA7C45 /* FlockIntents.swift in Sources */,
 				2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */,
 				FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */,
+				1415B0516182E38E2674E520 /* KeyboardDismiss.swift in Sources */,
 				D5878449871C0315AF107378 /* LearnView.swift in Sources */,
 				E38C4EF05F3E19AFD9D025A1 /* LocationManager.swift in Sources */,
 				E2F73E9EB82B38D978BF5D18 /* MapRadarView.swift in Sources */,

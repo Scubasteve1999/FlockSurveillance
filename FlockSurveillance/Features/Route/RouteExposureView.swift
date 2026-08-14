@@ -20,6 +20,7 @@ struct RouteExposureView: View {
     @State private var selectedOptionID: UUID?
     @State private var sharePayload: ShareActivityPayload?
     @State private var activeField: ActiveField = .destination
+    @FocusState private var focusedField: ActiveField?
     @State private var mapPosition: MapCameraPosition = .automatic
     @State private var showDriveMode = false
     @State private var commuteHint: String?
@@ -64,6 +65,11 @@ struct RouteExposureView: View {
                 }
             }
             .navigationBarHidden(true)
+            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar { dismissRouteKeyboard() }
+            .onChange(of: focusedField) { _, value in
+                if let value { activeField = value }
+            }
             .overlay {
                 if isRouting {
                     ProgressView("Finding the drive with fewer cameras…")
@@ -210,18 +216,14 @@ struct RouteExposureView: View {
     private var searchCard: some View {
         SectionCard {
             VStack(alignment: .leading, spacing: 12) {
-                labeledField("From", text: $originQuery, placeholder: "Current location or address") {
-                    activeField = .origin
-                }
+                labeledField("From", text: $originQuery, placeholder: "Current location or address", field: .origin)
                 if activeField == .origin, !originSuggestions.isEmpty {
                     suggestionList(originSuggestions) { completion in
                         Task { await selectOrigin(completion) }
                     }
                 }
 
-                labeledField("To", text: $destinationQuery, placeholder: "Destination") {
-                    activeField = .destination
-                }
+                labeledField("To", text: $destinationQuery, placeholder: "Destination", field: .destination)
                 if activeField == .destination, !destinationSuggestions.isEmpty {
                     suggestionList(destinationSuggestions) { completion in
                         Task { await selectDestination(completion) }
@@ -463,7 +465,12 @@ struct RouteExposureView: View {
         }
     }
 
-    private func labeledField(_ title: String, text: Binding<String>, placeholder: String, onFocus: @escaping () -> Void) -> some View {
+    private func labeledField(
+        _ title: String,
+        text: Binding<String>,
+        placeholder: String,
+        field: ActiveField
+    ) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .semibold))
@@ -471,11 +478,11 @@ struct RouteExposureView: View {
                 .foregroundStyle(AppTheme.mutedForeground)
             TextField(placeholder, text: text)
                 .textInputAutocapitalization(.words)
+                .focused($focusedField, equals: field)
                 .padding(12)
                 .background(AppTheme.background.opacity(0.55))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .foregroundStyle(AppTheme.foreground)
-                .onTapGesture(perform: onFocus)
         }
     }
 
@@ -519,19 +526,27 @@ struct RouteExposureView: View {
             errorMessage = "Location unavailable. Enable location access or type an address."
             return
         }
+        dismissRouteKeyboard()
         originCoordinate = coordinate
         originQuery = "Current location"
         originSuggestions = []
         errorMessage = nil
     }
 
+    private func dismissRouteKeyboard() {
+        focusedField = nil
+        KeyboardDismiss.resign()
+    }
+
     private func selectOrigin(_ completion: MKLocalSearchCompletion) async {
+        dismissRouteKeyboard()
         originQuery = completion.title
         originSuggestions = []
         originCoordinate = await geocode(completion)
     }
 
     private func selectDestination(_ completion: MKLocalSearchCompletion) async {
+        dismissRouteKeyboard()
         destinationQuery = completion.title
         destinationSuggestions = []
         destinationCoordinate = await geocode(completion)

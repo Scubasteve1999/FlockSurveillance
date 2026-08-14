@@ -715,6 +715,7 @@ private struct SharingPartnerSearchSheet: View {
     let onSelect: (SharingPartner) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismissSearch) private var dismissSearch
     @State private var query = ""
 
     private var matches: [SharingPartner] {
@@ -739,7 +740,7 @@ private struct SharingPartnerSearchSheet: View {
                 } else {
                     List(matches) { partner in
                         Button {
-                            onSelect(partner)
+                            closeSearch { onSelect(partner) }
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(partner.name)
@@ -774,13 +775,21 @@ private struct SharingPartnerSearchSheet: View {
             .navigationTitle("Find partners")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $query, prompt: "Agency, county, or state")
+            .scrollDismissesKeyboard(.immediately)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Close") { closeSearch { dismiss() } }
                         .foregroundStyle(AppTheme.accent)
                 }
             }
+            .onDisappear { KeyboardDismiss.resign() }
         }
+    }
+
+    private func closeSearch(then action: () -> Void) {
+        dismissSearch()
+        KeyboardDismiss.resign()
+        action()
     }
 }
 

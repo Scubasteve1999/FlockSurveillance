@@ -22,6 +22,7 @@ struct SettingsView: View {
     @State private var workQuery = ""
     @State private var workSuggestions: [MKLocalSearchCompletion] = []
     @State private var addressField: AddressField = .home
+    @FocusState private var focusedAddress: AddressField?
     @State private var completer = PlaceCompleter()
     @State private var homeStatus: String?
     @State private var workStatus: String?
@@ -193,11 +194,11 @@ struct SettingsView: View {
 
                                 TextField("Search an address for Home", text: $homeQuery)
                                     .textInputAutocapitalization(.words)
+                                    .focused($focusedAddress, equals: .home)
                                     .padding(12)
                                     .background(AppTheme.background.opacity(0.55))
                                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                     .foregroundStyle(AppTheme.foreground)
-                                    .onTapGesture { addressField = .home }
 
                                 if addressField == .home, !homeSuggestions.isEmpty {
                                     VStack(alignment: .leading, spacing: 0) {
@@ -261,11 +262,11 @@ struct SettingsView: View {
 
                                 TextField("Search an address for Work", text: $workQuery)
                                     .textInputAutocapitalization(.words)
+                                    .focused($focusedAddress, equals: .work)
                                     .padding(12)
                                     .background(AppTheme.background.opacity(0.55))
                                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                     .foregroundStyle(AppTheme.foreground)
-                                    .onTapGesture { addressField = .work }
 
                                 if addressField == .work, !workSuggestions.isEmpty {
                                     VStack(alignment: .leading, spacing: 0) {
@@ -407,6 +408,11 @@ struct SettingsView: View {
                 }
             }
             .navigationBarHidden(true)
+            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar { dismissAddressKeyboard() }
+            .onChange(of: focusedAddress) { _, value in
+                if let value { addressField = value }
+            }
             .onChange(of: homeQuery) { _, value in
                 addressField = .home
                 completer.query = value
@@ -509,7 +515,13 @@ struct SettingsView: View {
         applyHome(coordinate, message: "Home set to current location.")
     }
 
+    private func dismissAddressKeyboard() {
+        focusedAddress = nil
+        KeyboardDismiss.resign()
+    }
+
     private func selectHome(_ completion: MKLocalSearchCompletion) async {
+        dismissAddressKeyboard()
         homeQuery = completion.title
         homeSuggestions = []
         let request = MKLocalSearch.Request(completion: completion)
@@ -544,6 +556,7 @@ struct SettingsView: View {
     }
 
     private func selectWork(_ completion: MKLocalSearchCompletion) async {
+        dismissAddressKeyboard()
         workQuery = completion.title
         workSuggestions = []
         let request = MKLocalSearch.Request(completion: completion)

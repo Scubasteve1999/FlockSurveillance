@@ -1,6 +1,6 @@
 # Privacy Policy — Flock Surveillance
 
-**Last updated: July 30, 2026**
+**Last updated: August 13, 2026**
 
 Flock Surveillance is a civic transparency app that maps community-documented ALPR (automated
 license plate reader) camera locations from OpenStreetMap. It is not affiliated with Flock Safety.
@@ -52,6 +52,12 @@ OpenStreetMap containing the location and any description you write. This is a d
 user-initiated action, and the submission is public — it becomes part of the OpenStreetMap
 record. No personal information or account is attached. Do not include personal details in a
 report. See the [OpenStreetMap privacy policy](https://osmfoundation.org/wiki/Privacy_Policy).
+
+## Tips
+
+An optional tip jar in Settings lets you send a one-time tip through Apple In-App Purchase.
+Apple processes the payment. We do not receive your card number, and we do not send receipts
+or transaction data to a developer server. A tip unlocks nothing. The app stays free either way.
 
 ## On-device storage
 

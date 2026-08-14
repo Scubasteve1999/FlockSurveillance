@@ -386,6 +386,8 @@ struct SettingsView: View {
                             }
                         }
 
+                        TipJarSection()
+
                         SectionCard {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("ABOUT")

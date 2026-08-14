@@ -50,6 +50,7 @@ WHAT'S NEW
 • End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
 • Alerts follow Home and the city on your map, not only the first city you cached
 • Traffic cams stay off if you turned them off before location was available
+• Optional tip jar in Settings — the app stays free and a tip unlocks nothing
 
 ================================================================================
 PRIVACY NUTRITION LABEL
@@ -87,4 +88,4 @@ Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.8.2 / CURRENT_PROJECT_VERSION 14
+MARKETING_VERSION 1.9.0 / CURRENT_PROJECT_VERSION 16

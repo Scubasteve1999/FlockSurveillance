@@ -1,0 +1,66 @@
+{
+  "identifier" : "F1A7C0DE5A4E4B2F9C3D8E1A0B6C7D2E",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "A11C0FEE00014E01B00151D000000001",
+      "localizations" : [
+        {
+          "description" : "A small optional tip. Unlocks nothing.",
+          "displayName" : "Small tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.flocksurveillance.app.tip.small",
+      "referenceName" : "Small tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "A11C0FEE00014E01B00151D000000002",
+      "localizations" : [
+        {
+          "description" : "A medium optional tip. Unlocks nothing.",
+          "displayName" : "Medium tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.flocksurveillance.app.tip.medium",
+      "referenceName" : "Medium tip",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "A11C0FEE00014E01B00151D000000003",
+      "localizations" : [
+        {
+          "description" : "A large optional tip. Unlocks nothing.",
+          "displayName" : "Large tip",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.flocksurveillance.app.tip.large",
+      "referenceName" : "Large tip",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

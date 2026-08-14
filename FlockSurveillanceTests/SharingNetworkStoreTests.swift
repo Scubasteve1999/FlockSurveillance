@@ -399,6 +399,165 @@ final class SharingNetworkStoreTests: XCTestCase {
         XCTAssertEqual(texas.longitude, centroid.longitude, accuracy: 0.0001)
     }
 
+    func testCountyGroupsExcludeUngroupedAndSumWithThem() throws {
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":4,"partnerCount":4
+          }],
+          "partners":[
+            {
+              "id":"1","name":"Austin PD","state":"TX","entityType":"municipal_police",
+              "latitude":30.27,"longitude":-97.74,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}],
+              "county":"Travis","placeName":"Austin","geocode":"place"
+            },
+            {
+              "id":"2","name":"Travis County Sheriff","state":"TX","entityType":"county_sheriff",
+              "latitude":30.33,"longitude":-97.78,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubIn","inactive":false}],
+              "county":"Travis","placeName":null,"geocode":"county"
+            },
+            {
+              "id":"3","name":"Dallas PD","state":"TX","entityType":"municipal_police",
+              "latitude":32.78,"longitude":-96.80,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"bidirectional","inactive":false}],
+              "county":"Dallas","placeName":"Dallas","geocode":"place"
+            },
+            {
+              "id":"4","name":"Mystery Task Force","state":"TX","entityType":"task_force",
+              "latitude":31.05,"longitude":-97.56,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}],
+              "county":null,"placeName":null,"geocode":"none"
+            }
+          ],
+          "stats":{"partnerCount":4,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+        let counties = store.countyGroups(for: "waunakee", state: "TX")
+        let ungrouped = store.ungroupedPartners(for: "waunakee", state: "TX")
+        XCTAssertEqual(counties.map(\.county), ["Travis", "Dallas"])
+        XCTAssertEqual(counties.first?.partnerCount, 2)
+        XCTAssertEqual(counties.first?.hubOut, 1)
+        XCTAssertEqual(counties.first?.hubIn, 1)
+        XCTAssertEqual(ungrouped.map(\.id), ["4"])
+        XCTAssertEqual(
+            counties.reduce(0) { $0 + $1.partnerCount } + ungrouped.count,
+            store.partners(for: "waunakee", state: "TX").count
+        )
+        XCTAssertFalse(counties.contains { group in group.partners.contains { $0.geocode == "none" } })
+    }
+
+    func testGeocodeNoneNeverBecomesCountyMarker() throws {
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":1,"partnerCount":1
+          }],
+          "partners":[
+            {
+              "id":"1","name":"Highway Patrol","state":"CA","entityType":"state_agency",
+              "latitude":36.11,"longitude":-119.68,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}],
+              "county":"Sacramento","placeName":null,"geocode":"none"
+            }
+          ],
+          "stats":{"partnerCount":1,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+        XCTAssertTrue(store.countyGroups(for: "waunakee", state: "CA").isEmpty)
+        XCTAssertEqual(store.ungroupedPartners(for: "waunakee", state: "CA").map(\.id), ["1"])
+    }
+
+    func testShippedBundleCountyGroupsStayUnderRenderCap() throws {
+        let bundle = try SharingNetworkStore.loadBundle(from: .main)
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(bundle)
+        let cap = SharingNetworkStore.maxRenderedPartners
+
+        for hub in bundle.hubs {
+            let states = store.stateGroups(for: hub.id)
+            XCTAssertLessThanOrEqual(states.count, cap, "\(hub.id): state pins")
+            for state in states {
+                let counties = store.countyGroups(for: hub.id, state: state.state)
+                let ungrouped = store.ungroupedPartners(for: hub.id, state: state.state)
+                XCTAssertEqual(
+                    counties.reduce(0) { $0 + $1.partnerCount } + ungrouped.count,
+                    state.partnerCount,
+                    "\(hub.id) \(state.state): county + ungrouped must equal state partners"
+                )
+                XCTAssertLessThanOrEqual(counties.count, cap, "\(hub.id) \(state.state): county pins")
+                XCTAssertFalse(
+                    counties.contains { $0.partners.contains { !$0.hasInferredLocation } },
+                    "\(hub.id) \(state.state): county pins must not include geocode none"
+                )
+                if SharingNetworkStore.shouldPinAgenciesDirectly(partnerCount: state.partnerCount) {
+                    let agencyPins = store.partners(for: hub.id, state: state.state).filter(\.hasInferredLocation)
+                    XCTAssertLessThanOrEqual(agencyPins.count, cap, "\(hub.id) \(state.state): agency pins")
+                }
+                for county in counties {
+                    XCTAssertLessThanOrEqual(county.partners.count, cap, "\(hub.id) \(county.county): agency list")
+                }
+            }
+        }
+    }
+
+    func testMatchingPartnersSearchesCounty() throws {
+        let json = """
+        {
+          "schemaVersion":"1.0.0",
+          "generatedAt":"2026-07-11T00:00:00Z",
+          "sourceGeneratedAt":null,
+          "attribution":{"title":"t","url":"https://example.com","note":"n"},
+          "sources":[],
+          "hubs":[{
+            "id":"waunakee","name":"Waunakee WI PD","shortName":"Waunakee",
+            "latitude":43.19,"longitude":-89.45,"releaseDate":null,
+            "sourceRowCount":1,"partnerCount":1
+          }],
+          "partners":[
+            {
+              "id":"1","name":"Alpha PD","state":"TX","entityType":"municipal_police",
+              "latitude":30.27,"longitude":-97.74,"inactive":false,"membership":"waunakee",
+              "hubLinks":[{"hubId":"waunakee","direction":"hubOut","inactive":false}],
+              "county":"Travis","placeName":"Austin","geocode":"place"
+            }
+          ],
+          "stats":{"partnerCount":1,"hubCount":1}
+        }
+        """.data(using: .utf8)!
+
+        let store = SharingNetworkStore()
+        store.applyLoadedBundle(try SharingNetworkStore.loadBundle(from: json))
+        XCTAssertEqual(store.matchingPartners(for: "waunakee", query: "travis").map(\.id), ["1"])
+        XCTAssertEqual(store.matchingPartners(for: "waunakee", query: "austin").map(\.id), ["1"])
+    }
+
+    func testDirectAgencyPinThreshold() {
+        XCTAssertTrue(SharingNetworkStore.shouldPinAgenciesDirectly(partnerCount: 12))
+        XCTAssertFalse(SharingNetworkStore.shouldPinAgenciesDirectly(partnerCount: 13))
+    }
+
     func testFailedLoadCanRetry() async {
         let store = SharingNetworkStore()
         await store.reload(resourceName: "DoesNotExistSharingNetworkBundle")

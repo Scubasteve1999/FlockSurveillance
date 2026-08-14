@@ -12,3 +12,4 @@ xcuserdata/
 *.mode2v3
 *.perspectivev3
 .claude/
+Scripts/.cache/

@@ -13,6 +13,14 @@ enum SharingDirection: String, Codable, CaseIterable, Sendable {
         case .bidirectional: return "Bidirectional"
         }
     }
+
+    static func dominant(hubOut: Int, hubIn: Int, bidirectional: Int) -> SharingDirection {
+        if bidirectional >= hubOut, bidirectional >= hubIn, bidirectional > 0 {
+            return .bidirectional
+        }
+        if hubIn > hubOut { return .hubIn }
+        return .hubOut
+    }
 }
 
 struct SharingNetworkBundle: Codable, Sendable {
@@ -73,9 +81,50 @@ struct SharingPartner: Codable, Sendable, Identifiable, Hashable {
     let inactive: Bool
     let membership: String
     let hubLinks: [SharingHubLink]
+    let county: String?
+    let placeName: String?
+    /// `county`, `place`, or `none` — inferred from the agency name, not a FOIA address.
+    let geocode: String?
+
+    init(
+        id: String,
+        name: String,
+        state: String,
+        entityType: String,
+        latitude: Double,
+        longitude: Double,
+        inactive: Bool,
+        membership: String,
+        hubLinks: [SharingHubLink],
+        county: String? = nil,
+        placeName: String? = nil,
+        geocode: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.state = state
+        self.entityType = entityType
+        self.latitude = latitude
+        self.longitude = longitude
+        self.inactive = inactive
+        self.membership = membership
+        self.hubLinks = hubLinks
+        self.county = county
+        self.placeName = placeName
+        self.geocode = geocode
+    }
 
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    var hasInferredLocation: Bool {
+        geocode == "county" || geocode == "place"
+    }
+
+    var inferredCountyName: String? {
+        let trimmed = county?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     func link(for hubId: String) -> SharingHubLink? {
@@ -120,11 +169,35 @@ struct SharingStateGroup: Identifiable, Hashable {
 
     /// Tint the state pin by the most common link direction.
     var dominantDirection: SharingDirection {
-        if bidirectional >= hubOut, bidirectional >= hubIn, bidirectional > 0 {
-            return .bidirectional
-        }
-        if hubIn > hubOut { return .hubIn }
-        return .hubOut
+        SharingDirection.dominant(hubOut: hubOut, hubIn: hubIn, bidirectional: bidirectional)
+    }
+}
+
+/// One inferred-county map node. Pins use Census centroids, not FOIA addresses.
+struct SharingCountyGroup: Identifiable, Hashable {
+    var id: String { "\(state)|\(county)" }
+
+    let state: String
+    let county: String
+    let latitude: Double
+    let longitude: Double
+    let partners: [SharingPartner]
+    let hubOut: Int
+    let hubIn: Int
+    let bidirectional: Int
+
+    var partnerCount: Int { partners.count }
+
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    var markerTitle: String {
+        "\(county) · \(partnerCount)"
+    }
+
+    var dominantDirection: SharingDirection {
+        SharingDirection.dominant(hubOut: hubOut, hubIn: hubIn, bidirectional: bidirectional)
     }
 }
 

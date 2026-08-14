@@ -77,6 +77,12 @@ final class SharingNetworkStore {
             .filter { partner in
                 if partner.name.lowercased().contains(needle) { return true }
                 if partner.state.lowercased().contains(needle) { return true }
+                if let county = partner.inferredCountyName?.lowercased(), county.contains(needle) {
+                    return true
+                }
+                if let place = partner.placeName?.lowercased(), place.contains(needle) {
+                    return true
+                }
                 let entity = partner.entityType
                     .replacingOccurrences(of: "_", with: " ")
                     .lowercased()
@@ -87,14 +93,16 @@ final class SharingNetworkStore {
             .map { $0 }
     }
 
-    /// Upper bound for map annotations (state pins + spokes) per hub.
+    /// Upper bound for map annotations (state, county, or agency pins) per view.
     ///
-    /// The state map is ~41 markers, well under this. Keep the cap so a future
-    /// partner-pin path cannot reintroduce the VoiceOver hang (1,000+ Markers).
-    /// Do not raise without an accessibility re-check.
+    /// Do not raise without an accessibility re-check. Illinois alone has 280
+    /// Waunakee partners — pin counties there, not every agency.
     static let maxRenderedPartners = 250
 
-    /// Active partners grouped by state, pinned at honest state centroids.
+    /// States at or under this many agencies skip the county step and pin agencies.
+    static let directAgencyPinThreshold = 12
+
+    /// Active partners grouped by state, pinned at state centroids.
     func stateGroups(for hubId: String) -> [SharingStateGroup] {
         Self.makeStateGroups(partners: partners(for: hubId), hubId: hubId)
     }
@@ -139,6 +147,68 @@ final class SharingNetworkStore {
             }
             return lhs.state < rhs.state
         }
+    }
+
+    /// Geocoded partners in `state` grouped by inferred county. `none` stays out.
+    func countyGroups(for hubId: String, state: String) -> [SharingCountyGroup] {
+        Self.makeCountyGroups(partners: partners(for: hubId, state: state), hubId: hubId)
+    }
+
+    func ungroupedPartners(for hubId: String, state: String) -> [SharingPartner] {
+        partners(for: hubId, state: state).filter { $0.inferredCountyName == nil || !$0.hasInferredLocation }
+    }
+
+    func partners(for hubId: String, state: String, includeInactive: Bool = false) -> [SharingPartner] {
+        let wanted = state.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        return partners(for: hubId, includeInactive: includeInactive).filter {
+            $0.state.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == wanted
+        }
+    }
+
+    static func makeCountyGroups(partners: [SharingPartner], hubId: String) -> [SharingCountyGroup] {
+        var buckets: [String: [SharingPartner]] = [:]
+        for partner in partners {
+            guard partner.hasInferredLocation, let county = partner.inferredCountyName else { continue }
+            buckets[county, default: []].append(partner)
+        }
+        return buckets.map { county, members in
+            let sorted = members.sorted {
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+            }
+            var hubOut = 0
+            var hubIn = 0
+            var bidirectional = 0
+            for partner in sorted {
+                switch partner.link(for: hubId)?.direction {
+                case .hubOut: hubOut += 1
+                case .hubIn: hubIn += 1
+                case .bidirectional: bidirectional += 1
+                case nil: break
+                }
+            }
+            let latitude = sorted.map(\.latitude).reduce(0, +) / Double(sorted.count)
+            let longitude = sorted.map(\.longitude).reduce(0, +) / Double(sorted.count)
+            return SharingCountyGroup(
+                state: sorted[0].state.uppercased(),
+                county: county,
+                latitude: latitude,
+                longitude: longitude,
+                partners: sorted,
+                hubOut: hubOut,
+                hubIn: hubIn,
+                bidirectional: bidirectional
+            )
+        }
+        .sorted { lhs, rhs in
+            if lhs.partnerCount != rhs.partnerCount {
+                return lhs.partnerCount > rhs.partnerCount
+            }
+            return lhs.county.localizedCaseInsensitiveCompare(rhs.county) == .orderedAscending
+        }
+    }
+
+    static func shouldPinAgenciesDirectly(partnerCount: Int) -> Bool {
+        partnerCount <= directAgencyPinThreshold
     }
 
     /// Prefer partners inside `preferring` when capping arcs, then stride-sample the rest.
@@ -211,6 +281,61 @@ final class SharingNetworkStore {
             span: MKCoordinateSpan(
                 latitudeDelta: min(latDelta, 45),
                 longitudeDelta: min(lonDelta, 60)
+            )
+        )
+    }
+
+    static func regionFitting(hub: SharingHub, countyGroups: [SharingCountyGroup]) -> MKCoordinateRegion {
+        var points = countyGroups.map(\.coordinate)
+        if points.isEmpty {
+            points.append(hub.coordinate)
+        }
+        return regionFitting(coordinates: points, minimumSpan: 0.8)
+    }
+
+    static func regionFitting(partners: [SharingPartner], fallback: CLLocationCoordinate2D) -> MKCoordinateRegion {
+        let points = partners.filter(\.hasInferredLocation).map(\.coordinate)
+        if points.isEmpty {
+            return MKCoordinateRegion(
+                center: fallback,
+                span: MKCoordinateSpan(latitudeDelta: 1.2, longitudeDelta: 1.2)
+            )
+        }
+        return regionFitting(coordinates: points, minimumSpan: 0.35)
+    }
+
+    static func regionFitting(
+        coordinates: [CLLocationCoordinate2D],
+        minimumSpan: Double
+    ) -> MKCoordinateRegion {
+        guard let first = coordinates.first else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 39.8, longitude: -98.5),
+                span: MKCoordinateSpan(latitudeDelta: 35, longitudeDelta: 50)
+            )
+        }
+        var minLat = first.latitude
+        var maxLat = first.latitude
+        var minLon = first.longitude
+        var maxLon = first.longitude
+        for point in coordinates.dropFirst() {
+            minLat = min(minLat, point.latitude)
+            maxLat = max(maxLat, point.latitude)
+            minLon = min(minLon, point.longitude)
+            maxLon = max(maxLon, point.longitude)
+        }
+        let latPad = max((maxLat - minLat) * 0.22, minimumSpan * 0.25)
+        let lonPad = max((maxLon - minLon) * 0.22, minimumSpan * 0.25)
+        let latDelta = max((maxLat - minLat) + latPad * 2, minimumSpan)
+        let lonDelta = max((maxLon - minLon) + lonPad * 2, minimumSpan)
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: (minLat + maxLat) / 2,
+                longitude: (minLon + maxLon) / 2
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: min(latDelta, 20),
+                longitudeDelta: min(lonDelta, 20)
             )
         )
     }

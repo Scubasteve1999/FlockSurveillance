@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
-"""Build SharingNetworkBundle.json from DeFlock Dane FOIA dataset.
+"""Build or enrich SharingNetworkBundle.json.
 
 Usage:
-  python3 Scripts/build_sharing_network_bundle.py
+  python3 Scripts/build_sharing_network_bundle.py --enrich-existing
   python3 Scripts/build_sharing_network_bundle.py --input /path/to/dataset.json
 
-Downloads https://deflockdane.org/shared-networks/dataset.json when --input is omitted.
+`--enrich-existing` geocodes the already-bundled FOIA names (no DeFlock refetch)
+against Census county and place gazetteers. Default path without --input still
+downloads DeFlock; prefer --enrich-existing unless the snapshot itself changed.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
+import csv
+import io
 import json
-import math
+import re
 import urllib.request
+import zipfile
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -108,17 +113,348 @@ DIRECTION_MAP = {
 }
 
 
-def jittered_coordinate(state: str, partner_id: str) -> tuple[float, float]:
-    lat, lon = STATE_CENTROIDS.get(state.upper(), STATE_CENTROIDS["UNKNOWN"])
-    digest = hashlib.sha256(partner_id.encode("utf-8")).digest()
-    # Deterministic ~±0.6° spread so arcs don't stack on one centroid.
-    dlat = (digest[0] / 255.0 - 0.5) * 1.2
-    dlon = (digest[1] / 255.0 - 0.5) * 1.2
-    # Keep WI partners from sitting on hub cities.
-    if state.upper() == "WI":
-        dlat *= 1.4
-        dlon *= 1.4
-    return (round(lat + dlat, 5), round(lon + dlon, 5))
+CENSUS_COUNTY_URL = (
+    "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/"
+    "2024_Gazetteer/2024_Gaz_counties_national.zip"
+)
+CENSUS_PLACE_URL = (
+    "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/"
+    "2024_Gazetteer/2024_Gaz_place_national.zip"
+)
+
+COUNTY_EQUIV_SUFFIXES = (
+    " county",
+    " parish",
+    " borough",
+    " census area",
+    " municipality",
+    " city and borough",
+)
+PLACE_SUFFIXES = (
+    " city",
+    " village",
+    " town",
+    " cdp",
+    " borough",
+    " municipality",
+    " township",
+    " urban county",
+)
+
+COUNTY_NAME_RE = re.compile(
+    r"(?P<name>[A-Za-z][A-Za-z .'-]*?)\s+(?:County|Parish)\b",
+    re.I,
+)
+COUNTY_CO_RE = re.compile(
+    r"(?P<name>[A-Za-z][A-Za-z .'-]*?)\s+Co\.?(?:\s|$)",
+    re.I,
+)
+CITY_OF_RE = re.compile(
+    r"^City of\s+(?P<name>.+?)(?:\s+[A-Z]{2})?$",
+    re.I,
+)
+PLACE_BEFORE_AGENCY_RE = re.compile(
+    r"""^(?P<name>.+?)\s+(
+        Police\s+Department|
+        Police\s+Dept\.?|
+        Police|
+        PD|
+        Sheriff'?s?\s+(?:Office|Dept\.?|Department)|
+        Sheriff|
+        SO
+    )\b""",
+    re.I | re.X,
+)
+UNIV_PLACE_RE = re.compile(
+    r"University of[^,-–]+[-–]\s*(?P<name>.+)$",
+    re.I,
+)
+LEADING_STATE_RE = re.compile(r"^[A-Z]{2}\s*[-–:]\s*")
+PAREN_STATE_RE = re.compile(r"\s*\([A-Z]{2}\)\s*")
+NOISE_SUFFIX_RE = re.compile(
+    r"\s*[-–]\s*(New Business|New|OLD|Inactive|Updated).*$",
+    re.I,
+)
+TOWN_OF_RE = re.compile(
+    r"\b(?:Village|Town|City|Township|Borough)\s+of\s+",
+    re.I,
+)
+
+COUNTY_ALIASES = {
+    "dade": "miami dade",
+    "miami dade": "miami dade",
+    "miami-dade": "miami dade",
+    "st louis": "st louis",
+    "saint louis": "st louis",
+    "lasalle": "la salle",
+    "dupage": "du page",
+    "dekalb": "de kalb",
+    "mchenry": "mc henry",
+    "mclean": "mc lean",
+    "desoto": "de soto",
+    "lamoure": "la moure",
+}
+
+
+@dataclass(frozen=True)
+class GazetteerRow:
+    state: str
+    name: str
+    key: str
+    latitude: float
+    longitude: float
+
+
+@dataclass(frozen=True)
+class GeocodeResult:
+    latitude: float
+    longitude: float
+    county: str | None
+    place_name: str | None
+    method: str
+
+
+def normalize_key(value: str) -> str:
+    text = value.lower().replace("&", " and ")
+    text = text.replace("saint ", "st ")
+    text = text.replace("st. ", "st ")
+    text = text.replace("ft. ", "ft ")
+    text = text.replace("fort ", "ft ")
+    text = re.sub(r"[^a-z0-9 ]+", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return COUNTY_ALIASES.get(text, text)
+
+
+def strip_known_suffix(value: str, suffixes: tuple[str, ...]) -> str:
+    lower = value.lower()
+    for suffix in suffixes:
+        if lower.endswith(suffix):
+            return value[: -len(suffix)].strip()
+    return value
+
+
+def download_cached(url: str, dest: Path) -> Path:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.exists() and dest.stat().st_size > 0:
+        return dest
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "FlockSurveillance/1.8 (civic transparency; gazetteer cache)"},
+    )
+    with urllib.request.urlopen(request, timeout=120) as resp:
+        dest.write_bytes(resp.read())
+    return dest
+
+
+def read_gazetteer_table(zip_path: Path) -> list[dict[str, str]]:
+    with zipfile.ZipFile(zip_path) as archive:
+        name = next(n for n in archive.namelist() if n.endswith(".txt"))
+        raw = archive.read(name)
+    text = raw.decode("latin-1")
+    reader = csv.DictReader(io.StringIO(text), delimiter="\t")
+    rows = []
+    for row in reader:
+        rows.append({(key or "").strip(): (value or "").strip() for key, value in row.items()})
+    return rows
+
+
+def load_gazetteer(cache_dir: Path) -> tuple[dict[str, list[GazetteerRow]], dict[str, list[GazetteerRow]]]:
+    county_zip = download_cached(CENSUS_COUNTY_URL, cache_dir / "2024_Gaz_counties_national.zip")
+    place_zip = download_cached(CENSUS_PLACE_URL, cache_dir / "2024_Gaz_place_national.zip")
+
+    counties: dict[str, list[GazetteerRow]] = {}
+    for row in read_gazetteer_table(county_zip):
+        state = (row.get("USPS") or "").strip().upper()
+        name = strip_known_suffix((row.get("NAME") or "").strip(), COUNTY_EQUIV_SUFFIXES)
+        if not state or not name:
+            continue
+        lat = float(row["INTPTLAT"])
+        lon = float(row["INTPTLONG"])
+        counties.setdefault(state, []).append(
+            GazetteerRow(state, name, normalize_key(name), lat, lon)
+        )
+
+    places: dict[str, list[GazetteerRow]] = {}
+    for row in read_gazetteer_table(place_zip):
+        state = (row.get("USPS") or "").strip().upper()
+        raw_name = (row.get("NAME") or "").strip()
+        name = strip_known_suffix(raw_name, PLACE_SUFFIXES)
+        if not state or not name:
+            continue
+        lat = float(row["INTPTLAT"])
+        lon = float(row["INTPTLONG"])
+        places.setdefault(state, []).append(
+            GazetteerRow(state, name, normalize_key(name), lat, lon)
+        )
+
+    return counties, places
+
+
+def lookup_row(rows: list[GazetteerRow], candidate: str) -> GazetteerRow | None:
+    key = normalize_key(candidate)
+    if not key:
+        return None
+    exact = [row for row in rows if row.key == key]
+    if len(exact) == 1:
+        return exact[0]
+    if len(exact) > 1:
+        return min(exact, key=lambda row: len(row.name))
+    # Prefix only when the candidate is long enough to stay confident.
+    if len(key) < 5:
+        return None
+    prefixed = [row for row in rows if row.key.startswith(key) or key.startswith(row.key)]
+    if len(prefixed) == 1:
+        return prefixed[0]
+    return None
+
+
+def nearest_county(
+    state: str,
+    latitude: float,
+    longitude: float,
+    counties: dict[str, list[GazetteerRow]],
+) -> GazetteerRow | None:
+    rows = counties.get(state.upper(), [])
+    if not rows:
+        return None
+    return min(
+        rows,
+        key=lambda row: (row.latitude - latitude) ** 2 + (row.longitude - longitude) ** 2,
+    )
+
+
+def scrub_agency_name(name: str, state: str) -> str:
+    text = NOISE_SUFFIX_RE.sub("", name).strip()
+    text = PAREN_STATE_RE.sub(" ", text)
+    text = LEADING_STATE_RE.sub("", text).strip()
+    state_key = (state or "").upper()
+    if state_key and len(state_key) == 2:
+        text = re.sub(rf"\s+{re.escape(state_key)}\s+", " ", text, flags=re.I)
+        text = re.sub(rf"\s+{re.escape(state_key)}$", "", text, flags=re.I)
+    return re.sub(r"\s+", " ", text).strip(" -")
+
+
+def extract_county_candidate(name: str) -> str | None:
+    for pattern in (COUNTY_NAME_RE, COUNTY_CO_RE):
+        match = pattern.search(name)
+        if match:
+            candidate = match.group("name").strip(" -")
+            if candidate:
+                return candidate
+    return None
+
+
+def extract_place_candidate(name: str, entity_type: str) -> str | None:
+    city = CITY_OF_RE.match(name)
+    if city:
+        return city.group("name").strip(" -")
+    univ = UNIV_PLACE_RE.search(name)
+    if univ:
+        return univ.group("name").strip(" -")
+    place = PLACE_BEFORE_AGENCY_RE.match(name)
+    if place:
+        token = place.group("name").strip(" -")
+        token = TOWN_OF_RE.sub("", token)
+        token = re.sub(
+            r"\b(University of|College of|Dept of|Department of)\b",
+            "",
+            token,
+            flags=re.I,
+        ).strip(" -")
+        if token:
+            return token
+    if entity_type == "county_sheriff":
+        return extract_county_candidate(name) or name.split(",")[0].strip()
+    return None
+
+
+def geocode_partner(
+    name: str,
+    state: str,
+    entity_type: str,
+    counties: dict[str, list[GazetteerRow]],
+    places: dict[str, list[GazetteerRow]],
+) -> GeocodeResult:
+    state_key = (state or "UNKNOWN").upper()
+    fallback = STATE_CENTROIDS.get(state_key, STATE_CENTROIDS["UNKNOWN"])
+    county_rows = counties.get(state_key, [])
+    place_rows = places.get(state_key, [])
+    cleaned = scrub_agency_name(name, state_key)
+
+    county_candidate = extract_county_candidate(cleaned) or extract_county_candidate(name)
+    if county_candidate:
+        row = lookup_row(county_rows, county_candidate)
+        if row:
+            return GeocodeResult(
+                latitude=round(row.latitude, 5),
+                longitude=round(row.longitude, 5),
+                county=row.name,
+                place_name=None,
+                method="county",
+            )
+
+    place_candidate = extract_place_candidate(cleaned, entity_type)
+    if place_candidate:
+        # Sheriff-style names without "County" still try the county table first.
+        if entity_type == "county_sheriff":
+            row = lookup_row(county_rows, place_candidate)
+            if row:
+                return GeocodeResult(
+                    latitude=round(row.latitude, 5),
+                    longitude=round(row.longitude, 5),
+                    county=row.name,
+                    place_name=None,
+                    method="county",
+                )
+        row = lookup_row(place_rows, place_candidate)
+        if row:
+            county = nearest_county(state_key, row.latitude, row.longitude, counties)
+            return GeocodeResult(
+                latitude=round(row.latitude, 5),
+                longitude=round(row.longitude, 5),
+                county=county.name if county else None,
+                place_name=row.name,
+                method="place",
+            )
+
+    return GeocodeResult(
+        latitude=round(fallback[0], 5),
+        longitude=round(fallback[1], 5),
+        county=None,
+        place_name=None,
+        method="none",
+    )
+
+
+def apply_geocode(
+    partners: list[dict],
+    counties: dict[str, list[GazetteerRow]],
+    places: dict[str, list[GazetteerRow]],
+) -> dict[str, int]:
+    counts = {"county": 0, "place": 0, "none": 0}
+    for partner in partners:
+        result = geocode_partner(
+            partner["name"],
+            partner.get("state") or "UNKNOWN",
+            partner.get("entityType") or "unknown",
+            counties,
+            places,
+        )
+        partner["latitude"] = result.latitude
+        partner["longitude"] = result.longitude
+        partner["county"] = result.county
+        partner["placeName"] = result.place_name
+        partner["geocode"] = result.method
+        counts[result.method] += 1
+    return counts
+
+
+def attribution_note() -> str:
+    return (
+        "Public FOIA / transparency-portal releases. Agency sharing links only — "
+        "not which cameras feed which agency. Map pins are inferred from the "
+        "agency name (Census county or place), not a FOIA address."
+    )
 
 
 def load_dataset(path: Path | None) -> dict:
@@ -157,7 +493,7 @@ def build_bundle(dataset: dict) -> dict:
     for rec in dataset.get("records", []):
         state = (rec.get("state") or "UNKNOWN").upper()
         pid = str(rec.get("id") or rec.get("canonical") or rec.get("name"))
-        lat, lon = jittered_coordinate(state, pid)
+        fallback = STATE_CENTROIDS.get(state, STATE_CENTROIDS["UNKNOWN"])
         hub_links = []
         for j in rec.get("jurisdictions") or []:
             if not j.get("present"):
@@ -181,8 +517,11 @@ def build_bundle(dataset: dict) -> dict:
                 "name": rec.get("canonical") or rec.get("name") or "Unknown agency",
                 "state": state,
                 "entityType": rec.get("type") or "unknown",
-                "latitude": lat,
-                "longitude": lon,
+                "latitude": fallback[0],
+                "longitude": fallback[1],
+                "county": None,
+                "placeName": None,
+                "geocode": "none",
                 "inactive": bool(rec.get("inactive_any") or rec.get("inactive")),
                 "membership": rec.get("membership") or "",
                 "hubLinks": hub_links,
@@ -210,7 +549,7 @@ def build_bundle(dataset: dict) -> dict:
         "attribution": {
             "title": "DeFlock Dane Shared Networks",
             "url": ATTRIBUTION_URL,
-            "note": "Public FOIA / transparency-portal releases. Agency sharing links only — not which cameras feed which agency. Partner map positions are approximate (state-level).",
+            "note": attribution_note(),
         },
         "sources": sources,
         "hubs": hubs,
@@ -222,29 +561,61 @@ def build_bundle(dataset: dict) -> dict:
     }
 
 
+def enrich_existing_bundle(path: Path, counties, places) -> dict:
+    with path.open() as handle:
+        bundle = json.load(handle)
+    counts = apply_geocode(bundle["partners"], counties, places)
+    bundle["generatedAt"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    bundle["attribution"]["note"] = attribution_note()
+    bundle["_geocodeCounts"] = counts
+    return bundle
+
+
+def write_bundle(bundle: dict, path: Path) -> None:
+    bundle = dict(bundle)
+    counts = bundle.pop("_geocodeCounts", None)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as handle:
+        json.dump(bundle, handle, separators=(",", ":"), ensure_ascii=False)
+        handle.write("\n")
+    size_kb = path.stat().st_size / 1024
+    extra = ""
+    if counts:
+        extra = f" — geocode county={counts['county']} place={counts['place']} none={counts['none']}"
+    print(
+        f"Wrote {path} ({size_kb:.0f} KB) — "
+        f"{bundle['stats']['partnerCount']} partners, {bundle['stats']['hubCount']} hubs{extra}"
+    )
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, help="Local dataset.json path")
+    parser.add_argument(
+        "--enrich-existing",
+        action="store_true",
+        help="Geocode names in the existing bundle; do not download DeFlock.",
+    )
     parser.add_argument(
         "--output",
         type=Path,
         default=root / "FlockSurveillance" / "Resources" / "SharingNetworkBundle.json",
     )
     args = parser.parse_args()
+    cache_dir = root / "Scripts" / ".cache"
+    counties, places = load_gazetteer(cache_dir)
+
+    if args.enrich_existing:
+        bundle = enrich_existing_bundle(args.output, counties, places)
+        write_bundle(bundle, args.output)
+        return
 
     dataset = load_dataset(args.input)
     bundle = build_bundle(dataset)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w") as f:
-        json.dump(bundle, f, separators=(",", ":"), ensure_ascii=False)
-        f.write("\n")
-
-    size_kb = args.output.stat().st_size / 1024
-    print(
-        f"Wrote {args.output} ({size_kb:.0f} KB) — "
-        f"{bundle['stats']['partnerCount']} partners, {bundle['stats']['hubCount']} hubs"
-    )
+    counts = apply_geocode(bundle["partners"], counties, places)
+    bundle["_geocodeCounts"] = counts
+    write_bundle(bundle, args.output)
 
 
 if __name__ == "__main__":

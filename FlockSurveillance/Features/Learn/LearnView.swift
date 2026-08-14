@@ -167,7 +167,7 @@ private struct LearnArticle: Identifiable {
             id: sharingNetworkArticleID,
             eyebrow: "FOIA sharing",
             title: "See who they share with",
-            body: "Public records from three Wisconsin hubs (Waunakee, Middleton, Grand Chute) list thousands of partner agencies. Sharing Network maps those FOIA links by state — tap a state for the agency list. Agency-to-agency relationships only, not which cameras feed which agency, and not a complete national graph. Snapshot attributed to DeFlock Dane; no Flock vendor APIs."
+            body: "Public records from three Wisconsin hubs (Waunakee, Middleton, Grand Chute) list thousands of partner agencies. Sharing Network maps those FOIA links by inferred county from the agency name — tap a state, then a county, for every listed agency. Pins are Census place/county matches, not FOIA addresses. Agency-to-agency relationships only, not which cameras feed which agency, and not a complete national graph. Snapshot attributed to DeFlock Dane; no Flock vendor APIs."
         ),
         LearnArticle(
             id: "retention",

@@ -321,11 +321,17 @@ struct SharingNetworkView: View {
             arcs = []
             return
         }
-        arcs = store.arcs(
+        let cap = SharingNetworkStore.maxRenderedPartners
+        var next = store.arcs(
             for: hub.id,
-            limit: SharingNetworkStore.maxRenderedPartners,
+            limit: cap,
             preferring: visibleRegion
         )
+        // Off-sample search focus adds one Marker — keep total ≤ cap.
+        if let focused = focusedPartner, !next.contains(where: { $0.partner.id == focused.id }) {
+            next = Array(next.prefix(max(cap - 1, 0)))
+        }
+        arcs = next
     }
 
     private func arcColor(_ direction: SharingDirection) -> Color {

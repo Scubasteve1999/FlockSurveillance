@@ -121,6 +121,14 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(score.cameraCount, 8)
         XCTAssertEqual(score.flockPercent, 50)
         XCTAssertTrue(score.headline.lowercased().contains("watched"))
+        XCTAssertTrue(score.headline.hasPrefix("Your block"))
+        let area = GeoHelpers.placeScore(
+            cameras: cameras,
+            near: origin,
+            radiusMeters: 1609.34,
+            isPersonal: false
+        )
+        XCTAssertTrue(area.headline.hasPrefix("This area"))
         XCTAssertTrue(score.shareText.contains("cameras"))
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
     }
@@ -234,5 +242,21 @@ final class GeoHelpersTests: XCTestCase {
         )
         XCTAssertFalse(settled)
         XCTAssertFalse(GeoHelpers.shouldCommitPlaceScore(cameraCount: 0, settled: settled))
+    }
+
+    func testUnionRegionIsQueriedTilesNotScheduledViewport() throws {
+        let centerTile = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 39.8, longitude: -98.5),
+            span: MKCoordinateSpan(latitudeDelta: 0.45, longitudeDelta: 0.45)
+        )
+        let union = try XCTUnwrap(GeoHelpers.unionRegion(of: [centerTile]))
+        XCTAssertEqual(union.center.latitude, 39.8, accuracy: 0.001)
+        XCTAssertEqual(union.span.latitudeDelta, 0.45, accuracy: 0.001)
+        XCTAssertFalse(
+            GeoHelpers.region(
+                union,
+                contains: CLLocationCoordinate2D(latitude: 47.6, longitude: -122.3)
+            )
+        )
     }
 }

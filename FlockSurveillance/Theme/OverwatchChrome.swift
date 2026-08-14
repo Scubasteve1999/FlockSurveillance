@@ -90,23 +90,28 @@ struct OverwatchBootBanner: View {
 
     private func runSequence() {
         OverwatchAudio.bootPing()
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
-            phase = .shown
-        }
         if reduceMotion {
+            phase = .shown
             glow = false
         } else {
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.82)) {
+                phase = .shown
+            }
             withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) {
                 glow = true
             }
         }
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 2_400_000_000)
-            withAnimation(.easeIn(duration: 0.35)) {
-                phase = .leaving
+            if reduceMotion {
+                phase = .hidden
+            } else {
+                withAnimation(.easeIn(duration: 0.35)) {
+                    phase = .leaving
+                }
+                try? await Task.sleep(nanoseconds: 380_000_000)
+                phase = .hidden
             }
-            try? await Task.sleep(nanoseconds: 380_000_000)
-            phase = .hidden
             onFinished()
         }
     }

@@ -29,6 +29,7 @@ struct OverpassElement: Decodable, Sendable {
 }
 
 struct OverpassResponse: Decodable, Sendable {
+    let remark: String?
     let elements: [OverpassElement]
 }
 
@@ -74,6 +75,7 @@ enum OverpassError: LocalizedError {
     case httpStatus(Int)
     case decoding
     case emptyRegion
+    case runtimeRemark
 
     var errorDescription: String? {
         switch self {
@@ -81,6 +83,7 @@ enum OverpassError: LocalizedError {
         case .httpStatus(let code): return "Overpass returned HTTP \(code)."
         case .decoding: return "Could not parse camera data."
         case .emptyRegion: return "Map region is too small to query."
+        case .runtimeRemark: return "Overpass reported a runtime error."
         }
     }
 }
@@ -92,6 +95,10 @@ enum OverpassParser {
             decoded = try JSONDecoder().decode(OverpassResponse.self, from: data)
         } catch {
             throw OverpassError.decoding
+        }
+
+        if OverpassParser.isFailedRemark(decoded.remark) {
+            throw OverpassError.runtimeRemark
         }
 
         var seen = Set<String>()
@@ -125,6 +132,14 @@ enum OverpassParser {
             )
         }
         return cameras
+    }
+
+    /// Overpass often returns HTTP 200 with `elements: []` plus a timeout remark.
+    /// Those must not count as confirmed-empty mirrors.
+    static func isFailedRemark(_ remark: String?) -> Bool {
+        guard let remark, !remark.isEmpty else { return false }
+        let lower = remark.lowercased()
+        return lower.contains("runtime error") || lower.contains("timed out") || lower.contains("timeout")
     }
 
     static func coordinate(for element: OverpassElement) -> (lat: Double, lon: Double)? {
@@ -210,14 +225,17 @@ actor OverpassClient {
           node["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           node["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           node["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          node["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           node["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
           way["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           way["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           way["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          way["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           way["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
           relation["man_made"="surveillance"]["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           relation["surveillance:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           relation["man_made"="surveillance"]["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
+          relation["camera:type"~"^alpr$",i](\(south),\(west),\(north),\(east));
           relation["man_made"="surveillance"]["surveillance"~"^alpr$",i](\(south),\(west),\(north),\(east));
         );
         out center tags;
@@ -226,6 +244,7 @@ actor OverpassClient {
         var lastError: Error = OverpassError.invalidURL
         var emptyResult: [ALPRCameraDTO]?
         var emptyMirrorCount = 0
+        var errorCount = 0
 
         for endpoint in endpoints {
             do {
@@ -242,21 +261,23 @@ actor OverpassClient {
                 throw CancellationError()
             } catch {
                 lastError = error
+                errorCount += 1
             }
         }
 
         // Require multi-mirror empty consensus before treating a tile as a true void.
-        // A single empty + errors elsewhere is not enough to soft-clear cache.
-        if let emptyResult, Self.acceptsConfirmedEmpty(emptyMirrorCount: emptyMirrorCount) {
+        // Timeout remarks and HTTP errors must not count toward that consensus.
+        if let emptyResult, Self.acceptsConfirmedEmpty(emptyMirrorCount: emptyMirrorCount, errorCount: errorCount) {
             lastFetchAt = Date()
             return emptyResult
         }
         throw lastError
     }
 
-    /// Empty Overpass responses are only trusted after at least two mirrors agree.
-    static func acceptsConfirmedEmpty(emptyMirrorCount: Int) -> Bool {
-        emptyMirrorCount >= 2
+    /// Empty Overpass responses are only trusted after at least two mirrors agree
+    /// and no other mirror failed (an errored host may have held data).
+    static func acceptsConfirmedEmpty(emptyMirrorCount: Int, errorCount: Int = 0) -> Bool {
+        emptyMirrorCount >= 2 && errorCount == 0
     }
 
     private func perform(query: String, endpoint: String) async throws -> [ALPRCameraDTO] {

@@ -205,4 +205,47 @@ final class AlertsAndReportTests: XCTestCase {
             )
         )
     }
+
+    func testAlertCandidatesIncludeViewportWhenHomeIsDistant() {
+        let atlanta = CLLocationCoordinate2D(latitude: 33.749, longitude: -84.388)
+        let seattle = CLLocationCoordinate2D(latitude: 47.606, longitude: -122.332)
+        var rows: [(id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String)] = []
+        for index in 0..<40 {
+            rows.append((
+                "atl-\(index)",
+                atlanta.latitude + Double(index) * 0.001,
+                atlanta.longitude,
+                true,
+                "ATL \(index)"
+            ))
+        }
+        rows.append(("sea-0", seattle.latitude, seattle.longitude, true, "SEA"))
+
+        let selected = AlertCandidateRanking.select(
+            from: rows,
+            home: atlanta,
+            viewport: seattle,
+            fallback: atlanta
+        )
+        XCTAssertTrue(selected.contains { $0.id == "sea-0" })
+        XCTAssertTrue(selected.contains { $0.id.hasPrefix("atl-") })
+    }
+
+    func testAlertCandidatesFallbackWhenNoHomeOrViewport() {
+        let atlanta = CLLocationCoordinate2D(latitude: 33.749, longitude: -84.388)
+        let rows = [(
+            id: "atl-0",
+            latitude: atlanta.latitude,
+            longitude: atlanta.longitude,
+            isFlock: true,
+            title: "ATL"
+        )]
+        let selected = AlertCandidateRanking.select(
+            from: rows,
+            home: nil,
+            viewport: nil,
+            fallback: atlanta
+        )
+        XCTAssertEqual(selected.map(\.id), ["atl-0"])
+    }
 }

@@ -75,31 +75,15 @@ final class CameraRepository {
         let fallback = CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
 
         let result = await Task.detached(priority: .utility) { () -> (candidates: [AlertCandidate], points: [WidgetSnapshotStore.CameraPoint]) in
-            let anchor = home ?? regionCenter ?? fallback
-            let origin = CLLocation(latitude: anchor.latitude, longitude: anchor.longitude)
-            let ranked = snapshot
-                .map { row -> (row: (id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String), distance: CLLocationDistance) in
-                    let location = CLLocation(latitude: row.latitude, longitude: row.longitude)
-                    return (row, location.distance(from: origin))
-                }
-                .sorted { $0.distance < $1.distance }
+            let candidates = AlertCandidateRanking.select(
+                from: snapshot,
+                home: home,
+                viewport: regionCenter,
+                fallback: fallback
+            )
 
-            let candidates = ranked.prefix(5_000).map {
-                AlertCandidate(
-                    id: $0.row.id,
-                    latitude: $0.row.latitude,
-                    longitude: $0.row.longitude,
-                    isFlock: $0.row.isFlock,
-                    title: $0.row.title
-                )
-            }
-
-            let homeOrigin: CLLocation
-            if let home {
-                homeOrigin = CLLocation(latitude: home.latitude, longitude: home.longitude)
-            } else {
-                homeOrigin = origin
-            }
+            let widgetAnchor = home ?? regionCenter ?? fallback
+            let homeOrigin = CLLocation(latitude: widgetAnchor.latitude, longitude: widgetAnchor.longitude)
             let widgetPoints = snapshot
                 .map { row -> (row: (id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String), distance: CLLocationDistance) in
                     let location = CLLocation(latitude: row.latitude, longitude: row.longitude)
@@ -115,6 +99,14 @@ final class CameraRepository {
 
         AlertCandidateStore.write(result.candidates)
         WidgetSnapshotStore.writeCameraPoints(result.points)
+        if AppPreferences.alertsEnabled {
+            AlertsEngine.shared.reseedFromLastKnownLocation()
+        }
+    }
+
+    /// Re-rank alert candidates after Home / cache changes, then reseed geofences.
+    func republishAlertCandidates() {
+        Task { await publishAlertCandidatesAsync() }
     }
 
     func scheduleFetch(for region: MKCoordinateRegion, delayNanoseconds: UInt64 = 450_000_000) {
@@ -245,7 +237,9 @@ final class CameraRepository {
             pruneCache()
             loadCached()
             if updateSettledRegion {
-                lastFetchedRegion = region
+                // Only the tiles we actually queried — never the scheduled
+                // continental / capped viewport (false Place Score Clear).
+                lastFetchedRegion = GeoHelpers.unionRegion(of: tiles)
             }
             lastSuccessfulFetchAt = .now
             isServingStale = false
@@ -428,8 +422,17 @@ final class CameraRepository {
         return combined
     }
 
-    func placeScore(near coordinate: CLLocationCoordinate2D, radiusMeters: CLLocationDistance = 1609.34) -> PlaceScore {
-        GeoHelpers.placeScore(cameras: cameras, near: coordinate, radiusMeters: radiusMeters)
+    func placeScore(
+        near coordinate: CLLocationCoordinate2D,
+        radiusMeters: CLLocationDistance = 1609.34,
+        isPersonal: Bool = true
+    ) -> PlaceScore {
+        GeoHelpers.placeScore(
+            cameras: cameras,
+            near: coordinate,
+            radiusMeters: radiusMeters,
+            isPersonal: isPersonal
+        )
     }
 
     var freshnessLabel: String? {
@@ -441,7 +444,11 @@ final class CameraRepository {
 
     private func upsert(_ remote: [ALPRCamera]) {
         guard let modelContext else {
-            cameras = remote
+            var byID = Dictionary(uniqueKeysWithValues: cameras.map { ($0.id, $0) })
+            for camera in remote {
+                byID[camera.id] = camera
+            }
+            cameras = Array(byID.values)
             return
         }
 
@@ -484,8 +491,10 @@ final class CameraRepository {
     ) {
         guard let modelContext, !regions.isEmpty else { return }
         let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
+        // Hidden / already-absent rows must not inflate density and block sparse clear.
+        let visible = existing.filter { !$0.isHidden && !$0.isAbsentFromOSM }
         let absent = CoverageConfidence.idsToMarkAbsent(
-            cached: existing.map { ($0.id, $0.coordinate) },
+            cached: visible.map { ($0.id, $0.coordinate) },
             remoteIDs: remoteIDs,
             regions: regions,
             excluding: protectedIDs

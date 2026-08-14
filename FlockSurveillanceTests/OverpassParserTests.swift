@@ -103,4 +103,20 @@ final class OverpassParserTests: XCTestCase {
         XCTAssertTrue(camera.isFlock)
         XCTAssertEqual(camera.operatorName, "Flock Safety")
     }
+
+    func testRuntimeRemarkIsNotAnEmptySuccess() {
+        let json = """
+        {
+          "remark": "runtime error: Query timed out in \\"query\\" after 25 seconds.",
+          "elements": []
+        }
+        """.data(using: .utf8)!
+        XCTAssertTrue(OverpassParser.isFailedRemark("runtime error: Query timed out"))
+        XCTAssertFalse(OverpassParser.isFailedRemark(nil))
+        XCTAssertThrowsError(try OverpassParser.cameras(from: json)) { error in
+            guard case OverpassError.runtimeRemark = error else {
+                return XCTFail("Expected runtimeRemark, got \(error)")
+            }
+        }
+    }
 }

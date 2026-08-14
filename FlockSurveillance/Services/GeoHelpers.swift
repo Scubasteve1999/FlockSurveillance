@@ -188,6 +188,31 @@ enum GeoHelpers {
         return tiles
     }
 
+    /// Bounding region of tiles that were actually queried — not the scheduled viewport.
+    static func unionRegion(of regions: [MKCoordinateRegion]) -> MKCoordinateRegion? {
+        guard !regions.isEmpty else { return nil }
+        var minLat = Double.greatestFiniteMagnitude
+        var maxLat = -Double.greatestFiniteMagnitude
+        var minLon = Double.greatestFiniteMagnitude
+        var maxLon = -Double.greatestFiniteMagnitude
+        for region in regions {
+            minLat = min(minLat, region.center.latitude - region.span.latitudeDelta / 2)
+            maxLat = max(maxLat, region.center.latitude + region.span.latitudeDelta / 2)
+            minLon = min(minLon, region.center.longitude - region.span.longitudeDelta / 2)
+            maxLon = max(maxLon, region.center.longitude + region.span.longitudeDelta / 2)
+        }
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: (minLat + maxLat) / 2,
+                longitude: (minLon + maxLon) / 2
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: max(maxLat - minLat, 0.01),
+                longitudeDelta: max(maxLon - minLon, 0.01)
+            )
+        )
+    }
+
     static func region(for route: MKRoute, padding: Double = 1.25) -> MKCoordinateRegion {
         var region = MKCoordinateRegion(route.polyline.boundingMapRect)
         region.span.latitudeDelta = max(region.span.latitudeDelta * padding, 0.02)
@@ -262,7 +287,8 @@ enum GeoHelpers {
     static func placeScore(
         cameras: [ALPRCamera],
         near coordinate: CLLocationCoordinate2D,
-        radiusMeters: CLLocationDistance
+        radiusMeters: CLLocationDistance,
+        isPersonal: Bool = true
     ) -> PlaceScore {
         let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         let nearby = cameras.filter { $0.location.distance(from: origin) <= radiusMeters }
@@ -291,7 +317,8 @@ enum GeoHelpers {
             flockCount: flock,
             flockPercent: flockPercent,
             densityPerSquareMile: perSqMi,
-            grade: grade
+            grade: grade,
+            isPersonal: isPersonal
         )
     }
 
@@ -406,6 +433,8 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     let flockPercent: Int
     let densityPerSquareMile: Double
     let grade: String
+    /// True when the pin is live GPS or saved Home — never a map-center / metro preview.
+    var isPersonal: Bool = true
 
     var radiusMilesLabel: String {
         let miles = radiusMeters / 1609.34
@@ -413,14 +442,15 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         return String(format: "%.0f mi", miles)
     }
 
-    /// Mainstream headline: "Your block is Watched"
+    /// Honest headline: "Your block…" only for GPS/Home; otherwise "This area…"
     var headline: String {
+        let subject = isPersonal ? "Your block" : "This area"
         switch grade {
-        case "Clear": return "Your block looks clear"
-        case "Light": return "Your block is lightly watched"
-        case "Watched": return "Your block is watched"
-        case "Heavy": return "Your block is heavily watched"
-        default: return "Your block is saturated with cameras"
+        case "Clear": return "\(subject) looks clear"
+        case "Light": return "\(subject) is lightly watched"
+        case "Watched": return "\(subject) is watched"
+        case "Heavy": return "\(subject) is heavily watched"
+        default: return "\(subject) is saturated with cameras"
         }
     }
 

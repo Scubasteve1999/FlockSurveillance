@@ -529,6 +529,7 @@ struct SettingsView: View {
     private func applyHome(_ coordinate: CLLocationCoordinate2D, message: String) {
         WidgetBridge.setHomeCoordinate(coordinate)
         repository.refreshWidgetSnapshot()
+        repository.republishAlertCandidates()
         homeStatus = message
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }

@@ -6,6 +6,7 @@ struct OnboardingView: View {
     @Environment(LocationManager.self) private var locationManager
     @Environment(CameraRepository.self) private var repository
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Cold open → instrumented pages (score hard-cut lands on features).
     @State private var showColdOpen = true
@@ -131,6 +132,13 @@ struct OnboardingView: View {
 
     private func runColdOpenSequence() {
         Task { @MainActor in
+            if reduceMotion {
+                coldLine = 3
+                try? await Task.sleep(nanoseconds: 400_000_000)
+                guard showColdOpen else { return }
+                finishColdOpen()
+                return
+            }
             try? await Task.sleep(nanoseconds: 350_000_000)
             guard showColdOpen else { return }
             withAnimation(.easeOut(duration: 0.35)) { coldLine = 1 }
@@ -233,7 +241,7 @@ struct OnboardingView: View {
                 let level = SurveillanceLevel.compute(
                     visibleCount: teaserScore.cameraCount,
                     nearestMeters: nil,
-                    inWatchedZone: teaserScore.cameraCount >= 5
+                    inWatchedZone: false
                 )
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -295,7 +303,7 @@ struct OnboardingView: View {
             Spacer()
         }
         .padding(.horizontal, 24)
-        .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+        .onChange(of: locationManager.locationUpdateKey) { _, _ in
             refreshTeaserScore()
         }
         .onChange(of: repository.cameras.count) { _, _ in
@@ -337,7 +345,11 @@ struct OnboardingView: View {
         let hasPersonalLocation = locationManager.location != nil || WidgetBridge.homeCoordinate() != nil
         let coordinate = teaserCoordinate()
         teaserIsSample = !hasPersonalLocation
-        let score = repository.placeScore(near: coordinate, radiusMeters: 1609.34)
+        let score = repository.placeScore(
+            near: coordinate,
+            radiusMeters: 1609.34,
+            isPersonal: hasPersonalLocation
+        )
         let settled = repository.hasSettledFetch(covering: coordinate)
 
         // Don't publish a Clear grade until we have nearby cameras or a settled
@@ -468,7 +480,7 @@ struct OnboardingView: View {
                 Capsule()
                     .fill(index == page ? AppTheme.primary : AppTheme.border)
                     .frame(width: index == page ? 22 : 8, height: 8)
-                    .animation(.easeInOut(duration: 0.25), value: page)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: page)
             }
         }
     }
@@ -479,8 +491,12 @@ struct OnboardingView: View {
 
             Button {
                 if page < 2 {
-                    withAnimation(.easeInOut(duration: 0.3)) {
+                    if reduceMotion {
                         page += 1
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            page += 1
+                        }
                     }
                 } else {
                     // Do NOT wrap this in withAnimation — animating MapKit into the

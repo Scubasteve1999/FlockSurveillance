@@ -5,6 +5,7 @@ struct SensorDetailSheet: View {
     let sensor: PublicSensor
     var attribution: String?
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var heroAppeared = false
     @State private var copyAppeared = false
 
@@ -32,6 +33,11 @@ struct SensorDetailSheet: View {
                 }
             }
             .onAppear {
+                if reduceMotion {
+                    heroAppeared = true
+                    copyAppeared = true
+                    return
+                }
                 withAnimation(.spring(response: 0.45, dampingFraction: 0.86)) {
                     heroAppeared = true
                 }

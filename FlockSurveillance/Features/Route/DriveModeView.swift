@@ -105,8 +105,8 @@ struct DriveModeView: View {
                 }
             }
         }
-        .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
-            driveSession.update(userLocation: locationManager.location, hapticsEnabled: radar.hapticsEnabled)
+        .onChange(of: locationManager.locationUpdateKey) { _, _ in
+            // Location → session updates live at the app root. HUD only follows the map.
             if let location = locationManager.location {
                 mapPosition = .camera(
                     MapCamera(

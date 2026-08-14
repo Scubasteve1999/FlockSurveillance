@@ -8,6 +8,7 @@ struct WatchednessDial: View {
     var size: CGFloat = 148
     var animate: Bool = true
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var bloom: CGFloat = 0
 
     private var densityColor: Color {
@@ -73,21 +74,30 @@ struct WatchednessDial: View {
         }
         .onAppear {
             guard animate else { return }
+            if reduceMotion {
+                bloom = targetBloom
+                return
+            }
             withAnimation(.easeOut(duration: 0.75)) {
                 bloom = targetBloom
             }
         }
         .onChange(of: cameraCount) { _, _ in
-            guard animate else { return }
-            withAnimation(.easeInOut(duration: 0.4)) {
-                bloom = targetBloom
-            }
+            applyBloomChange()
         }
         .onChange(of: grade) { _, _ in
-            guard animate else { return }
-            withAnimation(.easeInOut(duration: 0.4)) {
-                bloom = targetBloom
-            }
+            applyBloomChange()
+        }
+    }
+
+    private func applyBloomChange() {
+        guard animate else { return }
+        if reduceMotion {
+            bloom = targetBloom
+            return
+        }
+        withAnimation(.easeInOut(duration: 0.4)) {
+            bloom = targetBloom
         }
     }
 }

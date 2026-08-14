@@ -34,6 +34,9 @@ final class DriveSession {
     private(set) var metersToNext: CLLocationDistance?
     private(set) var camerasRemaining = 0
     private(set) var exposureLabel = "Clear"
+    /// Bumped on every start/stop so a stale Live Activity `start` Task cannot
+    /// request a new activity after the session has already ended.
+    private(set) var liveActivityGeneration = 0
 
     private var lastPulseDistance: CLLocationDistance = .greatestFiniteMagnitude
 
@@ -62,14 +65,17 @@ final class DriveSession {
         self.exposureLabel = exposureLabel
         isActive = true
         lastPulseDistance = .greatestFiniteMagnitude
+        liveActivityGeneration += 1
+        let generation = liveActivityGeneration
         // The Drive HUD already surfaces approaches; don't double-notify.
         AlertsEngine.shared.isSuppressed = true
         refresh(userLocation: nil)
-        Task { await DriveLiveActivityController.shared.start(session: self) }
+        Task { await DriveLiveActivityController.shared.start(session: self, generation: generation) }
     }
 
     func stop() {
         isActive = false
+        liveActivityGeneration += 1
         AlertsEngine.shared.isSuppressed = false
         route = nil
         hits = []

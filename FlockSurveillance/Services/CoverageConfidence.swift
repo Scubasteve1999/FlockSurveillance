@@ -81,7 +81,8 @@ struct CoverageConfidence: Equatable {
         if remoteCount == 0 {
             return cachedInCoverage >= 1 && cachedInCoverage <= 3
         }
-        if cachedInCoverage <= 3 { return true }
+        // Sparse and dense share the same truncation heuristic — a 1-of-3
+        // mirror must not soft-clear the other two pins.
         return remoteCount * 2 >= cachedInCoverage
     }
 

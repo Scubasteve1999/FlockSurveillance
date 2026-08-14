@@ -11,6 +11,11 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     /// Compass heading in degrees (0 = north), nil until the first heading fix.
     private(set) var headingDegrees: Double?
 
+    /// Stable key so east/west movement (unchanged latitude) still retriggers observers.
+    var locationUpdateKey: String {
+        SensorAtlasAutoPolicy.locationKey(location?.coordinate)
+    }
+
     override init() {
         authorizationStatus = manager.authorizationStatus
         super.init()
@@ -69,6 +74,11 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
                 if CLLocationManager.headingAvailable() {
                     self.manager.startUpdatingHeading()
                 }
+                // Re-apply drive background flags after an auth change mid-drive.
+                self.setDriveTrackingEnabled(DriveSession.shared.isActive)
+            } else {
+                self.manager.allowsBackgroundLocationUpdates = false
+                self.manager.showsBackgroundLocationIndicator = false
             }
         }
     }

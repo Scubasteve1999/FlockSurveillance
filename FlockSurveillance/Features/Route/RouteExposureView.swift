@@ -107,7 +107,7 @@ struct RouteExposureView: View {
                 case .destination: destinationSuggestions = results
                 }
             }
-            .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+            .onChange(of: locationManager.locationUpdateKey) { _, _ in
                 if let location = locationManager.location {
                     completer.bias(to: location.coordinate)
                 }
@@ -364,14 +364,13 @@ struct RouteExposureView: View {
 
                 OverwatchPrimaryButton {
                     if driveSession.isActive {
-                        showDriveMode = true
-                    } else {
-                        driveSession.start(from: result)
-                        showDriveMode = true
+                        driveSession.stop()
                     }
+                    driveSession.start(from: result)
+                    showDriveMode = true
                 } label: {
                     Label(
-                        driveSession.isActive ? "Resume Overwatch" : "Start Overwatch Drive",
+                        driveSession.isActive ? "Switch Overwatch Drive" : "Start Overwatch Drive",
                         systemImage: "car.fill"
                     )
                     .font(.system(size: 14, weight: .bold))

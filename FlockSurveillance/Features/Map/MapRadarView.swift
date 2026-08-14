@@ -494,9 +494,8 @@ struct MapRadarView: View {
             }
             Spacer()
             Button {
-                if let center = visibleRegion?.center {
-                    reportTarget = ReportTarget(coordinate: center)
-                }
+                guard let center = visibleRegion?.center else { return }
+                reportTarget = ReportTarget(coordinate: center)
                 withAnimation(.easeInOut(duration: 0.25)) {
                     isPlacingReport = false
                 }
@@ -510,6 +509,8 @@ struct MapRadarView: View {
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
+            .disabled(visibleRegion == nil)
+            .opacity(visibleRegion == nil ? 0.45 : 1)
         }
         .padding(14)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
@@ -776,7 +777,11 @@ struct MapRadarView: View {
         guard let coordinate = locationManager.location?.coordinate ?? WidgetBridge.homeCoordinate()
         else { return }
 
-        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let score = repository.placeScore(
+            near: coordinate,
+            radiusMeters: placeScoreRadius,
+            isPersonal: isPersonalScoreCoordinate(coordinate)
+        )
         let settled = repository.hasSettledFetch(covering: coordinate)
 
         // Kick off once; later calls only refresh / burn when data is ready.
@@ -841,7 +846,11 @@ struct MapRadarView: View {
                 visibleRegion = region
             }
         }
-        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let score = repository.placeScore(
+            near: coordinate,
+            radiusMeters: placeScoreRadius,
+            isPersonal: isPersonalScoreCoordinate(coordinate)
+        )
         if publishOptimisticClear || score.cameraCount > 0 {
             withAnimation(.easeInOut(duration: 0.25)) {
                 placeScore = score
@@ -853,9 +862,25 @@ struct MapRadarView: View {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
+    private func isPersonalScoreCoordinate(_ coordinate: CLLocationCoordinate2D) -> Bool {
+        let pin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        if let gps = locationManager.location, gps.distance(from: pin) < 200 {
+            return true
+        }
+        if let home = WidgetBridge.homeCoordinate() {
+            let origin = CLLocation(latitude: home.latitude, longitude: home.longitude)
+            if origin.distance(from: pin) < 200 { return true }
+        }
+        return false
+    }
+
     private func refreshPendingScoreIfNeeded(allowClear: Bool = false) {
         guard let coordinate = pendingScoreCoordinate else { return }
-        let score = repository.placeScore(near: coordinate, radiusMeters: placeScoreRadius)
+        let score = repository.placeScore(
+            near: coordinate,
+            radiusMeters: placeScoreRadius,
+            isPersonal: isPersonalScoreCoordinate(coordinate)
+        )
         let settled = repository.hasSettledFetch(covering: coordinate)
 
         if score.cameraCount > 0 {

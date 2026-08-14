@@ -11,9 +11,11 @@ final class DriveLiveActivityController {
 
     private init() {}
 
-    func start(session: DriveSession) async {
+    func start(session: DriveSession, generation: Int) async {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        guard session.isActive, generation == session.liveActivityGeneration else { return }
         await end()
+        guard session.isActive, generation == session.liveActivityGeneration else { return }
 
         let state = contentState(from: session)
         let attributes = DriveActivityAttributes(routeSummary: "Overwatch Drive")
@@ -21,6 +23,16 @@ final class DriveLiveActivityController {
             activity = try Activity.request(attributes: attributes, content: .init(state: state, staleDate: nil))
         } catch {
             activity = nil
+        }
+    }
+
+    /// Process death resets `DriveSession` but system Live Activities survive.
+    /// Sweep leftovers on launch when no drive is active.
+    func endOrphanedIfNeeded(sessionIsActive: Bool) async {
+        guard !sessionIsActive else { return }
+        activity = nil
+        for existing in Activity<DriveActivityAttributes>.activities {
+            await existing.end(nil, dismissalPolicy: .immediate)
         }
     }
 

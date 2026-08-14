@@ -46,7 +46,13 @@ struct FlockSurveillanceApp: App {
                 return try ModelContainer(for: ALPRCamera.self, PendingReport.self, configurations: configuration)
             }
         } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
+            // Last resort: in-memory store so a corrupted disk file doesn't crash launch.
+            let memory = ModelConfiguration(isStoredInMemoryOnly: true)
+            do {
+                return try ModelContainer(for: ALPRCamera.self, PendingReport.self, configurations: memory)
+            } catch {
+                fatalError("Failed to create ModelContainer: \(error)")
+            }
         }
     }()
 
@@ -78,6 +84,11 @@ struct FlockSurveillanceApp: App {
                         await reportStore.verifyOpenReports(repository: repository)
                     }
                 }
+                Task {
+                    await DriveLiveActivityController.shared.endOrphanedIfNeeded(
+                        sessionIsActive: driveSession.isActive
+                    )
+                }
             }
             .onChange(of: hasSeenOnboarding) { _, seen in
                 guard seen else { return }
@@ -105,7 +116,7 @@ struct FlockSurveillanceApp: App {
                     )
                 }
             }
-            .onChange(of: locationManager.location?.coordinate.latitude) { _, _ in
+            .onChange(of: locationManager.locationUpdateKey) { _, _ in
                 guard driveSession.isActive else { return }
                 driveSession.update(
                     userLocation: locationManager.location,

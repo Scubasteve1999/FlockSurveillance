@@ -38,6 +38,36 @@ final class DriveSessionTests: XCTestCase {
         XCTAssertFalse(AlertsEngine.shared.isSuppressed)
     }
 
+    func testStartStopBumpsLiveActivityGeneration() {
+        let session = DriveSession()
+        let before = session.liveActivityGeneration
+        session.start(
+            hits: [makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100)],
+            exposureLabel: "Light"
+        )
+        XCTAssertGreaterThan(session.liveActivityGeneration, before)
+        let afterStart = session.liveActivityGeneration
+        session.stop()
+        XCTAssertGreaterThan(session.liveActivityGeneration, afterStart)
+        XCTAssertFalse(session.isActive)
+    }
+
+    func testUpdateAfterStopIsNoOp() {
+        let session = DriveSession()
+        session.start(
+            hits: [makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100)],
+            exposureLabel: "Light"
+        )
+        session.stop()
+        session.update(
+            userLocation: CLLocation(latitude: 43.1, longitude: -89.4),
+            hapticsEnabled: false
+        )
+        XCTAssertFalse(session.isActive)
+        XCTAssertTrue(session.hits.isEmpty)
+        XCTAssertNil(session.nextHit)
+    }
+
     func testUpdateMarksNearbyHitPassedAndAdvancesNext() {
         let session = DriveSession()
         defer { session.stop() }

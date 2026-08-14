@@ -59,6 +59,28 @@ final class SensorAtlasAutoPolicyTests: XCTestCase {
         )
     }
 
+    func testManualOffWithoutLocationSuppressesAllMetros() {
+        let after = SensorAtlasAutoPolicy.suppressedAfterManualOff(
+            current: [],
+            coordinate: nil
+        )
+        XCTAssertEqual(after, ["Madison", "Milwaukee"])
+        XCTAssertNil(
+            SensorAtlasAutoPolicy.shouldAutoEnable(
+                layerAlreadyOn: false,
+                suppressedMetroNames: after,
+                coordinate: madison
+            )
+        )
+        XCTAssertNil(
+            SensorAtlasAutoPolicy.shouldAutoEnable(
+                layerAlreadyOn: false,
+                suppressedMetroNames: after,
+                coordinate: milwaukee
+            )
+        )
+    }
+
     func testManualOnClearsAllSuppressions() {
         let cleared = SensorAtlasAutoPolicy.suppressedAfterManualOn(
             current: ["Madison", "Milwaukee"]

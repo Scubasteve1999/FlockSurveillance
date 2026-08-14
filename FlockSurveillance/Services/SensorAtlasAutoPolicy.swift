@@ -22,7 +22,11 @@ enum SensorAtlasAutoPolicy {
     ) -> Set<String> {
         guard let coordinate,
               let metro = SensorAtlasCoverage.metro(containing: coordinate)
-        else { return current }
+        else {
+            // No GPS yet — suppress every known metro so auto-enable cannot
+            // undo an explicit off once a Madison/Milwaukee fix arrives.
+            return current.union(Set(SensorAtlasCoverage.metros.map(\.name)))
+        }
         var next = current
         next.insert(metro.name)
         return next

@@ -48,6 +48,57 @@ struct AlertCandidate: Codable, Sendable {
     let title: String
 }
 
+/// Rank persisted geofence candidates around Home *and* the last viewport so
+/// travelers still get local alerts when Home is set in another city.
+enum AlertCandidateRanking {
+    static let maxPersisted = 5_000
+    static let perAnchor = 2_500
+
+    static func select(
+        from rows: [(id: String, latitude: Double, longitude: Double, isFlock: Bool, title: String)],
+        home: CLLocationCoordinate2D?,
+        viewport: CLLocationCoordinate2D?,
+        fallback: CLLocationCoordinate2D,
+        limit: Int = maxPersisted
+    ) -> [AlertCandidate] {
+        var seen = Set<String>()
+        var result: [AlertCandidate] = []
+
+        func append(nearestTo coordinate: CLLocationCoordinate2D, cap: Int) {
+            let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            let ranked = rows
+                .map { row -> (AlertCandidate, CLLocationDistance) in
+                    let location = CLLocation(latitude: row.latitude, longitude: row.longitude)
+                    let candidate = AlertCandidate(
+                        id: row.id,
+                        latitude: row.latitude,
+                        longitude: row.longitude,
+                        isFlock: row.isFlock,
+                        title: row.title
+                    )
+                    return (candidate, location.distance(from: origin))
+                }
+                .sorted { $0.1 < $1.1 }
+            for (candidate, _) in ranked.prefix(cap) {
+                guard seen.insert(candidate.id).inserted else { continue }
+                result.append(candidate)
+                if result.count >= limit { return }
+            }
+        }
+
+        if let home {
+            append(nearestTo: home, cap: perAnchor)
+        }
+        if let viewport, result.count < limit {
+            append(nearestTo: viewport, cap: perAnchor)
+        }
+        if result.isEmpty {
+            append(nearestTo: fallback, cap: limit)
+        }
+        return result
+    }
+}
+
 enum AlertCandidateStore {
     /// Serial queue keeps writes ordered (rapid loadCached calls must not let an
     /// older snapshot win) and reads consistent with in-flight writes.
@@ -59,7 +110,7 @@ enum AlertCandidateStore {
     }
 
     static func write(_ candidates: [AlertCandidate]) {
-        queue.async {
+        queue.sync {
             guard let data = try? JSONEncoder().encode(candidates) else { return }
             try? data.write(to: fileURL, options: .atomic)
         }

@@ -77,6 +77,28 @@ final class CoverageConfidenceTests: XCTestCase {
         XCTAssertFalse(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 1))
         XCTAssertTrue(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 2))
         XCTAssertTrue(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 3))
+        XCTAssertFalse(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 2, errorCount: 1))
+        XCTAssertFalse(OverpassClient.acceptsConfirmedEmpty(emptyMirrorCount: 3, errorCount: 1))
+    }
+
+    func testIdsToMarkAbsentSkipsSparseTruncatedRemote() {
+        let region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39),
+            span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        )
+        let cached: [(id: String, coordinate: CLLocationCoordinate2D)] = [
+            ("a", CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)),
+            ("b", CLLocationCoordinate2D(latitude: 33.751, longitude: -84.391)),
+            ("c", CLLocationCoordinate2D(latitude: 33.752, longitude: -84.392))
+        ]
+        let absent = CoverageConfidence.idsToMarkAbsent(
+            cached: cached,
+            remoteIDs: ["a"],
+            region: region
+        )
+        XCTAssertTrue(absent.isEmpty)
+        XCTAssertFalse(CoverageConfidence.shouldTrustAbsentDiff(remoteCount: 1, cachedInCoverage: 3))
+        XCTAssertTrue(CoverageConfidence.shouldTrustAbsentDiff(remoteCount: 2, cachedInCoverage: 3))
     }
 
     func testIdsToMarkAbsentSkipsDenseEmptyRemote() {

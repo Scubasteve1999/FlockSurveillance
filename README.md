@@ -72,6 +72,10 @@ python3 Scripts/build_sharing_network_bundle.py
 
 That writes `FlockSurveillance/Resources/SharingNetworkBundle.json`. Relationships are agency-to-agency links from public records — not which cameras feed which agency, and not a complete national graph.
 
+### Mid-South research
+
+Public-records inventory and Olive Branch entranceway reconstruction (citations only; no live OSM edits): [`docs/midsouth/`](docs/midsouth/).
+
 ## App Store
 
 Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.8.0). 1.8.1 is the next store build. Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).

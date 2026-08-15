@@ -40,8 +40,8 @@ FlockSurveillance/
   Intents/      Siri / App Shortcuts
 Shared/         code compiled into both app and widget
 NearbyCamerasWidget/
-Scripts/        frame_aso_screenshots.py (ASO screenshot framing)
-docs/           ASO.md, LAUNCH.md, aso-captures/
+Scripts/        frame_aso_screenshots.py (ASO screenshot framing), build_sharing_network_bundle.py, build_midsouth_alpr_snapshot.py
+docs/           ASO.md, LAUNCH.md, aso-captures/, midsouth/ (research inventory)
 ```
 
 Services worth knowing: `OverpassClient` (OSM fetch), `CameraRepository` (cache + viewport scoping),

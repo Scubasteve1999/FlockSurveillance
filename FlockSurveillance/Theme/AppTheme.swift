@@ -26,6 +26,10 @@ enum AppTheme {
     static let trafficSensorMarker = Color(red: 1.0, green: 0.82, blue: 0.22)
     /// Sharing Network bidirectional links (hub ↔ partner).
     static let sharingBidirectional = Color(red: 0.95, green: 0.72, blue: 0.28)
+    static let entranceMatch = densityLow
+    static let entranceNearMiss = densityMedium
+    static let entranceGap = mutedForeground
+    static let entranceLayerMarker = densityMedium
 
     static let cornerRadius: CGFloat = 16
     /// Primary / secondary CTA corners (Drive, Route, etc.).

@@ -13,6 +13,7 @@ struct MapRadarView: View {
 
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatStored = true
     @AppStorage(AppPreferenceKey.showSensorAtlas) private var showSensorAtlasStored = false
+    @AppStorage(AppPreferenceKey.showOliveBranchEntrances) private var showOliveBranchEntrancesStored = false
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.watchModeEnabled) private var watchModeStored = false
     @AppStorage(AppPreferenceKey.hasAutoShownPlaceScore) private var hasAutoShownPlaceScore = false
@@ -33,6 +34,9 @@ struct MapRadarView: View {
     @State private var showHeat = AppPreferences.showHeatDefault
     @State private var showSensorAtlas = AppPreferences.showSensorAtlas
     @State private var sensorAtlasStore = SensorAtlasStore()
+    @State private var showOliveBranchEntrances = AppPreferences.showOliveBranchEntrances
+    @State private var entranceStore = OliveBranchEntranceStore()
+    @State private var selectedEntranceSite: OliveBranchUniqueSite?
     /// Hold the shared engine so SwiftUI observes corridor enter/exit for the HUD.
     @State private var alertsEngine = AlertsEngine.shared
     @State private var pulsePhase = false
@@ -55,6 +59,10 @@ struct MapRadarView: View {
     /// Prevents re-entrant auto-enable before `onChange` clears the toggle flag.
     @State private var sensorAtlasAutoEnableInFlight = false
     @State private var sensorAtlasBannerDismissTask: Task<Void, Never>?
+    @State private var entranceBanner: String?
+    @State private var isAutoTogglingEntrances = false
+    @State private var entranceAutoEnableInFlight = false
+    @State private var entranceBannerDismissTask: Task<Void, Never>?
     /// City rankings strip is opt-in so Map first paint stays one status band + tools.
     @State private var showCityRankings = false
 
@@ -89,6 +97,11 @@ struct MapRadarView: View {
     private var visibleSensors: [PublicSensor] {
         guard showSensorAtlas, let visibleRegion else { return [] }
         return sensorAtlasStore.sensors(in: visibleRegion)
+    }
+
+    private var visibleEntranceSites: [OliveBranchUniqueSite] {
+        guard showOliveBranchEntrances, let visibleRegion else { return [] }
+        return entranceStore.uniqueSites(in: visibleRegion)
     }
 
     private var coverageConfidence: CoverageConfidence {
@@ -134,6 +147,7 @@ struct MapRadarView: View {
         .onChange(of: radar.watchModeEnabled) { _, enabled in handleWatchModeChange(enabled) }
         .onChange(of: showHeat) { _, value in showHeatStored = value }
         .onChange(of: showSensorAtlas) { _, value in handleSensorAtlasToggle(value) }
+        .onChange(of: showOliveBranchEntrances) { _, value in handleEntranceToggle(value) }
         .onChange(of: filter) { _, value in defaultFilterRaw = value.rawValue }
         .onReceive(NotificationCenter.default.publisher(for: .flockPlaceScore)) { _ in
             PendingIntentActions.placeScoreRequested = false
@@ -149,6 +163,14 @@ struct MapRadarView: View {
         .sheet(item: $selectedSensor) { sensor in
             SensorDetailSheet(sensor: sensor, attribution: sensorAtlasStore.attribution)
                 .presentationBackground(AppTheme.background)
+        }
+        .sheet(item: $selectedEntranceSite) { site in
+            EntranceSiteDetailSheet(
+                site: site,
+                nearestPin: site.nearestOsmNode.flatMap { entranceStore.pin(id: $0) },
+                attribution: entranceStore.attribution
+            )
+            .presentationBackground(AppTheme.background)
         }
         .sheet(item: $sharePayload) { payload in
             ActivityShareView(items: payload.items)
@@ -235,6 +257,29 @@ struct MapRadarView: View {
                 .padding(.horizontal, 16)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
+            if showOliveBranchEntrances, let entranceError = entranceStore.loadError {
+                Text(entranceError)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.primary)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if let entranceBanner {
+                EntranceLayerBanner(text: entranceBanner) {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        self.entranceBanner = nil
+                    }
+                }
+                .padding(.horizontal, 16)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+            if showOliveBranchEntrances, entranceStore.loadError == nil {
+                Text("Reconstructed city-limit crossings — not official 2022 Utility sites. No pin ≠ skipped entrance.")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if locationDenied {
                 LocationDeniedBanner()
             }
@@ -286,12 +331,15 @@ struct MapRadarView: View {
         locationManager.start()
         showHeat = showHeatStored
         showSensorAtlas = showSensorAtlasStored
+        showOliveBranchEntrances = showOliveBranchEntrancesStored
         filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
         radar.watchModeEnabled = watchModeStored
         sensorAtlasStore.loadIfNeeded()
+        entranceStore.loadIfNeeded()
         bootstrapRegion()
         startPulseIfNeeded()
         maybeAutoEnableSensorAtlas()
+        maybeAutoEnableEntrances()
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 150_000_000)
             maybeAutoShowPlaceScore()
@@ -312,6 +360,8 @@ struct MapRadarView: View {
     private func handleDisappear() {
         sensorAtlasBannerDismissTask?.cancel()
         sensorAtlasBannerDismissTask = nil
+        entranceBannerDismissTask?.cancel()
+        entranceBannerDismissTask = nil
     }
 
     private func handleCamerasCountChange() {
@@ -357,6 +407,7 @@ struct MapRadarView: View {
         }
         maybeAutoShowPlaceScore()
         maybeAutoEnableSensorAtlas()
+        maybeAutoEnableEntrances()
     }
 
     private func handleWatchModeChange(_ enabled: Bool) {
@@ -387,6 +438,29 @@ struct MapRadarView: View {
         }
         isAutoTogglingSensorAtlas = false
         sensorAtlasAutoEnableInFlight = false
+    }
+
+    private func handleEntranceToggle(_ value: Bool) {
+        showOliveBranchEntrancesStored = value
+        if value {
+            entranceStore.loadIfNeeded()
+            if !isAutoTogglingEntrances {
+                AppPreferences.oliveBranchEntrancesAutoSuppressed =
+                    OliveBranchEntranceAutoPolicy.suppressedAfterManualOn(
+                        current: AppPreferences.oliveBranchEntrancesAutoSuppressed
+                    )
+            }
+        } else if !isAutoTogglingEntrances {
+            AppPreferences.oliveBranchEntrancesAutoSuppressed =
+                OliveBranchEntranceAutoPolicy.suppressedAfterManualOff(
+                    current: AppPreferences.oliveBranchEntrancesAutoSuppressed
+                )
+            entranceBanner = nil
+            entranceBannerDismissTask?.cancel()
+            entranceBannerDismissTask = nil
+        }
+        isAutoTogglingEntrances = false
+        entranceAutoEnableInFlight = false
     }
 
     private func noteSurveillanceLevel() {
@@ -464,6 +538,19 @@ struct MapRadarView: View {
                             selectedSensor = sensor
                         } label: {
                             SensorAnnotationView()
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            if showOliveBranchEntrances {
+                ForEach(visibleEntranceSites) { site in
+                    Annotation("", coordinate: site.coordinate, anchor: .center) {
+                        Button {
+                            selectedEntranceSite = site
+                        } label: {
+                            EntranceSiteAnnotationView(site: site)
                         }
                         .buttonStyle(.plain)
                     }
@@ -611,62 +698,86 @@ struct MapRadarView: View {
 
     private var filterBar: some View {
         HStack(spacing: 8) {
-            ForEach(CameraFilter.allCases) { item in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        filter = item
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(CameraFilter.allCases) { item in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                filter = item
+                            }
+                        } label: {
+                            Text(item.rawValue)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(filter == item ? AppTheme.background : AppTheme.foreground)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(filter == item ? AppTheme.primary : AppTheme.card.opacity(0.92))
+                                .clipShape(Capsule())
+                                .overlay(Capsule().stroke(AppTheme.border, lineWidth: filter == item ? 0 : 1))
+                        }
+                        .buttonStyle(.plain)
                     }
-                } label: {
-                    Text(item.rawValue)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(filter == item ? AppTheme.background : AppTheme.foreground)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(filter == item ? AppTheme.primary : AppTheme.card.opacity(0.92))
-                        .clipShape(Capsule())
-                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: filter == item ? 0 : 1))
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showSensorAtlas.toggle()
+                        }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    } label: {
+                        Text("Traffic cams")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(showSensorAtlas ? AppTheme.background : AppTheme.foreground)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.card.opacity(0.92))
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(AppTheme.border, lineWidth: showSensorAtlas ? 0 : 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(showSensorAtlas ? "Hide municipal traffic cameras" : "Show municipal traffic cameras")
+
+                    if !cityRankings.isEmpty {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showCityRankings.toggle()
+                                if showCityRankings { placeScore = nil }
+                            }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        } label: {
+                            Text("METROS")
+                                .font(.system(size: 12, weight: .black, design: .monospaced))
+                                .foregroundStyle(showCityRankings ? AppTheme.background : AppTheme.foreground)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(showCityRankings ? AppTheme.accent : AppTheme.card.opacity(0.92))
+                                .clipShape(Capsule())
+                                .overlay(Capsule().stroke(AppTheme.border, lineWidth: showCityRankings ? 0 : 1))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(showCityRankings ? "Hide city rankings" : "Show city rankings")
+                    }
                 }
-                .buttonStyle(.plain)
             }
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    showSensorAtlas.toggle()
+                    showOliveBranchEntrances.toggle()
                 }
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
-                Text("Traffic cams")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(showSensorAtlas ? AppTheme.background : AppTheme.foreground)
-                    .padding(.horizontal, 14)
+                Text("GATES")
+                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .foregroundStyle(showOliveBranchEntrances ? AppTheme.background : AppTheme.foreground)
+                    .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.card.opacity(0.92))
+                    .background(showOliveBranchEntrances ? AppTheme.entranceLayerMarker : AppTheme.card.opacity(0.92))
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(AppTheme.border, lineWidth: showSensorAtlas ? 0 : 1))
+                    .overlay(Capsule().stroke(AppTheme.border, lineWidth: showOliveBranchEntrances ? 0 : 1))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(showSensorAtlas ? "Hide municipal traffic cameras" : "Show municipal traffic cameras")
-
-            if !cityRankings.isEmpty {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showCityRankings.toggle()
-                        if showCityRankings { placeScore = nil }
-                    }
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                } label: {
-                    Text("METROS")
-                        .font(.system(size: 12, weight: .black, design: .monospaced))
-                        .foregroundStyle(showCityRankings ? AppTheme.background : AppTheme.foreground)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(showCityRankings ? AppTheme.accent : AppTheme.card.opacity(0.92))
-                        .clipShape(Capsule())
-                        .overlay(Capsule().stroke(AppTheme.border, lineWidth: showCityRankings ? 0 : 1))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(showCityRankings ? "Hide city rankings" : "Show city rankings")
-            }
-            Spacer()
+            .accessibilityLabel(
+                showOliveBranchEntrances
+                    ? "Hide reconstructed Olive Branch entranceways"
+                    : "Show reconstructed Olive Branch entranceways"
+            )
             Toggle(isOn: Binding(
                 get: { radar.hapticsEnabled },
                 set: { radar.hapticsEnabled = $0 }
@@ -750,6 +861,34 @@ struct MapRadarView: View {
                 if sensorAtlasBanner?.contains(metroName) == true {
                     sensorAtlasBanner = nil
                 }
+            }
+        }
+    }
+
+    /// Near Olive Branch, turn the reconstructed entrance overlay on — unless the user opted out.
+    private func maybeAutoEnableEntrances() {
+        guard !entranceAutoEnableInFlight else { return }
+        guard OliveBranchEntranceAutoPolicy.shouldAutoEnable(
+            layerAlreadyOn: showOliveBranchEntrances,
+            suppressed: AppPreferences.oliveBranchEntrancesAutoSuppressed,
+            coordinate: locationManager.location?.coordinate
+        ) else { return }
+
+        entranceAutoEnableInFlight = true
+        entranceStore.loadIfNeeded()
+        isAutoTogglingEntrances = true
+        withAnimation(.easeInOut(duration: 0.25)) {
+            showOliveBranchEntrances = true
+            entranceBanner = "Olive Branch entranceways on — reconstructed crossings, not official Utility sites. Gaps have no mapped pin."
+        }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+
+        entranceBannerDismissTask?.cancel()
+        entranceBannerDismissTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 6_000_000_000)
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.25)) {
+                entranceBanner = nil
             }
         }
     }
@@ -923,6 +1062,40 @@ struct MapRadarView: View {
             sharePayload = ShareActivityPayload(items: items)
             ReviewPrompter.recordHighSignalEvent(requestReview: requestReview)
         }
+    }
+}
+
+private struct EntranceLayerBanner: View {
+    let text: String
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "diamond.fill")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(AppTheme.background)
+                .padding(8)
+                .background(AppTheme.entranceLayerMarker, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            Text(text)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(AppTheme.foreground)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss")
+        }
+        .padding(12)
+        .background(AppTheme.card.opacity(0.96), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.entranceLayerMarker.opacity(0.45), lineWidth: 1)
+        )
     }
 }
 

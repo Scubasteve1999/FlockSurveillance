@@ -111,7 +111,7 @@ struct LearnView: View {
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. Sensor Atlas overlays municipal traffic CCTV from public WisDOT inventory (not ALPR). It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. Sensor Atlas overlays municipal traffic CCTV from public WisDOT inventory (not ALPR). GATES reconstructs Olive Branch city-limit crossings from the public record — not official Utility locations. It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)
@@ -186,6 +186,12 @@ private struct LearnArticle: Identifiable {
             eyebrow: "Sensor Atlas",
             title: "Traffic cams are not ALPRs",
             body: "Toggle Traffic cams on the map to see municipal WisDOT traffic CCTV locations (Madison and Milwaukee snapshot). Opening a pin may load a traveler still from WisDOT hosts only — your device contacts that host; the app does not collect the image. These are not license-plate readers, not Flock Safety cameras, not live ALPR feeds, and they never feed proximity alerts. Proximity alerts only mean your phone is near a mapped OSM ALPR pin."
+        ),
+        LearnArticle(
+            id: "olive-branch-gates",
+            eyebrow: "Olive Branch",
+            title: "Entranceways are a reconstruction",
+            body: "In 2022 the city accepted a Utility Associates plan for 24 fixed ALPRs at “major entranceways.” Official minutes and news never named the intersections. GATES plots a geographic reconstruction of those city-limit crossings against crowdsourced OSM pins (ODbL). A pin at a gate is not a confirmed 2022 Utility camera — Utility ≠ Flock — and a gap is not evidence the city skipped that road. The OSM city limit is TIGER 2008; annexation can shift a “city line.” These sites never feed proximity alerts."
         ),
         LearnArticle(
             id: "reporting",

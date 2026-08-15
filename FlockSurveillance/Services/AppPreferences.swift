@@ -6,6 +6,9 @@ enum AppPreferenceKey {
     static let showSensorAtlas = "prefs.showSensorAtlas"
     /// Metro names where the user manually turned Traffic cams off (per-city suppress).
     static let sensorAtlasSuppressedMetros = "prefs.sensorAtlasSuppressedMetros"
+    static let showOliveBranchEntrances = "prefs.showOliveBranchEntrances"
+    /// Manual off of the Olive Branch entrance overlay suppresses home-market auto-enable.
+    static let oliveBranchEntrancesAutoSuppressed = "prefs.oliveBranchEntrancesAutoSuppressed"
     /// Legacy global suppress flag — migrated once into `sensorAtlasSuppressedMetros`.
     static let sensorAtlasAutoSuppressedLegacy = "prefs.sensorAtlasAutoSuppressed"
     static let defaultFilter = "prefs.defaultFilter"
@@ -39,6 +42,17 @@ enum AppPreferences {
     static var showSensorAtlas: Bool {
         get { UserDefaults.standard.bool(forKey: AppPreferenceKey.showSensorAtlas) }
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showSensorAtlas) }
+    }
+
+    /// Olive Branch entrance reconstruction layer. Off by default unless auto-enabled in-market.
+    static var showOliveBranchEntrances: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.showOliveBranchEntrances) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.showOliveBranchEntrances) }
+    }
+
+    static var oliveBranchEntrancesAutoSuppressed: Bool {
+        get { UserDefaults.standard.bool(forKey: AppPreferenceKey.oliveBranchEntrancesAutoSuppressed) }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.oliveBranchEntrancesAutoSuppressed) }
     }
 
     /// Metros where Traffic cams auto-enable is suppressed after a manual off.

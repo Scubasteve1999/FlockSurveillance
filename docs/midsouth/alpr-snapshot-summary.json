@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "research_date": "2026-08-14",
+  "snapshot_date": "2026-08-14",
+  "osm_timestamp": "2026-08-14T23:18:00Z",
+  "query": "node[\"surveillance:type\"=\"ALPR\"](34.80,-90.25,35.26,-89.60);",
+  "bbox": {
+    "south": 34.8,
+    "west": -90.25,
+    "north": 35.26,
+    "east": -89.6
+  },
+  "license": "ODbL",
+  "attribution": "Map data © OpenStreetMap contributors. DeFlock renders the same surveillance:type=ALPR nodes; it is not an independent coordinate database.",
+  "city_assignment": "OSM admin polygons (admin_level=8 place, admin_level=6 county), not bounding boxes.",
+  "notes": [
+    "Count-only snapshot from the 2026-08-14 research pull. Full pin GeoJSON is not committed.",
+    "Regenerate with: python3 Scripts/build_midsouth_alpr_snapshot.py",
+    "If a later pull differs, keep the script output and record the new osm_timestamp."
+  ],
+  "total": 845,
+  "by_city": {
+    "Memphis": 424,
+    "Germantown": 80,
+    "Collierville": 74,
+    "unincorporated MS": 53,
+    "unincorporated TN": 52,
+    "Olive Branch": 31,
+    "Southaven": 29,
+    "Bartlett": 24,
+    "Lakeland": 21,
+    "Marion AR": 16,
+    "Horn Lake": 12,
+    "West Memphis": 9,
+    "Arlington": 6,
+    "Hernando": 5,
+    "Piperton": 5,
+    "unincorporated AR": 4
+  },
+  "by_county": {
+    "Shelby County, TN": 679,
+    "DeSoto County, MS": 127,
+    "Crittenden County, AR": 29,
+    "Fayette County, TN": 7,
+    "Marshall County, MS": 3
+  },
+  "by_vendor": {
+    "Flock Safety": 819,
+    "other": 26
+  },
+  "clusters": {
+    "densest_1mi": {
+      "latitude": 35.10284,
+      "longitude": -89.85706,
+      "count": 52,
+      "label": "east Memphis / Germantown"
+    },
+    "southaven_horn_lake_goodman_i55": {
+      "count": 19
+    }
+  }
+}

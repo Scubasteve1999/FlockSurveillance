@@ -4,12 +4,11 @@ import SwiftUI
 struct EntranceSiteDetailSheet: View {
     let site: OliveBranchUniqueSite
     let nearestPin: OliveBranchEntrancePin?
-    var attribution: String?
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 14) {
                     Text(site.displayRoad)
                         .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(AppTheme.foreground)
@@ -30,10 +29,6 @@ struct EntranceSiteDetailSheet: View {
 
                     if let nearestPin {
                         pinBlock(nearestPin)
-                    } else {
-                        Text("No mapped OSM pin within 250 m of this crossing.")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(AppTheme.mutedForeground)
                     }
 
                     if !site.notes.isEmpty {
@@ -44,13 +39,6 @@ struct EntranceSiteDetailSheet: View {
                     }
 
                     flags
-
-                    if let attribution, !attribution.isEmpty {
-                        Text(attribution)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(AppTheme.mutedForeground.opacity(0.85))
-                            .padding(.top, 4)
-                    }
                 }
                 .padding(20)
             }
@@ -77,13 +65,12 @@ struct EntranceSiteDetailSheet: View {
 
     private var qualityLine: some View {
         Group {
-            if let meters = site.distanceMeters, let node = site.nearestOsmNode {
-                Text("Nearest mapped pin \(node) is \(Int(meters.rounded())) m from this crossing — published table, not a live vendor match.")
+            if let meters = site.distanceMeters {
+                Text("\(Int(meters.rounded())) m from this crossing (published table).")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.foreground)
-                    .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text("Gap: nothing mapped within 250 m. That is not evidence the city skipped this entrance.")
+                Text("No pin within 250 m — not proof the city skipped this road.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.foreground)
                     .fixedSize(horizontal: false, vertical: true)
@@ -118,21 +105,14 @@ struct EntranceSiteDetailSheet: View {
                         .foregroundStyle(AppTheme.accent)
                 }
             }
-            Text("A mapped pin here is not a confirmed 2022 Utility / Coreforce camera.")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(AppTheme.mutedForeground)
         }
     }
 
     private var flags: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Reconstruction — not an official site list. The city never published the 24 intersections.")
-            Text("Utility (2022) ≠ Flock (2024 SaaS). OSM tags here are almost all Flock Safety.")
-            Text("City limit from OSM relation 1832800 (TIGER 2008). Annexation can shift this line.")
-            Text("This overlay does not watch plates and does not feed proximity alerts.")
-        }
-        .font(.system(size: 12, weight: .medium))
-        .foregroundStyle(AppTheme.mutedForeground)
-        .fixedSize(horizontal: false, vertical: true)
+        Text("Reconstruction, not official sites. Pin ≠ 2022 Utility camera. Utility ≠ Flock. Does not watch plates or feed alerts.")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(AppTheme.mutedForeground)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.top, 4)
     }
 }

@@ -167,8 +167,7 @@ struct MapRadarView: View {
         .sheet(item: $selectedEntranceSite) { site in
             EntranceSiteDetailSheet(
                 site: site,
-                nearestPin: site.nearestOsmNode.flatMap { entranceStore.pin(id: $0) },
-                attribution: entranceStore.attribution
+                nearestPin: site.nearestOsmNode.flatMap { entranceStore.pin(id: $0) }
             )
             .presentationBackground(AppTheme.background)
         }

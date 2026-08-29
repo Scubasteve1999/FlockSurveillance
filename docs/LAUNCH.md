@@ -1,6 +1,6 @@
 # Flock Surveillance — App Store
 
-**Shipped.** v1.8.0 (build 11) is live.
+**Shipped.** v1.9.0 (build 16) is live (2026-08-19).
 
 - Listing: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933)
 - Apple ID: `6789356933`
@@ -22,7 +22,8 @@ infrastructure.
 
 ## Screenshots (1.8.1)
 
-Apple requires at least one 6.9" screenshot and allows up to ten. **Seven shipped.** Marketing
+Last capture set — not asserted as current store art. Apple requires at least one 6.9"
+screenshot and allows up to ten. Seven frames in `docs/aso-captures/raw/`. Marketing
 frames with headline text are a convention, not a requirement.
 
 | # | Stem | Status |
@@ -58,6 +59,10 @@ Sharing Network geocodes FOIA names to Census county/place and drills nation →
 county → agency. Pins are inferred from the name, not a FOIA address. 250-marker cap held.
 Build 14 dismisses the stuck keyboard on search and address fields.
 What's New: [ASO.md](ASO.md) · paste pack: [aso-captures/ASC_PASTE.txt](aso-captures/ASC_PASTE.txt).
+
+## 1.9.0 (build 16)
+
+Shipped 2026-08-19. Tip jar, Sharing Network by county, keyboard dismiss.
 
 ## 1.8.2 backlog
 

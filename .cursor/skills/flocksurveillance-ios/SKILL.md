@@ -46,3 +46,4 @@ Civic transparency ALPR map app (SwiftUI, iOS 17+, Xcode 16+). On-device OSM/Ove
 | Drive session | `FlockSurveillance/Services/DriveSession.swift` |
 | Sharing Network | `FlockSurveillance/Services/SharingNetworkStore.swift` |
 | ASO notes | `docs/ASO.md` |
+| Mid-South research | `docs/midsouth/` |

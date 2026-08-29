@@ -119,4 +119,15 @@ final class OverpassParserTests: XCTestCase {
             }
         }
     }
+
+    func testOverpassUserAgentUsesMarketingVersionNotLegacyPin() {
+        let version = OSMHTTPIdentity.marketingVersion
+        XCTAssertFalse(version.isEmpty)
+        XCTAssertNotEqual(version, "1.5")
+        XCTAssertEqual(
+            OSMHTTPIdentity.overpass,
+            "FlockSurveillance/\(version) (civic transparency; contact: flocksurveillance.com)"
+        )
+        XCTAssertFalse(OSMHTTPIdentity.overpass.contains("/1.5 "))
+    }
 }

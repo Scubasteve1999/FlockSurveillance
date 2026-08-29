@@ -118,7 +118,7 @@ actor OSMReportService {
 
     private let notesEndpoint = URL(string: "https://api.openstreetmap.org/api/0.6/notes.json")!
     private let session: URLSession
-    private let userAgent = "FlockSurveillance-iOS/1.5 (civic transparency; contact: flocksurveillance.com)"
+    private let userAgent = OSMHTTPIdentity.osmNotes
 
     init(session: URLSession = .shared) {
         self.session = session

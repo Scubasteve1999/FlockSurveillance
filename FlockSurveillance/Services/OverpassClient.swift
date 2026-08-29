@@ -169,6 +169,29 @@ enum OverpassParser {
     }
 }
 
+/// OSM/Overpass `User-Agent`. Version is `MARKETING_VERSION` via Info.plist —
+/// not a second hardcoded source.
+enum OSMHTTPIdentity {
+    static var marketingVersion: String {
+        let bundles = [Bundle(for: OverpassClient.self), .main]
+        for bundle in bundles {
+            if let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+               !version.isEmpty {
+                return version
+            }
+        }
+        return "unknown"
+    }
+
+    static var overpass: String {
+        "FlockSurveillance/\(marketingVersion) (civic transparency; contact: flocksurveillance.com)"
+    }
+
+    static var osmNotes: String {
+        "FlockSurveillance-iOS/\(marketingVersion) (civic transparency; contact: flocksurveillance.com)"
+    }
+}
+
 actor OverpassClient {
     static let shared = OverpassClient()
 
@@ -195,7 +218,7 @@ actor OverpassClient {
             configuration.waitsForConnectivity = false
             configuration.httpAdditionalHeaders = [
                 "Accept": "application/json",
-                "User-Agent": "FlockSurveillance/1.5 (civic transparency; contact: flocksurveillance.com)"
+                "User-Agent": OSMHTTPIdentity.overpass
             ]
             self.session = URLSession(configuration: configuration)
         }

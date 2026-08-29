@@ -122,6 +122,17 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertFalse(text.contains("operator"))
     }
 
+    func testOSMNoteUserAgentUsesMarketingVersionNotLegacyPin() {
+        let version = OSMHTTPIdentity.marketingVersion
+        XCTAssertFalse(version.isEmpty)
+        XCTAssertNotEqual(version, "1.5")
+        XCTAssertEqual(
+            OSMHTTPIdentity.osmNotes,
+            "FlockSurveillance-iOS/\(version) (civic transparency; contact: flocksurveillance.com)"
+        )
+        XCTAssertFalse(OSMHTTPIdentity.osmNotes.contains("/1.5 "))
+    }
+
     // MARK: - OSM note JSON + landing
 
     func testParseNoteFeatureJSON() throws {

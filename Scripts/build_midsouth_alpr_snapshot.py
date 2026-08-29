@@ -37,7 +37,18 @@ ENDPOINTS = (
     "https://overpass.osm.ch/api/interpreter",
 )
 
-USER_AGENT = "FlockSurveillance/1.5 (civic transparency; contact: flocksurveillance.com)"
+def marketing_version() -> str:
+    for line in (ROOT / "project.yml").read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("MARKETING_VERSION:"):
+            return stripped.split(":", 1)[1].strip().strip("\"'")
+    raise SystemExit("MARKETING_VERSION missing from project.yml")
+
+
+USER_AGENT = (
+    f"FlockSurveillance/{marketing_version()} "
+    "(civic transparency; contact: flocksurveillance.com)"
+)
 
 # Display labels for the published table. Keys are (normalized name, admin_level, state).
 PLACE_LABELS = {

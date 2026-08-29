@@ -67,7 +67,6 @@ Shipped 2026-08-19. Tip jar, Sharing Network by county, keyboard dismiss.
 ## 1.8.2 backlog
 
 - AR screenshot (`07-ar-camera`)
-- Overpass/OSM User-Agent still says `1.5`
 - `MapRadarView` split
 - Remaining pluralization in `CityRankingsStrip` and `SharingNetworkView`
 

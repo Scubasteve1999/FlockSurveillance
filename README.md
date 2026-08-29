@@ -4,7 +4,7 @@ Civic transparency iOS app that answers: **how watched is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
-## Features (v1.8)
+## Features (v1.9)
 
 - **Sensor Atlas** — municipal traffic CCTV layer (Madison + Milwaukee WisDOT snapshot). Auto-enables when you’re in those metros (dismissible; respects manual off). Tap a gold pin for a hero still + “not ALPR” frame. Does not feed proximity alerts.
 - **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
@@ -78,7 +78,7 @@ Public-records inventory and Olive Branch entranceway reconstruction (citations 
 
 ## App Store
 
-Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.8.0). 1.8.1 is the next store build. Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).
+Live: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) (v1.9.0). Listing notes: [`docs/LAUNCH.md`](docs/LAUNCH.md).
 
 ## Brand / domain
 

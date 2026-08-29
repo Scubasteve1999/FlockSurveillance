@@ -110,9 +110,10 @@ enum AlertCandidateStore {
     }
     private static let lastWrittenSignature = SignatureBox()
 
-    private static var fileURL: URL {
-        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        return support.appendingPathComponent("AlertCandidates.json")
+    private static var fileURL: URL? {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first?
+            .appendingPathComponent("AlertCandidates.json")
     }
 
     /// True when the ranked ID list changed (or this is the first write this process).
@@ -120,24 +121,54 @@ enum AlertCandidateStore {
         previousSignature != nextSignature
     }
 
+    /// Runs a persistence operation only for a changed signature and reports
+    /// success only after that operation completes. Keeping this decision pure
+    /// makes the failure behavior testable without touching app storage.
+    static func persistIfChanged(
+        previousSignature: [String]?,
+        nextSignature: [String],
+        persist: () throws -> Void
+    ) -> Bool {
+        guard shouldReplace(previousSignature: previousSignature, nextSignature: nextSignature) else {
+            return false
+        }
+        do {
+            try persist()
+            return true
+        } catch {
+            return false
+        }
+    }
+
     /// Writes pre-encoded JSON only when `signature` differs from the last write.
     /// Returns true when the file changed and geofences should reseed.
     static func replaceEncodedIfChanged(_ data: Data, signature: [String]) -> Bool {
         queue.sync {
-            guard shouldReplace(previousSignature: lastWrittenSignature.value, nextSignature: signature) else {
-                return false
+            guard let fileURL else { return false }
+            let didPersist = persistIfChanged(
+                previousSignature: lastWrittenSignature.value,
+                nextSignature: signature
+            ) {
+                try data.write(to: fileURL, options: .atomic)
             }
-            lastWrittenSignature.value = signature
-            try? data.write(to: fileURL, options: .atomic)
-            return true
+            if didPersist {
+                lastWrittenSignature.value = signature
+            }
+            return didPersist
         }
     }
 
     static func write(_ candidates: [AlertCandidate]) {
         queue.sync {
-            lastWrittenSignature.value = candidates.map(\.id)
-            guard let data = try? JSONEncoder().encode(candidates) else { return }
-            try? data.write(to: fileURL, options: .atomic)
+            guard let fileURL,
+                  let data = try? JSONEncoder().encode(candidates)
+            else { return }
+            do {
+                try data.write(to: fileURL, options: .atomic)
+                lastWrittenSignature.value = candidates.map(\.id)
+            } catch {
+                // Leave the old signature intact so a later publish retries.
+            }
         }
     }
 
@@ -147,6 +178,7 @@ enum AlertCandidateStore {
 
     static func read() -> [AlertCandidate] {
         queue.sync {
+            guard let fileURL else { return [] }
             guard let data = try? Data(contentsOf: fileURL) else { return [] }
             return (try? JSONDecoder().decode([AlertCandidate].self, from: data)) ?? []
         }

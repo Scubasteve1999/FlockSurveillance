@@ -256,4 +256,43 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertTrue(AlertCandidateStore.shouldReplace(previousSignature: first, nextSignature: ["a", "c", "b"]))
         XCTAssertTrue(AlertCandidateStore.shouldReplace(previousSignature: first, nextSignature: ["a", "b"]))
     }
+
+    func testCandidatePersistenceReportsSuccessOnlyAfterWriteCompletes() {
+        var didWrite = false
+        let changed = AlertCandidateStore.persistIfChanged(
+            previousSignature: ["a"],
+            nextSignature: ["b"]
+        ) {
+            didWrite = true
+        }
+
+        XCTAssertTrue(changed)
+        XCTAssertTrue(didWrite)
+    }
+
+    func testCandidatePersistenceDoesNotReportFailedWriteAsChange() {
+        enum WriteFailure: Error { case unavailable }
+
+        let changed = AlertCandidateStore.persistIfChanged(
+            previousSignature: ["a"],
+            nextSignature: ["b"]
+        ) {
+            throw WriteFailure.unavailable
+        }
+
+        XCTAssertFalse(changed)
+    }
+
+    func testCandidatePersistenceSkipsUnchangedSignature() {
+        var didWrite = false
+        let changed = AlertCandidateStore.persistIfChanged(
+            previousSignature: ["a"],
+            nextSignature: ["a"]
+        ) {
+            didWrite = true
+        }
+
+        XCTAssertFalse(changed)
+        XCTAssertFalse(didWrite)
+    }
 }

@@ -16,7 +16,7 @@ struct CameraDetailSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(cameras.count == 1 ? "Camera Intel" : "\(cameras.count) Cameras")
+                    Text(cameras.count == 1 ? "Mapped pin" : "\(cameras.count) mapped pins")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundStyle(AppTheme.foreground)
 

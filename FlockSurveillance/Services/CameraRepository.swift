@@ -197,7 +197,7 @@ final class CameraRepository {
 
         let tooLarge = collapseContinental && GeoHelpers.isRegionTooLargeForFullFetch(region)
         coverageHint = tooLarge
-            ? "Zoom into a city to load more cameras — Overpass only serves metro-sized areas."
+            ? "Zoom into a city to load more mapped pins — Overpass only serves metro-sized areas."
             : nil
 
         let tiles = GeoHelpers.queryTiles(
@@ -264,7 +264,7 @@ final class CameraRepository {
                     ? nil
                     : error.localizedDescription
                 if tooLarge {
-                    coverageHint = "Zoom into a city to load more cameras — showing cached pins only."
+                    coverageHint = "Zoom into a city to load more mapped pins — showing cached pins only."
                 }
                 isServingStale = !cameras.isEmpty
                 if cameras.isEmpty {
@@ -329,7 +329,7 @@ final class CameraRepository {
             if loadedAny {
                 self.coverageHint = nil
             } else if self.cameras.count < self.seedMinimumCacheCount {
-                self.coverageHint = "Zoom into a city to load cameras from OpenStreetMap."
+                self.coverageHint = "Zoom into a city to load mapped pins from OpenStreetMap."
             }
         }
     }

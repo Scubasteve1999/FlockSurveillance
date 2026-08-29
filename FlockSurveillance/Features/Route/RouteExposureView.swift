@@ -72,7 +72,7 @@ struct RouteExposureView: View {
             }
             .overlay {
                 if isRouting {
-                    ProgressView("Finding the drive with fewer cameras…")
+                    ProgressView("Finding the drive with fewer mapped pins…")
                         .padding(20)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
@@ -268,7 +268,7 @@ struct RouteExposureView: View {
                 Text("No drive yet")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Tap Home → Work or pick any addresses. We’ll score alternate drives by cameras near each path and recommend the one with the fewest.")
+                Text("Tap Home → Work or pick any addresses. We’ll score alternate drives by mapped pins near each path and recommend the one with the fewest.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
@@ -283,7 +283,7 @@ struct RouteExposureView: View {
                     .tracking(0.8)
                     .foregroundStyle(AppTheme.mutedForeground)
                 Text(analysis.options.count > 1
-                     ? "Tap a route to compare. Recommended has the fewest cameras."
+                     ? "Tap a route to compare. Recommended has the fewest mapped pins."
                      : "MapKit returned one drive for this pair.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
@@ -305,7 +305,7 @@ struct RouteExposureView: View {
                                         StatusBadge(text: "Best", color: AppTheme.accent)
                                     }
                                 }
-                                Text("\(option.cameraCount == 1 ? "1 camera" : "\(option.cameraCount) cameras") · \(String(format: "%.1f mi", option.distance / 1609.34))")
+                                Text("\(option.cameraCount == 1 ? "1 mapped pin" : "\(option.cameraCount) mapped pins") · \(String(format: "%.1f mi", option.distance / 1609.34))")
                                     .font(.system(size: 12, weight: .medium))
                                     .foregroundStyle(AppTheme.mutedForeground)
                             }
@@ -347,7 +347,7 @@ struct RouteExposureView: View {
                             .font(.system(size: 10, weight: .semibold))
                             .tracking(0.8)
                             .foregroundStyle(AppTheme.mutedForeground)
-                        Text(result.cameraCount == 1 ? "1 camera" : "\(result.cameraCount) cameras")
+                        Text(result.cameraCount == 1 ? "1 mapped pin" : "\(result.cameraCount) mapped pins")
                             .font(.system(size: 26, weight: .bold))
                             .foregroundStyle(AppTheme.foreground)
                     }
@@ -433,7 +433,7 @@ struct RouteExposureView: View {
                 .foregroundStyle(AppTheme.foreground)
 
             if result.cameras.isEmpty {
-                Text("No mapped cameras near this drive.")
+                Text("No mapped pins near this drive.")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             } else {
@@ -692,11 +692,11 @@ struct RouteExposureView: View {
         Flock Surveillance — Safest Drive
         From: \(from)
         To: \(to)
-        Cameras on route: \(result.cameraCount) (\(result.flockCount) Flock)
+        Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)
         Watchedness: \(result.exposureScore)
         Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi
         Alternatives scored: \(optionCount)
-        Fewer cameras. Same destination.
+        Fewer mapped pins. Same destination.
         flocksurveillance.com
         \(AppLinks.appStore.absoluteString)
         """

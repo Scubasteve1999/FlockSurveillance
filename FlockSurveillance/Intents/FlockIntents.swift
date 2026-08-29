@@ -67,7 +67,7 @@ enum PendingIntentActions {
 }
 
 struct NearbyCamerasIntent: AppIntent {
-    static let title: LocalizedStringResource = "Check Nearby Cameras"
+    static let title: LocalizedStringResource = "Check Nearby Mapped Pins"
     static let description = IntentDescription("Counts community-mapped cameras within a mile of Home.")
 
     @MainActor
@@ -77,7 +77,7 @@ struct NearbyCamerasIntent: AppIntent {
             return .result(dialog: "Set a Home location in Flock Surveillance settings first.")
         }
         guard snapshot.updatedAt != nil else {
-            return .result(dialog: "Open Flock Surveillance once so it can load cameras near Home.")
+            return .result(dialog: "Open Flock Surveillance once so it can load mapped pins near Home.")
         }
         var dialog = snapshot.count == 1
             ? "There is 1 mapped camera within a mile of Home."
@@ -109,7 +109,7 @@ struct CheckPlaceScoreIntent: AppIntent {
 
 struct StartDriveModeIntent: AppIntent {
     static let title: LocalizedStringResource = "Start Drive Mode"
-    static let description = IntentDescription("Opens route analysis so you can start a lower-camera drive.")
+    static let description = IntentDescription("Opens route analysis so you can start a drive with fewer mapped pins.")
     static let openAppWhenRun = true
 
     @MainActor
@@ -123,7 +123,7 @@ struct StartDriveModeIntent: AppIntent {
 
 struct SafestDriveHomeIntent: AppIntent {
     static let title: LocalizedStringResource = "Safest Drive Home"
-    static let description = IntentDescription("Opens the Route tab and scores the lowest-camera drive from Work to Home.")
+    static let description = IntentDescription("Opens the Route tab and scores the drive with the fewest mapped pins from Work to Home.")
     static let openAppWhenRun = true
 
     @MainActor
@@ -152,7 +152,7 @@ struct FlockShortcuts: AppShortcutsProvider {
                 "Check nearby cameras in \(.applicationName)",
                 "Nearby cameras in \(.applicationName)"
             ],
-            shortTitle: "Nearby cameras",
+            shortTitle: "Nearby mapped pins",
             systemImageName: "camera.metering.spot"
         )
         AppShortcut(
@@ -168,7 +168,7 @@ struct FlockShortcuts: AppShortcutsProvider {
             intent: StartDriveModeIntent(),
             phrases: [
                 "Start drive mode in \(.applicationName)",
-                "Plan a low camera drive in \(.applicationName)"
+                "Plan a drive with fewer mapped pins in \(.applicationName)"
             ],
             shortTitle: "Drive Mode",
             systemImageName: "car.fill"
@@ -177,7 +177,7 @@ struct FlockShortcuts: AppShortcutsProvider {
             intent: SafestDriveHomeIntent(),
             phrases: [
                 "Safest drive home in \(.applicationName)",
-                "Drive home with fewer cameras in \(.applicationName)"
+                "Drive home with fewer mapped pins in \(.applicationName)"
             ],
             shortTitle: "Safest drive home",
             systemImageName: "house.fill"

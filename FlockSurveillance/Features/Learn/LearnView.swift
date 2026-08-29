@@ -29,7 +29,7 @@ struct LearnView: View {
                                         .font(.system(size: 10, weight: .semibold))
                                         .tracking(0.8)
                                         .foregroundStyle(AppTheme.accent)
-                                    Text("From cameras already on your device — incomplete coverage is curiosity, not a blank map.")
+                                    Text("From mapped pins already on your device — incomplete coverage is curiosity, not a blank map.")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundStyle(AppTheme.mutedForeground)
 

@@ -135,6 +135,29 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
     }
 
+    func testPlaceScoreSaturatedHeadlineUsesMappedPins() {
+        let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        let cameras = (0..<30).map { index in
+            ALPRCamera(
+                id: "s\(index)",
+                latitude: 33.75 + Double(index) * 0.0003,
+                longitude: -84.39,
+                manufacturer: "Flock Safety"
+            )
+        }
+        let score = GeoHelpers.placeScore(cameras: cameras, near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(score.grade, "Saturated")
+        XCTAssertEqual(score.headline, "Your block is saturated with mapped pins")
+        XCTAssertFalse(score.headline.contains("cameras"))
+        let area = GeoHelpers.placeScore(
+            cameras: cameras,
+            near: origin,
+            radiusMeters: 1609.34,
+            isPersonal: false
+        )
+        XCTAssertEqual(area.headline, "This area is saturated with mapped pins")
+    }
+
     func testCityRankingsSortsByCount() {
         let atlanta = CLLocationCoordinate2D(latitude: 33.7490, longitude: -84.3880)
         let miami = CLLocationCoordinate2D(latitude: 25.7617, longitude: -80.1918)

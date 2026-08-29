@@ -184,7 +184,7 @@ struct DriveModeView: View {
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(AppTheme.accent)
                             .rotationEffect(.degrees(arrowAngle))
-                            .accessibilityLabel("Direction to next camera")
+                            .accessibilityLabel("Direction to next mapped pin")
                     }
                 }
 
@@ -202,7 +202,7 @@ struct DriveModeView: View {
                 Text("CORRIDOR CLEAR")
                     .font(.system(size: 26, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.densityLow)
-                Text("No remaining mapped cameras on this drive.")
+                Text("No remaining mapped pins on this drive.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }

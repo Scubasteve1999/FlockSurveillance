@@ -143,7 +143,7 @@ struct SettingsView: View {
                                             reseedAlerts()
                                         }
                                     )) {
-                                        labelRow("Flock cameras only", "Skip other ALPR manufacturers")
+                                        labelRow("Flock pins only", "Skip other ALPR manufacturers")
                                     }
                                     .tint(AppTheme.accent)
 
@@ -365,7 +365,7 @@ struct SettingsView: View {
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
 
-                                Text("\(repository.cameras.count == 1 ? "1 camera" : "\(repository.cameras.count) cameras") cached locally")
+                                Text("\(repository.cameras.count == 1 ? "1 mapped pin" : "\(repository.cameras.count) mapped pins") cached locally")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundStyle(AppTheme.foreground)
 
@@ -374,7 +374,7 @@ struct SettingsView: View {
                                     didClearCache = true
                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 } label: {
-                                    Label("Clear camera cache", systemImage: "trash")
+                                    Label("Clear mapped pin cache", systemImage: "trash")
                                         .font(.system(size: 14, weight: .semibold))
                                 }
 

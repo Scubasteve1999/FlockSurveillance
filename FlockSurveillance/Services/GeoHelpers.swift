@@ -450,7 +450,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         case "Light": return "\(subject) is lightly watched"
         case "Watched": return "\(subject) is watched"
         case "Heavy": return "\(subject) is heavily watched"
-        default: return "\(subject) is saturated with cameras"
+        default: return "\(subject) is saturated with mapped pins"
         }
     }
 

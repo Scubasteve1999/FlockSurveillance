@@ -81,7 +81,7 @@ enum OverpassError: LocalizedError {
         switch self {
         case .invalidURL: return "Could not reach the OpenStreetMap Overpass API."
         case .httpStatus(let code): return "Overpass returned HTTP \(code)."
-        case .decoding: return "Could not parse camera data."
+        case .decoding: return "Could not parse OpenStreetMap pin data."
         case .emptyRegion: return "Map region is too small to query."
         case .runtimeRemark: return "Overpass reported a runtime error."
         }

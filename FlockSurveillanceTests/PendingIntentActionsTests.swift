@@ -84,6 +84,31 @@ final class PendingIntentActionsTests: XCTestCase {
         XCTAssertFalse(GeoHelpers.isValidMapCoordinate(CLLocationCoordinate2D(latitude: .nan, longitude: -84.39)))
     }
 
+    func testNearbyCamerasIntentTitleUsesMappedPins() {
+        XCTAssertEqual(String(localized: NearbyCamerasIntent.title), "Check Nearby Mapped Pins")
+    }
+
+    func testNearbyCamerasIntentDescriptionAndSiriPhrasesUseMappedPins() throws {
+        let source = try String(contentsOf: flockIntentsSourceURL(), encoding: .utf8)
+        XCTAssertTrue(
+            source.contains("Counts community-mapped ALPR pins within a mile of Home.")
+        )
+        XCTAssertTrue(source.contains("How many mapped pins are near me in \\(.applicationName)"))
+        XCTAssertTrue(source.contains("Check nearby mapped pins in \\(.applicationName)"))
+        XCTAssertTrue(source.contains("Nearby mapped pins in \\(.applicationName)"))
+        XCTAssertFalse(source.contains("community-mapped cameras"))
+        XCTAssertFalse(source.contains("Check nearby cameras"))
+        XCTAssertFalse(source.contains("Nearby cameras in"))
+        XCTAssertFalse(source.contains("How many cameras are near me"))
+    }
+
+    private func flockIntentsSourceURL() -> URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("FlockSurveillance/Intents/FlockIntents.swift")
+    }
+
     private func clearPending() {
         PendingIntentActions.placeScoreRequested = false
         PendingIntentActions.mapFocusCoordinate = nil

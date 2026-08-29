@@ -68,7 +68,7 @@ enum PendingIntentActions {
 
 struct NearbyCamerasIntent: AppIntent {
     static let title: LocalizedStringResource = "Check Nearby Mapped Pins"
-    static let description = IntentDescription("Counts community-mapped cameras within a mile of Home.")
+    static let description = IntentDescription("Counts community-mapped ALPR pins within a mile of Home.")
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
@@ -148,9 +148,9 @@ struct FlockShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: NearbyCamerasIntent(),
             phrases: [
-                "How many cameras are near me in \(.applicationName)",
-                "Check nearby cameras in \(.applicationName)",
-                "Nearby cameras in \(.applicationName)"
+                "How many mapped pins are near me in \(.applicationName)",
+                "Check nearby mapped pins in \(.applicationName)",
+                "Nearby mapped pins in \(.applicationName)"
             ],
             shortTitle: "Nearby mapped pins",
             systemImageName: "camera.metering.spot"

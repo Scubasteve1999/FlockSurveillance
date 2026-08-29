@@ -31,7 +31,7 @@ struct DriveLiveActivityWidget: Widget {
                         Text("\(context.state.remaining)")
                             .font(.system(size: 24, weight: .black, design: .rounded))
                             .foregroundStyle(.white)
-                        Text("GRID AHEAD")
+                        Text("PINS AHEAD")
                             .font(.system(size: 9, weight: .heavy, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.55))
                     }
@@ -57,7 +57,7 @@ struct DriveLiveActivityWidget: Widget {
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                         Spacer()
-                        Text("\(context.state.remaining) AHEAD · \(context.state.exposureLabel)")
+                        Text("\(context.state.remaining) PINS · \(context.state.exposureLabel)")
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
                             .foregroundStyle(.secondary)
                     }

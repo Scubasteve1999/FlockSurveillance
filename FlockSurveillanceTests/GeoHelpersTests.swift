@@ -130,6 +130,8 @@ final class GeoHelpersTests: XCTestCase {
         )
         XCTAssertTrue(area.headline.hasPrefix("This area"))
         XCTAssertTrue(score.shareText.contains("cameras"))
+        XCTAssertTrue(score.cameraCountLabel.contains("mapped"))
+        XCTAssertTrue(score.shareText.contains("Mapped OSM pins"))
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
     }
 

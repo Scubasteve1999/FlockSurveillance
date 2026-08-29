@@ -126,7 +126,7 @@ struct RouteExposureView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("OVERWATCH · DRIVE LIVE")
+                        Text("OVERWATCH · DRIVE")
                             .font(.system(size: 10, weight: .black, design: .monospaced))
                             .tracking(0.8)
                             .foregroundStyle(AppTheme.primary)
@@ -140,7 +140,7 @@ struct RouteExposureView: View {
                         .foregroundStyle(AppTheme.foreground)
                     }
                     Spacer()
-                    Text("\(driveSession.camerasRemaining) AHEAD")
+                    Text("\(driveSession.camerasRemaining) PINS AHEAD")
                         .font(.system(size: 12, weight: .black, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
                 }

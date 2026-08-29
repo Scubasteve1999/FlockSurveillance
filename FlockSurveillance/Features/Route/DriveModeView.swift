@@ -228,7 +228,7 @@ struct DriveModeView: View {
             .frame(height: 5)
 
             HStack {
-                Text("\(driveSession.camerasRemaining) GRID AHEAD")
+                Text("\(driveSession.camerasRemaining) PINS AHEAD")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
                 Spacer()

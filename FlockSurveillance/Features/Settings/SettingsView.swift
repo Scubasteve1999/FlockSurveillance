@@ -55,7 +55,7 @@ struct SettingsView: View {
                         OverwatchPageHeader(
                             eyebrow: "OVERWATCH · GEAR",
                             title: "Settings",
-                            subtitle: "Tune radar, Home & Work for commute, and local cache."
+                            subtitle: "Tune Overwatch, Home & Work for commute, and local cache."
                         )
 
                         SectionCard {

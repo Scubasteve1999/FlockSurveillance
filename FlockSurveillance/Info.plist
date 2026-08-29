@@ -40,7 +40,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.</string>
+	<string>Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIBackgroundModes</key>

@@ -17,9 +17,10 @@ struct CoverageConfidence: Equatable {
     let state: FetchState
     let freshnessShort: String?
 
-    /// Compact instrument line, e.g. `Fetched · 42 · 18% facing · 3m`.
+    /// Compact instrument line, e.g. `Fetched · 42 pins · 18% facing · 3m`.
     var instrumentLine: String {
-        var parts: [String] = [stateLabel, "\(visibleCount)"]
+        let pinLabel = visibleCount == 1 ? "1 pin" : "\(visibleCount) pins"
+        var parts: [String] = [stateLabel, pinLabel]
         parts.append("\(facingPercent)% facing")
         if let freshnessShort, !freshnessShort.isEmpty {
             parts.append(freshnessShort)

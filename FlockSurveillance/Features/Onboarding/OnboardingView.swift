@@ -194,7 +194,7 @@ struct OnboardingView: View {
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
 
-            Text("See the cameras watching you.")
+            Text("See mapped cameras near you.")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.primary)
                 .multilineTextAlignment(.center)

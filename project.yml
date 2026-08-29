@@ -53,7 +53,7 @@ targets:
           - CFBundleURLName: com.flocksurveillance.app
             CFBundleURLSchemes:
               - flocksurveillance
-        NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby ALPR cameras and route exposure.
+        NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.
         NSLocationAlwaysAndWhenInUseUsageDescription: Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.
         NSCameraUsageDescription: Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.
     settings:

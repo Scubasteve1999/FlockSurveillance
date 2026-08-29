@@ -29,7 +29,7 @@ struct CameraAnnotationView: View {
             }
         }
         .shadow(color: color.opacity(0.7), radius: 10, y: 0)
-        .accessibilityLabel(count > 1 ? "\(count) ALPR cameras" : "ALPR camera")
+        .accessibilityLabel(count > 1 ? "\(count) mapped ALPR cameras" : "mapped ALPR camera")
     }
 }
 
@@ -65,12 +65,12 @@ struct RadarHUD: View {
 
     private var modeLabel: String {
         if inWatchedZone { return WatchedZoneCopy.hudActiveLabel }
-        if watchModeEnabled { return "OVERWATCH LIVE" }
+        if watchModeEnabled { return "OVERWATCH ON" }
         return "OVERWATCH"
     }
 
     private var visibleCountLabel: String {
-        visibleCount == 1 ? "1 camera" : "\(visibleCount) cameras"
+        visibleCount == 1 ? "1 mapped pin" : "\(visibleCount) mapped pins"
     }
 
     var body: some View {
@@ -145,7 +145,7 @@ struct RadarHUD: View {
                     VStack(spacing: 3) {
                         Image(systemName: watchModeEnabled ? "dot.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right")
                             .font(.system(size: 14, weight: .bold))
-                        Text(watchModeEnabled ? "LIVE" : "ARM")
+                        Text(watchModeEnabled ? "ON" : "ARM")
                             .font(.system(size: 10, weight: .black))
                             .tracking(0.6)
                     }
@@ -358,7 +358,7 @@ struct RadarHUD: View {
                     .font(.system(size: 30, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.foreground)
                     .contentTransition(.numericText())
-                Text(inWatchedZone ? "HOT" : (watchModeEnabled ? "LIVE" : "VIEW"))
+                Text(inWatchedZone ? "HOT" : (watchModeEnabled ? "ON" : "PINS"))
                     .font(.system(size: 9, weight: .black))
                     .tracking(1.2)
                     .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)
@@ -440,7 +440,7 @@ struct LocationDeniedBanner: View {
                 Text("Location off")
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Enable location to power radar and route exposure.")
+                Text("Enable location to show nearby mapped pins and route exposure.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }

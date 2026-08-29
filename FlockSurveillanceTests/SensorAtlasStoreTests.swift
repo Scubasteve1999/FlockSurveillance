@@ -123,6 +123,8 @@ final class SensorAtlasStoreTests: XCTestCase {
         XCTAssertTrue(body.lowercased().contains("mapped"))
         XCTAssertTrue(body.contains("not a plate-read"))
         XCTAssertFalse(body.lowercased().contains("scanned your plate"))
+        XCTAssertFalse(body.lowercased().contains("detected"))
+        XCTAssertFalse(body.lowercased().contains("pinged"))
         XCTAssertEqual(WatchedZoneCopy.hudActiveLabel, "WATCHED ZONE")
         XCTAssertTrue(WatchedZoneCopy.leftBody(passedCount: 2).contains("cleared"))
         XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("mapped"))

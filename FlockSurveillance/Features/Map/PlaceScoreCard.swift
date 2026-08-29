@@ -66,7 +66,7 @@ struct WatchednessDial: View {
                     .foregroundStyle(AppTheme.primary)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
-                Text(cameraCount == 1 ? "1 CAM" : "\(cameraCount) CAMS")
+                Text(cameraCount == 1 ? "1 PIN" : "\(cameraCount) PINS")
                     .font(.system(size: size * 0.08, weight: .bold))
                     .tracking(0.6)
                     .foregroundStyle(AppTheme.mutedForeground)

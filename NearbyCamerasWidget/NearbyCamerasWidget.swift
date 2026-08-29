@@ -93,6 +93,11 @@ struct NearbyCamerasWidgetView: View {
                     .font(.system(size: 18, weight: .black))
             }
         }
+        .accessibilityLabel(
+            entry.hasHome
+                ? "\(pinCountLabel) mapped near Home"
+                : "Set Home in Overwatch"
+        )
         .containerBackground(for: .widget) { Color.clear }
         .widgetURL(URL(string: "flocksurveillance://map"))
     }

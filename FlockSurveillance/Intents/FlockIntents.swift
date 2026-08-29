@@ -80,8 +80,8 @@ struct NearbyCamerasIntent: AppIntent {
             return .result(dialog: "Open Flock Surveillance once so it can load cameras near Home.")
         }
         var dialog = snapshot.count == 1
-            ? "There is 1 camera within a mile of Home."
-            : "There are \(snapshot.count) cameras within a mile of Home."
+            ? "There is 1 mapped camera within a mile of Home."
+            : "There are \(snapshot.count) mapped cameras within a mile of Home."
         if let nearest = snapshot.nearestMeters {
             dialog += " The nearest is \(ProximityRadar.formatDistance(nearest)) away."
         }

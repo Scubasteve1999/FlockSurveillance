@@ -160,7 +160,7 @@ struct OverwatchThreatTicker: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text(inWatchedZone ? "// GRID" : "// SCAN")
+            Text(inWatchedZone ? "// GRID" : "// MAP")
                 .font(.system(size: 10, weight: .black, design: .monospaced))
                 .foregroundStyle(level.color)
             Text("·")

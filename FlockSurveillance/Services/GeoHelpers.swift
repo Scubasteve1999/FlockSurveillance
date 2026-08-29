@@ -455,7 +455,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     }
 
     var cameraCountLabel: String {
-        cameraCount == 1 ? "1 camera" : "\(cameraCount) cameras"
+        cameraCount == 1 ? "1 mapped camera" : "\(cameraCount) mapped cameras"
     }
 
     var shareText: String {

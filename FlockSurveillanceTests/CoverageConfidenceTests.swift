@@ -181,6 +181,7 @@ final class CoverageConfidenceTests: XCTestCase {
         )
         XCTAssertEqual(confidence.state, .fetched)
         XCTAssertTrue(confidence.instrumentLine.contains("Fetched"))
+        XCTAssertTrue(confidence.instrumentLine.contains("1 pin"))
         XCTAssertTrue(confidence.instrumentLine.contains("100% facing"))
         XCTAssertTrue(confidence.instrumentLine.contains("2m"))
     }

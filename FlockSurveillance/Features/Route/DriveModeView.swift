@@ -194,7 +194,7 @@ struct DriveModeView: View {
                     .lineLimit(1)
 
                 if inHotApproach {
-                    Text("HOT APPROACH — mapped pin only, not a plate read")
+                    Text("ZONE APPROACH — mapped pin only, not a plate read")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(AppTheme.critical.opacity(0.9))
                 }

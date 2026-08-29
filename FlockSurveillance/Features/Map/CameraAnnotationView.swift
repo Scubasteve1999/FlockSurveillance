@@ -145,7 +145,7 @@ struct RadarHUD: View {
                     VStack(spacing: 3) {
                         Image(systemName: watchModeEnabled ? "dot.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right")
                             .font(.system(size: 14, weight: .bold))
-                        Text(watchModeEnabled ? "ON" : "ARM")
+                        Text(watchModeEnabled ? "ON" : "SET")
                             .font(.system(size: 10, weight: .black))
                             .tracking(0.6)
                     }
@@ -171,7 +171,7 @@ struct RadarHUD: View {
                     .shadow(color: watchModeEnabled ? AppTheme.primary.opacity(0.55) : .clear, radius: 10, y: 0)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Arm overwatch mode")
+                .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Set overwatch mode")
             }
 
             // Threat meter bar
@@ -358,7 +358,7 @@ struct RadarHUD: View {
                     .font(.system(size: 30, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.foreground)
                     .contentTransition(.numericText())
-                Text(inWatchedZone ? "HOT" : (watchModeEnabled ? "ON" : "PINS"))
+                Text(inWatchedZone ? "ZONE" : (watchModeEnabled ? "ON" : "PINS"))
                     .font(.system(size: 9, weight: .black))
                     .tracking(1.2)
                     .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)

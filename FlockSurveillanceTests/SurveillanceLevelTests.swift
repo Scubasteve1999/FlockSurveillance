@@ -64,4 +64,15 @@ final class SurveillanceLevelTests: XCTestCase {
             XCTAssertGreaterThan(fills[i], fills[i - 1])
         }
     }
+
+    func testCriticalCopyIsWatchedZoneNotDetector() {
+        XCTAssertEqual(SurveillanceLevel.critical.chip, "ZONE")
+        XCTAssertEqual(SurveillanceLevel.critical.title, "WATCHED ZONE")
+        for level in SurveillanceLevel.allCases {
+            XCTAssertFalse(level.chip.contains("HOT"))
+            XCTAssertFalse(level.title.contains("HOT"))
+            XCTAssertFalse(level.chip.contains("ARM"))
+            XCTAssertFalse(level.title.contains("ARM"))
+        }
+    }
 }

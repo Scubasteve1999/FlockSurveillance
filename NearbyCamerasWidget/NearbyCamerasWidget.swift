@@ -51,7 +51,7 @@ struct NearbyCamerasWidgetView: View {
         case 1...4: return "LOW"
         case 5...14: return "ELEV"
         case 15...29: return "HIGH"
-        default: return "HOT"
+        default: return "ZONE"
         }
     }
 

@@ -23,6 +23,22 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def marketing_version() -> str:
+    for line in (ROOT / "project.yml").read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("MARKETING_VERSION:"):
+            return stripped.split(":", 1)[1].strip().strip("\"'")
+    raise SystemExit("MARKETING_VERSION missing from project.yml")
+
+
+USER_AGENT = (
+    f"FlockSurveillance/{marketing_version()} "
+    "(civic transparency; gazetteer cache)"
+)
+
 DATASET_URL = "https://deflockdane.org/shared-networks/dataset.json"
 ATTRIBUTION_URL = "https://deflockdane.org/shared-networks/"
 
@@ -239,7 +255,7 @@ def download_cached(url: str, dest: Path) -> Path:
         return dest
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "FlockSurveillance/1.8 (civic transparency; gazetteer cache)"},
+        headers={"User-Agent": USER_AGENT},
     )
     with urllib.request.urlopen(request, timeout=120) as resp:
         dest.write_bytes(resp.read())

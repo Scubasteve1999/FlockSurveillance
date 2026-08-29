@@ -106,7 +106,7 @@ stay honest: "near mapped pins," not "detected."
   driving-task entitlement. Declaring `CPTemplateApplicationSceneSessionRoleApplication` early
   freezes iPad onboarding and scene transitions. Scene code is inert without it. See `project.yml`.
 - Version lives in `project.yml` (`MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`), not in Xcode.
-- Overpass/OSM `User-Agent` still reports `1.5` — known stale, low priority.
+- Overpass/OSM `User-Agent` is `OSMHTTPIdentity` and tracks `MARKETING_VERSION` via Info.plist.
 
 ## Working agreements
 

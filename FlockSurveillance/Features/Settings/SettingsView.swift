@@ -74,7 +74,7 @@ struct SettingsView: View {
                                 .tint(AppTheme.accent)
 
                                 Toggle(isOn: $showHeatDefault) {
-                                    labelRow("Coverage heat by default", "Show density circles on the map")
+                                    labelRow("Pin-density heat by default", "Show density of mapped pins in view — not city coverage")
                                 }
                                 .tint(AppTheme.accent)
 

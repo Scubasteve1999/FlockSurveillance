@@ -165,6 +165,7 @@ struct RadarHUD: View {
                 .foregroundStyle(AppTheme.mutedForeground)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
+                .accessibilityLabel(confidence.instrumentAccessibilityLabel)
 
             if let coverageHint {
                 Text(coverageHint)
@@ -327,17 +328,17 @@ struct RadarHUD: View {
                 .rotationEffect(.degrees(-90))
                 .shadow(color: levelColor.opacity(0.55), radius: 6, y: 0)
 
-            // Radar sweep (overwatch / zone)
+            // Quiet Overwatch tick — short arc, not a live-detector sweep.
             if watchModeEnabled || inWatchedZone {
                 Circle()
-                    .trim(from: 0, to: 0.18)
+                    .trim(from: 0, to: 0.07)
                     .stroke(
-                        levelColor.opacity(0.85),
-                        style: StrokeStyle(lineWidth: 2.5, lineCap: .round)
+                        levelColor.opacity(0.45),
+                        style: StrokeStyle(lineWidth: 2, lineCap: .round)
                     )
                     .frame(width: 108, height: 108)
                     .rotationEffect(.degrees(sweepAngle))
-                    .opacity(0.9)
+                    .opacity(0.7)
             }
 
             if inWatchedZone {
@@ -366,7 +367,7 @@ struct RadarHUD: View {
             sweepAngle = 45
             return
         }
-        withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
+        withAnimation(.linear(duration: 4.2).repeatForever(autoreverses: false)) {
             sweepAngle = 360
         }
     }

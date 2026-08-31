@@ -17,15 +17,27 @@ struct CoverageConfidence: Equatable {
     let state: FetchState
     let freshnessShort: String?
 
-    /// Compact instrument line, e.g. `Fetched · 42 pins · 18% facing · 3m`.
+    /// Compact instrument line, e.g. `Fetched · 42 pins · 18% with facing · 3m`.
+    /// `with facing` is the share of viewport OSM pins that have a direction tag — not heading toward the user.
     var instrumentLine: String {
         let pinLabel = visibleCount == 1 ? "1 pin" : "\(visibleCount) pins"
         var parts: [String] = [stateLabel, pinLabel]
-        parts.append("\(facingPercent)% facing")
+        parts.append("\(facingPercent)% with facing")
         if let freshnessShort, !freshnessShort.isEmpty {
             parts.append(freshnessShort)
         }
         return parts.joined(separator: " · ")
+    }
+
+    /// VoiceOver: tagged-direction share, never “cameras facing you.”
+    var instrumentAccessibilityLabel: String {
+        let pinLabel = visibleCount == 1 ? "1 pin" : "\(visibleCount) pins"
+        var parts: [String] = [stateLabel, pinLabel]
+        parts.append("\(facingPercent) percent of pins have a tagged direction")
+        if let freshnessShort, !freshnessShort.isEmpty {
+            parts.append(freshnessShort)
+        }
+        return parts.joined(separator: ", ")
     }
 
     private var stateLabel: String {

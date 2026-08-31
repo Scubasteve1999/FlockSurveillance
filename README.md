@@ -9,7 +9,7 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 - **Sensor Atlas** — municipal traffic CCTV layer (Madison + Milwaukee WisDOT snapshot). Auto-enables when you’re in those metros (dismissible; respects manual off). Tap a gold pin for a hero still + “not ALPR” frame. Does not feed proximity alerts.
 - **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
 - **Watched-zone proximity** — geofenced alerts and radar HUD when your phone is near mapped OSM ALPR pins (honest “near mapped pins” copy — not plate-read detection)
-- **Coverage Confidence** — radar instrument shows fetch state, facing %, and freshness; ghost pins soft-clear after a successful OSM refresh
+- **Coverage Confidence** — radar instrument shows fetch state, tagged-direction share (`with facing`), and freshness; ghost pins soft-clear after a successful OSM refresh
 - **Surveillance Radar Shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
 - **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
 - **Coverage Engine** — tracked OSM reports with pending map pins, note status checks, and a notification when your camera lands
@@ -24,7 +24,7 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 - **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget (“Cameras near Home”)
 - **Community reporting** — flag unmapped or changed cameras as anonymous OpenStreetMap notes; tracked until mapped
 - **CarPlay Drive Mode** — driving-task template mirroring the HUD (code ready; awaits Apple's CarPlay entitlement). Do **not** add the CarPlay scene manifest to Info.plist until the entitlement is approved — declaring it early freezes iPad scene transitions.
-- **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, coverage heat, freshness label, optional approach haptics
+- **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, mapped-pin density heat, freshness label, optional approach haptics
 - **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
 - **Camera FOV cones** — short map wedges + detail preview when OSM `camera:direction` / `direction` is tagged
 - **Safest Drive** — MapKit driving directions + alternates, per-route camera fetch, shareable drive report, Start Drive + Live Activity tip

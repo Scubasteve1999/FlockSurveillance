@@ -649,7 +649,7 @@ struct MapRadarView: View {
                 headerRailButton(
                     systemName: showHeat ? "circle.hexagongrid.fill" : "circle.hexagongrid",
                     tint: showHeat ? AppTheme.accent : AppTheme.mutedForeground,
-                    label: showHeat ? "Hide coverage heat" : "Show coverage heat"
+                    label: showHeat ? "Hide mapped-pin density" : "Show mapped-pin density"
                 ) {
                     withAnimation(.easeInOut(duration: 0.25)) {
                         showHeat.toggle()

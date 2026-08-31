@@ -130,6 +130,17 @@ struct MapRadarView: View {
         )
     }
 
+    /// Keep repository sparse/seed hints. After a successful fetch with 0 pins in view, name the next tap.
+    private var mapCoverageHint: String? {
+        if let hint = repository.coverageHint { return hint }
+        guard camerasInView.isEmpty,
+              !locationDenied,
+              !repository.isLoading,
+              repository.lastSuccessfulFetchAt != nil
+        else { return nil }
+        return "Zoom into a city, or tap Report on the tool rail."
+    }
+
     var body: some View {
         GeometryReader { geo in
             mapStack(size: geo.size)
@@ -309,7 +320,7 @@ struct MapRadarView: View {
                 inWatchedZone: inWatchedZone,
                 densityLabel: AppTheme.densityLabel(count: camerasInView.count),
                 confidence: coverageConfidence,
-                coverageHint: repository.coverageHint,
+                coverageHint: mapCoverageHint,
                 errorMessage: repository.lastError,
                 watchModeEnabled: radar.watchModeEnabled,
                 onToggleWatch: toggleWatchMode

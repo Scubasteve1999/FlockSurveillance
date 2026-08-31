@@ -431,15 +431,16 @@ struct LocationDeniedBanner: View {
         HStack(spacing: 12) {
             Image(systemName: "location.slash.fill")
                 .foregroundStyle(AppTheme.primary)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("Location off")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 16, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Enable location to show nearby mapped pins and route exposure.")
+                Text("Tap Settings to show nearby mapped OSM pins.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            Spacer()
+            Spacer(minLength: 8)
             Button("Settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
@@ -448,13 +449,30 @@ struct LocationDeniedBanner: View {
             .font(.system(size: 13, weight: .bold))
             .foregroundStyle(AppTheme.accent)
         }
-        .padding(12)
-        .background(AppTheme.card.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .padding(14)
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                AppTheme.card.opacity(0.85),
+                                AppTheme.cardBottom.opacity(0.95)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
                 .stroke(AppTheme.border, lineWidth: 1)
         )
+        .shadow(color: .black.opacity(0.4), radius: 8, y: 4)
         .padding(.horizontal, 16)
     }
 }

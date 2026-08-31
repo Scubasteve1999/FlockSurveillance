@@ -129,6 +129,10 @@ final class SensorAtlasStoreTests: XCTestCase {
         XCTAssertTrue(WatchedZoneCopy.leftBody(passedCount: 2).contains("cleared"))
         XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("mapped"))
         XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("not plate"))
+        XCTAssertEqual(
+            WatchedZoneCopy.mappedOperatorCaption("Flock Safety"),
+            "Mapped operator · Flock Safety"
+        )
     }
 
     func testAllowlistBlocksForeignHosts() {

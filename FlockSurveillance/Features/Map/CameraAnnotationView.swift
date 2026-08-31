@@ -63,10 +63,11 @@ struct RadarHUD: View {
 
     private var targetRing: CGFloat { level.dialFill }
 
-    private var modeLabel: String {
+    /// One headline: WATCHED ZONE while inside, otherwise the surveillance title.
+    /// Density (Saturated, etc.) stays a badge — not a second shout.
+    private var headline: String {
         if inWatchedZone { return WatchedZoneCopy.hudActiveLabel }
-        if watchModeEnabled { return "OVERWATCH ON" }
-        return "OVERWATCH"
+        return level.title
     }
 
     private var visibleCountLabel: String {
@@ -75,17 +76,17 @@ struct RadarHUD: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center, spacing: 14) {
+            HStack(alignment: .top, spacing: 12) {
                 tacticalDial
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
                         inWatchedZone
-                            ? "Watched zone. \(visibleCountLabel) in view, \(level.title). Phone near mapped ALPR pins, not a plate-read alert."
-                            : "\(visibleCountLabel) in view, \(level.title)"
+                            ? "Watched zone. \(visibleCountLabel) in view, \(headline). Phone near mapped ALPR pins, not a plate-read alert."
+                            : "\(visibleCountLabel) in view, \(headline)"
                     )
 
-                VStack(alignment: .leading, spacing: 7) {
-                    HStack(spacing: 6) {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
                         if inWatchedZone || watchModeEnabled {
                             Circle()
                                 .fill(levelColor)
@@ -93,21 +94,14 @@ struct RadarHUD: View {
                                 .opacity(zonePulse ? 0.2 : 1)
                                 .shadow(color: levelColor.opacity(0.9), radius: zonePulse ? 6 : 2)
                         }
-                        Text(modeLabel)
-                            .font(.system(size: 10, weight: .heavy))
-                            .tracking(1.1)
-                            .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)
+                        Text(headline)
+                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .foregroundStyle(AppTheme.foreground)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .contentTransition(.opacity)
                     }
 
-                    HStack(spacing: 6) {
-                        StatusBadge(text: level.chip, color: levelColor)
-                        StatusBadge(text: densityLabel, color: AppTheme.densityColor(count: visibleCount))
-                    }
-
-                    Text(level.title)
-                        .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(AppTheme.foreground)
-                        .contentTransition(.opacity)
+                    StatusBadge(text: densityLabel, color: AppTheme.densityColor(count: visibleCount))
 
                     if inWatchedZone {
                         Text(WatchedZoneCopy.hudActiveSubtitle)
@@ -127,10 +121,10 @@ struct RadarHUD: View {
                                 .contentTransition(.numericText())
                         }
                         if let nearestLabel {
-                            Text(nearestLabel)
+                            Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(AppTheme.mutedForeground)
-                                .lineLimit(1)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     } else {
                         Text("NO LOCK")
@@ -138,40 +132,7 @@ struct RadarHUD: View {
                             .foregroundStyle(AppTheme.mutedForeground)
                     }
                 }
-
-                Spacer(minLength: 0)
-
-                Button(action: onToggleWatch) {
-                    VStack(spacing: 3) {
-                        Image(systemName: watchModeEnabled ? "dot.radiowaves.left.and.right" : "antenna.radiowaves.left.and.right")
-                            .font(.system(size: 14, weight: .bold))
-                        Text(watchModeEnabled ? "ON" : "SET")
-                            .font(.system(size: 10, weight: .black))
-                            .tracking(0.6)
-                    }
-                    .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
-                    .frame(width: 56, height: 56)
-                    .background(
-                        watchModeEnabled
-                            ? AnyShapeStyle(LinearGradient(
-                                colors: [AppTheme.primary, AppTheme.critical],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            : AnyShapeStyle(AppTheme.card)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .stroke(
-                                watchModeEnabled ? AppTheme.primary.opacity(0.0) : AppTheme.border,
-                                lineWidth: 1
-                            )
-                    )
-                    .shadow(color: watchModeEnabled ? AppTheme.primary.opacity(0.55) : .clear, radius: 10, y: 0)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Set overwatch mode")
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             // Threat meter bar
@@ -219,12 +180,10 @@ struct RadarHUD: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            HStack {
+            HStack(alignment: .center, spacing: 8) {
                 DataSourcePill()
-                Spacer()
-                Text("ROUTE · lower-cam drives")
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(AppTheme.mutedForeground)
+                Spacer(minLength: 8)
+                overwatchToggle
             }
         }
         .padding(14)
@@ -297,6 +256,41 @@ struct RadarHUD: View {
         }
     }
 
+    private var overwatchToggle: some View {
+        Button(action: onToggleWatch) {
+            HStack(spacing: 5) {
+                Image(systemName: watchModeEnabled ? "eye.fill" : "eye")
+                    .font(.system(size: 12, weight: .bold))
+                Text(watchModeEnabled ? "ON" : "SET")
+                    .font(.system(size: 11, weight: .black))
+                    .tracking(0.6)
+            }
+            .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                watchModeEnabled
+                    ? AnyShapeStyle(LinearGradient(
+                        colors: [AppTheme.primary, AppTheme.critical],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    : AnyShapeStyle(AppTheme.card)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
+                    .stroke(
+                        watchModeEnabled ? AppTheme.primary.opacity(0.0) : AppTheme.border,
+                        lineWidth: 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .fixedSize()
+        .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Set overwatch mode")
+    }
+
     private var tacticalDial: some View {
         ZStack {
             // Outer glow when hot
@@ -358,10 +352,10 @@ struct RadarHUD: View {
                     .font(.system(size: 30, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.foreground)
                     .contentTransition(.numericText())
-                Text(inWatchedZone ? "ZONE" : (watchModeEnabled ? "ON" : "PINS"))
+                Text(visibleCount == 1 ? "PIN" : "PINS")
                     .font(.system(size: 9, weight: .black))
                     .tracking(1.2)
-                    .foregroundStyle(inWatchedZone || watchModeEnabled ? levelColor : AppTheme.mutedForeground)
+                    .foregroundStyle(AppTheme.mutedForeground)
             }
         }
         .frame(width: 118, height: 118)

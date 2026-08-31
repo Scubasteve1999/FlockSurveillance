@@ -55,11 +55,14 @@ struct CoverageConfidence: Equatable {
         now: Date = .now
     ) -> CoverageConfidence {
         let state: FetchState
-        if isLoading {
+        let hasPins = !visibleCameras.isEmpty
+        // Pins already on screen are never "Loading" — that footer flickered as
+        // `Loading · 116 pins` during refresh. Fetched / cached / error only.
+        if isLoading && !hasPins {
             state = .loading
-        } else if isSeeding {
+        } else if isSeeding && !hasPins {
             state = .seeding
-        } else if lastError != nil, !isServingStale || visibleCameras.isEmpty {
+        } else if lastError != nil, !isServingStale || !hasPins {
             state = .error
         } else if isServingStale || !hasViewportFetch {
             // Cold cache / seed-only / failed-fetch fallback — not a fresh viewport fetch.

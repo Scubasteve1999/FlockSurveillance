@@ -215,4 +215,36 @@ final class CoverageConfidenceTests: XCTestCase {
         XCTAssertEqual(confidence.state, .loading)
         XCTAssertTrue(confidence.instrumentLine.hasPrefix("Loading"))
     }
+
+    func testInstrumentLineNeverLoadingWhenPinsVisible() {
+        let cameras = [
+            ALPRCamera(id: "1", latitude: 33.75, longitude: -84.39)
+        ]
+        let refreshing = CoverageConfidence.make(
+            visibleCameras: cameras,
+            isLoading: true,
+            isSeeding: false,
+            isServingStale: false,
+            lastError: nil,
+            lastSuccessfulFetchAt: Date().addingTimeInterval(-120),
+            hasViewportFetch: true
+        )
+        XCTAssertEqual(refreshing.state, .fetched)
+        XCTAssertTrue(refreshing.instrumentLine.hasPrefix("Fetched"))
+        XCTAssertTrue(refreshing.instrumentLine.contains("1 pin"))
+        XCTAssertFalse(refreshing.instrumentLine.contains("Loading"))
+
+        let cachedWhileRefresh = CoverageConfidence.make(
+            visibleCameras: cameras,
+            isLoading: true,
+            isSeeding: true,
+            isServingStale: false,
+            lastError: nil,
+            lastSuccessfulFetchAt: Date().addingTimeInterval(-3600),
+            hasViewportFetch: false
+        )
+        XCTAssertEqual(cachedWhileRefresh.state, .stale)
+        XCTAssertTrue(cachedWhileRefresh.instrumentLine.hasPrefix("Cached"))
+        XCTAssertFalse(cachedWhileRefresh.instrumentLine.contains("Loading"))
+    }
 }

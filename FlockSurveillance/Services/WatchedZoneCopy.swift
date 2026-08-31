@@ -23,4 +23,9 @@ enum WatchedZoneCopy {
 
     static let hudActiveLabel = "WATCHED ZONE"
     static let hudActiveSubtitle = "Phone GPS near mapped ALPR pins — not plate reads"
+
+    /// Caption under LOCK — nearest pin's OSM operator, not this app's brand.
+    static func mappedOperatorCaption(_ name: String) -> String {
+        "Mapped operator · \(name)"
+    }
 }

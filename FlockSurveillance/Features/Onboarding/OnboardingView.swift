@@ -86,7 +86,7 @@ struct OnboardingView: View {
                 }
 
                 if coldLine >= 2 {
-                    Text("BEING MAPPED")
+                    Text("NEAR MAPPED PINS")
                         .font(.system(size: 34, weight: .black))
                         .tracking(1.5)
                         .foregroundStyle(AppTheme.primary)
@@ -127,7 +127,7 @@ struct OnboardingView: View {
         .onTapGesture {
             finishColdOpen()
         }
-        .accessibilityLabel("You are being mapped. Tap to continue.")
+        .accessibilityLabel("You are near mapped pins. OpenStreetMap, public record, not a vendor feed. Tap to skip.")
     }
 
     private func runColdOpenSequence() {
@@ -194,7 +194,7 @@ struct OnboardingView: View {
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
 
-            Text("See mapped cameras near you.")
+            Text("See mapped pins near you.")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(AppTheme.primary)
                 .multilineTextAlignment(.center)
@@ -238,11 +238,8 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
             } else if let teaserScore {
-                let level = SurveillanceLevel.compute(
-                    visibleCount: teaserScore.cameraCount,
-                    nearestMeters: nil,
-                    inWatchedZone: false
-                )
+                let densityLabel = AppTheme.densityLabel(count: teaserScore.cameraCount)
+                let densityColor = AppTheme.densityColor(count: teaserScore.cameraCount)
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         if teaserIsSample {
@@ -252,7 +249,7 @@ struct OnboardingView: View {
                                 .foregroundStyle(AppTheme.accent)
                         }
                         Spacer()
-                        StatusBadge(text: level.chip, color: level.color)
+                        StatusBadge(text: densityLabel, color: densityColor)
                     }
 
                     Text(teaserScore.headline)
@@ -270,13 +267,10 @@ struct OnboardingView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(teaserScore.grade.uppercased())
                                 .font(.system(size: 28, weight: .black))
-                                .foregroundStyle(level.color)
+                                .foregroundStyle(densityColor)
                             Text(teaserScore.cameraCountLabel)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(AppTheme.accent)
-                            Text(level.title)
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundStyle(AppTheme.mutedForeground)
                         }
                     }
 
@@ -290,12 +284,12 @@ struct OnboardingView: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                        .stroke(level.color.opacity(0.45), lineWidth: 1.5)
+                        .stroke(densityColor.opacity(0.45), lineWidth: 1.5)
                 )
-                .shadow(color: level.color.opacity(0.2), radius: 16, y: 0)
+                .shadow(color: densityColor.opacity(0.2), radius: 16, y: 0)
             }
 
-            Text("Share a war-room card. Arm Overwatch. Take the lower-cam drive home.")
+            Text("Share a Place Score card. Turn on Overwatch. Pick the drive with fewer mapped pins.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
@@ -367,7 +361,7 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             Spacer()
 
-            Text("ARM YOUR GEAR")
+            Text("YOUR SETUP")
                 .font(.system(size: 12, weight: .heavy, design: .monospaced))
                 .tracking(2)
                 .foregroundStyle(AppTheme.accent)
@@ -396,8 +390,8 @@ struct OnboardingView: View {
 
             permissionCard(
                 icon: "bell.badge.fill",
-                title: "Camera alerts",
-                detail: "Notifies you near mapped cameras, even in the background.",
+                title: "Mapped-pin alerts",
+                detail: "Notifies you near mapped OSM pins, even in the background.",
                 actionLabel: alertsActionLabel,
                 isDone: alertsFullyEnabled
             ) {

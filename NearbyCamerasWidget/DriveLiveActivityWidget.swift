@@ -31,7 +31,7 @@ struct DriveLiveActivityWidget: Widget {
                         Text("\(context.state.remaining)")
                             .font(.system(size: 24, weight: .black, design: .rounded))
                             .foregroundStyle(.white)
-                        Text("PINS AHEAD")
+                        Text("MAPPED PINS")
                             .font(.system(size: 9, weight: .heavy, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.55))
                     }
@@ -57,13 +57,13 @@ struct DriveLiveActivityWidget: Widget {
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                         Spacer()
-                        Text("\(context.state.remaining) PINS · \(context.state.exposureLabel)")
+                        Text("\(context.state.remaining) mapped · \(context.state.exposureLabel)")
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
                             .foregroundStyle(.secondary)
                     }
                 }
             } compactLeading: {
-                Image(systemName: "dot.radiowaves.left.and.right")
+                Image(systemName: "eye")
                     .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
             } compactTrailing: {
                 Text(context.state.distanceLabel)

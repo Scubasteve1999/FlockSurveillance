@@ -45,20 +45,21 @@ struct NearbyCamerasWidgetView: View {
     var entry: NearbyCamerasEntry
     @Environment(\.widgetFamily) private var family
 
-    private var levelChip: String {
+    /// Same buckets as `AppTheme.densityLabel` — HUD words, not CLEAR/ELEV/ZONE.
+    private var densityLabel: String {
         switch entry.count {
-        case 0: return "CLEAR"
-        case 1...4: return "LOW"
-        case 5...14: return "ELEV"
-        case 15...29: return "HIGH"
-        default: return "ZONE"
+        case 0: return "Clear"
+        case 1...4: return "Low"
+        case 5...14: return "Moderate"
+        case 15...29: return "Dense"
+        default: return "Saturated"
         }
     }
 
-    private var levelColor: Color {
+    /// Same buckets as `AppTheme.densityColor`. Palette RGB stays local (widget target).
+    private var densityColor: Color {
         switch entry.count {
-        case 0: return Color(red: 0.22, green: 0.92, blue: 0.55)
-        case 1...4: return Color(red: 0.18, green: 0.92, blue: 0.88)
+        case 0...4: return Color(red: 0.22, green: 0.92, blue: 0.55)
         case 5...14: return Color(red: 1.0, green: 0.72, blue: 0.18)
         case 15...29: return Color(red: 1.0, green: 0.32, blue: 0.22)
         default: return Color(red: 1.0, green: 0.12, blue: 0.28)
@@ -76,7 +77,7 @@ struct NearbyCamerasWidgetView: View {
         case .accessoryRectangular:
             accessoryRectangular
         case .accessoryInline:
-            Text(entry.hasHome ? "\(pinCountLabel) · \(levelChip)" : "Set Home · Overwatch")
+            Text(entry.hasHome ? "\(pinCountLabel) · \(densityLabel)" : "Set Home in Settings")
                 .widgetURL(URL(string: "flocksurveillance://map"))
         default:
             systemView
@@ -89,14 +90,16 @@ struct NearbyCamerasWidgetView: View {
             VStack(spacing: 0) {
                 Image(systemName: "eye.fill")
                     .font(.system(size: 11, weight: .semibold))
-                Text(entry.hasHome ? "\(entry.count)" : "—")
-                    .font(.system(size: 18, weight: .black))
+                if entry.hasHome {
+                    Text("\(entry.count)")
+                        .font(.system(size: 18, weight: .black))
+                }
             }
         }
         .accessibilityLabel(
             entry.hasHome
                 ? "\(pinCountLabel) mapped near Home"
-                : "Set Home in Overwatch"
+                : "Set Home in Settings"
         )
         .containerBackground(for: .widget) { Color.clear }
         .widgetURL(URL(string: "flocksurveillance://map"))
@@ -108,7 +111,7 @@ struct NearbyCamerasWidgetView: View {
                 .font(.system(size: 10, weight: .black))
                 .tracking(0.5)
             if entry.hasHome {
-                Text("\(pinCountLabel.uppercased()) · \(levelChip)")
+                Text("\(pinCountLabel.uppercased()) · \(densityLabel)")
                     .font(.system(size: 13, weight: .bold))
                 if let nearest = entry.nearestMeters {
                     Text("LOCK \(format(nearest))")
@@ -116,7 +119,7 @@ struct NearbyCamerasWidgetView: View {
                         .opacity(0.75)
                 }
             } else {
-                Text("Set Home in GEAR")
+                Text("Set Home in Settings")
                     .font(.system(size: 13, weight: .semibold))
             }
         }
@@ -133,9 +136,18 @@ struct NearbyCamerasWidgetView: View {
                     .tracking(1.0)
                     .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
                 Spacer()
-                Text(levelChip)
-                    .font(.system(size: 10, weight: .black, design: .monospaced))
-                    .foregroundStyle(levelColor)
+                if entry.hasHome {
+                    Text(densityLabel)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(densityColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(densityColor.opacity(0.15))
+                        .overlay(
+                            Capsule().stroke(densityColor.opacity(0.35), lineWidth: 1)
+                        )
+                        .clipShape(Capsule())
+                }
             }
 
             if entry.hasHome {
@@ -164,10 +176,10 @@ struct NearbyCamerasWidgetView: View {
                     }
                 }
             } else {
-                Text("STANDBY")
-                    .font(.system(size: 20, weight: .black, design: .monospaced))
+                Text("Set Home")
+                    .font(.system(size: 20, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
-                Text("Set Home in GEAR to arm the grid.")
+                Text("Set Home in Settings.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.white.opacity(0.7))
             }

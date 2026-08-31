@@ -1,4 +1,3 @@
-import CoreLocation
 import SwiftUI
 
 /// Telemetry pin count for the mono HUD strings — keeps "1 PIN" from reading "1 PINS".
@@ -146,45 +145,5 @@ struct OverwatchScanlines: View {
             .blendMode(.overlay)
             .opacity(0.9)
         }
-    }
-}
-
-// MARK: - Threat ticker
-
-/// Compact monospaced status line for density / nearest pin.
-struct OverwatchThreatTicker: View {
-    let visibleCount: Int
-    let nearestMeters: CLLocationDistance?
-    let level: SurveillanceLevel
-    let inWatchedZone: Bool
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(inWatchedZone ? "// GRID" : "// MAP")
-                .font(.system(size: 10, weight: .black, design: .monospaced))
-                .foregroundStyle(level.color)
-            Text("·")
-                .foregroundStyle(AppTheme.mutedForeground)
-            Text(pinCountLabel(visibleCount))
-                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                .foregroundStyle(AppTheme.foreground)
-            if let nearestMeters {
-                Text("·")
-                    .foregroundStyle(AppTheme.mutedForeground)
-                Text("LOCK \(ProximityRadar.formatDistance(nearestMeters).uppercased())")
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(AppTheme.accent)
-            }
-            Spacer(minLength: 0)
-            Text(level.chip)
-                .font(.system(size: 10, weight: .black, design: .monospaced))
-                .foregroundStyle(level.color)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .background(AppTheme.card.opacity(0.88))
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(level.color.opacity(inWatchedZone ? 0.55 : 0.2), lineWidth: 1))
-        .padding(.horizontal, 16)
     }
 }

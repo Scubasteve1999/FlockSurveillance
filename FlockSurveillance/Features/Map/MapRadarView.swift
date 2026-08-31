@@ -232,12 +232,6 @@ struct MapRadarView: View {
                     showBootBanner = false
                 }
             }
-            OverwatchThreatTicker(
-                visibleCount: camerasInView.count,
-                nearestMeters: nearest?.meters,
-                level: surveillanceLevel,
-                inWatchedZone: inWatchedZone
-            )
             toolRail
             filterBar
             if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
@@ -614,7 +608,7 @@ struct MapRadarView: View {
             .map { $0 }
     }
 
-    /// Compact tool rail only — threat ticker carries status; no second brand band.
+    /// Compact tool rail only — RadarHUD carries status; no second brand band.
     private var toolRail: some View {
         HStack(spacing: 0) {
             Spacer(minLength: 0)

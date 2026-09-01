@@ -219,12 +219,12 @@ struct ARCameraSightView: View {
             return "No mapped pins within 400 m"
         }
         let nearest = nearestMeters.map(ProximityRadar.formatDistance) ?? "—"
-        return "\(count) IN RANGE · LOCK \(nearest) · \(arLevel.chip)"
+        return "\(count) IN RANGE · LOCK \(nearest) · \(AppTheme.densityLabel(count: count))"
     }
 
     private var emptyBanner: some View {
         VStack(spacing: 8) {
-            Text("No mapped cameras within 400 m")
+            Text("No mapped pins within 400 m")
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(AppTheme.foreground)
             Text("Pan the map or report one — AR only shows OpenStreetMap locations.")
@@ -250,7 +250,7 @@ struct ARCameraSightView: View {
             Text("AR requires a device")
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
-            Text("World tracking isn’t available in Simulator. Run on a physical iPhone to see mapped cameras in the street.")
+            Text("World tracking isn’t available in Simulator. Run on a physical iPhone to see mapped pins in the street.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)

@@ -408,7 +408,7 @@ struct CityRanking: Identifiable, Hashable {
     let cameraCount: Int
 
     var subtitle: String {
-        cameraCount == 1 ? "1 mapped camera" : "\(cameraCount) mapped cameras"
+        cameraCount == 1 ? "1 mapped pin" : "\(cameraCount) mapped pins"
     }
 
     func hash(into hasher: inout Hasher) {
@@ -455,7 +455,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     }
 
     var cameraCountLabel: String {
-        cameraCount == 1 ? "1 mapped camera" : "\(cameraCount) mapped cameras"
+        cameraCount == 1 ? "1 mapped pin" : "\(cameraCount) mapped pins"
     }
 
     var shareText: String {

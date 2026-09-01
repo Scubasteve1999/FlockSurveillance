@@ -129,8 +129,11 @@ final class GeoHelpersTests: XCTestCase {
             isPersonal: false
         )
         XCTAssertTrue(area.headline.hasPrefix("This area"))
-        XCTAssertTrue(score.shareText.contains("cameras"))
-        XCTAssertTrue(score.cameraCountLabel.contains("mapped"))
+        XCTAssertEqual(score.cameraCountLabel, "8 mapped pins")
+        XCTAssertTrue(score.cameraCountLabel.contains("mapped pin"))
+        XCTAssertFalse(score.cameraCountLabel.contains("camera"))
+        XCTAssertTrue(score.shareText.contains("mapped pin"))
+        XCTAssertFalse(score.shareText.contains("camera"))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pins"))
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
     }
@@ -181,6 +184,11 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(rankings.count, 2)
         XCTAssertEqual(rankings.first?.name, "Atlanta")
         XCTAssertGreaterThan(rankings.first?.cameraCount ?? 0, rankings[1].cameraCount)
+        XCTAssertEqual(rankings.first?.subtitle, "5 mapped pins")
+        XCTAssertFalse(rankings.contains { $0.subtitle.contains("camera") })
+        let miamiRank = rankings.first { $0.name == "Miami" }
+        XCTAssertEqual(miamiRank?.subtitle, "1 mapped pin")
+        XCTAssertTrue(miamiRank?.subtitle.contains("mapped pin") == true)
     }
 
     func testMidSouthSeedsFirstForLocalDensity() {

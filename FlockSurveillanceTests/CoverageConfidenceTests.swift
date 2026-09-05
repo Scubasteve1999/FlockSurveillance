@@ -182,7 +182,7 @@ final class CoverageConfidenceTests: XCTestCase {
         XCTAssertEqual(confidence.state, .fetched)
         XCTAssertTrue(confidence.instrumentLine.contains("Fetched"))
         XCTAssertTrue(confidence.instrumentLine.contains("1 pin"))
-        XCTAssertTrue(confidence.instrumentLine.contains("100% with facing"))
+        XCTAssertTrue(confidence.instrumentLine.contains("100% tagged direction"))
         XCTAssertFalse(confidence.instrumentLine.contains("% facing"))
         XCTAssertTrue(confidence.instrumentLine.contains("2m"))
         XCTAssertTrue(confidence.instrumentAccessibilityLabel.contains("100 percent of pins have a tagged direction"))

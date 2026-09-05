@@ -4,7 +4,7 @@ import Foundation
 /// Stays honest: mapped pins + phone GPS only — never plate-read claims.
 enum WatchedZoneCopy {
     static let enteringTitle = "WATCHED ZONE"
-    static let stillInsideTitle = "STILL IN THE GRID"
+    static let stillInsideTitle = "STILL IN ZONE"
     static let leftTitle = "CLEARED CORRIDOR"
 
     static func enteringBody(cameraTitle: String, radiusFeet: Int) -> String {

@@ -125,7 +125,17 @@ final class SensorAtlasStoreTests: XCTestCase {
         XCTAssertFalse(body.lowercased().contains("scanned your plate"))
         XCTAssertFalse(body.lowercased().contains("detected"))
         XCTAssertFalse(body.lowercased().contains("pinged"))
+        XCTAssertEqual(WatchedZoneCopy.enteringTitle, "WATCHED ZONE")
+        XCTAssertEqual(WatchedZoneCopy.stillInsideTitle, "STILL IN ZONE")
+        XCTAssertEqual(WatchedZoneCopy.leftTitle, "CLEARED CORRIDOR")
         XCTAssertEqual(WatchedZoneCopy.hudActiveLabel, "WATCHED ZONE")
+        for title in [
+            WatchedZoneCopy.enteringTitle,
+            WatchedZoneCopy.stillInsideTitle,
+            WatchedZoneCopy.leftTitle,
+        ] {
+            XCTAssertFalse(title.contains("GRID"), "\(title) must not use GRID language")
+        }
         XCTAssertTrue(WatchedZoneCopy.leftBody(passedCount: 2).contains("cleared"))
         XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("mapped"))
         XCTAssertTrue(WatchedZoneCopy.hudActiveSubtitle.lowercased().contains("not plate"))

@@ -108,6 +108,18 @@ struct LearnView: View {
                                     title: "DeFlock Dane shared networks",
                                     url: URL(string: "https://deflockdane.org/shared-networks/")!
                                 )
+                                linkRow(
+                                    title: "Tennessee Code § 55-10-302",
+                                    url: URL(string: "https://law.justia.com/codes/tennessee/title-55/chapter-10/part-3/section-55-10-302/")!
+                                )
+                                linkRow(
+                                    title: "Memphis City Council minutes — June 24, 2025",
+                                    url: URL(string: "https://memphistn.gov/wp-content/uploads/2025/07/Minutes-06-24-2025-1.pdf")!
+                                )
+                                linkRow(
+                                    title: "Memphis Q1 FY26 finance (Insight / Flock-Falcon)",
+                                    url: URL(string: "https://memphistn.gov/wp-content/uploads/2025/11/Q1-FINANCIAL-PRESENTAION_11.17.25-for-Council.pdf")!
+                                )
                             }
                         }
 
@@ -172,8 +184,14 @@ private struct LearnArticle: Identifiable {
         LearnArticle(
             id: "retention",
             eyebrow: "Retention",
-            title: "Time is a policy choice",
-            body: "How long plate reads are kept varies by contract and jurisdiction. Shorter retention limits retrospective tracking; longer retention expands it. Transparency about retention is part of democratic oversight."
+            title: "Tennessee keeps government plates 90 days",
+            body: "Tennessee Code Annotated § 55-10-302 limits government ALPR captured-plate data to 90 days unless it is part of an ongoing investigation — then destroy it when that investigation or criminal action ends. The statute took effect in 2014. Its text covers governmental entities, not private owners. Atlas of Surveillance lists Shelby County Sheriff’s Office retention at 30 days. This app does not store plate reads."
+        ),
+        LearnArticle(
+            id: "memphis-shelby",
+            eyebrow: "Memphis / Shelby",
+            title: "Council support is not a census",
+            body: "On June 24, 2025, Memphis City Council approved a resolution supporting MPD license-plate readers on state highway rights-of-way. Those minutes name no dollar amount, camera count, or vendor. City of Memphis Q1 FY26 finance lists $318,000 paid to Insight Public Sector as “FLOCK-FALCON INFRASTRUCTURE-FREE,” coverage June 9, 2025–June 8, 2026. That is a vendor line, not a published MPD Flock census. This app does not invent one."
         ),
         LearnArticle(
             id: "this-map",
@@ -191,7 +209,7 @@ private struct LearnArticle: Identifiable {
             id: "olive-branch-gates",
             eyebrow: "Olive Branch",
             title: "Entranceways are a reconstruction",
-            body: "In 2022 the city accepted a Utility Associates plan for 24 fixed ALPRs at “major entranceways.” Official minutes and news never named the intersections. GATES plots a geographic reconstruction of those city-limit crossings against crowdsourced OSM pins (ODbL). A pin at a gate is not a confirmed 2022 Utility camera — Utility ≠ Flock — and a gap is not evidence the city skipped that road. The OSM city limit is TIGER 2008; annexation can shift a “city line.” These sites never feed proximity alerts."
+            body: "August 2022: the city accepted Utility Associates for 24 ALPRs at unnamed “major entranceways.” May 7, 2024: the Board authorized terminating that Utility LPR agreement. December 17, 2024: consent item 16 approved Flock Group SaaS — minutes and agenda include no pin list or camera count. The mayor still described a 24-camera perimeter in 2026, including in county coverage framed as Flock. Atlas of Surveillance still lists Olive Branch ALPR as Coreforce / Utility 2022; that row is stale. Neighboring Southaven is listed by Atlas as 25 Flock as of September 2025. Horn Lake has had Flock since at least 2020; Atlas mis-files that agency as Tennessee. GATES plots a geographic reconstruction of those city-limit crossings against crowdsourced OSM pins (ODbL). A pin at a gate is not a confirmed 2022 Utility camera — Utility ≠ Flock — and a gap is not evidence the city skipped that road. The OSM city limit is TIGER 2008; annexation can shift a “city line.” These sites never feed proximity alerts."
         ),
         LearnArticle(
             id: "reporting",

@@ -127,7 +127,7 @@ final class SensorAtlasStoreTests: XCTestCase {
         XCTAssertFalse(body.lowercased().contains("pinged"))
         XCTAssertEqual(WatchedZoneCopy.enteringTitle, "WATCHED ZONE")
         XCTAssertEqual(WatchedZoneCopy.stillInsideTitle, "STILL IN ZONE")
-        XCTAssertEqual(WatchedZoneCopy.leftTitle, "CLEARED CORRIDOR")
+        XCTAssertEqual(WatchedZoneCopy.leftTitle, "CLEARED PINS")
         XCTAssertEqual(WatchedZoneCopy.hudActiveLabel, "WATCHED ZONE")
         for title in [
             WatchedZoneCopy.enteringTitle,

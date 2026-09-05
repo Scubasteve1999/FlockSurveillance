@@ -5,7 +5,7 @@ import Foundation
 enum WatchedZoneCopy {
     static let enteringTitle = "WATCHED ZONE"
     static let stillInsideTitle = "STILL IN ZONE"
-    static let leftTitle = "CLEARED CORRIDOR"
+    static let leftTitle = "CLEARED PINS"
 
     static func enteringBody(cameraTitle: String, radiusFeet: Int) -> String {
         "\(cameraTitle) within ~\(radiusFeet) ft — mapped OSM pin, not a plate-read alert."

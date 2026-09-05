@@ -67,12 +67,18 @@ final class SurveillanceLevelTests: XCTestCase {
 
     func testCriticalCopyIsWatchedZoneNotDetector() {
         XCTAssertEqual(SurveillanceLevel.critical.chip, "ZONE")
+        XCTAssertEqual(SurveillanceLevel.clear.title, "CLEAR PINS")
+        XCTAssertEqual(SurveillanceLevel.low.title, "LOW PINS")
+        XCTAssertEqual(SurveillanceLevel.elevated.title, "MODERATE PINS")
+        XCTAssertEqual(SurveillanceLevel.high.title, "DENSE PINS")
         XCTAssertEqual(SurveillanceLevel.critical.title, "WATCHED ZONE")
         for level in SurveillanceLevel.allCases {
             XCTAssertFalse(level.chip.contains("HOT"))
             XCTAssertFalse(level.title.contains("HOT"))
             XCTAssertFalse(level.chip.contains("ARM"))
             XCTAssertFalse(level.title.contains("ARM"))
+            XCTAssertFalse(level.title.contains("GRID"))
+            XCTAssertFalse(level.title.contains("COVERAGE"))
         }
     }
 }

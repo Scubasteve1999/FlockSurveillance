@@ -114,10 +114,16 @@ struct RadarHUD: View {
                         Text("NEAR")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundStyle(AppTheme.mutedForeground)
-                        Text(nearestMeters.map(ProximityRadar.formatDistance) ?? "—")
-                            .font(.system(size: 20, weight: .black, design: .rounded))
-                            .foregroundStyle(AppTheme.accent)
-                            .contentTransition(.numericText())
+                        if let nearestMeters {
+                            Text(ProximityRadar.formatDistance(nearestMeters))
+                                .font(.system(size: 20, weight: .black, design: .rounded))
+                                .foregroundStyle(AppTheme.accent)
+                                .contentTransition(.numericText())
+                        } else {
+                            Text("—")
+                                .font(.system(size: 20, weight: .black, design: .rounded))
+                                .foregroundStyle(AppTheme.mutedForeground)
+                        }
                     }
                     if let nearestMeters, let nearestLabel {
                         Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))

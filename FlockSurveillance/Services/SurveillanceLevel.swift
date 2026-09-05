@@ -15,13 +15,13 @@ enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
         lhs.rawValue < rhs.rawValue
     }
 
-    /// Short HUD chip: CLEAR / LOW / ELEV / HIGH / ZONE
+    /// Short HUD chip: CLEAR / LOW / MOD / DENSE / ZONE
     var chip: String {
         switch self {
         case .clear: return "CLEAR"
         case .low: return "LOW"
-        case .elevated: return "ELEV"
-        case .high: return "HIGH"
+        case .elevated: return "MOD"
+        case .high: return "DENSE"
         case .critical: return "ZONE"
         }
     }

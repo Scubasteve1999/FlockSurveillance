@@ -96,10 +96,14 @@ final class PendingIntentActionsTests: XCTestCase {
         XCTAssertTrue(source.contains("How many mapped pins are near me in \\(.applicationName)"))
         XCTAssertTrue(source.contains("Check nearby mapped pins in \\(.applicationName)"))
         XCTAssertTrue(source.contains("Nearby mapped pins in \\(.applicationName)"))
+        XCTAssertTrue(source.contains("There is 1 mapped pin within a mile of Home."))
+        XCTAssertTrue(source.contains("There are \\(snapshot.count) mapped pins within a mile of Home."))
         XCTAssertFalse(source.contains("community-mapped cameras"))
         XCTAssertFalse(source.contains("Check nearby cameras"))
         XCTAssertFalse(source.contains("Nearby cameras in"))
         XCTAssertFalse(source.contains("How many cameras are near me"))
+        XCTAssertFalse(source.contains("mapped camera"))
+        XCTAssertFalse(source.contains("mapped cameras"))
     }
 
     private func flockIntentsSourceURL() -> URL {

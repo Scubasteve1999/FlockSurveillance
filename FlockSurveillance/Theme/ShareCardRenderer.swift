@@ -335,7 +335,7 @@ private struct DriveReportShareCard: View {
                 Spacer(minLength: 0)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("FEWER CAMERAS. SAME DESTINATION.")
+                    Text("FEWER PINS. SAME DESTINATION.")
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
                     Text("flocksurveillance.com · App Store · OSM community data")

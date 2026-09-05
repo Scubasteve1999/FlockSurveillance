@@ -112,7 +112,7 @@ struct RadarHUD: View {
 
                     if let nearestMeters {
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text("LOCK")
+                            Text("NEAR")
                                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                                 .foregroundStyle(AppTheme.mutedForeground)
                             Text(ProximityRadar.formatDistance(nearestMeters))
@@ -127,7 +127,7 @@ struct RadarHUD: View {
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     } else {
-                        Text("NO LOCK")
+                        Text("NO NEAR")
                             .font(.system(size: 13, weight: .bold, design: .monospaced))
                             .foregroundStyle(AppTheme.mutedForeground)
                     }

@@ -22,7 +22,7 @@ struct DriveLiveActivityWidget: Widget {
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
                             .lineLimit(1)
-                        Text("LOCK \(context.state.distanceLabel)")
+                        Text("NEAR \(context.state.distanceLabel)")
                             .font(.system(size: 14, weight: .black, design: .monospaced))
                             .foregroundStyle(Color(red: 0.18, green: 0.92, blue: 0.88))
                     }
@@ -42,7 +42,7 @@ struct DriveLiveActivityWidget: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Text("LOCK")
+                    Text("NEAR")
                         .font(.system(size: 10, weight: .black, design: .monospaced))
                         .foregroundStyle(.secondary)
                 }

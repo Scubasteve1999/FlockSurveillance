@@ -133,7 +133,7 @@ struct RouteExposureView: View {
                         Text(
                             driveSession.nextHit.map { hit in
                                 let distance = driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
-                                return "LOCK \(distance) · \(hit.isFlock ? "Flock" : "mapped") pin"
+                                return "NEAR \(distance) · \(hit.isFlock ? "Flock" : "mapped") pin"
                             } ?? "Corridor clear"
                         )
                         .font(.system(size: 16, weight: .semibold))

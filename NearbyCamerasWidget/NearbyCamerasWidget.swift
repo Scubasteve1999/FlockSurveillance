@@ -114,7 +114,7 @@ struct NearbyCamerasWidgetView: View {
                 Text("\(pinCountLabel.uppercased()) · \(densityLabel)")
                     .font(.system(size: 13, weight: .bold))
                 if let nearest = entry.nearestMeters {
-                    Text("LOCK \(format(nearest))")
+                    Text("NEAR \(format(nearest))")
                         .font(.system(size: 12, weight: .semibold, design: .monospaced))
                         .opacity(0.75)
                 }
@@ -158,7 +158,7 @@ struct NearbyCamerasWidgetView: View {
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.65))
                 if let nearest = entry.nearestMeters {
-                    Text("LOCK \(format(nearest).uppercased())")
+                    Text("NEAR \(format(nearest).uppercased())")
                         .font(.system(size: 13, weight: .black, design: .monospaced))
                         .foregroundStyle(Color(red: 0.18, green: 0.92, blue: 0.88))
                 }

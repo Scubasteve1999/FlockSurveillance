@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 import SwiftUI
 
-/// How hard the mapped ALPR grid is pressing on you right now.
+/// How dense the mapped ALPR pins are in view right now.
 /// Pure density + proximity math — never plate-read claims.
 enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
     case clear = 0
@@ -26,13 +26,13 @@ enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
         }
     }
 
-    /// Full instrument title under the dial.
+    /// Full instrument title under the dial — pin density in view, not metro coverage.
     var title: String {
         switch self {
-        case .clear: return "CLEAR SKY"
-        case .low: return "SPARSE GRID"
-        case .elevated: return "HEAVY COVERAGE"
-        case .high: return "DENSE GRID"
+        case .clear: return "CLEAR PINS"
+        case .low: return "LOW PINS"
+        case .elevated: return "MODERATE PINS"
+        case .high: return "DENSE PINS"
         case .critical: return "WATCHED ZONE"
         }
     }

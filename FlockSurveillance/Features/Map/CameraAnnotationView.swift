@@ -217,13 +217,20 @@ struct RadarHUD: View {
         )
         .shadow(color: inWatchedZone ? levelColor.opacity(0.35) : .black.opacity(0.4), radius: inWatchedZone ? 16 : 8, y: 4)
         .onAppear {
-            withAnimation(.easeOut(duration: 0.7)) {
-                ringProgress = targetRing
+            if reduceMotion {
+                withoutAnimation { ringProgress = targetRing }
+            } else {
+                withAnimation(.easeOut(duration: 0.7)) {
+                    ringProgress = targetRing
+                }
             }
             startSweep()
             if inWatchedZone || watchModeEnabled {
                 updateZonePulse(true)
             }
+        }
+        .onChange(of: reduceMotion) { _, _ in
+            startSweep()
         }
         .onChange(of: visibleCount) { _, _ in
             withAnimation(.easeInOut(duration: 0.45)) {
@@ -244,6 +251,7 @@ struct RadarHUD: View {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
             }
             updateZonePulse(inside || watchModeEnabled)
+            startSweep()
         }
         .onChange(of: watchModeEnabled) { _, enabled in
             if enabled {
@@ -251,6 +259,7 @@ struct RadarHUD: View {
                 OverwatchAudio.armClick()
             }
             updateZonePulse(enabled || inWatchedZone)
+            startSweep()
         }
         .onChange(of: level) { previous, current in
             OverwatchAudio.stingIfEnteringCritical(previous: previous, current: current)
@@ -329,7 +338,8 @@ struct RadarHUD: View {
                 .shadow(color: levelColor.opacity(0.55), radius: 6, y: 0)
 
             // Quiet Overwatch tick — short arc, not a live-detector sweep.
-            if watchModeEnabled || inWatchedZone {
+            // Hidden under Reduce Motion so a leftover forever rotation cannot paint.
+            if !reduceMotion && (watchModeEnabled || inWatchedZone) {
                 Circle()
                     .trim(from: 0, to: 0.07)
                     .stroke(
@@ -362,14 +372,25 @@ struct RadarHUD: View {
         .frame(width: 118, height: 118)
     }
 
+    /// Parks or restarts the quiet Overwatch tick. A disabled `Transaction`
+    /// cancels any in-flight `repeatForever` so a mid-session Reduce Motion
+    /// toggle cannot leave the dial spinning.
     private func startSweep() {
-        guard !reduceMotion else {
-            sweepAngle = 45
+        let overwatchActive = watchModeEnabled || inWatchedZone
+        if reduceMotion || !overwatchActive {
+            withoutAnimation { sweepAngle = reduceMotion ? 45 : 0 }
             return
         }
+        withoutAnimation { sweepAngle = 0 }
         withAnimation(.linear(duration: 4.2).repeatForever(autoreverses: false)) {
             sweepAngle = 360
         }
+    }
+
+    private func withoutAnimation(_ updates: () -> Void) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction, updates)
     }
 
     private func updateZonePulse(_ active: Bool) {

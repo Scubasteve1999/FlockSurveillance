@@ -576,10 +576,10 @@ struct MapRadarView: View {
     private var reportPlacementBar: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Report a camera")
+                Text("Report a pin")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(AppTheme.foreground)
-                Text("Pan so the crosshair is on the camera")
+                Text("Pan so the crosshair is on the pin")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
             }
@@ -643,7 +643,7 @@ struct MapRadarView: View {
                 headerRailButton(
                     systemName: "flag.fill",
                     tint: isPlacingReport ? AppTheme.primary : AppTheme.accent,
-                    label: "Report a camera"
+                    label: "Report a pin"
                 ) {
                     withAnimation(.easeInOut(duration: 0.25)) {
                         isPlacingReport.toggle()

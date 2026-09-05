@@ -20,8 +20,16 @@ struct CameraDetailSheet: View {
                         .font(.system(size: 24, weight: .bold))
                         .foregroundStyle(AppTheme.foreground)
 
-                    Text("Crowdsourced OpenStreetMap data. Locations may be incomplete or outdated.")
+                    Text("Volunteer-mapped OpenStreetMap pin. Approximate. Could be wrong, moved, or gone.")
                         .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+
+                    Text("A pin is a claim, not a guarantee. It does not mean this camera scanned your plate, that the city tracked you, that anyone scanned your face, or that the map is complete. Private and HOA Flocks often never appear in official agency counts. Not affiliated with Flock Safety. Not legal advice.")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+
+                    Text("Fetched dates below are when this app last pulled the pin from OpenStreetMap — not a field survey.")
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(AppTheme.mutedForeground)
 
                     ForEach(cameras, id: \.id) { camera in
@@ -53,6 +61,11 @@ struct CameraDetailSheet: View {
                                     let meters = camera.location.distance(from: userLocation)
                                     detailRow("Distance", ProximityRadar.formatDistance(meters))
                                 }
+
+                                detailRow(
+                                    "Fetched",
+                                    camera.fetchedAt.formatted(date: .abbreviated, time: .shortened)
+                                )
 
                                 let coords = String(format: "%.5f, %.5f", camera.latitude, camera.longitude)
                                 HStack(alignment: .bottom) {

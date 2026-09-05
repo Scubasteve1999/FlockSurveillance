@@ -110,26 +110,20 @@ struct RadarHUD: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    if let nearestMeters {
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text("NEAR")
-                                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(AppTheme.mutedForeground)
-                            Text(ProximityRadar.formatDistance(nearestMeters))
-                                .font(.system(size: 20, weight: .black, design: .rounded))
-                                .foregroundStyle(AppTheme.accent)
-                                .contentTransition(.numericText())
-                        }
-                        if let nearestLabel {
-                            Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(AppTheme.mutedForeground)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    } else {
-                        Text("NO NEAR")
-                            .font(.system(size: 13, weight: .bold, design: .monospaced))
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text("NEAR")
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundStyle(AppTheme.mutedForeground)
+                        Text(nearestMeters.map(ProximityRadar.formatDistance) ?? "—")
+                            .font(.system(size: 20, weight: .black, design: .rounded))
+                            .foregroundStyle(AppTheme.accent)
+                            .contentTransition(.numericText())
+                    }
+                    if let nearestMeters, let nearestLabel {
+                        Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(AppTheme.mutedForeground)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

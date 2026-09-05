@@ -15,7 +15,7 @@ struct RootTabView: View {
                 }
             }
             .tabItem {
-                Label("MAP", systemImage: "dot.radiowaves.left.and.right")
+                Label("MAP", systemImage: "map.fill")
             }
             .tag(0)
 

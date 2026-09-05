@@ -786,7 +786,7 @@ struct MapRadarView: View {
                 get: { radar.hapticsEnabled },
                 set: { radar.hapticsEnabled = $0 }
             )) {
-                Image(systemName: "waveform.path")
+                Image(systemName: "hand.tap.fill")
                     .font(.system(size: 13, weight: .semibold))
             }
             .toggleStyle(.button)

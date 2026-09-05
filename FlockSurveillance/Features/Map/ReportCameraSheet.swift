@@ -64,7 +64,7 @@ struct ReportCameraSheet: View {
 
     private var formView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Report a Camera")
+            Text("Report a pin")
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
 
@@ -94,7 +94,7 @@ struct ReportCameraSheet: View {
                         .foregroundStyle(AppTheme.accent)
 
                     VStack(alignment: .leading, spacing: 8) {
-                        fieldLabel("Camera facing (optional)")
+                        fieldLabel("Pin facing (optional)")
                         Picker("Direction", selection: $direction) {
                             ForEach(directions, id: \.self) { item in
                                 Text(item.isEmpty ? "Unknown" : item).tag(item)

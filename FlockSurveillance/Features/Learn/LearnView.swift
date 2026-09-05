@@ -214,8 +214,8 @@ private struct LearnArticle: Identifiable {
         LearnArticle(
             id: "reporting",
             eyebrow: "Reporting",
-            title: "How camera reports work",
-            body: "Tap the flag on the map to report an unmapped camera, or flag a mapped one that changed. Your report is posted as an anonymous public note on OpenStreetMap and tracked on this device. We refresh nearby Overpass data and update the pending pin when mappers tag it — usually within days — then notify you when it lands."
+            title: "How pin reports work",
+            body: "Tap the flag on the map to report an unmapped pin, or flag a mapped pin that changed. Your report is posted as an anonymous public note on OpenStreetMap and tracked on this device. We refresh nearby Overpass data and update the pending pin when mappers tag it — usually within days — then notify you when it lands."
         )
     ]
 }

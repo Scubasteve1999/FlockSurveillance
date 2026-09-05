@@ -220,7 +220,7 @@ struct ARCameraSightView: View {
         }
         let nearest = nearestMeters.map(ProximityRadar.formatDistance) ?? "—"
         let pins = count == 1 ? "1 PIN" : "\(count) PINS"
-        return "\(pins) · LOCK \(nearest) · \(AppTheme.densityLabel(count: count))"
+        return "\(pins) · NEAR \(nearest) · \(AppTheme.densityLabel(count: count))"
     }
 
     private var emptyBanner: some View {

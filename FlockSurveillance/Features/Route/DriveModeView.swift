@@ -172,7 +172,7 @@ struct DriveModeView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
 
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    Text("LOCK")
+                    Text("NEAR")
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                     Text(driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—")

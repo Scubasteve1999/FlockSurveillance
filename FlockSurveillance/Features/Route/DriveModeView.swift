@@ -194,12 +194,12 @@ struct DriveModeView: View {
                     .lineLimit(1)
 
                 if inHotApproach {
-                    Text("ZONE APPROACH — mapped pin only, not a plate read")
+                    Text("NEAR PIN — mapped pin only, not a plate read")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(AppTheme.critical.opacity(0.9))
                 }
             } else {
-                Text("CORRIDOR CLEAR")
+                Text("NO PINS AHEAD")
                     .font(.system(size: 26, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.densityLow)
                 Text("No remaining mapped pins on this drive.")

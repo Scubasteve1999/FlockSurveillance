@@ -29,7 +29,7 @@ struct CameraAnnotationView: View {
             }
         }
         .shadow(color: color.opacity(0.7), radius: 10, y: 0)
-        .accessibilityLabel(count > 1 ? "\(count) mapped ALPR cameras" : "mapped ALPR camera")
+        .accessibilityLabel(count > 1 ? "\(count) mapped ALPR pins" : "1 mapped ALPR pin")
     }
 }
 

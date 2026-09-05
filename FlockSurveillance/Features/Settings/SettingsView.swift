@@ -69,7 +69,7 @@ struct SettingsView: View {
                                     get: { radar.hapticsEnabled },
                                     set: { radar.hapticsEnabled = $0 }
                                 )) {
-                                    labelRow("Proximity haptics", "Pulse as you approach ALPRs")
+                                    labelRow("Proximity haptics", "Pulse near mapped pins — not plate reads")
                                 }
                                 .tint(AppTheme.accent)
 

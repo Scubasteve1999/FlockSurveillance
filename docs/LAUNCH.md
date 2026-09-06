@@ -64,6 +64,12 @@ What's New: [ASO.md](ASO.md) · paste pack: [aso-captures/ASC_PASTE.txt](aso-cap
 
 Shipped 2026-08-19. Tip jar, Sharing Network by county, keyboard dismiss.
 
+## 1.9.1 (build 17)
+
+Honesty copy pass — pin-zone / HOW MAPPED / Fewest Pins Drive / no pins ahead.
+Not submitted yet. Stephen archives on his Mac after merge. What's New and
+Description are already honesty-ready on `main`.
+
 ## 1.8.2 backlog
 
 - AR screenshot (`07-ar-camera`)

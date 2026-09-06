@@ -1,7 +1,7 @@
 import CarPlay
 import UIKit
 
-/// Driving-task CarPlay scene: mirrors the Drive Mode HUD (next ALPR, distance,
+/// Driving-task CarPlay scene: mirrors the Drive Mode HUD (next pin, distance,
 /// remaining count) on the car screen.
 ///
 /// Requires the `com.apple.developer.carplay-driving-task` entitlement, which
@@ -57,15 +57,15 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         if session.isActive {
             let nextLabel: String
             if let next = session.nextHit {
-                nextLabel = next.isFlock ? "Flock ALPR" : next.manufacturer
+                nextLabel = next.isFlock ? "Flock pin" : next.manufacturer
             } else {
                 nextLabel = "No pins ahead"
             }
             let distance = session.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
             items = [
-                CPInformationItem(title: "Next ALPR", detail: nextLabel),
+                CPInformationItem(title: "Next pin", detail: nextLabel),
                 CPInformationItem(title: "Distance", detail: distance),
-                CPInformationItem(title: "Remaining", detail: session.camerasRemaining == 1 ? "1 camera" : "\(session.camerasRemaining) cameras"),
+                CPInformationItem(title: "Remaining", detail: session.camerasRemaining == 1 ? "1 pin" : "\(session.camerasRemaining) pins"),
                 CPInformationItem(title: "Exposure", detail: session.exposureLabel)
             ]
         } else {
@@ -78,7 +78,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         }
 
         return CPInformationTemplate(
-            title: "ALPR Drive Mode",
+            title: "Drive Mode",
             layout: .leading,
             items: items,
             actions: []

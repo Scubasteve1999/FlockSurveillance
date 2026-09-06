@@ -170,7 +170,7 @@ struct RouteExposureView: View {
         OverwatchPageHeader(
             eyebrow: "OVERWATCH · ROUTE",
             title: "Safest Drive",
-            subtitle: "One tap for Home ↔ Work, or search any trip. We pick the corridor with the fewest mapped ALPR pins."
+            subtitle: "One tap for Home ↔ Work, or search any trip. We pick the route with the fewest mapped ALPR pins."
         )
     }
 

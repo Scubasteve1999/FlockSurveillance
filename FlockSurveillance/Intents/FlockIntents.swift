@@ -122,7 +122,7 @@ struct StartDriveModeIntent: AppIntent {
 }
 
 struct SafestDriveHomeIntent: AppIntent {
-    static let title: LocalizedStringResource = "Safest Drive Home"
+    static let title: LocalizedStringResource = "Fewest Pins Drive Home"
     static let description = IntentDescription("Opens the Route tab and scores the drive with the fewest mapped pins from Work to Home.")
     static let openAppWhenRun = true
 
@@ -139,7 +139,7 @@ struct SafestDriveHomeIntent: AppIntent {
             NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
         }
         NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
-        return .result(dialog: "Scoring the safest drive home…")
+        return .result(dialog: "Scoring the fewest-pin drive home…")
     }
 }
 
@@ -176,10 +176,10 @@ struct FlockShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: SafestDriveHomeIntent(),
             phrases: [
-                "Safest drive home in \(.applicationName)",
+                "Fewest pins drive home in \(.applicationName)",
                 "Drive home with fewer mapped pins in \(.applicationName)"
             ],
-            shortTitle: "Safest drive home",
+            shortTitle: "Fewest pins home",
             systemImageName: "house.fill"
         )
     }

@@ -123,7 +123,7 @@ struct LearnView: View {
                             }
                         }
 
-                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Safest-drive scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. Sensor Atlas overlays municipal traffic CCTV from public WisDOT inventory (not ALPR). GATES reconstructs Olive Branch city-limit crossings from the public record — not official Utility locations. It is not affiliated with Flock Safety.")
+                        Text("This app uses crowdsourced OpenStreetMap data, including cameras documented by the DeFlock community. Fewest-pins scoring uses MapKit against that map. Sharing Network uses a public FOIA snapshot from DeFlock Dane — not live vendor data. Sensor Atlas overlays municipal traffic CCTV from public WisDOT inventory (not ALPR). GATES reconstructs Olive Branch city-limit crossings from the public record — not official Utility locations. It is not affiliated with Flock Safety.")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .padding(.bottom, 12)

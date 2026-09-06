@@ -163,7 +163,7 @@ private struct PlaceScoreShareCard: View {
 
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("HOW WATCHED IS YOUR LIFE RIGHT NOW?")
+                        Text("HOW MAPPED IS YOUR BLOCK RIGHT NOW?")
                             .font(.system(size: 11, weight: .heavy, design: .monospaced))
                             .foregroundStyle(AppTheme.accent)
                         Text("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED")

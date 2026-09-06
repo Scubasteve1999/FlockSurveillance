@@ -59,7 +59,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             if let next = session.nextHit {
                 nextLabel = next.isFlock ? "Flock ALPR" : next.manufacturer
             } else {
-                nextLabel = "Corridor clear"
+                nextLabel = "No pins ahead"
             }
             let distance = session.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
             items = [

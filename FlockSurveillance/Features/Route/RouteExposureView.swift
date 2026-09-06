@@ -169,7 +169,7 @@ struct RouteExposureView: View {
     private var brandBlock: some View {
         OverwatchPageHeader(
             eyebrow: "OVERWATCH · ROUTE",
-            title: "Safest Drive",
+            title: "Fewest Pins Drive",
             subtitle: "One tap for Home ↔ Work, or search any trip. We pick the route with the fewest mapped ALPR pins."
         )
     }
@@ -205,7 +205,7 @@ struct RouteExposureView: View {
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(AppTheme.primary)
                 } else {
-                    Text("Set Home and Work in Settings for one-tap safest drives.")
+                    Text("Set Home and Work in Settings for one-tap fewest-pin drives.")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }
@@ -689,7 +689,7 @@ struct RouteExposureView: View {
         let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
         let optionCount = analysis?.options.count ?? 1
         return """
-        Flock Surveillance — Safest Drive
+        Flock Surveillance — Fewest Pins Drive
         From: \(from)
         To: \(to)
         Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)

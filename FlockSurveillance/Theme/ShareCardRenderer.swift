@@ -279,7 +279,7 @@ private struct DriveReportShareCard: View {
                     .fill(AppTheme.accent.opacity(0.7))
                     .frame(height: 2)
 
-                Text("OVERWATCH // SAFEST DRIVE")
+                Text("OVERWATCH // FEWEST PINS")
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(AppTheme.accent)

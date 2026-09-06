@@ -89,12 +89,11 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ### What's New (this release)
 
 ```
-• Sharing Network maps FOIA partners by inferred county from the agency name — not fake pins or live camera feeds
-• Keyboard dismisses from search and address fields (Done, scroll, or picking a result)
-• Place Score says “Your block” only for GPS or Home — map previews say “This area”
-• End Drive now clears a stuck Live Activity; Hide Overwatch still keeps the drive going
-• Alerts follow Home and the city on your map, not only the first city you cached
-• Traffic cams stay off if you turned them off before location was available
+• Clearer honesty copy: mapped OSM pins + phone GPS only — not plate reads
+• Pin-zone alerts and Map HUD language replace “watched zone” framing
+• Place Score and share cards say HOW MAPPED (not HOW WATCHED)
+• Route compare is Fewest Pins Drive (not Safest Drive)
+• Drive Mode / Live Activity: “no pins ahead” instead of detector-style corridor clear
 ```
 
 ## Screenshot capture checklist

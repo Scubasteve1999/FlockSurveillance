@@ -3,8 +3,8 @@ import Foundation
 /// Punchy proximity copy for corridor alerts and HUD.
 /// Stays honest: mapped pins + phone GPS only — never plate-read claims.
 enum WatchedZoneCopy {
-    static let enteringTitle = "WATCHED ZONE"
-    static let stillInsideTitle = "STILL IN ZONE"
+    static let enteringTitle = "PIN ZONE"
+    static let stillInsideTitle = "STILL IN PIN ZONE"
     static let leftTitle = "CLEARED PINS"
 
     static func enteringBody(cameraTitle: String, radiusFeet: Int) -> String {
@@ -21,7 +21,7 @@ enum WatchedZoneCopy {
             : "You cleared \(passedCount) mapped ALPR pins on that stretch."
     }
 
-    static let hudActiveLabel = "WATCHED ZONE"
+    static let hudActiveLabel = "PIN ZONE"
     static let hudActiveSubtitle = "Phone GPS near mapped ALPR pins — not plate reads"
 
     /// Caption under NEAR — nearest pin's OSM operator, not this app's brand.

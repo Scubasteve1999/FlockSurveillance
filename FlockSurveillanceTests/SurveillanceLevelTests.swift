@@ -75,7 +75,7 @@ final class SurveillanceLevelTests: XCTestCase {
         XCTAssertEqual(SurveillanceLevel.low.title, "LOW PINS")
         XCTAssertEqual(SurveillanceLevel.elevated.title, "MODERATE PINS")
         XCTAssertEqual(SurveillanceLevel.high.title, "DENSE PINS")
-        XCTAssertEqual(SurveillanceLevel.critical.title, "WATCHED ZONE")
+        XCTAssertEqual(SurveillanceLevel.critical.title, "PIN ZONE")
         for level in SurveillanceLevel.allCases {
             XCTAssertFalse(level.chip.contains("HOT"))
             XCTAssertFalse(level.title.contains("HOT"))

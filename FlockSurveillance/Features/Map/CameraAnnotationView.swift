@@ -63,7 +63,7 @@ struct RadarHUD: View {
 
     private var targetRing: CGFloat { level.dialFill }
 
-    /// One headline: WATCHED ZONE while inside, otherwise the surveillance title.
+    /// One headline: PIN ZONE while inside, otherwise the surveillance title.
     /// Density (Saturated, etc.) stays a badge — not a second shout.
     private var headline: String {
         if inWatchedZone { return WatchedZoneCopy.hudActiveLabel }

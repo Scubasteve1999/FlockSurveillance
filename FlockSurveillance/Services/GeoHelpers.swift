@@ -300,7 +300,7 @@ enum GeoHelpers {
         switch nearby.count {
         case 0: grade = "Clear"
         case 1...4: grade = "Light"
-        case 5...14: grade = "Watched"
+        case 5...14: grade = "Mapped"
         case 15...29: grade = "Heavy"
         default: grade = "Saturated"
         }
@@ -447,9 +447,9 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         let subject = isPersonal ? "Your block" : "This area"
         switch grade {
         case "Clear": return "\(subject) looks clear"
-        case "Light": return "\(subject) is lightly watched"
-        case "Watched": return "\(subject) is watched"
-        case "Heavy": return "\(subject) is heavily watched"
+        case "Light": return "\(subject) has light mapped pins"
+        case "Mapped": return "\(subject) has mapped pins nearby"
+        case "Heavy": return "\(subject) has dense mapped pins"
         default: return "\(subject) is saturated with mapped pins"
         }
     }
@@ -464,7 +464,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         \(headline)
         \(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)
         Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)
-        How watched is your life right now?
+        Mapped OSM pin density near you.
         Mapped OSM pins — not a vendor feed.
         flocksurveillance.com
         \(AppLinks.appStore.absoluteString)

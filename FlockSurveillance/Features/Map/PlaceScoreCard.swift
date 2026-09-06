@@ -112,7 +112,7 @@ struct PlaceScoreCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("HOW WATCHED?")
+                Text("HOW MAPPED?")
                     .font(.system(size: 10, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(AppTheme.mutedForeground)
@@ -156,7 +156,7 @@ struct PlaceScoreCard: View {
             }
 
             Button(action: onShare) {
-                Label("Share how watched you are", systemImage: "square.and.arrow.up")
+                Label("Share your mapped pins", systemImage: "square.and.arrow.up")
                     .font(.system(size: 14, weight: .semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)

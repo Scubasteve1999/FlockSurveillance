@@ -159,9 +159,9 @@ struct FlockShortcuts: AppShortcutsProvider {
             intent: CheckPlaceScoreIntent(),
             phrases: [
                 "Check my place score in \(.applicationName)",
-                "How watched am I in \(.applicationName)"
+                "How mapped am I in \(.applicationName)"
             ],
-            shortTitle: "How watched?",
+            shortTitle: "How mapped?",
             systemImageName: "gauge.with.dots.needle.67percent"
         )
         AppShortcut(

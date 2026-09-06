@@ -117,10 +117,11 @@ final class GeoHelpersTests: XCTestCase {
             )
         }
         let score = GeoHelpers.placeScore(cameras: cameras, near: origin, radiusMeters: 1609.34)
-        XCTAssertEqual(score.grade, "Watched")
+        XCTAssertEqual(score.grade, "Mapped")
         XCTAssertEqual(score.cameraCount, 8)
         XCTAssertEqual(score.flockPercent, 50)
-        XCTAssertTrue(score.headline.lowercased().contains("watched"))
+        XCTAssertEqual(score.headline, "Your block has mapped pins nearby")
+        XCTAssertFalse(score.headline.lowercased().contains("watched"))
         XCTAssertTrue(score.headline.hasPrefix("Your block"))
         let area = GeoHelpers.placeScore(
             cameras: cameras,
@@ -129,13 +130,50 @@ final class GeoHelpersTests: XCTestCase {
             isPersonal: false
         )
         XCTAssertTrue(area.headline.hasPrefix("This area"))
+        XCTAssertEqual(area.headline, "This area has mapped pins nearby")
         XCTAssertEqual(score.cameraCountLabel, "8 mapped pins")
         XCTAssertTrue(score.cameraCountLabel.contains("mapped pin"))
         XCTAssertFalse(score.cameraCountLabel.contains("camera"))
         XCTAssertTrue(score.shareText.contains("mapped pin"))
         XCTAssertFalse(score.shareText.contains("camera"))
-        XCTAssertTrue(score.shareText.contains("Mapped OSM pins"))
+        XCTAssertTrue(score.shareText.contains("Mapped OSM pins — not a vendor feed."))
+        XCTAssertTrue(score.shareText.contains("Mapped OSM pin density near you."))
+        XCTAssertFalse(score.shareText.contains("How watched is your life right now?"))
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
+    }
+
+    func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {
+        let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        func cameras(_ count: Int) -> [ALPRCamera] {
+            (0..<count).map { index in
+                ALPRCamera(
+                    id: "h\(index)",
+                    latitude: 33.75 + Double(index) * 0.0003,
+                    longitude: -84.39,
+                    manufacturer: "Flock Safety"
+                )
+            }
+        }
+
+        let light = GeoHelpers.placeScore(cameras: cameras(3), near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(light.grade, "Light")
+        XCTAssertEqual(light.headline, "Your block has light mapped pins")
+        XCTAssertFalse(light.headline.lowercased().contains("watched"))
+
+        let mapped = GeoHelpers.placeScore(cameras: cameras(8), near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(mapped.grade, "Mapped")
+        XCTAssertEqual(mapped.headline, "Your block has mapped pins nearby")
+        XCTAssertFalse(mapped.headline.lowercased().contains("watched"))
+
+        let heavy = GeoHelpers.placeScore(cameras: cameras(20), near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(heavy.grade, "Heavy")
+        XCTAssertEqual(heavy.headline, "Your block has dense mapped pins")
+        XCTAssertFalse(heavy.headline.lowercased().contains("watched"))
+
+        XCTAssertEqual(
+            GeoHelpers.placeScore(cameras: [], near: origin, radiusMeters: 1609.34).headline,
+            "Your block looks clear"
+        )
     }
 
     func testPlaceScoreSaturatedHeadlineUsesMappedPins() {

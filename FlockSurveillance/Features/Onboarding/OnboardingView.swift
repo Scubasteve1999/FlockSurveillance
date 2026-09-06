@@ -214,12 +214,12 @@ struct OnboardingView: View {
         VStack(spacing: 18) {
             Spacer()
 
-            Text("HOW WATCHED?")
+            Text("HOW MAPPED?")
                 .font(.system(size: 12, weight: .heavy, design: .monospaced))
                 .tracking(2)
                 .foregroundStyle(AppTheme.accent)
 
-            Text("How watched is your life?")
+            Text("How mapped is your life?")
                 .font(.system(size: 24, weight: .black))
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)

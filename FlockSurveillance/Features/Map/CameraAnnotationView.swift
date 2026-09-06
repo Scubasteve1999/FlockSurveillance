@@ -81,7 +81,7 @@ struct RadarHUD: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
                         inWatchedZone
-                            ? "Watched zone. \(visibleCountLabel) in view, \(headline). Phone near mapped ALPR pins, not a plate-read alert."
+                            ? "Pin zone. \(visibleCountLabel) in view, \(headline). Phone near mapped ALPR pins, not a plate-read alert."
                             : "\(visibleCountLabel) in view, \(headline)"
                     )
 

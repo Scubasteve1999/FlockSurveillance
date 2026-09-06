@@ -361,7 +361,7 @@ struct RouteExposureView: View {
                 HStack(spacing: 16) {
                     metric("Flock", "\(result.flockCount)")
                     metric("Distance", String(format: "%.1f mi", result.route.distance / 1609.34))
-                    metric("Watchedness", result.exposureScore)
+                    metric("Pin score", result.exposureScore)
                 }
 
                 OverwatchPrimaryButton {
@@ -693,7 +693,7 @@ struct RouteExposureView: View {
         From: \(from)
         To: \(to)
         Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)
-        Watchedness: \(result.exposureScore)
+        Pin score: \(result.exposureScore)
         Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi
         Alternatives scored: \(optionCount)
         Fewer mapped pins. Same destination.

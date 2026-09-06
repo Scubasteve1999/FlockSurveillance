@@ -80,7 +80,7 @@ Store URL: https://apps.apple.com/us/app/flock-surveillance-alpr-map/id678935693
 ### X post (attach Live Activity Lock Screen shot)
 
 ```
-How watched is this road while you drive?
+How mapped is this road while you drive?
 
 Flock Surveillance: Drive Mode + Lock Screen Live Activity near mapped ALPR pins from OpenStreetMap.
 

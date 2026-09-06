@@ -32,7 +32,7 @@ Owner reaction (paraphrased): *“damn then this isn’t what I want.”*
 
 **Flock Surveillance** — civic transparency iOS app (SwiftUI, iOS 17+, Xcode 16+).
 
-Answers: **how watched is your life right now?**
+Answers: **how mapped is your life right now?**
 
 | Does | Does not |
 |------|----------|
@@ -78,7 +78,7 @@ CI: public repo, `macos-15` Actions green on `main` when last checked.
 | Notify when *phone* near mapped camera | **Yes** | Already exists (`AlertsEngine` geofences); can polish |
 | Phone camera + AR pins on street | **Yes** | Already exists; not vendor feed |
 | Public *municipal traffic* cams near ALPRs | **Maybe** | Different data source, city-by-city, not ALPR video; legal only where openly published |
-| Stronger “how watched” / FOIA / sharing graph | **Yes** | Fits current thesis |
+| Stronger “how mapped” / FOIA / sharing graph | **Yes** | Fits current thesis |
 | CarPlay Drive HUD | **Blocked** | Waiting on Apple entitlement |
 
 ---

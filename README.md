@@ -1,6 +1,6 @@
 # Flock Surveillance
 
-Civic transparency iOS app that answers: **how watched is your life right now?**
+Civic transparency iOS app that answers: **how mapped is your life right now?**
 
 Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
@@ -15,19 +15,19 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 - **Coverage Engine** — tracked OSM reports with pending map pins, note status checks, and a notification when your camera lands
 - **Your contributions** — Settings list of open / landed reports with “check again” and map focus
 - **Denser Overpass ingest** — alternate ALPR tag schemes (`camera:type`, case-insensitive `surveillance:type`) plus stronger Flock detection from operator/brand/name
-- **Instant How Watched?** — auto Place Score on first map open + onboarding teaser grade
+- **Instant How Mapped?** — auto Place Score on first map open + onboarding teaser grade
 - **Visual share cards** — Instagram-ready Place Score and drive-report PNGs with deep links
-- **Safest drive Home ↔ Work** — set Work in Settings; one-tap commute buttons + Siri “Safest drive home”
+- **Fewest pins drive Home ↔ Work** — set Work in Settings; one-tap commute buttons + Siri “Fewest pins drive home”
 - **City rankings** — most-mapped metros from seed cities + local cache (map strip + Learn)
 - **Background camera alerts** — geofenced notifications near mapped cameras, even with the app closed (Always location, opt-in, quiet hours)
-- **Siri + Shortcuts** — nearby cameras, how watched, Drive Mode, safest drive home
+- **Siri + Shortcuts** — nearby pins, how mapped, Drive Mode, fewest pins drive home
 - **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget (“Cameras near Home”)
 - **Community reporting** — flag unmapped or changed cameras as anonymous OpenStreetMap notes; tracked until mapped
 - **CarPlay Drive Mode** — driving-task template mirroring the HUD (code ready; awaits Apple's CarPlay entitlement). Do **not** add the CarPlay scene manifest to Info.plist until the entitlement is approved — declaring it early freezes iPad scene transitions.
 - **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, mapped-pin density heat, freshness label, optional approach haptics
 - **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
 - **Camera FOV cones** — short map wedges + detail preview when OSM `camera:direction` / `direction` is tagged
-- **Safest Drive** — MapKit driving directions + alternates, per-route camera fetch, shareable drive report, Start Drive + Live Activity tip
+- **Fewest Pins Drive** — MapKit driving directions + alternates, per-route camera fetch, shareable drive report, Start Drive + Live Activity tip
 - **Drive Mode** — Start Drive HUD with next camera distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
 - **Camera Intel 2.0** — OSM tags, copy coords, OpenStreetMap deep link, distance from you
 - **Settings** — haptics/heat/filter defaults, Set Home + Work, contributions, clear cache

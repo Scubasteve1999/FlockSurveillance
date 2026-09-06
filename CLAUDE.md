@@ -1,6 +1,6 @@
 # Flock Surveillance — agent guide
 
-SwiftUI iOS app. Civic transparency: **"how watched is this road while driving?"**
+SwiftUI iOS app. Civic transparency: **"how mapped is this road while driving?"**
 Maps community-documented ALPR cameras from OpenStreetMap. Not affiliated with Flock Safety.
 
 ## Build

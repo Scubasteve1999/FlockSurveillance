@@ -86,4 +86,4 @@ Legacy Python framer: Scripts/frame_aso_screenshots.py (backup only)
 ================================================================================
 VERSION
 ================================================================================
-MARKETING_VERSION 1.9.0 / CURRENT_PROJECT_VERSION 16
+MARKETING_VERSION 1.9.1 / CURRENT_PROJECT_VERSION 17

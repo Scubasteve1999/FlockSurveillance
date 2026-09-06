@@ -45,7 +45,7 @@ final class DriveLiveActivityController {
     func end() async {
         guard let activity else { return }
         let finalState = DriveActivityAttributes.ContentState(
-            nextLabel: "Drive ended · corridor clear",
+            nextLabel: "Drive ended · no pins ahead",
             distanceLabel: "—",
             remaining: 0,
             exposureLabel: sessionExposureFallback
@@ -58,7 +58,7 @@ final class DriveLiveActivityController {
 
     private func contentState(from session: DriveSession) -> DriveActivityAttributes.ContentState {
         let next = session.nextHit.map { $0.isFlock ? "Next Flock pin" : "Next mapped pin" }
-            ?? "Corridor clear"
+            ?? "No pins ahead"
         let distance = session.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
         return DriveActivityAttributes.ContentState(
             nextLabel: next,

@@ -33,7 +33,7 @@ enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
         case .low: return "LOW PINS"
         case .elevated: return "MODERATE PINS"
         case .high: return "DENSE PINS"
-        case .critical: return "WATCHED ZONE"
+        case .critical: return "PIN ZONE"
         }
     }
 

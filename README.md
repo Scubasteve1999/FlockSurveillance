@@ -2,15 +2,15 @@
 
 Civic transparency iOS app that answers: **how mapped is your life right now?**
 
-Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
+Maps community-documented ALPR cameras from OpenStreetMap, with pin-zone alerts, route exposure, and a Home Screen widget. Not affiliated with Flock Safety. No private vendor APIs.
 
 ## Features (v1.9)
 
 - **Sensor Atlas** — municipal traffic CCTV layer (Madison + Milwaukee WisDOT snapshot). Auto-enables when you’re in those metros (dismissible; respects manual off). Tap a gold pin for a hero still + “not ALPR” frame. Does not feed proximity alerts.
 - **Sharing Network Map** — pick a FOIA-disclosed hub (Waunakee / Middleton / Grand Chute) and see hub-and-spoke arcs to ~1,900 partner agencies from DeFlock Dane public records; on-device bundle, no Flock vendor APIs
-- **Watched-zone proximity** — geofenced alerts and radar HUD when your phone is near mapped OSM ALPR pins (honest “near mapped pins” copy — not plate-read detection)
-- **Coverage Confidence** — radar instrument shows fetch state, tagged-direction share (`with facing`), and freshness; ghost pins soft-clear after a successful OSM refresh
-- **Surveillance Radar Shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
+- **Pin-zone alerts** — geofenced alerts and map HUD when your phone is near mapped OSM ALPR pins (honest “near mapped pins” copy — not plate-read detection)
+- **Coverage Confidence** — map instrument shows fetch state, tagged-direction share (`with facing`), and freshness; ghost pins soft-clear after a successful OSM refresh
+- **Map HUD shell** — compact control rail + proximity dial HUD; Place Score bloom dial matches the share PNG
 - **AR Camera Sight** — raise your phone and see mapped ALPR pins (and FOV wedges when direction is tagged) in the street; on-device only, not a live feed
 - **Coverage Engine** — tracked OSM reports with pending map pins, note status checks, and a notification when your camera lands
 - **Your contributions** — Settings list of open / landed reports with “check again” and map focus
@@ -24,8 +24,8 @@ Maps community-documented ALPR cameras from OpenStreetMap, with proximity radar,
 - **Lock-screen widgets** — accessory circular / rectangular / inline families plus the Home Screen widget (“Cameras near Home”)
 - **Community reporting** — flag unmapped or changed cameras as anonymous OpenStreetMap notes; tracked until mapped
 - **CarPlay Drive Mode** — driving-task template mirroring the HUD (code ready; awaits Apple's CarPlay entitlement). Do **not** add the CarPlay scene manifest to Info.plist until the entitlement is approved — declaring it early freezes iPad scene transitions.
-- **Map + Proximity Radar** — viewport-scoped clusters, Flock-only filter, mapped-pin density heat, freshness label, optional approach haptics
-- **Live Watch Mode** — pulsing radar ring + stronger haptic cadence while watching
+- **Map + proximity HUD** — viewport-scoped clusters, Flock-only filter, mapped-pin density heat, freshness label, optional approach haptics
+- **Live Watch Mode** — pulsing proximity ring + stronger haptic cadence while watching
 - **Camera FOV cones** — short map wedges + detail preview when OSM `camera:direction` / `direction` is tagged
 - **Fewest Pins Drive** — MapKit driving directions + alternates, per-route camera fetch, shareable drive report, Start Drive + Live Activity tip
 - **Drive Mode** — Start Drive HUD with next camera distance, remaining count, approach haptics, Live Activity / Dynamic Island when available
@@ -50,7 +50,7 @@ open FlockSurveillance.xcodeproj
 
 Select a Development Team in Signing & Capabilities for the app and widget targets, then run on a simulator or device.
 
-Location permission is required for radar and “use my location” routing. Camera permission is required only for AR Camera Sight (overlay stays on-device; nothing is recorded). Camera data requires network access to Overpass.
+Location permission is required for proximity alerts and “use my location” routing. Camera permission is required only for AR Camera Sight (overlay stays on-device; nothing is recorded). Camera data requires network access to Overpass.
 
 ## Data
 

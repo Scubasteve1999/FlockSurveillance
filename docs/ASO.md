@@ -34,9 +34,9 @@ Notes:
 
 > How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 >
-> Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device.
+> Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device.
 
-Then feature bullets in this order: Drive Mode, Fewest Pins Drive, Radar/alerts, Place Score, AR, Map + FOV, Sharing Network, reporting/widgets.
+Then feature bullets in this order: Drive Mode, Fewest Pins Drive, Pin-zone alerts, Place Score, AR, Map + FOV, Sharing Network, reporting/widgets.
 
 ## App Store Connect paste pack
 
@@ -71,11 +71,11 @@ NEW: Drive Mode + Live Activity — how mapped is this road while you drive. Map
 ```
 How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 
-Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
+Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
 
 • Drive Mode — live countdown HUD + Lock Screen / Dynamic Island Live Activity while you drive
 • Fewest Pins Drive Home ↔ Work — compare routes by mapped pin exposure; share a drive report
-• Watched-zone radar — optional geofenced alerts when your phone is near mapped OSM pins (not plate reads)
+• Pin-zone alerts — optional geofenced alerts when your phone is near mapped OSM pins (not plate reads)
 • Instant Place Score — grade your block in seconds; share Instagram-ready cards
 • AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
 • Map + FOV cones — clusters, Flock filter, Coverage Confidence, optional approach haptics
@@ -105,7 +105,7 @@ Capture order matches the storyboard below. Prefer **iPhone 16 Pro Max / 6.9"** 
 |---|------|--------|------------------|---------|-------|
 | 1 | `01-drive-mode` | Drive Mode HUD | Route → directions → Start Drive | How mapped is this road | Sim OK for HUD; **device** for Dynamic Island composite |
 | 2 | `02-safest-drive` | Fewest Pins Drive / route compare | Route → Home↔Work | Pick the quieter route | Show alternatives card if available |
-| 3 | `03-radar-hud` | Radar HUD / watched zone | Map tab after successful fetch | Near mapped pins — honest | Wait until instrument shows Fetched |
+| 3 | `03-radar-hud` | Map HUD / pin zone | Map tab after successful fetch | Near mapped pins — honest | Wait until instrument shows Fetched |
 | 4 | `04-place-score` | Place Score dial | Map → How Mapped? / Place Score | Your block, graded | Settled score after covering fetch |
 | 5 | `05-share-card` | Place Score share PNG | Share from Place Score → save image | Share your mapped pins | Prefer `ShareCardRenderer` output |
 | 6 | `06-map-fov` | Map + FOV | Map, Flock filter off, FOV cones visible | See every mapped camera | Zoom so several cones read |
@@ -127,7 +127,7 @@ Marketing frames are composed in Figma: [Flock Surveillance App Store Screenshot
 
 1. **Drive Mode HUD** — `01-drive-mode` — "How mapped is this road"
 2. **Fewest Pins Drive / route compare** — `02-safest-drive` — "Pick the quieter route"
-3. **Radar HUD / watched zone** — `03-radar-hud` — "Near mapped pins — honest"
+3. **Map HUD / pin zone** — `03-radar-hud` — "Near mapped pins — honest"
 4. **Place Score dial** — `04-place-score` — "Your block, graded"
 5. **Place Score share card** — `05-share-card` — "Share your mapped pins"
 6. **Map + FOV cones** — `06-map-fov` — "See every mapped camera"

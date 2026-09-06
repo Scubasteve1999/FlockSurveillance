@@ -2,7 +2,7 @@
 
 **Live listing:** [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933) · Apple ID `6789356933`
 
-**Positioning:** DeFlock owns “see cameras + report.” Flock Surveillance owns **“how watched is this road right now, while I’m driving.”** Map, Sharing Network, and Sensor Atlas are infrastructure — not the lead story.
+**Positioning:** DeFlock owns “see cameras + report.” Flock Surveillance owns **“how mapped is this road right now, while I’m driving.”** Map, Sharing Network, and Sensor Atlas are infrastructure — not the lead story.
 
 **Framed screenshots:** Figma is the source of truth (SpotterCast pattern). See [Screenshot storyboard](#screenshot-storyboard-69-set-in-order). Python [`Scripts/frame_aso_screenshots.py`](../Scripts/frame_aso_screenshots.py) is legacy/backup only.
 
@@ -13,7 +13,7 @@
 | Field | Recommendation | Notes |
 |---|---|---|
 | Name (30 chars) | `Flock Surveillance: ALPR Map` | Brand + highest-value keyword in the name |
-| Subtitle (30 chars) | `How watched is this road?` | Drive-leaning; keeps “watched” language from Place Score / share cards |
+| Subtitle (30 chars) | `How mapped is this road?` | Drive-leaning; keeps mapped-pin language from Place Score / share cards |
 
 ## Keyword field (100 chars)
 
@@ -28,15 +28,15 @@ Notes:
 
 ## Promotional text (170 chars, editable without review)
 
-> NEW: Drive Mode + Live Activity — how watched is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
+> NEW: Drive Mode + Live Activity — how mapped is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
 
 ## Description opener (first 3 lines matter most)
 
-> How watched is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by camera exposure, or grade your block with Place Score.
+> How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 >
 > Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device.
 
-Then feature bullets in this order: Drive Mode, Safest Drive, Radar/alerts, Place Score, AR, Map + FOV, Sharing Network, reporting/widgets.
+Then feature bullets in this order: Drive Mode, Fewest Pins Drive, Radar/alerts, Place Score, AR, Map + FOV, Sharing Network, reporting/widgets.
 
 ## App Store Connect paste pack
 
@@ -51,7 +51,7 @@ Flock Surveillance: ALPR Map
 ### Subtitle (30)
 
 ```
-How watched is this road?
+How mapped is this road?
 ```
 
 ### Keywords (100)
@@ -63,18 +63,18 @@ alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,sp
 ### Promotional Text (170)
 
 ```
-NEW: Drive Mode + Live Activity — how watched is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
+NEW: Drive Mode + Live Activity — how mapped is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
 ```
 
 ### Description (full)
 
 ```
-How watched is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by camera exposure, or grade your block with Place Score.
+How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 
 Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
 
 • Drive Mode — live countdown HUD + Lock Screen / Dynamic Island Live Activity while you drive
-• Safest Drive Home ↔ Work — compare routes by mapped camera exposure; share a drive report
+• Fewest Pins Drive Home ↔ Work — compare routes by mapped pin exposure; share a drive report
 • Watched-zone radar — optional geofenced alerts when your phone is near mapped OSM pins (not plate reads)
 • Instant Place Score — grade your block in seconds; share Instagram-ready cards
 • AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
@@ -103,11 +103,11 @@ Capture order matches the storyboard below. Prefer **iPhone 16 Pro Max / 6.9"** 
 
 | # | Stem | Screen | How to get there | Caption | Notes |
 |---|------|--------|------------------|---------|-------|
-| 1 | `01-drive-mode` | Drive Mode HUD | Route → directions → Start Drive | How watched is this road | Sim OK for HUD; **device** for Dynamic Island composite |
-| 2 | `02-safest-drive` | Safest Drive / route compare | Route → Home↔Work | Pick the quieter route | Show alternatives card if available |
+| 1 | `01-drive-mode` | Drive Mode HUD | Route → directions → Start Drive | How mapped is this road | Sim OK for HUD; **device** for Dynamic Island composite |
+| 2 | `02-safest-drive` | Fewest Pins Drive / route compare | Route → Home↔Work | Pick the quieter route | Show alternatives card if available |
 | 3 | `03-radar-hud` | Radar HUD / watched zone | Map tab after successful fetch | Near mapped pins — honest | Wait until instrument shows Fetched |
-| 4 | `04-place-score` | Place Score dial | Map → How Watched? / Place Score | Your block, graded | Settled score after covering fetch |
-| 5 | `05-share-card` | Place Score share PNG | Share from Place Score → save image | Share how watched you are | Prefer `ShareCardRenderer` output |
+| 4 | `04-place-score` | Place Score dial | Map → How Mapped? / Place Score | Your block, graded | Settled score after covering fetch |
+| 5 | `05-share-card` | Place Score share PNG | Share from Place Score → save image | Share your mapped pins | Prefer `ShareCardRenderer` output |
 | 6 | `06-map-fov` | Map + FOV | Map, Flock filter off, FOV cones visible | See every mapped camera | Zoom so several cones read |
 | 7 | `07-ar-camera` | AR Camera Sight | Map → AR | Point at the street | **Physical device outdoors**; do not fake |
 | 8 | `08-sharing-network` | Sharing Network | Map → Sharing Network; pick **Waunakee** | See who they share with | Offline OK (bundled FOIA) |
@@ -125,11 +125,11 @@ Older low-res JPEGs and pre-reorder raw PNGs may still exist under [`docs/aso-ca
 
 Marketing frames are composed in Figma: [Flock Surveillance App Store Screenshots](https://www.figma.com/design/rJp6KGfLHbxRHWyHvSExrC). Canvas **1320×2868**. Brand **FLOCK SURVEILLANCE**, background `#0F1217`, headlines `#F26B47`.
 
-1. **Drive Mode HUD** — `01-drive-mode` — "How watched is this road"
-2. **Safest Drive / route compare** — `02-safest-drive` — "Pick the quieter route"
+1. **Drive Mode HUD** — `01-drive-mode` — "How mapped is this road"
+2. **Fewest Pins Drive / route compare** — `02-safest-drive` — "Pick the quieter route"
 3. **Radar HUD / watched zone** — `03-radar-hud` — "Near mapped pins — honest"
 4. **Place Score dial** — `04-place-score` — "Your block, graded"
-5. **Place Score share card** — `05-share-card` — "Share how watched you are"
+5. **Place Score share card** — `05-share-card` — "Share your mapped pins"
 6. **Map + FOV cones** — `06-map-fov` — "See every mapped camera"
 7. **AR Camera Sight** — `07-ar-camera` — "Point at the street"
 8. **Sharing Network (Waunakee)** — `08-sharing-network` — "See who they share with"

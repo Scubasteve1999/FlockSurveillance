@@ -1,6 +1,6 @@
 Flock Surveillance — App Store Connect paste pack (v1.8.2)
 Source: docs/ASO.md — paste into ASC → version → App Information / Review.
-Positioning: drive-first (how watched is this road) vs DeFlock map+report.
+Positioning: drive-first (how mapped is this road) vs DeFlock map+report.
 
 ================================================================================
 NAME (30)
@@ -10,7 +10,7 @@ Flock Surveillance: ALPR Map
 ================================================================================
 SUBTITLE (30)
 ================================================================================
-How watched is this road?
+How mapped is this road?
 
 ================================================================================
 KEYWORDS (100)
@@ -20,17 +20,17 @@ alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,sp
 ================================================================================
 PROMOTIONAL TEXT (170)
 ================================================================================
-NEW: Drive Mode + Live Activity — how watched is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
+NEW: Drive Mode + Live Activity — how mapped is this road while you drive. Mapped OSM pins only. Not plate reads. No Flock vendor APIs.
 
 ================================================================================
 DESCRIPTION
 ================================================================================
-How watched is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by camera exposure, or grade your block with Place Score.
+How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 
 Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, proximity radar, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
 
 • Drive Mode — live countdown HUD + Lock Screen / Dynamic Island Live Activity while you drive
-• Safest Drive Home ↔ Work — compare routes by mapped camera exposure; share a drive report
+• Fewest Pins Drive Home ↔ Work — compare routes by mapped pin exposure; share a drive report
 • Watched-zone radar — optional geofenced alerts when your phone is near mapped OSM pins (not plate reads)
 • Instant Place Score — grade your block in seconds; share Instagram-ready cards
 • AR Camera Sight — overlay mapped ALPR locations on the street (not a live feed)
@@ -73,11 +73,11 @@ Export to: docs/aso-captures/figma-export/
 Gap: 07-ar-camera still needs physical-device raw before final export.
 Drive Mode HUD raw: docs/aso-captures/raw/01-drive-mode.png (sim; optional Island reshoot).
 
-  01-drive-mode.png          How watched is this road
+  01-drive-mode.png          How mapped is this road
   02-safest-drive.png        Pick the quieter route
   03-radar-hud.png           Near mapped pins — honest
   04-place-score.png         Your block, graded
-  05-share-card.png          Share how watched you are
+  05-share-card.png          Share your mapped pins
   06-map-fov.png             See every mapped camera
   07-ar-camera.png           Point at the street          (needs device raw)
   08-sharing-network.png     See who they share with

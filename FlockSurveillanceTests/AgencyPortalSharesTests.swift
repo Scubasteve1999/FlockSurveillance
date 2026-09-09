@@ -33,6 +33,17 @@ final class AgencyPortalSharesTests: XCTestCase {
         XCTAssertEqual(store.agency(id: AgencyPortalSharesStore.shelbyCountySOID)?.shares.count, 1709)
     }
 
+    func testLoadIfNeededWaitsForInFlightReload() async {
+        let store = AgencyPortalSharesStore()
+        let reloadTask = Task { await store.reload() }
+        await Task.yield()
+        await store.loadIfNeeded()
+        XCTAssertTrue(store.isLoaded, "loadIfNeeded must wait for the in-flight decode, not return while isLoading")
+        XCTAssertFalse(store.isLoading)
+        XCTAssertEqual(store.midSouthSamples.first?.id, AgencyPortalSharesStore.shelbyCountySOID)
+        await reloadTask.value
+    }
+
     func testFailedLoadCanRetryFromBundle() async {
         let store = AgencyPortalSharesStore()
         await store.reload(resourceName: "DoesNotExistAgencyPortalSharesBundle")

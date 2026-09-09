@@ -10,6 +10,8 @@ final class AgencyPortalSharesStore {
     private(set) var loadError: String?
     private(set) var isLoaded = false
     private(set) var isLoading = false
+    @ObservationIgnored
+    private var loadWaiters: [CheckedContinuation<Void, Never>] = []
 
     func loadIfNeeded() async {
         guard !isLoaded else { return }
@@ -17,14 +19,27 @@ final class AgencyPortalSharesStore {
     }
 
     /// Force a reload. Decodes off the main actor. Keeps the previous
-    /// `loadError` visible until this attempt resolves.
+    /// `loadError` visible until this attempt resolves. Concurrent callers
+    /// wait for the in-flight decode instead of returning immediately.
     func reload(
         resourceName: String = AgencyPortalSharesStore.resourceName,
         from resourceBundle: Bundle = .main
     ) async {
-        guard !isLoading else { return }
+        if isLoading {
+            await withCheckedContinuation { continuation in
+                loadWaiters.append(continuation)
+            }
+            return
+        }
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            isLoading = false
+            let waiters = loadWaiters
+            loadWaiters.removeAll()
+            for waiter in waiters {
+                waiter.resume()
+            }
+        }
         do {
             let name = resourceName
             let loaded = try await Task.detached(priority: .userInitiated) {

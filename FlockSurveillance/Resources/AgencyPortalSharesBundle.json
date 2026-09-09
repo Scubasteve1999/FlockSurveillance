@@ -1,0 +1,6860 @@
+{
+  "schemaVersion": "1",
+  "generatedAt": "2026-09-09",
+  "attribution": {
+    "title": "Agency portal shares (bundled snapshot)",
+    "url": "https://transparency.flocksafety.com/",
+    "note": "On-device snapshot of publicly listed portal shares. Not live. Not full reach. Not plate-read access."
+  },
+  "agencies": [
+    {
+      "id": "shelby-county-tn-so",
+      "displayName": "Shelby County Sheriff's Office (TN)",
+      "regionLabel": "Mid-South sample",
+      "sourceTitle": "Flock Transparency Portal — Shelby County TN SO",
+      "sourceURL": "https://transparency.flocksafety.com/shelby-county-tn-so",
+      "asOfDate": "2026-09-08",
+      "shares": [
+        {
+          "name": "[Federal] Federal Bureau of Investigation (FBI)",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Indiana Dunes National Park IN PD",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Indiana HIDTA",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Midwest HIDTA",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Natchez Trace Parkway MS - National Park Service",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] National Park Service TN [Inactive]",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Tennessee Valley Authority Police",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] US GSA Office of Inspector General",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] US Postal Inspection Service",
+          "category": "federal"
+        },
+        {
+          "name": "[Federal] Wright Patterson OH Air Force Base",
+          "category": "federal"
+        },
+        {
+          "name": "A - Eldridge PD",
+          "category": "unknown"
+        },
+        {
+          "name": "A Storm Lake PD",
+          "category": "unknown"
+        },
+        {
+          "name": "AAR Arkadelphia PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Abbevile SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Abbeville SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Acworth GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ada County 1D SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Ada County ID SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ada OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adaievile KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adairvile KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adams County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Adams County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adams County Il SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Adams County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adams County It SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Adams County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Adamsville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adamsville AL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Addison IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Addison TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Addison TX PO Adrian MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adrian MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Adsievile KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aichison County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aigood TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Aiington Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aiken County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aken County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Akron OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL - Autauga County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL - Bear Creek PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL - Gadsden PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL Andalusia PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL Autauga County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL Bear Creek PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL Gadsden PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL Sylacauga PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AL- Andalusia PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alabaster AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alachua County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alachua County FL. SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Albany GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Albion Mi DPS",
+          "category": "unknown"
+        },
+        {
+          "name": "Alcoa TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Alen County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexander AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexander County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexander County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexandia IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexandria IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alexandria LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Algood TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Alington Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Allen County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Allen County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Allen County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Allen County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Allen TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alpharetta GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alpharetta GA PO Altoona 1A PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Alpharetta GA PO Altoona IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Altoona 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Alvin 7X PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Alvin TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Amarillo TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Amarilo TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Amberiey Village OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Amberley Village OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anderson County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anderson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Anderson IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anderson SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Andover KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ankeny 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ankeny IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anna TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anniston AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Anoka County MN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Antioch iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Antioch IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Antioeh IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Apex NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "App State University NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Appling County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR - Harrisburg PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR - Newton County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR Alma PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR Alma PO AR Arkadelphia PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR Arkadelphia PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR Harrisburg PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR Newton County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR- Alma PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "AR- Harrisburg PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ardmore AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Argo AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arington Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arlington Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arlington TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arnold MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arthur IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Arthur PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Asheville NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Asheville NC PO Ashland MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ashland Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ashland MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ashville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ashwille AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Atchison County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Athalia OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Athens County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Athens-Clarke County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Atington Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Atlanta GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Atoka County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Atoka TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Atoona 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Attorney Genera of Ilinois - Medicare Fraud Division Auburn AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Attorney General Imperial County CA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Attorney General of linois - Medicare Fraud Division Auburn AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auburn AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auburn GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auburn IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auburn NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auburn WA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Audrain County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Auglaize County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Augusta KS DPS",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aurora CO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aurora i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Aurora Il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Aurora it PO Aurora OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aurora OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Austin County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Autauga County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Avery County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Avex NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Aviston IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Avon CO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Avon IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baker County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baldwin County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baldwin County GA'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baldwin GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ballard County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Banks County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Banner Elk NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barber County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barbour County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bardstown PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Barling AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barnett Reservoir MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barrington Hills IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barrington Hills PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Barrow County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barrow County GA'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Barry County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Bartlet TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Bartlett TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Bartow County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Batavia OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Batesville MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baton Rouge LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bay County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bay St. Louis MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bay St.Louis MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bayfield County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Baylor Scott & White PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Beaumont TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bedford County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Bedford County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bedford VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bedtord VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Beebe AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Beebe AR PO Beech Grove IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Beebe ARPD Beech Grove IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Beech Grove IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bel Aire KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bellefontaine PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bellevue KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Belmont MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Belmont NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Belpre OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Belvidere iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Belvidere IL PO Benton AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Benton AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Benton County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Benton County WA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Benton iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Benton IL PO Bentonville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Benton it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bentonville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Berea KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Berkeley I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Berkeley IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Berkeley iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Berkeley MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Berrien County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Berrien County MI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bessemer AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bibb County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Biltmore Forest NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Biltmore Forest NC PO Birmingham AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Birmingham AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Birmingham AL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bixby OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Biythevile AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Biytheville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Black Mountain NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blackman/Leoni Public Safety Mi Blacksburg SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blackman/Leoni Public Safety MI Blacksburg SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blackshear GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blackshear GA PO Bleckley County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bleckley County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bloomfield NM PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bloomington IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bloomington PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Blount County Commission (AL) Blount County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Blountsville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blountsvlle AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blue Ash OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blue Springs MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blythevile AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Blytheville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boaz AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boaz AL PO Bogeta TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bogata TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bol Aire KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bolingbrook iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bolingbrook IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boone County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boone County I SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Boone County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Boone County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bosque County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bossier City LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bossier Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Botetourt County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bourbon County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bourbonnais i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bourbonnais I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bowdon GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bowling Green KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bowling Green MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boyd TPO Boynton Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boyd TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boyd TX PO Boynton Beach FL.PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boyd TXPD Boynton Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Boynton Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bradley County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Braintree MA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Branson MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Breckinridge County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bremen GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brent AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brentwood MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brevard County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bridgeton MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bridgeview I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bridgeview IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brighton CO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brighton CO PO Bristol IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bristol IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bristol IN/PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookhaven GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookhaven GA PO Brookland AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookland AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookvile OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookville OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brookville OH PO Brown County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brown Countv i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Brown County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Brown County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Brown County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Brown County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brownsburg IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Brunswick County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bryant AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bth Judicial District Drug Task Force - TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Buchanan County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bulloch County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Buncombe County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Burke County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Burlington 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Burlington IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Burlington NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Burnham iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Burnham IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Burr Ridge I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Burr Ridge IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bushnell iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bushnell IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Bushnell Il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Bushnell PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Butler County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butler GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butler IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butler N PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Butler Township OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butler Township OH PO Butler Township PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butler Township PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Butts County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Byram MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Byron GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Byron GA PO Byron IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Byron i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Byron IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Byron iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cabarrus County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cabarrus County NC-SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cabot AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CAC - Hudson Valley NY Caddo Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cairo GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Caldwell County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calera AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calhoun County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calhoun County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calhoun County Sc SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Calhoun County SC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calhoun GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Callaway County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calloway County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calumet County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Calumet County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Calumet Park I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Calumet Park It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Calumet Park It. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cambridge City IN PO Camden AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Camden TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Camila GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Camilla GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cammack Vilage AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cammack Vilage AR PO Canton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cammack Village AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Canton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Canton i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Canton iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Canton PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Canton TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cape Girardeau County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cape Girardeau MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carbondale I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Carbondale IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carbondale PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Carmel IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carmel iN PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Carmel N PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Carol Stream IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carolina Beach NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Caroliton KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carpentersville IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carroliton KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carroll County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carroll County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carrolton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carrolton KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carroton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carson County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carson County Tx SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Carter County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Carterile IL PO Carthage MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cartersville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cartervile I PO Carthage MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cartervile IL PO Carthage MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carterville IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Carterville IL PO Carthage MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Caruthersville MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cary iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "CaryiL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Caryville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Casa Grande AZ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cass County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cass County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cass County MISO ass County Mo SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cass County MISO cass County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cass County MISO Cass County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cass County Tx SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cass County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cataway County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catawba County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catawba County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catawba County NC-SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catoosa County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catoosa County GA'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Catoosa OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CCarksvlle IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CCherryvale KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CChristian County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CCopiah County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "CCumbertand County PA DA CCumberiand Metro IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cedar Blu VA PO Cedar County 1A SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cedar Bluff VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cedar Bluff VA PO Cedar County 1A SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cedar Blut VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cedar County 1A SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cedar Rapids 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cedartown GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Center Point AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Center Point AL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Centerton AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Centervile IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Central city KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Centralia IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Centralia IL PO CChadbourn NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chadbourn NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chaffee MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chaffee Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chambers County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chambers County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Champaign County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Champaign County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Champaign County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Champaign County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Channahon iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Channahon it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chanute KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Charleston I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Charleston i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Charleston iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Charleston MO DPS",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Charlestown PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chatfee MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chatham iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chatham iL PO Chatsworth GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chatsworth GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chattee MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cheatham County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Chenoa i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chenoa iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cherokee County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cherokee County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cherokee County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cherokee County NC.SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cherry Valey I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cherry Valley It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cherry Valley It. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cherryvale KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chesapeake VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chester County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chester County SC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chester County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Chesterfield County VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chesterfield MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chesterton IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cheviot OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cheyenne WY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chicago Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chicago i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chicago it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chilicothe I. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chilicothe IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chilicothe it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chilicothe PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Chillicothe 1. PO Chilton County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chilton County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Chipley FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Christian County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Christian County Mo SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Christian County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cicero iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cicero IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cicero PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ciinton County 1A SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cilinton County 1A SO",
+          "category": "unknown"
+        },
+        {
+          "name": "City of Oak Ridge North Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "City of Oak Ridge North TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "City of Waverly PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Claire County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Claire County WiSO EI Cajon CA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clark County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clarksvile IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clarksville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clarksville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clarksville IN PO Clarksville VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clarksville VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County FL-SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County FL.SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County FLSO Clay County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County Mo SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Clay County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clay County Tx SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Clay County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton County GA PO Clayton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton MO PO Clayton NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton MO PO Clayton Nc PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton MO PO Clayton No PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clayton No PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clearwater FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clearwater FLPD Clemson University SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clemson University SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clermont County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cleveland County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cleveland County OK SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cleveland County Ok SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cleveland MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cleveland Ms PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cleveland TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Cleveland TN PO Clinton County 1A SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Clinton County 1A SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Clinton County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Clinton Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clinton TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Clinton Township NJ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clinton Township NJ PO Clintwood VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clintwood VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clive 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clive A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clive APD Clover Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clive PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clive tA PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clover Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Clovis NM PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Clyde PD",
+          "category": "unknown"
+        },
+        {
+          "name": "CO - Rangely PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coal Valey iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Coal Valley iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Coal Valley Il. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Coal Valley PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cobb County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cobb County GA PO Cocke County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Cocke County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Cocoa Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cocoa FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cocoa FL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coffee County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coffeyville KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Colbert County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Colbert County AL. SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cole County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cole County Mo SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Colerain Township PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Colin County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Collegedale TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Collegedale TN PO Collier County FL SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Collier County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Collierville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Colonial Beach VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Colquitt County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbia County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbia County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbia County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Columbia County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbia Ms PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Columbia MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbus County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbus GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbus IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Columbus NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Commerce GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Concordia MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Conroe TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Conway AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cook County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cook County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Cooke County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cookevile TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Cookeville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Cooper County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coopertown TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Copiah County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coppell TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Coral Springs FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cortiand it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cortiand it. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cortland it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cortland it. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Cortland PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Corydon IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cottievle MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cottlevile MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cottleville MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cottlevle MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Country Club Hills IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Country Club Hills IL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Country Club Hils IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Country Club His IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "County It SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Covington County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Covington GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Covington LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Covington TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Coweta County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crainvile I. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Crainvile i. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Crainvile IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Craven County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crawford County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crawford County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Crawford County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crawford County It SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Crawford County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Crawford County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crawford Town NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crawfordsville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Creek County 0K SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Creek County OK SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crest Hill PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Crestview FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crestwood MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Creve Coeur IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Creve Coeur IL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Creve Coeur It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Creve Coeur it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Creve Coeur MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crisp County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crockett County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Cross County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cross Plains TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Crosse Tete LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crossvile TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Crossville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Crowley TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crowley Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Crown Point IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crystal City MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crystal Lake IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crystal Lake iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Crystal Lake IL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Crystal Springs MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cullman AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cullman County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Culpeper VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cumberiand County PA DA Cumberiand Metro IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cumberiand County PA DA Cumberland Metro IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cumberland Metro IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cumby TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cumming GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cuyahoga Falls OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Cynthiana KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dadevile AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dadeville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dale County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dallas County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dallas TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dalton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dandridge TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Danvile IL PO Danville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Danvile iL PO Danville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Danville IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Danville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Danville KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Daphne AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dare County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Darien I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Darien PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Darlington County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davenport iA PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Davenport IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davenport ia PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Davidson County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davidson County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davidson NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davie County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Davie County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dawson County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dayton PD",
+          "category": "unknown"
+        },
+        {
+          "name": "De Pere WIPD Dearborn County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "De Pere WIPO Dearborn County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dearborn MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Decatur AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Decatur County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Decatur County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Decatur i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Decatur IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Decatur PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Decatur PO Decatur IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Deer Park OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Deer Park OH PO Dekalb County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dekalb County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dekalb IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dekalb Il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Del city 0K PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Del city OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Delaware County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Delaware County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Delhi Twp OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Delphi IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Delphi iN PO Dent County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dent County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Department of Natural Resources - GA Depue i PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Department of Natural Resources - GA Depue il PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Department of Natural Resources - GA Depue iL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Derby KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Derby KS PO Des Moines 1A PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Derby KS PO es Moines 1A PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Derby KS PO es Moines IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Des Moines IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Des Peres MO DPS",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "DeSoto County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Desoto County School District MS Dickson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Dickson TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Diiberville MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dillard GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dillon SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "District 9 AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "District MS Dickson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Ditbervile MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ditberville MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dixie County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dixmoor iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dixmoor IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dixmoor iL PO DNU- Walker County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "DNU- Walker County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dodge City KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dodge city KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dodge County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Doerun GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dolton IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dolton It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dorado AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dorado KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Doraville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Doraville GA PO Dothan AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dothan AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dotton IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dougherty County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Douglas County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Douglas County NV SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Douglas GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Downers Grove IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Downers Grove It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Downers Grove It. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dublin OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dubuque 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dubuque IA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dubuque IA PO Duluth GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Duluth GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Duncan OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Duncan Ok PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Duncan Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dunn NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Dunn Nc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dunwoody GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "DuPage Co Ik Prosecutor Office DuPage County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "DuPage Co Ik Prosecutor Office DuPage County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "DuPage Co IL Prosecutor Office DuPage County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "DuPage Co it Prosecutor Ottice DuPage County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Duquesne MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Duquesne Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Durango CO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Durango Co PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Dyer County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Dyersburg TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "E1Paso CO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Easley SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Baton Rouge LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Dundee IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Hampton Village NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Moline I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "East Moline Il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "East Moline PD",
+          "category": "unknown"
+        },
+        {
+          "name": "East Peoria iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "East Point GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Tawakoni TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "East Tennessee State University TN Campus PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Eastpointe MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eaton OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eatonton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eau Claire County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "EI Dorado AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "EI Dorado KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "EI Reno OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "EICajon CA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eiknart County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ejay GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "El Dorado KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elbert County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elbert County GA'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elizabethton TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Elizabethtown KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eljay GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elkhart County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elkhart County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elljay GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ellsworth County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elm Ridge TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elmore County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elon University NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elwood IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elyria OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Elyria OH PO Emerson GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Emerson GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eminence KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Energy IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Enon OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Erwin NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Erwin TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Escambia County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Escambia County FL.SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Etowah County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eufaula AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Euharlee GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Eureka MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Evansville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Evendale OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairburn GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairfax County VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairfax OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairfield CA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairfield County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairfield Gade TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Fairfield Glade TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Fairfield PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Fairlawn OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairlawn OH PO Fairmount IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fairmount IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fannin County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fargo ND PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmer City i. PO Farmers Branch TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmer City IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmer City IL PO Farmers Branch TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmers Branch TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmersville TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmersville TX PO Farmington MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Farmington MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fayette AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fayette County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Fayette County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Fayette County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fayette County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Fayettevile TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Fayetteville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fayetteville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "FedEx Air Carrier PD",
+          "category": "unknown"
+        },
+        {
+          "name": "FedEx Ar Carrier PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Feirfax County VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Feirfield County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ferguson MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ferndale MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Festus MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Firfax County VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fishers IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fishkill Town NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fitzgerald GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Flagler County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fletcher NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Flint MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Flora- iL - PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Flora- it - PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Florence AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Florence KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Florence MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Florissant MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Flossmoor IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Flossmoor Il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Flossmoor It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Flowery Branch GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Floyd County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Floyd County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Foirfax County VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Foley AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Forest City NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Forest Park OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Forest Preserve District Wil County PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Forest Preserve District Will County PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Forsyth County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Loramie OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Mil SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Mill SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Oalethoroe GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Oglethorpe GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Pierce FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Smith AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Thomas KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Walton Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Wayne IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fort Worth TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fox Vallev IL Parks District Frankfort Il PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fox Valley IL Parks District Frankfort Il PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fox Valley IL Parks District Frankfort PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Frankfort KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Frankiin County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County FLSO Franklin County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Franklin County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Franklin County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin County PA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin IN PO Franklin Park IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin Park I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Franklin Township NJ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Franklin. GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Freeport IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Freeport il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Freeport it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Fremont County 1A SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Fremont County IA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Friendswood TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Frirfield County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Frirfield Glade TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Frontenac KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton County I SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Fulton County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Fulton County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Fulton iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Fulton MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton Mo PO Fulton MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fulton MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fultondale AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fultondale AL PO Fuquay-Varina NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Fuquay-Varina NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA - Mes/ocu/inteligence Gadsden County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA Bienvile Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA Bienville Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA- Mes/ocU/inteligence Gadsden County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA- Mes/ocuyinteligence Gadsden County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GA-Mes/ocUlnteligence Gadsden County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gahanna OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gahanna OH PO Gainesville FL.PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gainesville FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gainesville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Galesburg I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Galesburg IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gallatin TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Gallia County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Galveston County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gardendale AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garett KS PO Garrard County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garland TPO Gamer NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garland TPO Garner NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garland Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Garland TX PO Gamer NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garland TX PO Garner NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garner NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garnett KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Garrard County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gary IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gary INP Gas city IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gary INPD. Gas city IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gary INPD. Gas City IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gary NPD. Gas City IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gas city IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gas City IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gasconade Co MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gaston County NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gastonia NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gatinburg TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Gatlinburg TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Gautier MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GBHIGA County Nc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Geauga County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "GEBEBH County NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Geers Ferry AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Geneva WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Genoa Township OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Genoa Township OH PO Georgetown iL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgetown iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Georgetown IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgetown IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgetown KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgia State Patrol GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgia State Patrol GA PO Georgia Tech GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Georgia Tech GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Germantown OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Germantown OH PO Mercer County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Germantown TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Gibson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Giimer County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Giinton Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Giinton Se PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Giinton TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Giles County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Gilinton Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Gilles County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Gilmer County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ginton Se PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ginton Township NJ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glasgow KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glasgow KY PO len Carbon IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glen Carbon IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glen Cove NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glen Ellyn IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glencoe AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glencoe I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Glencoe i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Glencoe IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glendale OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glenpool OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Glenview i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Glenview PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Glermont County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Gluckstadt MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gogebie County Mi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Golf Manor OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gonzales LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gonzales LAPD Goodlettsville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Goodlettsville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Goodyear AZ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Goose Creek SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Goshen IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Goshen TWP OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grady County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grain Vaiey MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grain Valley MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grainger County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Granbury TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Beach/Michiana MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Beach/Michiana Mi PO Grana chute wi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Grand Beach/Michiana MI PO Grand Chute Wi PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Chute WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Haven Mi DPS",
+          "category": "unknown"
+        },
+        {
+          "name": "Grand Haven Ml DPS",
+          "category": "unknown"
+        },
+        {
+          "name": "Grand Island NE PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Istand NE PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Rapids MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grand Rapids Mi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Grande AZ PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grandview MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grant County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grant County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grant Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grantville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gratiot County Mi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Graves County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gray County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gray GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grayslake iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Grayson County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grayson County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenbrier TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Greene County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greene County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greene County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greene County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenfield IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greensburg IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenville County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenville MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenville NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenville SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenwood AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenwood County SC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greenwood IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greer SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Greers Ferry AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gretna LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Groesbeck Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Groesbeck TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grove City OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grove Hill AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Groveport OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Grundy County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Grundy County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Guilford County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gulf Breeze FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gulf County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gulf Shores AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gumby TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gun Barrel TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Guntersvlle AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gurnee i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Gwinnett County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gwinnett County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Gwinnett County School PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Habersham County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hampton Village NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hapeville GA PO Haralson County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hardeevile SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hardeman County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Hardin County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hardin County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hardin County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Hardinsburg KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harper County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harriman TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Harris County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harris County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrisburg Bureau PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrisburg I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Harrisburg IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrison AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrison County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrison County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrison OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrisonville MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harrisonville MO PO Hart County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hart County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hartford City IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hartselle AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hartsville SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harvey County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Harvey IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Haskell AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Haysi VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Haywood County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hazel Crest iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hazel Crest PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hazel Park MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hazel Park Mi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hazelwood MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hazleton PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hazleton PA PO Heard County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "HD snk town NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Heard County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Heber Springs AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Heber Springs AR PO Heflin AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Heber Springs AR PO Hetfn AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Heights IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Helena AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hempstead Village NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henderson County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henderson County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henderson KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henderson TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Henderson TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hendersonville NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hendersonville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Henry County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henry County GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henry County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henry County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Henry County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Henry County It SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Hermitage PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hernando MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Herrin i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Herrin PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hickory Creek TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hickory Hills IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hickory NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Highland Heights KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Highland IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hilsborough County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hilsborough NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hinckley IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hinsdale PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hinsdate PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hiram GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hobart IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hoffman Estates I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hoffman Estates IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Holbrook MA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Holland MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Holland TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hollister MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Holly Springs GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Homecroft IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Homewood Al. PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Homewood AL. PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hoopeston iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Hoover AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hope Mills NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hopkinsville KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Horn Lake MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hot Springs AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Houston Arson Bureau TX Houston County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Houston TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Howard County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hueytown AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huffman ISD Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Huffman ISD TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hugo Ok PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Humble ISD PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Humble TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hunt County 1X SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Hunt County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntersvile PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Huntersville PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Huntington County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntington IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntley iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Huntley PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Huntsvile AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntsvile TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntsville Aiport AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huntsvite AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huron OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Huron oH PO. Hutchinson KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Hutchinson KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IA- Eldridge PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Iberville Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IL) Forrest County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IN Chase County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IN Rensselaer PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "In The Hil PD",
+          "category": "unknown"
+        },
+        {
+          "name": "IN- Noble County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IN- Rensselaer PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "IN- Tipton County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Independence KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Independence KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Indian Hills KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Indian His KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Indian Point MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Indiana Department of Corrections Indiana State Police IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Indianapolis Metro PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Inverness IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Iredell County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Irving Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Irving TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Itinois Attorney General Imperial County CA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jack County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson County FL. SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Jackson Township OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jackson WIPD Jacksonville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jacksonville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jacksonville AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jacksonville Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jacksonville IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jasper AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jasper County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jasper GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jasper IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson City MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson City TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Jefferson County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Jefferson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Jefferson GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jefferson TX ISD PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jemison AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jennings County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jessamine County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jesup GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jetfersontown KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johns Creek GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johnson City TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Johnson County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johnson County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johnson County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johnson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Johnson County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Johnston 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Johnston city iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Johnston City iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Joliet iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Joliet iL PO Joliet Junior College It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Joliet Junior College IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jonesboro AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jonesboro GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Jonesborough PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Juab County UT SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Judicial District Drug Task Force - TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Julia District Drug Task Force - TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Junction City KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Justice IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kalamazoo MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kane County Forest Preserve IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kane County I SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Kankakee County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Kankakee IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kansas City KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kansas City MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kendalivie IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kendall County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kenner LAPD Kennesaw GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kennesaw State University GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kenosha County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Kenosha Wi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Kent County Mi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Kenton County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kettering OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kewanee IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kimberting City MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kings Mountain NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kingsport TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Kingston Springs TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Kingston TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Kline Township PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Knox County Il SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Knox County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Knox County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Knoxville Aitport TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Kokomo IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Kosciusko MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "KS Liste PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "KU Medical Center KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "KY - Kentucky State Police LA- Morgan City PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "La Follette TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "La Grange iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "La Grange MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "La Grange Park IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "La Grange Park PD",
+          "category": "unknown"
+        },
+        {
+          "name": "La Marque TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "La Marque TX PO La Paz County AZ SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "La Porte TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lad i PO Ladue Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ladd i PO Ladue Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lady Lake FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "LaFayette County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lafayette County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lafayette IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lafayette LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lafayette TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "LaGrange GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "LaGrange IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "LaGrange KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake city FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake County Forest Preserves IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake County Ik SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lake County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake Detton WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake Forest IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake Geneva WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake In The Hills PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lake Park GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake St. Louis Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lake Villa IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake Wales FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lake Zurich iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lakeside Park-Crestview Hils KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lakewood WA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lamar County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lamar County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lamar County Tx SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lancaster County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lancaster KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lansing IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lantana FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "LaPaz County AZ SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Laporte County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Las Vegas NM PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lasalle IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lauderdale County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lauderdale County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lauderdale County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Laurel Park NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Laurens County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Laurens County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Laurens County Se SO",
+          "category": "unknown"
+        },
+        {
+          "name": "LaVergne TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Lavon TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lavonia GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lawrence County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lawrence County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lawrence County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lawrence County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Lawrenceburg KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lawrencevile GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lea County NM SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "League city TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Leake County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lebanon IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lebanon Mo PO Lebanon OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lebanon TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Lee County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lee County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lee County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lee County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lee's Summit Mo PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Leeds AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Leesburg AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Leesburg GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lehigh County PA (RIIC) Leitchfield KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lemont It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lenoir City TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Lenoir Ne PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Leon County Sheriffs tice (FL) Lewis County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Lewisvile TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lexington KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lexington Medical Center SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lexington Medical Center Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lexington NE PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lexington Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lexington TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Liberty MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lighthouse Point FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ligonier IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Liiburn GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Limestone County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lincoln AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lincoln County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lincoln County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lincoln County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Lincoln Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lincolnshire i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lincolnton NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Linn County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lite Rock AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Livingston County I SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Livingston Parish County LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lockland OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lockport i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Locust Grove OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Logan County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Logansport IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Loganville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lombard it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lonoke County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lookout Mountain TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Loris se PO Loudon County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Loudon TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Loudoun County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Louisiana State Police (LA) Louisville Airport PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Louisvile Metro KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lovejoy GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Loveland CO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Loveland OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Loves Park I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lowell AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lowndes County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lubbock County Tx SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lubbock TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lucas County OH SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ludowici GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lufkin 7X PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lumberton Ne PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lumpkin County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Lunenburg County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Lyman PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Lyons iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mabank TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Macomb il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Macon County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Macon County Il SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Macon County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madeira OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Madison GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madison MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madisonville KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Madisonville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Maggie Valley NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mahoning Twp PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Malvern AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Manchester MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Manchester TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Manila AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mansfield OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mansfield TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Maplewood MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marble Falls TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marianna FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marietta GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marietta OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion County AL. SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Marion County it SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Marion County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion Health PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Marion i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Marion IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marion NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Markle IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mars Hil NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marseilles I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Marseilles IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marshall County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marshall County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marshall TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marta PO GA Martin County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Martinsville IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Maryland Heights MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Marysville OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mason County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Massachusetts State MA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Matteson iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mattoon IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mauldin SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mauldin Sc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Maury County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Maysville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "McCaysville GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "McCracken County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "McDonough GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mclean County iL SO",
+          "category": "unknown"
+        },
+        {
+          "name": "McPherson County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Meadows Place TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MeCurtain County OK SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MeDonough County IL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MeDowell County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MeHenry County i SO",
+          "category": "unknown"
+        },
+        {
+          "name": "MeKinney TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Melrose MA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Melrose Park I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "MeMinnville TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "MeNairy County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Menard County It SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Mendota i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Menomonee Falls Wi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mequon Wi PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mercer County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mesquite TX PO Methodist Health System PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Methuen MA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Metra IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Metropolis IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Michigan City IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Middle Tennessee State TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Middleburg Heights OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Middletown KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Midlothian It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Milam County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Milan iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Milan TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Mill Creek WA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Millcreek Twp PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Miller County AR SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Millington TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Milton GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Milton IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Miltown IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mineola Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mitchell County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MO Bartltt IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MO Claiborne County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Mocic Mokena il PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Molena GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moline i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Monee I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Monett MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monon IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Monroe County Wi SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Monroe GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monroe OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mont Belvieu TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Monterey TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Montevallo AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montezuma GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery County AL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery County KS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Montgomery County TX SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Montgomery County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moody AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moore OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mooresville NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morehead KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morgan Co MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morgan County IN'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morgan County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Morris iL PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Morristown TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Morriton AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morrow GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morrow OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Morton Grove i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Morton PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Moss Point MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moulton AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moultrie GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moundsvile WV PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Moundville AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mount Holly NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mount Morris Township PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Mount Pleasant SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mount Vernon IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mount Vernon TX ISD PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mountain Brook AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mountain View AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS - Biloxi PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS - Crenshaw PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS - Flowood PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ms - Raymond PD",
+          "category": "unknown"
+        },
+        {
+          "name": "MS - Senatobia PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS - Wayne County SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS - Yaz00 City PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "MS Office of Homeland Security Mt. Juliet TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Mt. Washington KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mt. Zion IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mt. Zion It PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Muhlenberg County KY SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Muncie IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Mundelein it PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Munford AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Munford TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Murfreesboro TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Murray County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Muscle Shoals AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Muskego WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Muskogee OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Nags Head NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Naon 0K PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Naon 0X PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Naperville I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Nash County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Nash TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Nashvile Int Aiport TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Nassau County NY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "NC Huntinabura IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "NC Huntingburg IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Canaan CT PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Caste PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Ellenton SC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Hanover County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Haven IN PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Lenox i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "New Madrid County MO SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "New Orleans LA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newberry County SC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newnan GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newport AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newport TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "Newton County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newton County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Newton PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Noble County SO",
+          "category": "unknown"
+        },
+        {
+          "name": "Now Knoxville OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Champaign IL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Champaign iL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Champaign it PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Cleveland County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Cleveland County NC'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Clinton Mo PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Clinton MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH College Park GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Dayton TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "OH Fairfield Township OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "OH Frirfeld Township OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Parish LA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "PD Dixie County FL SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "PD Dixie County FL'SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Peoria i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Peres MO DPS",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Precinct 4 (TX) Montgomery County IN SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Railroad PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Ralroad PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Richland County WI SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Richmond County GA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Richmond Heights MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Richmond KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Richmond MO PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Richmond VA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ridge TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ridgeland MS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Riley County KS PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Rincon GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Ripley TN PD",
+          "category": "localLE"
+        },
+        {
+          "name": "River Falls WI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "River Grove I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Riverdale GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Riverdale i PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Riverside County CA District Attorney Riverton I PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Riviera Beach FL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Roane County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Robertson County TN SO",
+          "category": "localLE"
+        },
+        {
+          "name": "Robeson County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "SBHGH County NC PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "SBRGR County Nc PD",
+          "category": "unknown"
+        },
+        {
+          "name": "SC Lyons GA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "SO Akron OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "SO Calera AL PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "SO Darien I PD",
+          "category": "unknown"
+        },
+        {
+          "name": "SO Davenport PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Somerset) Franklin Township PA PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Sparta PD",
+          "category": "unknown"
+        },
+        {
+          "name": "State University 1A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "State University A PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Sx Ralroad PD",
+          "category": "unknown"
+        },
+        {
+          "name": "SX Ralroad PD",
+          "category": "unknown"
+        },
+        {
+          "name": "TN Joplin Mo PD",
+          "category": "localLE"
+        },
+        {
+          "name": "TN Joplin MO PD",
+          "category": "localLE"
+        },
+        {
+          "name": "TX) Baytown TX PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "VG Airport KY PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Wyandotte MI PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Wyandotte Nation OK PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Wyle Tx PD",
+          "category": "unknown"
+        },
+        {
+          "name": "Wynne AR PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Wyoming OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Wythe County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Yancey County NC SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Yaz00 County MS SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "York County VA SO",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "York county VASO York ME PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "York ME PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Youngstown OH PD",
+          "category": "outOfStateLE"
+        },
+        {
+          "name": "Zionsile IN PD",
+          "category": "outOfStateLE"
+        }
+      ],
+      "notes": "Portal: Sharing Network Data With — Organizations granted access to Shelby County TN SO data. From user A–Z screen recording 2026-09-09. OCR may miss/misread some names; treat as best-effort snapshot, not an official export.",
+      "incomplete": true,
+      "incompleteReason": "Best-effort OCR from a portal screen recording; not an official export. Some names may be missing or misread. Letters Q/U/X were not clearly captured."
+    }
+  ]
+}

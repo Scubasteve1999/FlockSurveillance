@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		016420CD33435F77C2AC76A5 /* AgencyPortalSharesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2EF21E5BCA477C0BDCF753 /* AgencyPortalSharesModels.swift */; };
 		0332AEC2BFEDF8594A275803 /* ShareCardASOExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E865B6C580025A423D96835 /* ShareCardASOExportTests.swift */; };
 		0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839B34D71A068F6E097C63DE /* PendingReport.swift */; };
 		0473DAB1AD29F262ED8B940E /* PublicSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */; };
@@ -34,6 +35,7 @@
 		39F2D5BAEFB927FE385ABA94 /* WatchedZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC82521CA35252739669DF77 /* WatchedZone.swift */; };
 		3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
+		3DA6CF47488051E85036824F /* AgencyPortalSharesBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 9178CB3838AFDDBBD2B6DED2 /* AgencyPortalSharesBundle.json */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
 		43F99A4D1BAAB1B1313D0B24 /* SensorAtlasCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35311040ACCE7081A5FF43E2 /* SensorAtlasCoverage.swift */; };
@@ -44,9 +46,11 @@
 		52E36171496623748B17B062 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		5533B5E8495495D9CD7740EB /* PlaceCompleter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */; };
 		59546AA990B08DF4B87D3409 /* OliveBranchEntranceBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */; };
+		5A0636158C1228F77608F77B /* AgencyPortalSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EAF243C4AEB1C2FCD4F81B7 /* AgencyPortalSharesView.swift */; };
 		62F771913D5D78E558642B56 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */; };
 		67DC75CC1FCE3A16792F917B /* TipJarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 126D795158751DC52340B556 /* TipJarSection.swift */; };
 		6EC536BC9AA600A7956AB4E2 /* SensorAtlasAutoPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */; };
+		714C4F0308045CE65630257D /* AgencyPortalSharesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4120BA7E322A42C0813662C0 /* AgencyPortalSharesStore.swift */; };
 		723F3920CC4F5A1D41AFFD65 /* SensorAtlasBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 38E4546BCC022F9ACAB3B832 /* SensorAtlasBundle.json */; };
 		763A2154160FF47D2B081656 /* SharingNetworkBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */; };
 		786462527AEEA37C8E95B58F /* SensorAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC127AE1BE845A788CF3FF21 /* SensorAnnotationView.swift */; };
@@ -103,6 +107,7 @@
 		F6A1766D4222FD6BE0BCCFBF /* TipJarStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA5A86FD7B9DA246AC132CF /* TipJarStoreTests.swift */; };
 		F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */; };
 		FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC739360F96B00B18FF118D /* GeoHelpers.swift */; };
+		FF8CEB38D6F7A0DB4CD24942 /* AgencyPortalSharesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F730F2FE6EFFFEAD7FDC494A /* AgencyPortalSharesTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -151,6 +156,7 @@
 		244AA03B270FF87A615A5168 /* AlertsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsEngine.swift; sourceTree = "<group>"; };
 		25565AEE4313CE68A62C5C8B /* WatchedZoneCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZoneCopy.swift; sourceTree = "<group>"; };
 		2B68A447A228714091E0BCF1 /* FlockSurveillanceTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlockSurveillanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C2EF21E5BCA477C0BDCF753 /* AgencyPortalSharesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesModels.swift; sourceTree = "<group>"; };
 		2DA709B0872A9F478764A4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		2FF22F6446803768213AE8D0 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NearbyCamerasWidget.entitlements; sourceTree = "<group>"; };
@@ -159,6 +165,7 @@
 		3DDAD5FD47A4E1F7889426F3 /* SharingNetworkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStore.swift; sourceTree = "<group>"; };
 		3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReportDetailSheet.swift; sourceTree = "<group>"; };
 		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
+		4120BA7E322A42C0813662C0 /* AgencyPortalSharesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesStore.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
 		46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGeoMath.swift; sourceTree = "<group>"; };
 		4D4AF090DDE7F0ADE1448325 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
@@ -175,6 +182,7 @@
 		6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SharingNetworkBundle.json; sourceTree = "<group>"; };
 		6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRepository.swift; sourceTree = "<group>"; };
 		6AC739360F96B00B18FF118D /* GeoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpers.swift; sourceTree = "<group>"; };
+		6EAF243C4AEB1C2FCD4F81B7 /* AgencyPortalSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesView.swift; sourceTree = "<group>"; };
 		7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlockIntents.swift; sourceTree = "<group>"; };
 		7B55E39886ECEA0BFB3C874D /* SurveillanceLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveillanceLevel.swift; sourceTree = "<group>"; };
 		7C373293D13ED5DA5B5271D6 /* SensorAtlasStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasStore.swift; sourceTree = "<group>"; };
@@ -187,6 +195,7 @@
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveillanceLevelTests.swift; sourceTree = "<group>"; };
 		8ED03FA3B1E8310241F711D5 /* FlockSurveillance.storekit */ = {isa = PBXFileReference; path = FlockSurveillance.storekit; sourceTree = "<group>"; };
+		9178CB3838AFDDBBD2B6DED2 /* AgencyPortalSharesBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AgencyPortalSharesBundle.json; sourceTree = "<group>"; };
 		93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasAutoPolicyTests.swift; sourceTree = "<group>"; };
 		9E865B6C580025A423D96835 /* ShareCardASOExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardASOExportTests.swift; sourceTree = "<group>"; };
 		9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = OliveBranchEntranceBundle.json; sourceTree = "<group>"; };
@@ -229,6 +238,7 @@
 		F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkView.swift; sourceTree = "<group>"; };
 		F177CDDA111785B0070E83EC /* SharingNetworkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkModels.swift; sourceTree = "<group>"; };
 		F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ALPRCamera.swift; sourceTree = "<group>"; };
+		F730F2FE6EFFFEAD7FDC494A /* AgencyPortalSharesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesTests.swift; sourceTree = "<group>"; };
 		F77966A5546130F29FF025FF /* EntranceSiteDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntranceSiteDetailSheet.swift; sourceTree = "<group>"; };
 		F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = NearbyCamerasWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC127AE1BE845A788CF3FF21 /* SensorAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAnnotationView.swift; sourceTree = "<group>"; };
@@ -258,6 +268,7 @@
 		075B6499ABF82D2BC58C28E0 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				6EAF243C4AEB1C2FCD4F81B7 /* AgencyPortalSharesView.swift */,
 				F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */,
 			);
 			path = Network;
@@ -266,6 +277,7 @@
 		0B1D16367074D3BA3423FA49 /* FlockSurveillanceTests */ = {
 			isa = PBXGroup;
 			children = (
+				F730F2FE6EFFFEAD7FDC494A /* AgencyPortalSharesTests.swift */,
 				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
 				12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */,
 				1D7376FDA6828759C4914606 /* CoverageConfidenceTests.swift */,
@@ -375,6 +387,7 @@
 		6CAF10939076AFC689035941 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				2C2EF21E5BCA477C0BDCF753 /* AgencyPortalSharesModels.swift */,
 				F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */,
 				EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */,
 				839B34D71A068F6E097C63DE /* PendingReport.swift */,
@@ -395,6 +408,7 @@
 		984D76A961D7287B33E84FFB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				4120BA7E322A42C0813662C0 /* AgencyPortalSharesStore.swift */,
 				244AA03B270FF87A615A5168 /* AlertsEngine.swift */,
 				C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */,
 				46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */,
@@ -445,6 +459,7 @@
 		B5366AD1420620E239410081 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9178CB3838AFDDBBD2B6DED2 /* AgencyPortalSharesBundle.json */,
 				8ED03FA3B1E8310241F711D5 /* FlockSurveillance.storekit */,
 				9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */,
 				38E4546BCC022F9ACAB3B832 /* SensorAtlasBundle.json */,
@@ -607,6 +622,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DA6CF47488051E85036824F /* AgencyPortalSharesBundle.json in Resources */,
 				45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */,
 				1DFA15E663E9542FBB321049 /* FlockSurveillance.storekit in Resources */,
 				59546AA990B08DF4B87D3409 /* OliveBranchEntranceBundle.json in Resources */,
@@ -626,6 +642,9 @@
 				8D393EDF60B9CA294633DB92 /* ARCameraSightRepresentable.swift in Sources */,
 				81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */,
 				84010744C819B71E8C39AE52 /* ARGeoMath.swift in Sources */,
+				016420CD33435F77C2AC76A5 /* AgencyPortalSharesModels.swift in Sources */,
+				714C4F0308045CE65630257D /* AgencyPortalSharesStore.swift in Sources */,
+				5A0636158C1228F77608F77B /* AgencyPortalSharesView.swift in Sources */,
 				83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */,
 				9CB65369BA218943953FE432 /* AppLinks.swift in Sources */,
 				ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */,
@@ -696,6 +715,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCD1A26EEC8A89F743A325C7 /* ARGeoMathTests.swift in Sources */,
+				FF8CEB38D6F7A0DB4CD24942 /* AgencyPortalSharesTests.swift in Sources */,
 				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				174F1CA65DBFA4D7E22EE914 /* CoverageConfidenceTests.swift in Sources */,
 				3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */,

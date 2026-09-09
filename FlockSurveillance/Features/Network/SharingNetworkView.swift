@@ -12,6 +12,8 @@ struct SharingNetworkView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store = SharingNetworkStore()
+    @State private var portalSharesStore = AgencyPortalSharesStore()
+    @State private var selectedPortalAgency: AgencyPortalShareAgency?
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
     @State private var selectedCountyGroup: SharingCountyGroup?
@@ -76,6 +78,7 @@ struct SharingNetworkView: View {
         .preferredColorScheme(.dark)
         .task {
             await store.loadIfNeeded()
+            await portalSharesStore.loadIfNeeded()
         }
         .onChange(of: selectedMarkerID) { _, markerID in
             handleMarkerSelection(markerID)
@@ -127,6 +130,11 @@ struct SharingNetworkView: View {
                 .presentationDetents([.medium, .large])
                 .presentationBackground(AppTheme.background)
             }
+        }
+        .sheet(item: $selectedPortalAgency) { agency in
+            AgencyPortalSharesCard(agency: agency)
+                .presentationDetents([.large])
+                .presentationBackground(AppTheme.background)
         }
     }
 
@@ -353,6 +361,11 @@ struct SharingNetworkView: View {
                     .foregroundStyle(AppTheme.mutedForeground)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            Rectangle()
+                .fill(AppTheme.border)
+                .frame(height: 1)
+                .padding(.vertical, 2)
+            midSouthSamplesRow
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -364,6 +377,49 @@ struct SharingNetworkView: View {
         )
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
+    }
+
+    private var midSouthSampleAgency: AgencyPortalShareAgency? {
+        portalSharesStore.midSouthSamples.first
+            ?? portalSharesStore.agency(id: AgencyPortalSharesStore.shelbyCountySOID)
+    }
+
+    private var midSouthSamplesRow: some View {
+        Button {
+            if let agency = midSouthSampleAgency {
+                selectedPortalAgency = agency
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            } else {
+                Task {
+                    await portalSharesStore.loadIfNeeded()
+                    if let agency = midSouthSampleAgency {
+                        selectedPortalAgency = agency
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(AgencyPortalSharesCopy.midSouthSamplesTitle)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AppTheme.foreground)
+                    Text(midSouthSampleAgency?.displayName ?? "Bundled portal share lists")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .lineLimit(2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+            }
+            .padding(.top, 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("portal-shares-midsouth-samples")
+        .accessibilityLabel("\(AgencyPortalSharesCopy.midSouthSamplesTitle), \(midSouthSampleAgency?.displayName ?? "portal share lists")")
+        .accessibilityHint("Opens the bundled Shelby County Sheriff’s Office portal share list")
+        .disabled(portalSharesStore.isLoaded && midSouthSampleAgency == nil)
     }
 
     private var statusLine: String {

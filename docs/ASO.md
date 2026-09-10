@@ -90,7 +90,7 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 
 ```
 • Store screenshots now lead with “How mapped is this road?”
-• Sharing Network: Mid-South sample of who agencies share search access with (FOIA/portal snapshot; incomplete by nature; not live vendor data)
+• Sharing Network: Mid-South sample of organizations listed as sharing with (portal) — not full reach (bundled snapshot; incomplete by nature; not live vendor data)
 • Same honesty: phone near mapped OSM pins — not plate reads
 ```
 

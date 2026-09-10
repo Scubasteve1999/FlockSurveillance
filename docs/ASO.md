@@ -89,11 +89,9 @@ Not affiliated with Flock Safety. Civic transparency mapping — not a radar det
 ### What's New (this release)
 
 ```
-• Clearer honesty copy: mapped OSM pins + phone GPS only — not plate reads
-• Pin-zone alerts and Map HUD language replace “watched zone” framing
-• Place Score and share cards say HOW MAPPED (not HOW WATCHED)
-• Route compare is Fewest Pins Drive (not Safest Drive)
-• Drive Mode / Live Activity: “no pins ahead” instead of detector-style corridor clear
+• Store screenshots now lead with “How mapped is this road?”
+• Sharing Network: Mid-South sample of who agencies share search access with (FOIA/portal snapshot; incomplete by nature; not live vendor data)
+• Same honesty: phone near mapped OSM pins — not plate reads
 ```
 
 ## Screenshot capture checklist

@@ -44,8 +44,8 @@ PROFILES = {
         "radius": 74,
         "bezel": 15,
         "frames": [
-            ("01-drive-mode", ["How watched is", "this road?"],
-             "Live HUD and Lock Screen Activity while you drive", CORAL),
+            ("01-drive-mode", ["How mapped is", "this road?"],
+             "Mapped OSM pins — not plate reads", CORAL),
             ("02-safest-drive", ["Pick the", "quieter route"],
              "Compare drives by mapped ALPR exposure", CYAN),
             ("03-radar-hud", ["Near mapped pins.", "Nothing more."],

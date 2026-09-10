@@ -3,8 +3,8 @@ import Foundation
 @MainActor
 @Observable
 final class AgencyPortalSharesStore {
-    static let resourceName = "AgencyPortalSharesBundle"
-    static let shelbyCountySOID = "shelby-county-tn-so"
+    nonisolated static let resourceName = "AgencyPortalSharesBundle"
+    nonisolated static let shelbyCountySOID = "shelby-county-tn-so"
 
     private(set) var bundle: AgencyPortalSharesBundle?
     private(set) var loadError: String?

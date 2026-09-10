@@ -1,6 +1,6 @@
 # Flock Surveillance — App Store
 
-**Shipped.** v1.9.0 (build 16) is live (2026-08-19).
+**Shipped.** v1.9.1 (build 17) is live. v1.9.0 (build 16) shipped 2026-08-19.
 
 - Listing: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933)
 - Apple ID: `6789356933`
@@ -66,9 +66,12 @@ Shipped 2026-08-19. Tip jar, Sharing Network by county, keyboard dismiss.
 
 ## 1.9.1 (build 17)
 
-Honesty copy pass — pin-zone / HOW MAPPED / Fewest Pins Drive / no pins ahead.
-Not submitted yet. Stephen archives on his Mac after merge. What's New and
-Description are already honesty-ready on `main`.
+Shipped / live. Honesty copy pass — pin-zone / HOW MAPPED / Fewest Pins Drive / no pins ahead.
+
+## 1.9.2 (build 18)
+
+Store screenshot slot-1 honesty ("How mapped is this road?") + Shelby portal-shares
+honesty card already on tip. Not submitted yet. Stephen archives on his Mac after merge.
 
 ## 1.8.2 backlog
 

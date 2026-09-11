@@ -688,18 +688,23 @@ struct RouteExposureView: View {
         let from = originQuery.isEmpty ? "Origin" : originQuery
         let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
         let optionCount = analysis?.options.count ?? 1
-        return """
-        Flock Surveillance — Fewest Pins Drive
-        From: \(from)
-        To: \(to)
-        Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)
-        Pin score: \(result.exposureScore)
-        Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi
-        Alternatives scored: \(optionCount)
-        Fewer mapped pins. Same destination.
-        flocksurveillance.com
-        \(AppLinks.appStore.absoluteString)
-        """
+        var lines = [
+            "Mapped Camera Pins — Fewest Pins Drive",
+            "From: \(from)",
+            "To: \(to)",
+            "Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)",
+            "Pin score: \(result.exposureScore)",
+            "Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi",
+            "Alternatives scored: \(optionCount)",
+            "Fewer mapped pins. Same destination."
+        ]
+        if let host = AppLinks.shareFooterHost {
+            lines.append(host)
+        }
+        if let store = AppLinks.appStore {
+            lines.append(store.absoluteString)
+        }
+        return lines.joined(separator: "\n")
     }
 }
 

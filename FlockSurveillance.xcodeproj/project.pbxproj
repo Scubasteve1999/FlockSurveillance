@@ -13,6 +13,8 @@
 		0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839B34D71A068F6E097C63DE /* PendingReport.swift */; };
 		0473DAB1AD29F262ED8B940E /* PublicSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */; };
 		06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
+		A11C1D3A7B0E4F2C9D8E6A5B /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22C2E4B8C1F503D0E9F7B6C /* AppIdentity.swift */; };
+		C33D3F5C9D20614E1F0A8C7D /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22C2E4B8C1F503D0E9F7B6C /* AppIdentity.swift */; };
 		085AF7BD75826619C561CACE /* OliveBranchEntrance.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
 		0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */; };
@@ -204,6 +206,7 @@
 		A4B0B4143401454EFDFBD3EA /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsAndReportTests.swift; sourceTree = "<group>"; };
 		A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
+		B22C2E4B8C1F503D0E9F7B6C /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
 		ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverpassClient.swift; sourceTree = "<group>"; };
 		B071FF59632161F16D40277C /* CameraAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraAnnotationView.swift; sourceTree = "<group>"; };
 		B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -482,6 +485,7 @@
 		D1FD6B99158084B1D420AE07 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				B22C2E4B8C1F503D0E9F7B6C /* AppIdentity.swift */,
 				B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */,
 				546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */,
 				A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */,
@@ -647,6 +651,7 @@
 				5A0636158C1228F77608F77B /* AgencyPortalSharesView.swift in Sources */,
 				83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */,
 				9CB65369BA218943953FE432 /* AppLinks.swift in Sources */,
+				A11C1D3A7B0E4F2C9D8E6A5B /* AppIdentity.swift in Sources */,
 				ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */,
 				B3092670D2ABF81DE8B2ABB5 /* AppTheme.swift in Sources */,
 				3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */,
@@ -740,6 +745,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C33D3F5C9D20614E1F0A8C7D /* AppIdentity.swift in Sources */,
 				3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */,
 				B22450893821AAC205D17413 /* DriveLiveActivityWidget.swift in Sources */,
 				1C7B3F4D5E634EE6E7DB67BB /* NearbyCamerasWidget.swift in Sources */,
@@ -775,7 +781,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins.widget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -818,7 +824,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -832,11 +838,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Flock Surveillance";
+				INFOPLIST_KEY_CFBundleDisplayName = "Mapped Camera Pins";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -858,7 +864,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins.widget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -878,7 +884,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -895,7 +901,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins.tests;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -938,7 +944,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 742YD3WJAR;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -958,11 +964,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Flock Surveillance";
+				INFOPLIST_KEY_CFBundleDisplayName = "Mapped Camera Pins";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.9.2;
+				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -987,7 +993,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1004,7 +1010,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocksurveillance.app.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenmoore.mappedcamerapins.tests;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = "1,2";

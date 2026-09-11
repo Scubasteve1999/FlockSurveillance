@@ -26,7 +26,7 @@ struct NearbyCamerasProvider: TimelineProvider {
     }
 
     private func currentEntry() -> NearbyCamerasEntry {
-        let defaults = UserDefaults(suiteName: "group.com.flocksurveillance.shared")
+        let defaults = UserDefaults(suiteName: AppIdentity.appGroupID)
         let hasHome = defaults?.object(forKey: "homeLatitude") != nil
         let count = defaults?.integer(forKey: "nearbyCount") ?? 0
         let nearest = defaults?.double(forKey: "nearestMeters") ?? -1
@@ -78,7 +78,7 @@ struct NearbyCamerasWidgetView: View {
             accessoryRectangular
         case .accessoryInline:
             Text(entry.hasHome ? "\(pinCountLabel) · \(densityLabel)" : "Set Home in Settings")
-                .widgetURL(URL(string: "flocksurveillance://map"))
+                .widgetURL(AppIdentity.mapURL)
         default:
             systemView
         }
@@ -102,7 +102,7 @@ struct NearbyCamerasWidgetView: View {
                 : "Set Home in Settings"
         )
         .containerBackground(for: .widget) { Color.clear }
-        .widgetURL(URL(string: "flocksurveillance://map"))
+        .widgetURL(AppIdentity.mapURL)
     }
 
     private var accessoryRectangular: some View {
@@ -125,7 +125,7 @@ struct NearbyCamerasWidgetView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .containerBackground(for: .widget) { Color.clear }
-        .widgetURL(URL(string: "flocksurveillance://map"))
+        .widgetURL(AppIdentity.mapURL)
     }
 
     private var systemView: some View {
@@ -196,7 +196,7 @@ struct NearbyCamerasWidgetView: View {
                 endPoint: .bottomTrailing
             )
         }
-        .widgetURL(URL(string: "flocksurveillance://map"))
+        .widgetURL(AppIdentity.mapURL)
     }
 
     private func format(_ meters: Double) -> String {

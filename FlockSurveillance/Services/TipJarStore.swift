@@ -2,9 +2,9 @@ import Foundation
 import StoreKit
 
 enum TipProductID: String, CaseIterable, Identifiable {
-    case small = "com.flocksurveillance.app.tip.small"
-    case medium = "com.flocksurveillance.app.tip.medium"
-    case large = "com.flocksurveillance.app.tip.large"
+    case small = "com.stephenmoore.mappedcamerapins.tip.small"
+    case medium = "com.stephenmoore.mappedcamerapins.tip.medium"
+    case large = "com.stephenmoore.mappedcamerapins.tip.large"
 
     var id: String { rawValue }
 

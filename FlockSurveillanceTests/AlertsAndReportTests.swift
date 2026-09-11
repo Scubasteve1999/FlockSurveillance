@@ -90,6 +90,8 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertTrue(text.contains("Mount: Pole"))
         XCTAssertTrue(text.contains("Flock Safety"))
         XCTAssertTrue(text.contains("By the intersection"))
+        XCTAssertTrue(text.contains("Submitted via Mapped Camera Pins app."))
+        XCTAssertFalse(text.contains("Flock Surveillance"))
     }
 
     func testRemovedReportMentionsExistingElement() {
@@ -128,7 +130,7 @@ final class AlertsAndReportTests: XCTestCase {
         XCTAssertNotEqual(version, "1.5")
         XCTAssertEqual(
             OSMHTTPIdentity.osmNotes,
-            "FlockSurveillance-iOS/\(version) (civic transparency; contact: flocksurveillance.com)"
+            "MappedCameraPins-iOS/\(version) (civic transparency)"
         )
         XCTAssertFalse(OSMHTTPIdentity.osmNotes.contains("/1.5 "))
     }

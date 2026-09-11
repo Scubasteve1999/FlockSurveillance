@@ -74,10 +74,10 @@ struct NearbyCamerasIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let snapshot = WidgetBridge.readSnapshot()
         guard WidgetBridge.homeCoordinate() != nil else {
-            return .result(dialog: "Set a Home location in Flock Surveillance settings first.")
+            return .result(dialog: "Set a Home location in Mapped Camera Pins settings first.")
         }
         guard snapshot.updatedAt != nil else {
-            return .result(dialog: "Open Flock Surveillance once so it can load mapped pins near Home.")
+            return .result(dialog: "Open Mapped Camera Pins once so it can load mapped pins near Home.")
         }
         var dialog = snapshot.count == 1
             ? "There is 1 mapped pin within a mile of Home."
@@ -96,9 +96,7 @@ struct CheckPlaceScoreIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        if let url = URL(string: "flocksurveillance://map") {
-            NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
-        }
+        NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.mapURL])
         // Belt and braces: the notification reaches an already-mounted map; the
         // flag survives until the map appears on a cold start.
         PendingIntentActions.placeScoreRequested = true
@@ -114,9 +112,7 @@ struct StartDriveModeIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        if let url = URL(string: "flocksurveillance://route") {
-            NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
-        }
+        NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.routeURL])
         return .result()
     }
 }
@@ -129,15 +125,13 @@ struct SafestDriveHomeIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard WidgetBridge.homeCoordinate() != nil else {
-            return .result(dialog: "Set Home in Flock Surveillance Settings first.")
+            return .result(dialog: "Set Home in Mapped Camera Pins Settings first.")
         }
         guard WidgetBridge.workCoordinate() != nil else {
-            return .result(dialog: "Set Work in Flock Surveillance Settings first.")
+            return .result(dialog: "Set Work in Mapped Camera Pins Settings first.")
         }
         PendingIntentActions.commuteToHome = true
-        if let url = URL(string: "flocksurveillance://route?commute=home") {
-            NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": url])
-        }
+        NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.routeURL(commute: "home")])
         NotificationCenter.default.post(name: .flockSafestCommute, object: nil)
         return .result(dialog: "Scoring the fewest-pin drive home…")
     }

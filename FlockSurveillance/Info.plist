@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flock Surveillance</string>
+	<string>Mapped Camera Pins</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
@@ -24,10 +24,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.flocksurveillance.app</string>
+			<string>com.stephenmoore.mappedcamerapins</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>flocksurveillance</string>
+				<string>mappedcamerapins</string>
 			</array>
 		</dict>
 	</array>
@@ -36,11 +36,11 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-	<string>Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.</string>
+	<string>Mapped Camera Pins uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.</string>
+	<string>Always access lets Mapped Camera Pins alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.</string>
+	<string>Mapped Camera Pins uses your location to show nearby mapped ALPR cameras and route exposure.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIBackgroundModes</key>

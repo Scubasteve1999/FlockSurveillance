@@ -459,25 +459,26 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     }
 
     var shareText: String {
-        """
-        FLOCK SURVEILLANCE · OVERWATCH
-        \(headline)
-        \(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)
-        Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)
-        Mapped OSM pin density near you.
-        Mapped OSM pins — not a vendor feed.
-        flocksurveillance.com
-        \(AppLinks.appStore.absoluteString)
-        """
+        var lines = [
+            "MAPPED CAMERA PINS · OVERWATCH",
+            headline,
+            "\(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)",
+            "Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)",
+            "Mapped OSM pin density near you.",
+            "Mapped OSM pins — not a vendor feed."
+        ]
+        if let host = AppLinks.shareFooterHost {
+            lines.append(host)
+        }
+        if let store = AppLinks.appStore {
+            lines.append(store.absoluteString)
+        }
+        return lines.joined(separator: "\n")
     }
 
     var mapDeepLink: URL? {
         // ~100 m precision — enough to open the same block without sharing exact GPS.
-        URL(string: String(
-            format: "flocksurveillance://map?lat=%.3f&lon=%.3f",
-            coordinate.latitude,
-            coordinate.longitude
-        ))
+        AppIdentity.mapURL(lat: coordinate.latitude, lon: coordinate.longitude)
     }
 
     func hash(into hasher: inout Hasher) {

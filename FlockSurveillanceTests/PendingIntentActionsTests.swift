@@ -70,7 +70,12 @@ final class PendingIntentActionsTests: XCTestCase {
             grade: "Light"
         )
         let link = try XCTUnwrap(score.mapDeepLink)
-        XCTAssertEqual(link.scheme, "flocksurveillance")
+        XCTAssertEqual(link.scheme, AppIdentity.urlScheme)
+        XCTAssertEqual(AppIdentity.displayName, "Mapped Camera Pins")
+        XCTAssertEqual(AppIdentity.appGroupID, "group.com.stephenmoore.mappedcamerapins.shared")
+        XCTAssertNil(AppLinks.websiteHost)
+        XCTAssertNil(AppLinks.website)
+        XCTAssertNil(AppLinks.appStore)
         XCTAssertEqual(link.host, "map")
         let items = URLComponents(url: link, resolvingAgainstBaseURL: false)?.queryItems ?? []
         XCTAssertEqual(items.first(where: { $0.name == "lat" })?.value, "33.749")

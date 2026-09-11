@@ -6,7 +6,7 @@ import WidgetKit
 /// interactive refresh control can recompute nearby counts without opening
 /// the main process.
 enum WidgetSnapshotStore {
-    static let appGroupID = "group.com.flocksurveillance.shared"
+    static let appGroupID = AppIdentity.appGroupID
     static let nearbyCountKey = "nearbyCount"
     static let nearestMetersKey = "nearestMeters"
     static let homeLatKey = "homeLatitude"

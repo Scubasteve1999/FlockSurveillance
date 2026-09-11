@@ -139,7 +139,14 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.shareText.contains("Mapped OSM pins — not a vendor feed."))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pin density near you."))
         XCTAssertFalse(score.shareText.contains("How watched is your life right now?"))
-        XCTAssertTrue(score.shareText.contains(AppLinks.appStore.absoluteString))
+        XCTAssertTrue(score.shareText.contains("MAPPED CAMERA PINS"))
+        XCTAssertFalse(score.shareText.contains("Flock Surveillance"))
+        XCTAssertFalse(score.shareText.contains("flocksurveillance.com"))
+        if let store = AppLinks.appStore {
+            XCTAssertTrue(score.shareText.contains(store.absoluteString))
+        } else {
+            XCTAssertNil(AppLinks.websiteHost)
+        }
     }
 
     func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {

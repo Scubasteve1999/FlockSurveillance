@@ -698,9 +698,7 @@ struct RouteExposureView: View {
             "Alternatives scored: \(optionCount)",
             "Fewer mapped pins. Same destination."
         ]
-        if let host = AppLinks.shareFooterHost {
-            lines.append(host)
-        }
+        lines.append(AppLinks.shareFooterHost)
         if let store = AppLinks.appStore {
             lines.append(store.absoluteString)
         }

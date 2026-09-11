@@ -172,11 +172,9 @@ private struct PlaceScoreShareCard: View {
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        if let host = AppLinks.shareFooterHost {
-                            Text(host)
-                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundStyle(.white.opacity(0.55))
-                        }
+                        Text(AppLinks.shareFooterHost)
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.55))
                         Text("OSM community data")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.4))
@@ -340,7 +338,7 @@ private struct DriveReportShareCard: View {
                     Text("FEWER PINS. SAME DESTINATION.")
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
-                    Text(AppLinks.shareFooterHost.map { "\($0) · OSM community data" } ?? "OSM community data")
+                    Text("\(AppLinks.shareFooterHost) · OSM community data")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }

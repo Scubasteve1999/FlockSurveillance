@@ -142,11 +142,8 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.shareText.contains("MAPPED CAMERA PINS"))
         XCTAssertFalse(score.shareText.contains("Flock Surveillance"))
         XCTAssertFalse(score.shareText.contains("flocksurveillance.com"))
-        if let store = AppLinks.appStore {
-            XCTAssertTrue(score.shareText.contains(store.absoluteString))
-        } else {
-            XCTAssertNil(AppLinks.websiteHost)
-        }
+        XCTAssertTrue(score.shareText.contains("scubasteve1999.github.io/mapped-camera-pins-site"))
+        XCTAssertNil(AppLinks.appStore)
     }
 
     func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {

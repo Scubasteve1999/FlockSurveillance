@@ -92,7 +92,7 @@ private struct PlaceScoreShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("FLOCK SURVEILLANCE")
+                    Text("MAPPED CAMERA PINS")
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
@@ -172,10 +172,12 @@ private struct PlaceScoreShareCard: View {
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("flocksurveillance.com")
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.white.opacity(0.55))
-                        Text("App Store")
+                        if let host = AppLinks.shareFooterHost {
+                            Text(host)
+                                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                .foregroundStyle(.white.opacity(0.55))
+                        }
+                        Text("OSM community data")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.4))
                     }
@@ -265,7 +267,7 @@ private struct DriveReportShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("FLOCK SURVEILLANCE")
+                    Text("MAPPED CAMERA PINS")
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
@@ -338,7 +340,7 @@ private struct DriveReportShareCard: View {
                     Text("FEWER PINS. SAME DESTINATION.")
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
-                    Text("flocksurveillance.com · App Store · OSM community data")
+                    Text(AppLinks.shareFooterHost.map { "\($0) · OSM community data" } ?? "OSM community data")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }

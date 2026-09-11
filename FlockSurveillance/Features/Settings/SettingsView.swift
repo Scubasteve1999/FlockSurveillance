@@ -412,9 +412,11 @@ struct SettingsView: View {
                                 Link("DeFlock project", destination: AppLinks.deFlockProject)
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(AppTheme.accent)
-                                Link("flocksurveillance.com", destination: AppLinks.website)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(AppTheme.accent)
+                                if let website = AppLinks.website {
+                                    Link(website.host ?? "Website", destination: website)
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(AppTheme.accent)
+                                }
                             }
                         }
                     }
@@ -455,15 +457,16 @@ struct SettingsView: View {
                         }
                     },
                     onFocusMap: {
-                        let lat = String(format: "%.5f", report.latitude)
-                        let lon = String(format: "%.5f", report.longitude)
-                        if let url = URL(string: "flocksurveillance://map?lat=\(lat)&lon=\(lon)") {
-                            NotificationCenter.default.post(
-                                name: .flockDeepLink,
-                                object: nil,
-                                userInfo: ["url": url]
-                            )
-                        }
+                        let url = AppIdentity.mapURL(
+                            lat: report.latitude,
+                            lon: report.longitude,
+                            fractionDigits: 5
+                        )
+                        NotificationCenter.default.post(
+                            name: .flockDeepLink,
+                            object: nil,
+                            userInfo: ["url": url]
+                        )
                     }
                 )
                 .presentationBackground(AppTheme.background)

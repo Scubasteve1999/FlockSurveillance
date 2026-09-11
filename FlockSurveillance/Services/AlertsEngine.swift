@@ -483,7 +483,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         }
         recordAlert(cameraID: parsed.cameraID)
         content.sound = .default
-        content.userInfo = ["deepLink": "flocksurveillance://map"]
+        content.userInfo = ["deepLink": AppIdentity.mapURL.absoluteString]
 
         let request = UNNotificationRequest(
             identifier: "alpr-alert-\(parsed.cameraID)",
@@ -510,7 +510,7 @@ final class AlertsEngine: NSObject, CLLocationManagerDelegate {
         content.title = WatchedZoneCopy.leftTitle
         content.body = WatchedZoneCopy.leftBody(passedCount: passedCount)
         content.sound = .default
-        content.userInfo = ["deepLink": "flocksurveillance://map"]
+        content.userInfo = ["deepLink": AppIdentity.mapURL.absoluteString]
 
         let request = UNNotificationRequest(
             identifier: Self.zoneExitNotificationID,

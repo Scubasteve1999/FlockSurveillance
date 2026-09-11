@@ -15,7 +15,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.flocksurveillance.app.tip.small",
+      "productID" : "com.stephenmoore.mappedcamerapins.tip.small",
       "referenceName" : "Small tip",
       "type" : "Consumable"
     },
@@ -30,7 +30,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.flocksurveillance.app.tip.medium",
+      "productID" : "com.stephenmoore.mappedcamerapins.tip.medium",
       "referenceName" : "Medium tip",
       "type" : "Consumable"
     },
@@ -45,7 +45,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.flocksurveillance.app.tip.large",
+      "productID" : "com.stephenmoore.mappedcamerapins.tip.large",
       "referenceName" : "Large tip",
       "type" : "Consumable"
     }

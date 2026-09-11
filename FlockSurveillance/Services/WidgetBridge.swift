@@ -3,7 +3,7 @@ import Foundation
 import WidgetKit
 
 enum WidgetBridge {
-    static let appGroupID = "group.com.flocksurveillance.shared"
+    static let appGroupID = AppIdentity.appGroupID
     static let nearbyCountKey = "nearbyCount"
     static let nearestMetersKey = "nearestMeters"
     static let homeLatKey = "homeLatitude"

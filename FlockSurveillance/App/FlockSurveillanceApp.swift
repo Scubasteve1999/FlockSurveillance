@@ -136,7 +136,7 @@ struct FlockSurveillanceApp: App {
     }
 
     private func handleDeepLink(_ url: URL) {
-        guard url.scheme == "flocksurveillance" else { return }
+        guard url.scheme == AppIdentity.urlScheme else { return }
         let host = url.host?.lowercased()
         let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
 

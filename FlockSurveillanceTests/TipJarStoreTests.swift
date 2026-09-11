@@ -6,9 +6,9 @@ final class TipJarStoreTests: XCTestCase {
         XCTAssertEqual(
             TipProductID.allCases.map(\.rawValue),
             [
-                "com.flocksurveillance.app.tip.small",
-                "com.flocksurveillance.app.tip.medium",
-                "com.flocksurveillance.app.tip.large"
+                "com.stephenmoore.mappedcamerapins.tip.small",
+                "com.stephenmoore.mappedcamerapins.tip.medium",
+                "com.stephenmoore.mappedcamerapins.tip.large"
             ]
         )
     }
@@ -32,7 +32,7 @@ final class TipJarStoreTests: XCTestCase {
     }
 
     func testKnownProductLookup() {
-        XCTAssertEqual(TipProductID(rawValue: "com.flocksurveillance.app.tip.small"), .small)
+        XCTAssertEqual(TipProductID(rawValue: "com.stephenmoore.mappedcamerapins.tip.small"), .small)
         XCTAssertNil(TipProductID(rawValue: "com.flocksurveillance.app.tip.pro"))
     }
 }

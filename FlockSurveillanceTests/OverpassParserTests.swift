@@ -126,7 +126,7 @@ final class OverpassParserTests: XCTestCase {
         XCTAssertNotEqual(version, "1.5")
         XCTAssertEqual(
             OSMHTTPIdentity.overpass,
-            "FlockSurveillance/\(version) (civic transparency; contact: flocksurveillance.com)"
+            "MappedCameraPins/\(version) (civic transparency)"
         )
         XCTAssertFalse(OSMHTTPIdentity.overpass.contains("/1.5 "))
     }

@@ -1,6 +1,27 @@
 # Flock Surveillance — App Store
 
-**Shipped.** v1.9.1 (build 17) is live. v1.9.0 (build 16) shipped 2026-08-19.
+## Mapped Camera Pins (new ASC app)
+
+Identity retarget on this tip. **Flock Surveillance 1.9.x remains the prior listing** (`id6789356933`). This checkout is a **new** App Store app, not an update to that listing.
+
+| Field | Value |
+|---|---|
+| Display name | Mapped Camera Pins |
+| Bundle ID | `com.stephenmoore.mappedcamerapins` |
+| Tests | `com.stephenmoore.mappedcamerapins.tests` |
+| Widget | `com.stephenmoore.mappedcamerapins.widget` |
+| App Group | `group.com.stephenmoore.mappedcamerapins.shared` |
+| URL scheme | `mappedcamerapins` |
+| Tip IAPs | `com.stephenmoore.mappedcamerapins.tip.{small,medium,large}` |
+| Version | 1.0.0 (build 1) |
+
+Support / privacy host is **unset** on purpose (`AppLinks.websiteHost` is optional). Do not invent a marketing domain. Settings hides the website row until a host is chosen. Overpass User-Agent is `MappedCameraPins/<version> (civic transparency)` with no fake URL.
+
+**Before archive (Stephen):** create the new ASC app, the App Group in the developer portal, and the three tip IAP products. Then set support/privacy URLs. This slice does not archive, submit, or create the listing.
+
+---
+
+**Shipped (prior listing).** v1.9.1 (build 17) is live. v1.9.0 (build 16) shipped 2026-08-19.
 
 - Listing: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933)
 - Apple ID: `6789356933`

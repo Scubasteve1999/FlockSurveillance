@@ -257,9 +257,7 @@ final class ReportStore {
             content.body = "Mappers closed your correction note."
         }
         content.sound = .default
-        let lat = String(format: "%.3f", report.latitude)
-        let lon = String(format: "%.3f", report.longitude)
-        content.userInfo = ["deepLink": "flocksurveillance://map?lat=\(lat)&lon=\(lon)"]
+        content.userInfo = ["deepLink": AppIdentity.mapURL(lat: report.latitude, lon: report.longitude).absoluteString]
 
         let request = UNNotificationRequest(
             identifier: "report.landed.\(report.id.uuidString)",

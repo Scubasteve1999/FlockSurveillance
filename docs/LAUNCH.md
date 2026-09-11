@@ -15,9 +15,14 @@ Identity retarget on this tip. **Flock Surveillance 1.9.x remains the prior list
 | Tip IAPs | `com.stephenmoore.mappedcamerapins.tip.{small,medium,large}` |
 | Version | 1.0.0 (build 1) |
 
-Support / privacy host is **unset** on purpose (`AppLinks.websiteHost` is optional). Do not invent a marketing domain. Settings hides the website row until a host is chosen. Overpass User-Agent is `MappedCameraPins/<version> (civic transparency)` with no fake URL.
+Support / privacy URLs are **live on GitHub Pages** (`AppLinks.supportURL` / `AppLinks.privacyPolicyURL`). Settings exposes both links. Do not invent a marketing domain.
 
-**Before archive (Stephen):** create the new ASC app, the App Group in the developer portal, and the three tip IAP products. Then set support/privacy URLs. This slice does not archive, submit, or create the listing.
+- Support: https://scubasteve1999.github.io/mapped-camera-pins-site/
+- Privacy: https://scubasteve1999.github.io/mapped-camera-pins-site/privacy.html
+
+Overpass User-Agent is `MappedCameraPins/<version> (civic transparency)` with no fake URL.
+
+**Before archive (Stephen):** create the new ASC app, the App Group in the developer portal, and the three tip IAP products. This slice does not archive, submit, or create the listing.
 
 ---
 

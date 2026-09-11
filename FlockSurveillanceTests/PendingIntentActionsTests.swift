@@ -73,8 +73,10 @@ final class PendingIntentActionsTests: XCTestCase {
         XCTAssertEqual(link.scheme, AppIdentity.urlScheme)
         XCTAssertEqual(AppIdentity.displayName, "Mapped Camera Pins")
         XCTAssertEqual(AppIdentity.appGroupID, "group.com.stephenmoore.mappedcamerapins.shared")
-        XCTAssertNil(AppLinks.websiteHost)
-        XCTAssertNil(AppLinks.website)
+        XCTAssertEqual(AppLinks.supportURL.absoluteString, "https://scubasteve1999.github.io/mapped-camera-pins-site/")
+        XCTAssertEqual(AppLinks.privacyPolicyURL.absoluteString, "https://scubasteve1999.github.io/mapped-camera-pins-site/privacy.html")
+        XCTAssertEqual(AppLinks.website, AppLinks.supportURL)
+        XCTAssertEqual(AppLinks.shareFooterHost, "scubasteve1999.github.io/mapped-camera-pins-site")
         XCTAssertNil(AppLinks.appStore)
         XCTAssertEqual(link.host, "map")
         let items = URLComponents(url: link, resolvingAgainstBaseURL: false)?.queryItems ?? []

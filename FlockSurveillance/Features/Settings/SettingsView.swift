@@ -412,11 +412,12 @@ struct SettingsView: View {
                                 Link("DeFlock project", destination: AppLinks.deFlockProject)
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(AppTheme.accent)
-                                if let website = AppLinks.website {
-                                    Link(website.host ?? "Website", destination: website)
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(AppTheme.accent)
-                                }
+                                Link("Support", destination: AppLinks.supportURL)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(AppTheme.accent)
+                                Link("Privacy Policy", destination: AppLinks.privacyPolicyURL)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(AppTheme.accent)
                             }
                         }
                     }

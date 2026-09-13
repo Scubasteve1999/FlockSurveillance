@@ -13,7 +13,9 @@ struct SharingNetworkView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store = SharingNetworkStore()
     @State private var portalSharesStore = AgencyPortalSharesStore()
+    @State private var retentionDeltaStore = RetentionDeltaStore()
     @State private var selectedPortalAgency: AgencyPortalShareAgency?
+    @State private var showRetentionSamples = false
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
     @State private var selectedCountyGroup: SharingCountyGroup?
@@ -79,6 +81,7 @@ struct SharingNetworkView: View {
         .task {
             await store.loadIfNeeded()
             await portalSharesStore.loadIfNeeded()
+            await retentionDeltaStore.loadIfNeeded()
         }
         .onChange(of: selectedMarkerID) { _, markerID in
             handleMarkerSelection(markerID)
@@ -133,6 +136,11 @@ struct SharingNetworkView: View {
         }
         .sheet(item: $selectedPortalAgency) { agency in
             AgencyPortalSharesCard(agency: agency)
+                .presentationDetents([.large])
+                .presentationBackground(AppTheme.background)
+        }
+        .sheet(isPresented: $showRetentionSamples) {
+            RetentionDeltaSamplesList(store: retentionDeltaStore)
                 .presentationDetents([.large])
                 .presentationBackground(AppTheme.background)
         }
@@ -366,6 +374,7 @@ struct SharingNetworkView: View {
                 .frame(height: 1)
                 .padding(.vertical, 2)
             midSouthSamplesRow
+            retentionSamplesRow
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -420,6 +429,53 @@ struct SharingNetworkView: View {
         .accessibilityLabel("\(AgencyPortalSharesCopy.midSouthSamplesTitle), \(midSouthSampleAgency?.displayName ?? "portal share lists")")
         .accessibilityHint("Opens the bundled Shelby County Sheriff’s Office portal share list")
         .disabled(portalSharesStore.isLoaded && midSouthSampleAgency == nil)
+    }
+
+    private var retentionSamplesRow: some View {
+        Button {
+            if retentionDeltaStore.isLoaded || !retentionDeltaStore.agencies.isEmpty {
+                showRetentionSamples = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            } else {
+                Task {
+                    await retentionDeltaStore.loadIfNeeded()
+                    if !retentionDeltaStore.agencies.isEmpty {
+                        showRetentionSamples = true
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(RetentionDeltaCopy.samplesTitle)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AppTheme.foreground)
+                    Text(retentionSamplesSubtitle)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .lineLimit(2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(AppTheme.accent)
+            }
+            .padding(.top, 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("retention-delta-samples")
+        .accessibilityLabel("\(RetentionDeltaCopy.samplesTitle), \(retentionSamplesSubtitle)")
+        .accessibilityHint("Opens bundled public retention quotes compared to a dated vendor pitch")
+        .disabled(retentionDeltaStore.isLoaded && retentionDeltaStore.agencies.isEmpty)
+    }
+
+    private var retentionSamplesSubtitle: String {
+        let count = retentionDeltaStore.agencies.count
+        if count == 0 {
+            return RetentionDeltaCopy.samplesSubtitle
+        }
+        let word = count == 1 ? "agency" : "agencies"
+        return "\(count) \(word) · \(RetentionDeltaCopy.samplesSubtitle)"
     }
 
     private var statusLine: String {

@@ -1,0 +1,251 @@
+{
+  "schema_version": "1",
+  "generated_at": "2026-09-13",
+  "attribution": {
+    "title": "Retention-delta samples (bundled snapshot)",
+    "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+    "note": "On-device quotes from public agency pages and a dated Flock law-enforcement 7-day recommended/default pitch (2026-08-13: guardrails blog, deletion blog, private-sector FAQ). Not live. Not configured days. Flock’s Evidence Policy page still mixes 30-day and 7-day language — that vendor-doc conflict is noted on every card and is not resolved here."
+  },
+  "vendor_default": {
+    "version": "flock-le-recommended-7-day-2026-08-13",
+    "days": 7,
+    "as_of": "2026-08-13",
+    "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+    "label": "Flock LE recommended / default 7-day pitch"
+  },
+  "agencies": [
+    {
+      "id": "boulder-co-pd",
+      "display_name": "Boulder Police Department (CO)",
+      "region_label": "Colorado",
+      "vendor_default": {
+        "version": "flock-le-recommended-7-day-2026-08-13",
+        "days": 7,
+        "as_of": "2026-08-13",
+        "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+        "label": "Flock LE recommended / default 7-day pitch"
+      },
+      "evidence_mode": "unknown",
+      "source_conflict": true,
+      "delta_label": "conflict",
+      "source_chips": [
+        {
+          "title": "City of Boulder — Flock Safety cameras and Boulder Police Department",
+          "url": "https://bouldercolorado.gov/services/flock-safety-cameras-and-boulder-police-department",
+          "as_of_date": "2026-09-13"
+        },
+        {
+          "title": "Flock — privacy guardrails (7-day recommended / default pitch)",
+          "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — how LPR data is deleted (7-day default)",
+          "url": "https://www.flocksafety.com/blog/how-does-flock-handle-license-plate-data-deletion",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — private-sector FAQ (7-day default is new LE customers)",
+          "url": "https://www.flocksafety.com/blog/what-flocks-privacy-and-security-updates-mean-for-private-sector-customers",
+          "as_of_date": "2026-08-13"
+        }
+      ],
+      "notes": "The official City of Boulder page says “Data is only maintained for 30 days” in the intro and “License plate data is retained for 14 days” in the FAQ. Those quotes disagree. No single local_policy_days is recorded.",
+      "incomplete": true,
+      "incomplete_reason": "Official page self-conflicts (30 days in the intro vs 14 days in the FAQ). Mapped Camera Pins does not pick a number."
+    },
+    {
+      "id": "amarillo-tx-pd",
+      "display_name": "Amarillo Police Department (TX)",
+      "region_label": "Texas",
+      "vendor_default": {
+        "version": "flock-le-recommended-7-day-2026-08-13",
+        "days": 7,
+        "as_of": "2026-08-13",
+        "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+        "label": "Flock LE recommended / default 7-day pitch"
+      },
+      "local_policy_days": 7,
+      "local_policy_source": {
+        "title": "KVII / ABC7 Amarillo — police to cut ALPR retention to seven days",
+        "url": "https://abc7amarillo.com/news/local/amarillo-police-to-cut-license-plate-reader-data-retention-to-seven-days-after-misuse-claim-chief-thomas-hover-city-council-mayor-cole-stanley-flock-cameras",
+        "as_of_date": "2026-09-09"
+      },
+      "evidence_mode": "unknown",
+      "source_conflict": false,
+      "delta_label": "stated_eq",
+      "source_chips": [
+        {
+          "title": "KVII / ABC7 Amarillo — seven-day retention (council presentation)",
+          "url": "https://abc7amarillo.com/news/local/amarillo-police-to-cut-license-plate-reader-data-retention-to-seven-days-after-misuse-claim-chief-thomas-hover-city-council-mayor-cole-stanley-flock-cameras",
+          "as_of_date": "2026-09-09"
+        },
+        {
+          "title": "Flock — privacy guardrails (7-day recommended / default pitch)",
+          "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — how LPR data is deleted (7-day default)",
+          "url": "https://www.flocksafety.com/blog/how-does-flock-handle-license-plate-data-deletion",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — private-sector FAQ (7-day default is new LE customers)",
+          "url": "https://www.flocksafety.com/blog/what-flocks-privacy-and-security-updates-mean-for-private-sector-customers",
+          "as_of_date": "2026-08-13"
+        }
+      ],
+      "notes": "KVII reported that Chief Hover told council ALPR data retention would drop from 30 days to seven. That is a news quote of a stated policy change — not a published department policy PDF, and not a configured-days observation.",
+      "incomplete": true,
+      "incomplete_reason": "News report of a council presentation, not a published Amarillo PD policy PDF. Configured days are unknown."
+    },
+    {
+      "id": "lafayette-co-pd",
+      "display_name": "Lafayette Police Department (CO)",
+      "region_label": "Colorado",
+      "vendor_default": {
+        "version": "flock-le-recommended-7-day-2026-08-13",
+        "days": 7,
+        "as_of": "2026-08-13",
+        "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+        "label": "Flock LE recommended / default 7-day pitch"
+      },
+      "local_policy_days": 30,
+      "local_policy_source": {
+        "title": "City of Lafayette — Flock Safety ALPR Program",
+        "url": "https://www.lafayetteco.gov/4282",
+        "as_of_date": "2026-09-13"
+      },
+      "evidence_mode": "unknown",
+      "source_conflict": false,
+      "delta_label": "stated_gt_vendor_pitch",
+      "source_chips": [
+        {
+          "title": "City of Lafayette — Flock Safety ALPR Program",
+          "url": "https://www.lafayetteco.gov/4282",
+          "as_of_date": "2026-09-13"
+        },
+        {
+          "title": "Flock — privacy guardrails (7-day recommended / default pitch)",
+          "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — how LPR data is deleted (7-day default)",
+          "url": "https://www.flocksafety.com/blog/how-does-flock-handle-license-plate-data-deletion",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — private-sector FAQ (7-day default is new LE customers)",
+          "url": "https://www.flocksafety.com/blog/what-flocks-privacy-and-security-updates-mean-for-private-sector-customers",
+          "as_of_date": "2026-08-13"
+        }
+      ],
+      "notes": "Official Lafayette page: “License plate data is retained for 30 days.” That is an agency-stated quote, not a configured-days observation.",
+      "incomplete": false
+    },
+    {
+      "id": "tukwila-wa-pd",
+      "display_name": "Tukwila Police Department (WA)",
+      "region_label": "Washington",
+      "vendor_default": {
+        "version": "flock-le-recommended-7-day-2026-08-13",
+        "days": 7,
+        "as_of": "2026-08-13",
+        "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+        "label": "Flock LE recommended / default 7-day pitch"
+      },
+      "local_policy_days": 30,
+      "local_policy_source": {
+        "title": "Tukwila Flock ALPR FAQ handout (Dec 15, 2025)",
+        "url": "https://records.tukwilawa.gov/WebLink/1/edoc/432997/Reg%202025-12-15%20Item%208%20-%20Handout%20Distributed%20at%20Meeting%20-%20Flock%20Automated%20License%20Plate%20Reader%20(ALPR)%20FAQ.pdf",
+        "as_of_date": "2025-12-15"
+      },
+      "statute_cap_days": 21,
+      "statute_cap_source": {
+        "title": "Washington ESSB 6002 session law — 21-day ALPR retention cap",
+        "url": "https://lawfilesext.leg.wa.gov/biennium/2025-26/Pdf/Bills/Session%20Laws/Senate/6002-S.SL.pdf",
+        "as_of_date": "2026-03-30"
+      },
+      "evidence_mode": "unknown",
+      "source_conflict": true,
+      "delta_label": "conflict",
+      "source_chips": [
+        {
+          "title": "Tukwila Flock ALPR FAQ handout (30-day quote)",
+          "url": "https://records.tukwilawa.gov/WebLink/1/edoc/432997/Reg%202025-12-15%20Item%208%20-%20Handout%20Distributed%20at%20Meeting%20-%20Flock%20Automated%20License%20Plate%20Reader%20(ALPR)%20FAQ.pdf",
+          "as_of_date": "2025-12-15"
+        },
+        {
+          "title": "Washington ESSB 6002 session law (21-day statute cap)",
+          "url": "https://lawfilesext.leg.wa.gov/biennium/2025-26/Pdf/Bills/Session%20Laws/Senate/6002-S.SL.pdf",
+          "as_of_date": "2026-03-30"
+        },
+        {
+          "title": "Flock — privacy guardrails (7-day recommended / default pitch)",
+          "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — how LPR data is deleted (7-day default)",
+          "url": "https://www.flocksafety.com/blog/how-does-flock-handle-license-plate-data-deletion",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — private-sector FAQ (7-day default is new LE customers)",
+          "url": "https://www.flocksafety.com/blog/what-flocks-privacy-and-security-updates-mean-for-private-sector-customers",
+          "as_of_date": "2026-08-13"
+        }
+      ],
+      "notes": "Tukwila’s Dec 2025 FAQ quotes 30-day retention. ESSB 6002 (effective 2026-03-30) caps ALPR retention at 21 days. A later Tukwila policy PDF restates the 21-day statute default. This card does not choose between those sources and does not claim configured days.",
+      "incomplete": true,
+      "incomplete_reason": "Agency FAQ (30 days, Dec 2025) predates ESSB 6002 (21-day cap, effective 2026-03-30). Sources disagree; configured days are unknown."
+    },
+    {
+      "id": "green-bay-wi-pd",
+      "display_name": "Green Bay Police Department (WI)",
+      "region_label": "Wisconsin",
+      "vendor_default": {
+        "version": "flock-le-recommended-7-day-2026-08-13",
+        "days": 7,
+        "as_of": "2026-08-13",
+        "source_url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+        "label": "Flock LE recommended / default 7-day pitch"
+      },
+      "local_policy_days": 30,
+      "local_policy_source": {
+        "title": "Green Bay PD Policy 424 — Automated License Plate Readers (May 2026)",
+        "url": "https://www.greenbaywi.gov/DocumentCenter/View/18791/Policy-424-Automated-License-Plate-Readers-ALPR-May-2026",
+        "as_of_date": "2026-05"
+      },
+      "evidence_mode": "unknown",
+      "source_conflict": false,
+      "delta_label": "stated_gt_vendor_pitch",
+      "source_chips": [
+        {
+          "title": "Green Bay PD Policy 424 (May 2026) — 30-day retention",
+          "url": "https://www.greenbaywi.gov/DocumentCenter/View/18791/Policy-424-Automated-License-Plate-Readers-ALPR-May-2026",
+          "as_of_date": "2026-05"
+        },
+        {
+          "title": "Flock — privacy guardrails (7-day recommended / default pitch)",
+          "url": "https://www.flocksafety.com/blog/flock-guardrails-address-lpr-privacy-concerns-and-police-transparency",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — how LPR data is deleted (7-day default)",
+          "url": "https://www.flocksafety.com/blog/how-does-flock-handle-license-plate-data-deletion",
+          "as_of_date": "2026-08-13"
+        },
+        {
+          "title": "Flock — private-sector FAQ (7-day default is new LE customers)",
+          "url": "https://www.flocksafety.com/blog/what-flocks-privacy-and-security-updates-mean-for-private-sector-customers",
+          "as_of_date": "2026-08-13"
+        }
+      ],
+      "notes": "Policy 424 §424.5: “All ALPR data recorded shall be maintained for no longer than 30 days, after which it shall be permanently removed from the system.” That is an agency-stated quote, not a configured-days observation.",
+      "incomplete": false
+    }
+  ]
+}

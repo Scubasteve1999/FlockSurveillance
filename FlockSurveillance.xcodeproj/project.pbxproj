@@ -38,6 +38,11 @@
 		3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3DA6CF47488051E85036824F /* AgencyPortalSharesBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 9178CB3838AFDDBBD2B6DED2 /* AgencyPortalSharesBundle.json */; };
+		BE5F7A9B4C6D2E3F8A0B1C78 /* RetentionDeltaBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 7C1D4F5E2A3B6D8F0E9A1B67 /* RetentionDeltaBundle.json */; };
+		8F2B4C6D1E3A9B0C5D7E8F12 /* RetentionDeltaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8A1C2B9D0F3A5E7B6C8D91 /* RetentionDeltaModels.swift */; };
+		9C3D5E7F2A4B0C1D6E8F9A34 /* RetentionDeltaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A9B2D3C0E1F4B6D8C7E9F23 /* RetentionDeltaStore.swift */; };
+		AD4E6F8A3B5C1D2E7F9A0B56 /* RetentionDeltaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C3E4D1F2A5C7E9D8F0A45 /* RetentionDeltaView.swift */; };
+		CF6A8B0C5D7E3F4A9B1C2D90 /* RetentionDeltaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2E5A6F3B4C7E9A1F0B2C89 /* RetentionDeltaTests.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		4345000BCEC5D92E29CA64E6 /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCC130CE261175F0E1588FD /* WidgetBridge.swift */; };
 		43F99A4D1BAAB1B1313D0B24 /* SensorAtlasCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35311040ACCE7081A5FF43E2 /* SensorAtlasCoverage.swift */; };
@@ -168,6 +173,11 @@
 		3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingReportDetailSheet.swift; sourceTree = "<group>"; };
 		4012CEF579CDF48C3BF98B22 /* DriveSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveSession.swift; sourceTree = "<group>"; };
 		4120BA7E322A42C0813662C0 /* AgencyPortalSharesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesStore.swift; sourceTree = "<group>"; };
+		4E8A1C2B9D0F3A5E7B6C8D91 /* RetentionDeltaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaModels.swift; sourceTree = "<group>"; };
+		5A9B2D3C0E1F4B6D8C7E9F23 /* RetentionDeltaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaStore.swift; sourceTree = "<group>"; };
+		6B0C3E4D1F2A5C7E9D8F0A45 /* RetentionDeltaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaView.swift; sourceTree = "<group>"; };
+		7C1D4F5E2A3B6D8F0E9A1B67 /* RetentionDeltaBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RetentionDeltaBundle.json; sourceTree = "<group>"; };
+		8D2E5A6F3B4C7E9A1F0B2C89 /* RetentionDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaTests.swift; sourceTree = "<group>"; };
 		45829E80D0617450FB748525 /* RouteExposureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteExposureTests.swift; sourceTree = "<group>"; };
 		46E3910FFF8644CC3D3F9ED7 /* ARGeoMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARGeoMath.swift; sourceTree = "<group>"; };
 		4D4AF090DDE7F0ADE1448325 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
@@ -272,6 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				6EAF243C4AEB1C2FCD4F81B7 /* AgencyPortalSharesView.swift */,
+				6B0C3E4D1F2A5C7E9D8F0A45 /* RetentionDeltaView.swift */,
 				F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */,
 			);
 			path = Network;
@@ -281,6 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				F730F2FE6EFFFEAD7FDC494A /* AgencyPortalSharesTests.swift */,
+				8D2E5A6F3B4C7E9A1F0B2C89 /* RetentionDeltaTests.swift */,
 				A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */,
 				12A0EE865296C2ED637FE478 /* ARGeoMathTests.swift */,
 				1D7376FDA6828759C4914606 /* CoverageConfidenceTests.swift */,
@@ -392,6 +404,7 @@
 			children = (
 				2C2EF21E5BCA477C0BDCF753 /* AgencyPortalSharesModels.swift */,
 				F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */,
+				4E8A1C2B9D0F3A5E7B6C8D91 /* RetentionDeltaModels.swift */,
 				EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */,
 				839B34D71A068F6E097C63DE /* PendingReport.swift */,
 				5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */,
@@ -430,6 +443,7 @@
 				CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */,
 				87AA373662BC417002454737 /* ProximityRadar.swift */,
 				C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */,
+				5A9B2D3C0E1F4B6D8C7E9F23 /* RetentionDeltaStore.swift */,
 				8533AD3B6ABD4769BD7F279F /* ReviewPrompter.swift */,
 				1EF5071428035BACBE1EEF93 /* RouteExposureService.swift */,
 				87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */,
@@ -464,6 +478,7 @@
 			children = (
 				9178CB3838AFDDBBD2B6DED2 /* AgencyPortalSharesBundle.json */,
 				8ED03FA3B1E8310241F711D5 /* FlockSurveillance.storekit */,
+				7C1D4F5E2A3B6D8F0E9A1B67 /* RetentionDeltaBundle.json */,
 				9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */,
 				38E4546BCC022F9ACAB3B832 /* SensorAtlasBundle.json */,
 				6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */,
@@ -627,6 +642,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DA6CF47488051E85036824F /* AgencyPortalSharesBundle.json in Resources */,
+				BE5F7A9B4C6D2E3F8A0B1C78 /* RetentionDeltaBundle.json in Resources */,
 				45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */,
 				1DFA15E663E9542FBB321049 /* FlockSurveillance.storekit in Resources */,
 				59546AA990B08DF4B87D3409 /* OliveBranchEntranceBundle.json in Resources */,
@@ -649,6 +665,9 @@
 				016420CD33435F77C2AC76A5 /* AgencyPortalSharesModels.swift in Sources */,
 				714C4F0308045CE65630257D /* AgencyPortalSharesStore.swift in Sources */,
 				5A0636158C1228F77608F77B /* AgencyPortalSharesView.swift in Sources */,
+				8F2B4C6D1E3A9B0C5D7E8F12 /* RetentionDeltaModels.swift in Sources */,
+				9C3D5E7F2A4B0C1D6E8F9A34 /* RetentionDeltaStore.swift in Sources */,
+				AD4E6F8A3B5C1D2E7F9A0B56 /* RetentionDeltaView.swift in Sources */,
 				83D01F0C7E3A65FD63D43F36 /* AlertsEngine.swift in Sources */,
 				9CB65369BA218943953FE432 /* AppLinks.swift in Sources */,
 				A11C1D3A7B0E4F2C9D8E6A5B /* AppIdentity.swift in Sources */,
@@ -721,6 +740,7 @@
 			files = (
 				CCD1A26EEC8A89F743A325C7 /* ARGeoMathTests.swift in Sources */,
 				FF8CEB38D6F7A0DB4CD24942 /* AgencyPortalSharesTests.swift in Sources */,
+				CF6A8B0C5D7E3F4A9B1C2D90 /* RetentionDeltaTests.swift in Sources */,
 				1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */,
 				174F1CA65DBFA4D7E22EE914 /* CoverageConfidenceTests.swift in Sources */,
 				3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */,

@@ -1,4 +1,5 @@
 import CoreLocation
+import SwiftData
 import SwiftUI
 
 struct OnboardingView: View {

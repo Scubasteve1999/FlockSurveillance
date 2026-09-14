@@ -74,10 +74,10 @@ struct NearbyCamerasIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let snapshot = WidgetBridge.readSnapshot()
         guard WidgetBridge.homeCoordinate() != nil else {
-            return .result(dialog: "Set a Home location in Mapped Camera Pins settings first.")
+            return .result(dialog: "Set a Home location in Flock Surveillance settings first.")
         }
         guard snapshot.updatedAt != nil else {
-            return .result(dialog: "Open Mapped Camera Pins once so it can load mapped pins near Home.")
+            return .result(dialog: "Open Flock Surveillance once so it can load mapped pins near Home.")
         }
         var dialog = snapshot.count == 1
             ? "There is 1 mapped pin within a mile of Home."
@@ -125,10 +125,10 @@ struct SafestDriveHomeIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard WidgetBridge.homeCoordinate() != nil else {
-            return .result(dialog: "Set Home in Mapped Camera Pins Settings first.")
+            return .result(dialog: "Set Home in Flock Surveillance Settings first.")
         }
         guard WidgetBridge.workCoordinate() != nil else {
-            return .result(dialog: "Set Work in Mapped Camera Pins Settings first.")
+            return .result(dialog: "Set Work in Flock Surveillance Settings first.")
         }
         PendingIntentActions.commuteToHome = true
         NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.routeURL(commute: "home")])

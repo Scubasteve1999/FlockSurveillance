@@ -188,7 +188,7 @@ struct OnboardingView: View {
                 .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
                 .shadow(color: AppTheme.primary.opacity(0.35), radius: 16, y: 0)
 
-            Text("MAPPED CAMERA PINS")
+            Text("FLOCK SURVEILLANCE")
                 .font(.system(size: 28, weight: .black))
                 .tracking(1.4)
                 .foregroundStyle(AppTheme.foreground)

@@ -115,7 +115,10 @@ final class AgencyPortalSharesTests: XCTestCase {
         let federalNames = shelby.shares.filter { $0.category == .federal }.map(\.name)
         XCTAssertEqual(federalNames.count, 10)
         XCTAssertTrue(federalNames.contains("[Federal] Federal Bureau of Investigation (FBI)"))
-        XCTAssertFalse(federalNames.contains { $0.localizedCaseInsensitiveContains("ICE") })
+        XCTAssertFalse(
+            federalNames.contains { $0.contains("ICE") },
+            "Do not invent ICE as a federal partner; 'Office' in a real bundled name is not ICE"
+        )
     }
 
     func testSearchAndCategoryFilterDoNotInventPartners() throws {

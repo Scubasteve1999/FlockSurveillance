@@ -1,32 +1,35 @@
 # Flock Surveillance — App Store
 
-## Mapped Camera Pins (new ASC app)
+## Tip identity (this checkout)
 
-Identity retarget on this tip. **Flock Surveillance 1.9.x remains the prior listing** (`id6789356933`). This checkout is a **new** App Store app, not an update to that listing.
+Flock Surveillance is the tip product again. Stephen paused the Mapped Camera Pins rename.
 
 | Field | Value |
 |---|---|
-| Display name | Mapped Camera Pins |
-| Bundle ID | `com.stephenmoore.mappedcamerapins` |
-| Tests | `com.stephenmoore.mappedcamerapins.tests` |
-| Widget | `com.stephenmoore.mappedcamerapins.widget` |
-| App Group | `group.com.stephenmoore.mappedcamerapins.shared` |
-| URL scheme | `mappedcamerapins` |
-| Tip IAPs | `com.stephenmoore.mappedcamerapins.tip.{small,medium,large}` |
-| Version | 1.0.0 (build 1) |
+| Display name | Flock Surveillance |
+| Bundle ID | `com.flocksurveillance.app` |
+| Tests | `com.flocksurveillance.app.tests` |
+| Widget | `com.flocksurveillance.app.widget` |
+| App Group | `group.com.flocksurveillance.shared` |
+| URL scheme | `flocksurveillance` |
+| Tip IAPs | `com.flocksurveillance.app.tip.{small,medium,large}` |
+| Version | 1.9.3 (build 19) — next Flock archive. 1.9.2 (build 18) was already submitted on the live listing. |
 
-Support / privacy URLs are **live on GitHub Pages** (`AppLinks.supportURL` / `AppLinks.privacyPolicyURL`). Settings exposes both links. Do not invent a marketing domain.
+**Parked / unused:** Mapped Camera Pins identity and ASC listing `6810965608`. Leave that listing **draft**. Do not delete it from this slice. Do not archive, TestFlight, or submit from this PR.
+
+Support / privacy URLs stay on **live GitHub Pages** (`AppLinks.supportURL` / `AppLinks.privacyPolicyURL`). Settings exposes both links. Do not invent flocksurveillance.com in-app. Follow-on (out of this PR): rebrand Pages titles from “Mapped Camera Pins” → “Flock Surveillance” so Settings links match the store name.
 
 - Support: https://scubasteve1999.github.io/mapped-camera-pins-site/
 - Privacy: https://scubasteve1999.github.io/mapped-camera-pins-site/privacy.html
+- App Store: https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933
 
-Overpass User-Agent is `MappedCameraPins/<version> (civic transparency)` with no fake URL.
+Overpass User-Agent is `FlockSurveillance/<version> (civic transparency)` with no fake contact URL.
 
-**Before archive (Stephen):** create the new ASC app, the App Group in the developer portal, and the three tip IAP products. This slice does not archive, submit, or create the listing.
+This slice does not archive, submit, or delete the parked MCP listing.
 
 ---
 
-**Shipped (prior listing).** v1.9.1 (build 17) is live. v1.9.0 (build 16) shipped 2026-08-19.
+**Shipped.** v1.9.1 (build 17) is live. v1.9.0 (build 16) shipped 2026-08-19.
 
 - Listing: [Flock Surveillance: ALPR Map](https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933)
 - Apple ID: `6789356933`
@@ -97,7 +100,13 @@ Shipped / live. Honesty copy pass — pin-zone / HOW MAPPED / Fewest Pins Drive 
 ## 1.9.2 (build 18)
 
 Store screenshot slot-1 honesty ("How mapped is this road?") + Shelby portal-shares
-honesty card already on tip. Not submitted yet. Stephen archives on his Mac after merge.
+honesty card. Submitted on the Flock Surveillance listing.
+
+## 1.9.3 (build 19)
+
+Next Flock archive. Tip identity restored to Flock Surveillance after the Mapped Camera
+Pins rename was parked (unused ASC `6810965608` stays draft). Includes Thin+ Sharing
+Network retention-delta samples already on tip. Stephen archives on his Mac after merge.
 
 ## 1.8.2 backlog
 

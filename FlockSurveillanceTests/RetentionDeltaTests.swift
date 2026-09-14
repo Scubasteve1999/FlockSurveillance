@@ -289,7 +289,7 @@ final class RetentionDeltaTests: XCTestCase {
         let sources = [view, models, store, sharing]
 
         for source in sources {
-            XCTAssertFalse(source.contains("Flock Surveillance"))
+            XCTAssertFalse(source.contains("Mapped Camera Pins"))
             XCTAssertFalse(source.contains("can search your plate"))
             XCTAssertFalse(source.contains("detected your plate"))
             XCTAssertFalse(source.contains("they scanned you"))

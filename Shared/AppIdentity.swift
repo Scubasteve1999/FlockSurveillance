@@ -1,11 +1,12 @@
 import Foundation
 
 /// Bundle-adjacent identity shared by the app and the widget.
-/// Display name and scheme are the new ASC app; Xcode target / module names stay FlockSurveillance.
+/// Display name, URL scheme, and app group match the Flock Surveillance listing.
+/// Xcode target / module names stay FlockSurveillance.
 enum AppIdentity {
-    static let displayName = "Mapped Camera Pins"
-    static let urlScheme = "mappedcamerapins"
-    static let appGroupID = "group.com.stephenmoore.mappedcamerapins.shared"
+    static let displayName = "Flock Surveillance"
+    static let urlScheme = "flocksurveillance"
+    static let appGroupID = "group.com.flocksurveillance.shared"
 
     static var mapURL: URL {
         URL(string: "\(urlScheme)://map")!

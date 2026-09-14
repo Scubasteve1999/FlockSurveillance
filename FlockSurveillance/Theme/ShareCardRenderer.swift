@@ -92,7 +92,7 @@ private struct PlaceScoreShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("MAPPED CAMERA PINS")
+                    Text("FLOCK SURVEILLANCE")
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
@@ -265,7 +265,7 @@ private struct DriveReportShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("MAPPED CAMERA PINS")
+                    Text("FLOCK SURVEILLANCE")
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)

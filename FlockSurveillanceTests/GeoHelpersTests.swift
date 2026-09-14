@@ -135,15 +135,16 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.cameraCountLabel.contains("mapped pin"))
         XCTAssertFalse(score.cameraCountLabel.contains("camera"))
         XCTAssertTrue(score.shareText.contains("mapped pin"))
-        XCTAssertFalse(score.shareText.contains("camera"))
+        XCTAssertFalse(score.shareText.contains("8 cameras"))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pins — not a vendor feed."))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pin density near you."))
         XCTAssertFalse(score.shareText.contains("How watched is your life right now?"))
-        XCTAssertTrue(score.shareText.contains("MAPPED CAMERA PINS"))
-        XCTAssertFalse(score.shareText.contains("Flock Surveillance"))
+        XCTAssertTrue(score.shareText.contains("FLOCK SURVEILLANCE"))
+        XCTAssertFalse(score.shareText.contains("MAPPED CAMERA PINS"))
         XCTAssertFalse(score.shareText.contains("flocksurveillance.com"))
         XCTAssertTrue(score.shareText.contains("scubasteve1999.github.io/mapped-camera-pins-site"))
-        XCTAssertNil(AppLinks.appStore)
+        XCTAssertEqual(AppLinks.appStore?.absoluteString, "https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933")
+        XCTAssertTrue(score.shareText.contains(AppLinks.appStore!.absoluteString))
     }
 
     func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {

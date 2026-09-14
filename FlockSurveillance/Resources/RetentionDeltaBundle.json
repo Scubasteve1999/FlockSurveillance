@@ -52,7 +52,7 @@
       ],
       "notes": "The official City of Boulder page says “Data is only maintained for 30 days” in the intro and “License plate data is retained for 14 days” in the FAQ. Those quotes disagree. No single local_policy_days is recorded.",
       "incomplete": true,
-      "incomplete_reason": "Official page self-conflicts (30 days in the intro vs 14 days in the FAQ). Mapped Camera Pins does not pick a number."
+      "incomplete_reason": "Official page self-conflicts (30 days in the intro vs 14 days in the FAQ). Flock Surveillance does not pick a number."
     },
     {
       "id": "amarillo-tx-pd",

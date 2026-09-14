@@ -184,11 +184,11 @@ enum OSMHTTPIdentity {
     }
 
     static var overpass: String {
-        "MappedCameraPins/\(marketingVersion) (civic transparency)"
+        "FlockSurveillance/\(marketingVersion) (civic transparency)"
     }
 
     static var osmNotes: String {
-        "MappedCameraPins-iOS/\(marketingVersion) (civic transparency)"
+        "FlockSurveillance-iOS/\(marketingVersion) (civic transparency)"
     }
 }
 

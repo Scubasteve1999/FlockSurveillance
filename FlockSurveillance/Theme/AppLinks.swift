@@ -12,8 +12,8 @@ enum AppLinks {
     /// Settings primary site link — the live support page.
     static let website = supportURL
 
-    /// New ASC listing URL — unset until Stephen creates the app.
-    static let appStore: URL? = nil
+    /// Live Flock Surveillance listing.
+    static let appStore: URL? = URL(string: "https://apps.apple.com/us/app/flock-surveillance-alpr-map/id6789356933")
 
     /// Share-card / route share footer: host + path, not a bare github.io.
     static var shareFooterHost: String {

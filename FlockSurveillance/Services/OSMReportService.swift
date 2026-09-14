@@ -42,7 +42,7 @@ struct OSMCameraReport {
         if let notes, !notes.isEmpty {
             lines.append("Details: \(notes)")
         }
-        lines.append("Submitted via Mapped Camera Pins app.")
+        lines.append("Submitted via Flock Surveillance app.")
         return lines.joined(separator: "\n")
     }
 }

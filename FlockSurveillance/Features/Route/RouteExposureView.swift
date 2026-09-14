@@ -689,7 +689,7 @@ struct RouteExposureView: View {
         let to = destinationQuery.isEmpty ? "Destination" : destinationQuery
         let optionCount = analysis?.options.count ?? 1
         var lines = [
-            "Mapped Camera Pins — Fewest Pins Drive",
+            "Flock Surveillance — Fewest Pins Drive",
             "From: \(from)",
             "To: \(to)",
             "Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)",

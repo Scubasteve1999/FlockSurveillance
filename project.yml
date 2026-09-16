@@ -27,9 +27,12 @@ targets:
         excludes:
           - "**/.DS_Store"
           - Info.plist
+          - PrivacyInfo.xcprivacy
       - path: Shared
         excludes:
           - "**/.DS_Store"
+    resources:
+      - path: FlockSurveillance/PrivacyInfo.xcprivacy
     info:
       path: FlockSurveillance/Info.plist
       properties:
@@ -96,9 +99,12 @@ targets:
         excludes:
           - "**/.DS_Store"
           - Info.plist
+          - PrivacyInfo.xcprivacy
       - path: Shared
         excludes:
           - "**/.DS_Store"
+    resources:
+      - path: NearbyCamerasWidget/PrivacyInfo.xcprivacy
     info:
       path: NearbyCamerasWidget/Info.plist
       properties:

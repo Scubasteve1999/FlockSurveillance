@@ -125,7 +125,7 @@ struct RadarHUD: View {
                                 .foregroundStyle(AppTheme.mutedForeground)
                         }
                     }
-                    if let nearestMeters, let nearestLabel {
+                    if nearestMeters != nil, let nearestLabel {
                         Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(AppTheme.mutedForeground)

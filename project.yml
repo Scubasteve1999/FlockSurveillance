@@ -6,6 +6,10 @@ options:
   xcodeVersion: "27.0"
   createIntermediateGroups: true
   groupSortPosition: top
+  # Privacy manifests must land in Copy Bundle Resources (not compile / none).
+  fileTypes:
+    xcprivacy:
+      buildPhase: resources
 settings:
   base:
     SWIFT_VERSION: "5.9"
@@ -31,8 +35,9 @@ targets:
       - path: Shared
         excludes:
           - "**/.DS_Store"
-    resources:
       - path: FlockSurveillance/PrivacyInfo.xcprivacy
+        type: file
+        buildPhase: resources
     info:
       path: FlockSurveillance/Info.plist
       properties:
@@ -103,8 +108,9 @@ targets:
       - path: Shared
         excludes:
           - "**/.DS_Store"
-    resources:
       - path: NearbyCamerasWidget/PrivacyInfo.xcprivacy
+        type: file
+        buildPhase: resources
     info:
       path: NearbyCamerasWidget/Info.plist
       properties:

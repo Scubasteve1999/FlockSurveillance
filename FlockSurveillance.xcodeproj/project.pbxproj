@@ -116,6 +116,9 @@
 		F6A1766D4222FD6BE0BCCFBF /* TipJarStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA5A86FD7B9DA246AC132CF /* TipJarStoreTests.swift */; };
 		F911F18D21074D2006AE3DE5 /* PlaceScoreCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B70DAA437D2EEFDC03A1FE /* PlaceScoreCard.swift */; };
 		FCFAAA2A4D982C0A5CCDF066 /* GeoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AC739360F96B00B18FF118D /* GeoHelpers.swift */; };
+		0A72DE56B8340B2F57C9E1D3 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F961CD45A7239A1E46B8D0C2 /* PrivacyManifestTests.swift */; };
+		B52D8F01C3E9567A02C4D6E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A41C7E90B2D8456F91B3C5D7 /* PrivacyInfo.xcprivacy */; };
+		D74FAB23E501789C24E6F80A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C63E9A12D4F0678B13D5E7F9 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -259,6 +262,9 @@
 		FC127AE1BE845A788CF3FF21 /* SensorAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAnnotationView.swift; sourceTree = "<group>"; };
 		FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraSightView.swift; sourceTree = "<group>"; };
 		FC82521CA35252739669DF77 /* WatchedZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZone.swift; sourceTree = "<group>"; };
+		A41C7E90B2D8456F91B3C5D7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C63E9A12D4F0678B13D5E7F9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F961CD45A7239A1E46B8D0C2 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -304,6 +310,7 @@
 				F10BD8EA73F456C0232EDF66 /* OliveBranchEntranceStoreTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
 				CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */,
+				F961CD45A7239A1E46B8D0C2 /* PrivacyManifestTests.swift */,
 				C38A882B8D95C203AAB19E8B /* RetentionDeltaTests.swift */,
 				45829E80D0617450FB748525 /* RouteExposureTests.swift */,
 				93348D3D147F41BEC60B978B /* SensorAtlasAutoPolicyTests.swift */,
@@ -369,6 +376,7 @@
 				1059DB41CEE11F492065269C /* Theme */,
 				BAFBB64F66A54D0AB0341497 /* Assets.xcassets */,
 				593E4E84A26593904B0FAE3A /* FlockSurveillance.entitlements */,
+				A41C7E90B2D8456F91B3C5D7 /* PrivacyInfo.xcprivacy */,
 			);
 			path = FlockSurveillance;
 			sourceTree = "<group>";
@@ -390,6 +398,7 @@
 				30F32E7892548C74AAE392D0 /* NearbyCamerasWidget.entitlements */,
 				D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */,
 				5CE7601E92A7F1F36F2ACA42 /* NearbyCamerasWidgetBundle.swift */,
+				C63E9A12D4F0678B13D5E7F9 /* PrivacyInfo.xcprivacy */,
 			);
 			path = NearbyCamerasWidget;
 			sourceTree = "<group>";
@@ -583,6 +592,7 @@
 			buildConfigurationList = 9F09FE609457E02765572174 /* Build configuration list for PBXNativeTarget "NearbyCamerasWidgetExtension" */;
 			buildPhases = (
 				BAEB068C6350B17621DF6CCA /* Sources */,
+				E850BC34F612890D35A7C9B1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -648,9 +658,18 @@
 				45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */,
 				1DFA15E663E9542FBB321049 /* FlockSurveillance.storekit in Resources */,
 				59546AA990B08DF4B87D3409 /* OliveBranchEntranceBundle.json in Resources */,
+				B52D8F01C3E9567A02C4D6E8 /* PrivacyInfo.xcprivacy in Resources */,
 				9A23C5F65166237D59781E73 /* RetentionDeltaBundle.json in Resources */,
 				723F3920CC4F5A1D41AFFD65 /* SensorAtlasBundle.json in Resources */,
 				763A2154160FF47D2B081656 /* SharingNetworkBundle.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E850BC34F612890D35A7C9B1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D74FAB23E501789C24E6F80A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -752,6 +771,7 @@
 				825736B74843637D839FD918 /* OliveBranchEntranceStoreTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,
 				0EABAE04AE80D108744AF6A2 /* PendingIntentActionsTests.swift in Sources */,
+				0A72DE56B8340B2F57C9E1D3 /* PrivacyManifestTests.swift in Sources */,
 				F3AAF07EB39EF8AA30467395 /* RetentionDeltaTests.swift in Sources */,
 				497642A56A5D9B7A5F3F6406 /* RouteExposureTests.swift in Sources */,
 				6EC536BC9AA600A7956AB4E2 /* SensorAtlasAutoPolicyTests.swift in Sources */,

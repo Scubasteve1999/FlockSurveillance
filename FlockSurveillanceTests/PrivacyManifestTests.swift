@@ -74,7 +74,7 @@ final class PrivacyManifestTests: XCTestCase {
         XCTAssertTrue(yaml.contains("FlockSurveillance/PrivacyInfo.xcprivacy"))
         XCTAssertTrue(yaml.contains("NearbyCamerasWidget/PrivacyInfo.xcprivacy"))
         XCTAssertTrue(yaml.contains("iOS: \"17.0\""))
-        XCTAssertTrue(yaml.contains("xcodeVersion: \"16.0\""))
+        XCTAssertTrue(yaml.contains("xcodeVersion: \"27.0\""))
     }
 
     private func loadPlist(_ relativePath: String) throws -> [String: Any] {

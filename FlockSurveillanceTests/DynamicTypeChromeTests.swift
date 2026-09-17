@@ -110,8 +110,8 @@ final class DynamicTypeChromeTests: XCTestCase {
 
     func testProjectYmlDoesNotBumpVersion() throws {
         let yaml = try readProductSource("project.yml")
-        XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.9.3\""))
-        XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"19\""))
+        XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.3.5\""))
+        XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"21\""))
         XCTAssertTrue(yaml.contains("iOS: \"17.0\""))
     }
 

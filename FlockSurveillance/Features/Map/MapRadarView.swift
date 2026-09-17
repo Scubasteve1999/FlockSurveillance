@@ -249,8 +249,9 @@ struct MapRadarView: View {
                 .padding(.horizontal, 16)
             if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
                 Text(atlasError)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.footer.weight(.semibold))
                     .foregroundStyle(AppTheme.primary)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -265,8 +266,9 @@ struct MapRadarView: View {
             }
             if showOliveBranchEntrances, let entranceError = entranceStore.loadError {
                 Text(entranceError)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.footer.weight(.semibold))
                     .foregroundStyle(AppTheme.primary)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -281,8 +283,9 @@ struct MapRadarView: View {
             }
             if showOliveBranchEntrances, entranceStore.loadError == nil {
                 Text("Reconstructed city-limit crossings — not official 2022 Utility sites. No pin ≠ skipped entrance.")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -579,11 +582,13 @@ struct MapRadarView: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Report a pin")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTypography.rowTitle.weight(.bold))
                     .foregroundStyle(AppTheme.foreground)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("Pan so the crosshair is on the pin")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             Button {
@@ -594,7 +599,7 @@ struct MapRadarView: View {
                 }
             } label: {
                 Text("Here")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTypography.button.weight(.bold))
                     .foregroundStyle(AppTheme.background)
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
@@ -713,8 +718,11 @@ struct MapRadarView: View {
                             }
                         } label: {
                             Text(item.title)
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(AppTypography.filterChip)
                                 .foregroundStyle(filter == item ? AppTheme.background : AppTheme.foreground)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(3)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
                                 .background(filter == item ? AppTheme.primary : AppTheme.card.opacity(0.92))
@@ -736,8 +744,11 @@ struct MapRadarView: View {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     } label: {
                         Text("Traffic cams")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(AppTypography.filterChip)
                             .foregroundStyle(showSensorAtlas ? AppTheme.background : AppTheme.foreground)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(3)
+                            .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.card.opacity(0.92))
@@ -756,7 +767,7 @@ struct MapRadarView: View {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         } label: {
                             Text("METROS")
-                                .font(.system(size: 12, weight: .black, design: .monospaced))
+                                .font(AppTypography.hudMono)
                                 .foregroundStyle(showCityRankings ? AppTheme.background : AppTheme.foreground)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
@@ -776,7 +787,7 @@ struct MapRadarView: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Text("GATES")
-                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .font(AppTypography.hudMono)
                     .foregroundStyle(showOliveBranchEntrances ? AppTheme.background : AppTheme.foreground)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -1089,7 +1100,7 @@ private struct EntranceLayerBanner: View {
                 .padding(8)
                 .background(AppTheme.entranceLayerMarker, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             Text(text)
-                .font(.system(size: 13, weight: .semibold))
+                .font(AppTypography.filterChip)
                 .foregroundStyle(AppTheme.foreground)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
@@ -1123,7 +1134,7 @@ private struct SensorAtlasBanner: View {
                 .padding(8)
                 .background(AppTheme.trafficSensorMarker, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             Text(text)
-                .font(.system(size: 13, weight: .semibold))
+                .font(AppTypography.filterChip)
                 .foregroundStyle(AppTheme.foreground)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)

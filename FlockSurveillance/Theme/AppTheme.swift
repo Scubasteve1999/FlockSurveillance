@@ -56,6 +56,49 @@ enum AppTheme {
     }
 }
 
+/// Dynamic Type–friendly fonts for MAP chrome and GEAR Settings.
+/// Use these (or `Font.system(_:design:weight:)`) instead of raw point sizes
+/// for user-facing copy so Larger Content Size stays readable.
+enum AppTypography {
+    /// Mono page eyebrow — `FLOCK SURVEILLANCE · {TAB}` (~12pt at default).
+    static let pageEyebrow = Font.system(.caption, design: .monospaced).weight(.black)
+    /// Page title (~28pt at default, matches locked 28 `.black`).
+    static let pageTitle = Font.title.weight(.black)
+    /// Page subtitle (~15pt at default).
+    static let pageSubtitle = Font.subheadline.weight(.medium)
+
+    /// Section eyebrows — PREFERENCES, ALERTS, ABOUT (~11pt at default).
+    static let sectionEyebrow = Font.caption2.weight(.semibold)
+    /// Toggle / row titles (~15pt at default).
+    static let rowTitle = Font.subheadline.weight(.semibold)
+    /// Row subtitles, status lines (~12pt at default).
+    static let rowSubtitle = Font.caption.weight(.medium)
+    /// Footer / about / honesty-adjacent body (~13pt at default).
+    static let footer = Font.footnote.weight(.medium)
+    /// CTA and inline button labels.
+    static let button = Font.subheadline.weight(.semibold)
+
+    /// MAP honesty chip + `DataSourcePill`.
+    static let chip = Font.caption.weight(.medium)
+    static let chipIcon = Font.caption.weight(.semibold)
+    /// Filter chip titles (All ALPRs, Flock-branded pins).
+    static let filterChip = Font.footnote.weight(.semibold)
+    /// Compact mono chips (METROS, GATES, boot HUD).
+    static let hudMono = Font.system(.caption, design: .monospaced).weight(.black)
+    static let hudMonoSmall = Font.system(.caption2, design: .monospaced).weight(.bold)
+    /// Radar HUD coverage instrument line.
+    static let hudInstrument = Font.system(.caption, design: .monospaced).weight(.semibold)
+
+    /// Density / status badges.
+    static let badge = Font.caption2.weight(.semibold)
+    /// Radar HUD headline.
+    static let hudHeadline = Font.system(.headline, design: .rounded).weight(.black)
+    /// Radar HUD nearest-distance metric.
+    static let hudMetric = Font.system(.title2, design: .rounded).weight(.black)
+    /// Stat numerals (contribution counts).
+    static let statValue = Font.title3.weight(.bold)
+}
+
 struct SectionCard<Content: View>: View {
     @ViewBuilder var content: Content
 
@@ -83,8 +126,9 @@ struct StatusBadge: View {
 
     var body: some View {
         Text(text)
-            .font(.system(size: 11, weight: .semibold))
+            .font(AppTypography.badge)
             .foregroundStyle(color)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(color.opacity(0.15))
@@ -117,12 +161,11 @@ struct MapKitSizeGate<Content: View>: View {
 
 struct DataSourcePill: View {
     var body: some View {
-        HStack(alignment: .top, spacing: 6) {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
             Image(systemName: "map.fill")
-                .font(.system(size: 10, weight: .semibold))
-                .padding(.top, 1)
+                .font(AppTypography.chipIcon)
             Text(MapHonestyCopy.chipLine)
-                .font(.system(size: 11, weight: .medium))
+                .font(AppTypography.chip)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
         }

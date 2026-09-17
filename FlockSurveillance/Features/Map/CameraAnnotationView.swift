@@ -95,7 +95,7 @@ struct RadarHUD: View {
                                 .shadow(color: levelColor.opacity(0.9), radius: zonePulse ? 6 : 2)
                         }
                         Text(headline)
-                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .font(AppTypography.hudHeadline)
                             .foregroundStyle(AppTheme.foreground)
                             .fixedSize(horizontal: false, vertical: true)
                             .contentTransition(.opacity)
@@ -105,29 +105,29 @@ struct RadarHUD: View {
 
                     if inWatchedZone {
                         Text(WatchedZoneCopy.hudActiveSubtitle)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(AppTypography.rowSubtitle)
                             .foregroundStyle(AppTheme.mutedForeground)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
                     HStack(alignment: .firstTextBaseline, spacing: 4) {
                         Text("NEAR")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .font(AppTypography.hudMonoSmall)
                             .foregroundStyle(AppTheme.mutedForeground)
                         if let nearestMeters {
                             Text(ProximityRadar.formatDistance(nearestMeters))
-                                .font(.system(size: 20, weight: .black, design: .rounded))
+                                .font(AppTypography.hudMetric)
                                 .foregroundStyle(AppTheme.accent)
                                 .contentTransition(.numericText())
                         } else {
                             Text("—")
-                                .font(.system(size: 20, weight: .black, design: .rounded))
+                                .font(AppTypography.hudMetric)
                                 .foregroundStyle(AppTheme.mutedForeground)
                         }
                     }
                     if nearestMeters != nil, let nearestLabel {
                         Text(WatchedZoneCopy.mappedOperatorCaption(nearestLabel))
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(AppTypography.footer.weight(.semibold))
                             .foregroundStyle(AppTheme.mutedForeground)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -161,22 +161,21 @@ struct RadarHUD: View {
             .clipShape(Capsule())
 
             Text(confidence.instrumentLine)
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .font(AppTypography.hudInstrument)
                 .foregroundStyle(AppTheme.mutedForeground)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityLabel(confidence.instrumentAccessibilityLabel)
 
             if let coverageHint {
                 Text(coverageHint)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.footer.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
             if let errorMessage {
                 Text(errorMessage)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.footer)
                     .foregroundStyle(AppTheme.primary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -271,7 +270,7 @@ struct RadarHUD: View {
                 Image(systemName: watchModeEnabled ? "eye.fill" : "eye")
                     .font(.system(size: 12, weight: .bold))
                 Text(watchModeEnabled ? "ON" : "SET")
-                    .font(.system(size: 11, weight: .black))
+                    .font(AppTypography.badge.weight(.black))
                     .tracking(0.6)
             }
             .foregroundStyle(watchModeEnabled ? AppTheme.background : AppTheme.foreground)
@@ -453,10 +452,11 @@ struct LocationDeniedBanner: View {
                 .foregroundStyle(AppTheme.primary)
             VStack(alignment: .leading, spacing: 4) {
                 Text("Location off")
-                    .font(.system(size: 16, weight: .black, design: .rounded))
+                    .font(AppTypography.hudHeadline)
                     .foregroundStyle(AppTheme.foreground)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("Tap Settings to show nearby mapped OSM pins.")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.mutedForeground)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -466,7 +466,7 @@ struct LocationDeniedBanner: View {
                     UIApplication.shared.open(url)
                 }
             }
-            .font(.system(size: 13, weight: .bold))
+            .font(AppTypography.filterChip.weight(.bold))
             .foregroundStyle(AppTheme.accent)
         }
         .padding(14)

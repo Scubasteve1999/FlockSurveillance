@@ -16,15 +16,18 @@ struct OverwatchPageHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(eyebrow)
-                .font(.system(size: 12, weight: .black, design: .monospaced))
+                .font(AppTypography.pageEyebrow)
                 .tracking(1.2)
                 .foregroundStyle(AppTheme.primary)
+                .fixedSize(horizontal: false, vertical: true)
             Text(title)
-                .font(.system(size: 28, weight: .black))
+                .font(AppTypography.pageTitle)
                 .foregroundStyle(AppTheme.foreground)
+                .fixedSize(horizontal: false, vertical: true)
             Text(subtitle)
-                .font(.system(size: 15, weight: .medium))
+                .font(AppTypography.pageSubtitle)
                 .foregroundStyle(AppTheme.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
@@ -60,16 +63,18 @@ struct OverwatchBootBanner: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(AppIdentity.chromeMono)
-                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .font(AppTypography.hudMono)
                             .tracking(1.4)
                             .foregroundStyle(AppTheme.foreground)
+                            .fixedSize(horizontal: false, vertical: true)
                         Text("\(pinCountLabel(visibleCount)) IN VIEW · \(level.chip)")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .font(AppTypography.hudMonoSmall)
                             .foregroundStyle(level.color)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
                     Text("OSM")
-                        .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                        .font(AppTypography.hudMonoSmall)
                         .foregroundStyle(AppTheme.mutedForeground)
                 }
                 .padding(.horizontal, 14)

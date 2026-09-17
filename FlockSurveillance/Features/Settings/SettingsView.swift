@@ -61,9 +61,10 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 14) {
                                 Text("PREFERENCES")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 Toggle(isOn: Binding(
                                     get: { radar.hapticsEnabled },
@@ -80,8 +81,9 @@ struct SettingsView: View {
 
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Default filter")
-                                        .font(.system(size: 15, weight: .semibold))
+                                        .font(AppTypography.rowTitle)
                                         .foregroundStyle(AppTheme.foreground)
+                                        .fixedSize(horizontal: false, vertical: true)
                                     Picker("Default filter", selection: $defaultFilterRaw) {
                                         ForEach(CameraFilter.allCases) { filter in
                                             Text(filter.title).tag(filter.rawValue)
@@ -95,9 +97,10 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 14) {
                                 Text("ALERTS")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 Toggle(isOn: Binding(
                                     get: { alertsEnabled },
@@ -119,13 +122,13 @@ struct SettingsView: View {
                                     if !alertsHaveAlways {
                                         VStack(alignment: .leading, spacing: 8) {
                                             Text("Allow “Always” location access so alerts work in the background. Without it, alerts won’t fire with the app closed.")
-                                                .font(.system(size: 12, weight: .medium))
+                                                .font(AppTypography.rowSubtitle)
                                                 .foregroundStyle(AppTheme.primary)
                                             Button {
                                                 alertsEngine.requestAlwaysAccess()
                                             } label: {
                                                 Text("Grant Always access")
-                                                    .font(.system(size: 13, weight: .semibold))
+                                                    .font(AppTypography.button)
                                                     .foregroundStyle(AppTheme.background)
                                                     .padding(.horizontal, 12)
                                                     .padding(.vertical, 8)
@@ -165,17 +168,18 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("HOME FOR WIDGET")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 if let home = homeCoordinate {
                                     Text(String(format: "Current Home: %.4f, %.4f", home.latitude, home.longitude))
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(AppTypography.footer)
                                         .foregroundStyle(AppTheme.accent)
                                 } else {
                                     Text("No Home set yet.")
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(AppTypography.footer)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 }
 
@@ -183,7 +187,7 @@ struct SettingsView: View {
                                     setHomeToCurrentLocation()
                                 } label: {
                                     Label("Use current location", systemImage: "location.fill")
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(AppTypography.button)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 12)
                                         .foregroundStyle(AppTheme.background)
@@ -208,10 +212,10 @@ struct SettingsView: View {
                                             } label: {
                                                 VStack(alignment: .leading, spacing: 2) {
                                                     Text(item.title)
-                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .font(AppTypography.button)
                                                         .foregroundStyle(AppTheme.foreground)
                                                     Text(item.subtitle)
-                                                        .font(.system(size: 12, weight: .medium))
+                                                        .font(AppTypography.rowSubtitle)
                                                         .foregroundStyle(AppTheme.mutedForeground)
                                                 }
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -224,7 +228,7 @@ struct SettingsView: View {
 
                                 if let homeStatus {
                                     Text(homeStatus)
-                                        .font(.system(size: 12, weight: .medium))
+                                        .font(AppTypography.rowSubtitle)
                                         .foregroundStyle(AppTheme.accent)
                                 }
                             }
@@ -233,17 +237,18 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("WORK FOR COMMUTE")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 if let work = workCoordinate {
                                     Text(String(format: "Current Work: %.4f, %.4f", work.latitude, work.longitude))
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(AppTypography.footer)
                                         .foregroundStyle(AppTheme.accent)
                                 } else {
                                     Text("No Work set yet.")
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(AppTypography.footer)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 }
 
@@ -251,7 +256,7 @@ struct SettingsView: View {
                                     setWorkToCurrentLocation()
                                 } label: {
                                     Label("Use current location", systemImage: "location.fill")
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(AppTypography.button)
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 12)
                                         .foregroundStyle(AppTheme.background)
@@ -276,10 +281,10 @@ struct SettingsView: View {
                                             } label: {
                                                 VStack(alignment: .leading, spacing: 2) {
                                                     Text(item.title)
-                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .font(AppTypography.button)
                                                         .foregroundStyle(AppTheme.foreground)
                                                     Text(item.subtitle)
-                                                        .font(.system(size: 12, weight: .medium))
+                                                        .font(AppTypography.rowSubtitle)
                                                         .foregroundStyle(AppTheme.mutedForeground)
                                                 }
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -292,7 +297,7 @@ struct SettingsView: View {
 
                                 if let workStatus {
                                     Text(workStatus)
-                                        .font(.system(size: 12, weight: .medium))
+                                        .font(AppTypography.rowSubtitle)
                                         .foregroundStyle(AppTheme.accent)
                                 }
                             }
@@ -301,12 +306,13 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("YOUR CONTRIBUTIONS")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 Text("Anonymous OSM notes you submitted from this device. We watch open notes and refresh nearby when a camera lands.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
 
                                 HStack(spacing: 16) {
@@ -317,7 +323,7 @@ struct SettingsView: View {
 
                                 if reportStore.reports.isEmpty {
                                     Text("No reports yet — tap the flag on the map to add coverage.")
-                                        .font(.system(size: 13, weight: .medium))
+                                        .font(AppTypography.footer)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 } else {
                                     ForEach(reportStore.reports.prefix(12), id: \.id) { report in
@@ -327,15 +333,15 @@ struct SettingsView: View {
                                             HStack {
                                                 VStack(alignment: .leading, spacing: 2) {
                                                     Text(report.kind.rawValue)
-                                                        .font(.system(size: 14, weight: .semibold))
+                                                        .font(AppTypography.button)
                                                         .foregroundStyle(AppTheme.foreground)
                                                     Text(report.status.displayLabel)
-                                                        .font(.system(size: 12, weight: .medium))
+                                                        .font(AppTypography.rowSubtitle)
                                                         .foregroundStyle(AppTheme.accent)
                                                 }
                                                 Spacer()
                                                 Image(systemName: "chevron.right")
-                                                    .font(.system(size: 12, weight: .semibold))
+                                                    .font(AppTypography.rowSubtitle)
                                                     .foregroundStyle(AppTheme.mutedForeground)
                                             }
                                             .padding(.vertical, 6)
@@ -350,7 +356,7 @@ struct SettingsView: View {
                                     }
                                 } label: {
                                     Label("Check open reports now", systemImage: "arrow.clockwise")
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(AppTypography.button)
                                         .foregroundStyle(AppTheme.accent)
                                 }
                                 .buttonStyle(.plain)
@@ -361,12 +367,13 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("DATA")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                 Text("\(repository.cameras.count == 1 ? "1 mapped pin" : "\(repository.cameras.count) mapped pins") cached locally")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.foreground)
 
                                 Button(role: .destructive) {
@@ -375,12 +382,12 @@ struct SettingsView: View {
                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                 } label: {
                                     Label("Clear mapped pin cache", systemImage: "trash")
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(AppTypography.button)
                                 }
 
                                 if didClearCache {
                                     Text("Cache cleared.")
-                                        .font(.system(size: 12, weight: .medium))
+                                        .font(AppTypography.rowSubtitle)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 }
                             }
@@ -391,32 +398,33 @@ struct SettingsView: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("ABOUT")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.sectionEyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
+                                    .fixedSize(horizontal: false, vertical: true)
                                 Text("This app maps three layers — none of them is a live plate read.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Text("Community poles: volunteer-mapped OpenStreetMap ALPR nodes (ODbL), including work documented by DeFlock. Incomplete by nature. A pin is a claim, not a guarantee.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Text("Agency records: public minutes and contracts — hardware and SaaS approvals. Mid-South cities in our research brief have not published official intersection lists.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Text("Unknown private: HOA and other private Flocks often never appear in official agency counts.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Text("Sources: OpenStreetMap; city and county minutes; Atlas of Surveillance (agency/vendor rows, which can lag); bundled FOIA Sharing Network from DeFlock Dane. This app does not store plate reads, does not invent a scan score, and cannot see a vendor network. Dodging a mapped pin does not mean you are off the network. Not affiliated with Flock Safety.")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Link("DeFlock project", destination: AppLinks.deFlockProject)
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(AppTypography.button)
                                     .foregroundStyle(AppTheme.accent)
                                 Link("Support", destination: AppLinks.supportURL)
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(AppTypography.button)
                                     .foregroundStyle(AppTheme.accent)
                                 Link("Privacy Policy", destination: AppLinks.privacyPolicyURL)
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(AppTypography.button)
                                     .foregroundStyle(AppTheme.accent)
                             }
                         }
@@ -478,10 +486,10 @@ struct SettingsView: View {
     private func contributionStat(_ label: String, _ value: Int) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("\(value)")
-                .font(.system(size: 20, weight: .bold))
+                .font(AppTypography.statValue)
                 .foregroundStyle(AppTheme.foreground)
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(AppTypography.rowSubtitle)
                 .foregroundStyle(AppTheme.mutedForeground)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -490,9 +498,10 @@ struct SettingsView: View {
     private func quietHourPicker(_ label: String, selection: Binding<Int>) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label.uppercased())
-                .font(.system(size: 10, weight: .semibold))
+                .font(AppTypography.sectionEyebrow)
                 .tracking(0.8)
                 .foregroundStyle(AppTheme.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
             Picker(label, selection: selection) {
                 ForEach(0..<24, id: \.self) { hour in
                     Text(hourLabel(hour)).tag(hour)
@@ -516,12 +525,15 @@ struct SettingsView: View {
     private func labelRow(_ title: String, _ subtitle: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(AppTypography.rowTitle)
                 .foregroundStyle(AppTheme.foreground)
+                .fixedSize(horizontal: false, vertical: true)
             Text(subtitle)
-                .font(.system(size: 12, weight: .medium))
+                .font(AppTypography.rowSubtitle)
                 .foregroundStyle(AppTheme.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func setHomeToCurrentLocation() {

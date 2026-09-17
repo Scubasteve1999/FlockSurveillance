@@ -92,7 +92,7 @@ private struct PlaceScoreShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("FLOCK SURVEILLANCE")
+                    Text(AppIdentity.chromeMono)
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
@@ -106,7 +106,7 @@ private struct PlaceScoreShareCard: View {
                     .fill(AppTheme.primary.opacity(0.7))
                     .frame(height: 2)
 
-                Text("OVERWATCH // PLACE SCORE")
+                Text("PLACE SCORE")
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(AppTheme.accent)
@@ -269,7 +269,7 @@ private struct DriveReportShareCard: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Text("FLOCK SURVEILLANCE")
+                    Text(AppIdentity.chromeMono)
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
@@ -283,7 +283,7 @@ private struct DriveReportShareCard: View {
                     .fill(AppTheme.accent.opacity(0.7))
                     .frame(height: 2)
 
-                Text("OVERWATCH // FEWEST PINS")
+                Text("FEWEST PINS")
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(AppTheme.accent)

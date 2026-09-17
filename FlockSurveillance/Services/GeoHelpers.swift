@@ -460,7 +460,7 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
 
     var shareText: String {
         var lines = [
-            "FLOCK SURVEILLANCE · OVERWATCH",
+            AppIdentity.chromeMono,
             headline,
             "\(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)",
             "Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)",

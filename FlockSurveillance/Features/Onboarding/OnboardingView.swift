@@ -189,11 +189,12 @@ struct OnboardingView: View {
                 .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
                 .shadow(color: AppTheme.primary.opacity(0.35), radius: 16, y: 0)
 
-            Text("FLOCK SURVEILLANCE")
+            Text(AppIdentity.chromeMono)
                 .font(.system(size: 28, weight: .black))
                 .tracking(1.4)
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.center)
+                .accessibilityLabel(AppIdentity.displayName)
 
             Text("See mapped pins near you.")
                 .font(.system(size: 20, weight: .semibold))
@@ -290,7 +291,7 @@ struct OnboardingView: View {
                 .shadow(color: densityColor.opacity(0.2), radius: 16, y: 0)
             }
 
-            Text("Share a Place Score card. Turn on Overwatch. Pick the drive with fewer mapped pins.")
+            Text("Share a Place Score card. Start Drive Mode. Pick the drive with fewer mapped pins.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
@@ -380,7 +381,7 @@ struct OnboardingView: View {
             permissionCard(
                 icon: "location.fill",
                 title: "Location",
-                detail: "Centers the map on you and powers Overwatch proximity.",
+                detail: "Centers the map on you and powers Drive Mode proximity.",
                 actionLabel: didRequestLocation ? "Requested" : "Enable location",
                 isDone: didRequestLocation
             ) {

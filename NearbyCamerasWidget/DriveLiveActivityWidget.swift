@@ -7,10 +7,11 @@ struct DriveLiveActivityWidget: Widget {
         ActivityConfiguration(for: DriveActivityAttributes.self) { context in
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("OVERWATCH · DRIVE")
+                    Text(AppIdentity.chromeEyebrow("DRIVE"))
                         .font(.system(size: 10, weight: .black, design: .monospaced))
                         .tracking(1.0)
                         .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                        .accessibilityLabel("\(AppIdentity.displayName) drive")
                     Spacer()
                     Text(context.state.exposureLabel.uppercased())
                         .font(.system(size: 10, weight: .bold, design: .monospaced))

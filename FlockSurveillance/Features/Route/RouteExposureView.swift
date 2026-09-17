@@ -126,10 +126,11 @@ struct RouteExposureView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("OVERWATCH · DRIVE")
+                        Text(AppIdentity.chromeEyebrow("DRIVE"))
                             .font(.system(size: 10, weight: .black, design: .monospaced))
                             .tracking(0.8)
                             .foregroundStyle(AppTheme.primary)
+                            .accessibilityLabel("\(AppIdentity.displayName) drive")
                         Text(
                             driveSession.nextHit.map { hit in
                                 let distance = driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
@@ -149,7 +150,7 @@ struct RouteExposureView: View {
                     OverwatchPrimaryButton {
                         showDriveMode = true
                     } label: {
-                        Label("Resume Overwatch", systemImage: "car.fill")
+                        Label("Resume Drive", systemImage: "car.fill")
                             .font(.system(size: 14, weight: .bold))
                     }
                     .accessibilityHint("Reopens the drive HUD. Live Activity is already running.")
@@ -168,7 +169,7 @@ struct RouteExposureView: View {
 
     private var brandBlock: some View {
         OverwatchPageHeader(
-            eyebrow: "OVERWATCH · ROUTE",
+            eyebrow: AppIdentity.chromeEyebrow("ROUTE"),
             title: "Fewest Pins Drive",
             subtitle: "One tap for Home ↔ Work, or search any trip. We pick the route with the fewest mapped ALPR pins."
         )
@@ -372,7 +373,7 @@ struct RouteExposureView: View {
                     showDriveMode = true
                 } label: {
                     Label(
-                        driveSession.isActive ? "Switch Overwatch Drive" : "Start Overwatch Drive",
+                        driveSession.isActive ? "Switch Drive" : "Start Drive",
                         systemImage: "car.fill"
                     )
                     .font(.system(size: 14, weight: .bold))

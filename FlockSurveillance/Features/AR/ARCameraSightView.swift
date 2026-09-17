@@ -171,10 +171,11 @@ struct ARCameraSightView: View {
                         .fill(arLevel.color)
                         .frame(width: 7, height: 7)
                         .shadow(color: arLevel.color.opacity(0.8), radius: 4)
-                    Text("OVERWATCH · AR SIGHT")
+                    Text(AppIdentity.chromeEyebrow("AR SIGHT"))
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.0)
                         .foregroundStyle(arLevel.color)
+                        .accessibilityLabel("\(AppIdentity.displayName) AR sight")
                 }
                 Text(hudSubtitle)
                     .font(.system(size: 12, weight: .semibold))

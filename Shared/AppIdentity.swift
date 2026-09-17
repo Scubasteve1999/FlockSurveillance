@@ -5,8 +5,15 @@ import Foundation
 /// Xcode target / module names stay FlockSurveillance.
 enum AppIdentity {
     static let displayName = "Flock Surveillance"
+    /// Mono chrome / share header. Same product as the App Store listing — not a second brand.
+    static let chromeMono = "FLOCK SURVEILLANCE"
     static let urlScheme = "flocksurveillance"
     static let appGroupID = "group.com.flocksurveillance.shared"
+
+    /// Page / HUD eyebrow: product first, surface second. Overwatch is a mode, not a title.
+    static func chromeEyebrow(_ tab: String) -> String {
+        "\(chromeMono) · \(tab)"
+    }
 
     static var mapURL: URL {
         URL(string: "\(urlScheme)://map")!

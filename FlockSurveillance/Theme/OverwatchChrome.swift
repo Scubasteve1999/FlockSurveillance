@@ -26,12 +26,15 @@ struct OverwatchPageHeader: View {
                 .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
+        .accessibilityLabel("\(AppIdentity.displayName), \(title). \(subtitle)")
     }
 }
 
 // MARK: - Boot banner
 
-/// Slides in once when Overwatch map comes online, then dismisses.
+/// Slides in once when the map comes online, then dismisses.
 struct OverwatchBootBanner: View {
     let visibleCount: Int
     let level: SurveillanceLevel
@@ -56,7 +59,7 @@ struct OverwatchBootBanner: View {
                         .shadow(color: level.color.opacity(0.9), radius: glow ? 8 : 2)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("OVERWATCH ONLINE")
+                        Text(AppIdentity.chromeMono)
                             .font(.system(size: 11, weight: .black, design: .monospaced))
                             .tracking(1.4)
                             .foregroundStyle(AppTheme.foreground)
@@ -82,6 +85,10 @@ struct OverwatchBootBanner: View {
                 }
                 .padding(.horizontal, 16)
                 .transition(.move(edge: .top).combined(with: .opacity))
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(
+                    "\(AppIdentity.displayName). \(pinCountLabel(visibleCount)) in view. \(level.chip)"
+                )
             }
         }
         .onAppear { runSequence() }

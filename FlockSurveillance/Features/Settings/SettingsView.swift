@@ -53,9 +53,9 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         OverwatchPageHeader(
-                            eyebrow: "OVERWATCH · GEAR",
+                            eyebrow: AppIdentity.chromeEyebrow("GEAR"),
                             title: "Settings",
-                            subtitle: "Tune Overwatch, Home & Work for commute, and local cache."
+                            subtitle: "Tune Drive Mode, Home & Work for commute, and local cache."
                         )
 
                         SectionCard {

@@ -68,7 +68,8 @@ Chrome (`Theme/OverwatchChrome.swift`): `OverwatchPageHeader`, `OverwatchBootBan
 `OverwatchScanlines`, `OverwatchThreatTicker`.
 
 **Locked UI decisions — don't relitigate without being asked:**
-- Page header: mono coral eyebrow `OVERWATCH · {TAB}`, title 28 `.black`
+- Page header: mono coral eyebrow `FLOCK SURVEILLANCE · {TAB}`, title 28 `.black`.
+  Overwatch is an internal Drive/proximity mode, never a competing product title.
 - Map is decluttered: no brand band, city rankings off by default (opt-in via the **METROS** chip),
   keeps the threat ticker + RadarHUD
 - Every pulse / glow / scanline animation is gated on Reduce Motion. Any new ambient animation must
@@ -89,7 +90,7 @@ stay honest: "near mapped pins," not "detected."
 
 ## Invariants — regressing these is a bug, not a preference
 
-- **Drive Mode session lifetime.** Dismissing the HUD ("Hide Overwatch") only calls `dismiss()`.
+- **Drive Mode session lifetime.** Dismissing the HUD ("Hide HUD") only calls `dismiss()`.
   Only END DRIVE calls `DriveSession.stop()` and ends the Live Activity. Never merge the two.
   Location→session updates live at the app root while a drive is active; background GPS is enabled
   only via `LocationManager.setDriveTrackingEnabled` during a drive.

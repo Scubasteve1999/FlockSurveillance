@@ -107,9 +107,10 @@ struct NearbyCamerasWidgetView: View {
 
     private var accessoryRectangular: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("OVERWATCH")
+            Text(AppIdentity.chromeMono)
                 .font(.system(size: 10, weight: .black))
                 .tracking(0.5)
+                .accessibilityLabel(AppIdentity.displayName)
             if entry.hasHome {
                 Text("\(pinCountLabel.uppercased()) · \(densityLabel)")
                     .font(.system(size: 13, weight: .bold))
@@ -131,10 +132,11 @@ struct NearbyCamerasWidgetView: View {
     private var systemView: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("OVERWATCH")
+                Text(AppIdentity.chromeMono)
                     .font(.system(size: 10, weight: .black, design: .monospaced))
                     .tracking(1.0)
                     .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                    .accessibilityLabel(AppIdentity.displayName)
                 Spacer()
                 if entry.hasHome {
                     Text(densityLabel)
@@ -223,7 +225,7 @@ struct NearbyCamerasWidget: Widget {
         StaticConfiguration(kind: kind, provider: NearbyCamerasProvider()) { entry in
             NearbyCamerasWidgetView(entry: entry)
         }
-        .configurationDisplayName("Overwatch · Home")
+        .configurationDisplayName("Flock Surveillance · Home")
         .description("Mapped ALPR pins within 1 mile of Home — community data, not a vendor feed.")
         .supportedFamilies([
             .systemSmall, .systemMedium,

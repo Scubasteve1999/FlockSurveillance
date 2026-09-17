@@ -8,18 +8,21 @@ struct TipJarSection: View {
         SectionCard {
             VStack(alignment: .leading, spacing: 12) {
                 Text(TipJarCopy.eyebrow)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(AppTypography.sectionEyebrow)
                     .tracking(0.8)
                     .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Text(TipJarCopy.body)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(AppTypography.footer)
                     .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if store.phase == .unavailable {
                     Text(TipJarCopy.unavailable)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(AppTypography.footer)
                         .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
                 } else if !store.products.isEmpty {
                     ViewThatFits(in: .horizontal) {
                         HStack(spacing: 8) {
@@ -50,16 +53,19 @@ struct TipJarSection: View {
         switch store.phase {
         case .thankYou:
             Text(TipJarCopy.thankYou)
-                .font(.system(size: 12, weight: .medium))
+                .font(AppTypography.rowSubtitle)
                 .foregroundStyle(AppTheme.accent)
+                .fixedSize(horizontal: false, vertical: true)
         case .failed(let message):
             Text(message)
-                .font(.system(size: 12, weight: .medium))
+                .font(AppTypography.rowSubtitle)
                 .foregroundStyle(AppTheme.primary)
+                .fixedSize(horizontal: false, vertical: true)
         case .purchasing:
             Text(TipJarCopy.working)
-                .font(.system(size: 12, weight: .medium))
+                .font(AppTypography.rowSubtitle)
                 .foregroundStyle(AppTheme.mutedForeground)
+                .fixedSize(horizontal: false, vertical: true)
         default:
             EmptyView()
         }
@@ -72,11 +78,12 @@ struct TipJarSection: View {
         } label: {
             VStack(spacing: 4) {
                 Text(store.displayName(for: product))
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(AppTypography.button)
                     .foregroundStyle(AppTheme.foreground)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(product.displayPrice)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(AppTypography.footer)
                     .foregroundStyle(AppTheme.accent)
             }
             .frame(maxWidth: .infinity)

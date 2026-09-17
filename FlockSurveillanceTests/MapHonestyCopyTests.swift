@@ -54,7 +54,8 @@ final class MapHonestyCopyTests: XCTestCase {
 
         let shareCards = try readProductSource("FlockSurveillance/Theme/ShareCardRenderer.swift")
         XCTAssertTrue(shareCards.contains("MapHonestyCopy.chipLine"))
-        XCTAssertFalse(shareCards.contains("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED"))
+        XCTAssertTrue(shareCards.contains("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED"))
+        XCTAssertTrue(shareCards.contains("OSM community data"))
 
         let route = try readProductSource("FlockSurveillance/Features/Route/RouteExposureView.swift")
         XCTAssertTrue(route.contains("MapHonestyCopy.chipLine"))

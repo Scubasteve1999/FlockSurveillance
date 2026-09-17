@@ -45,36 +45,41 @@ final class PrivacyManifestTests: XCTestCase {
         XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])
     }
 
-    func testAppBundleCopiesPrivacyManifest() throws {
-        let url = try XCTUnwrap(
-            Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy"),
-            "PrivacyInfo.xcprivacy must be in Copy Bundle Resources for FlockSurveillance"
+    func testAppAndWidgetBundlesCopyPrivacyManifest() throws {
+        let app = try XCTUnwrap(
+            Bundle(identifier: "com.flocksurveillance.app"),
+            "Hosted tests must see the app bundle"
         )
-        let data = try Data(contentsOf: url)
+        let appManifest = try XCTUnwrap(
+            app.url(forResource: "PrivacyInfo", withExtension: "xcprivacy"),
+            "PrivacyInfo.xcprivacy must be in the FlockSurveillance app bundle"
+        )
+        let data = try Data(contentsOf: appManifest)
         let plist = try XCTUnwrap(
             PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any]
         )
         XCTAssertEqual(plist["NSPrivacyTracking"] as? Bool, false)
-    }
 
-    func testProjectMembershipWiresManifestsIntoAppAndWidget() throws {
-        let pbx = try String(contentsOf: repoFile("FlockSurveillance.xcodeproj/project.pbxproj"), encoding: .utf8)
-        XCTAssertTrue(pbx.contains("PrivacyInfo.xcprivacy in Resources"))
-        XCTAssertTrue(pbx.contains("PrivacyManifestTests.swift"))
+        let plugIns = app.builtInPlugInsURL ?? app.bundleURL.appendingPathComponent("PlugIns")
+        let widgetManifest = plugIns
+            .appendingPathComponent("NearbyCamerasWidgetExtension.appex")
+            .appendingPathComponent("PrivacyInfo.xcprivacy")
         XCTAssertTrue(
-            pbx.contains("FlockSurveillance/PrivacyInfo.xcprivacy") || pbx.contains("path = PrivacyInfo.xcprivacy"),
-            "xcodegen/pbxproj must copy PrivacyInfo.xcprivacy into target bundles"
+            FileManager.default.fileExists(atPath: widgetManifest.path),
+            "PrivacyInfo.xcprivacy must be in the NearbyCamerasWidgetExtension bundle"
         )
     }
 
-    func testProjectYmlWiresPrivacyInfoResourcesWithoutVersionBump() throws {
+    func testProjectYmlWiresPrivacyInfoAsCopyBundleResources() throws {
         let yaml = try String(contentsOf: repoFile("project.yml"), encoding: .utf8)
         XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.9.3\""))
         XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"19\""))
-        XCTAssertTrue(yaml.contains("FlockSurveillance/PrivacyInfo.xcprivacy"))
-        XCTAssertTrue(yaml.contains("NearbyCamerasWidget/PrivacyInfo.xcprivacy"))
         XCTAssertTrue(yaml.contains("iOS: \"17.0\""))
         XCTAssertTrue(yaml.contains("xcodeVersion: \"27.0\""))
+        XCTAssertTrue(yaml.contains("FlockSurveillance/PrivacyInfo.xcprivacy"))
+        XCTAssertTrue(yaml.contains("NearbyCamerasWidget/PrivacyInfo.xcprivacy"))
+        XCTAssertTrue(yaml.contains("xcprivacy:"))
+        XCTAssertTrue(yaml.contains("buildPhase: resources"))
     }
 
     private func loadPlist(_ relativePath: String) throws -> [String: Any] {

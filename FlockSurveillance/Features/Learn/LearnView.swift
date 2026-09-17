@@ -17,7 +17,7 @@ struct LearnView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         OverwatchPageHeader(
-                            eyebrow: "OVERWATCH · INTEL",
+                            eyebrow: AppIdentity.chromeEyebrow("INTEL"),
                             title: "Learn",
                             subtitle: "Short, sharp context on ALPRs, networks, and why maps matter."
                         )

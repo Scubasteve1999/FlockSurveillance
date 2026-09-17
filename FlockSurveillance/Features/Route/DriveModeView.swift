@@ -69,9 +69,10 @@ struct DriveModeView: View {
                     OverwatchSecondaryButton(verticalPadding: 15) {
                         dismiss()
                     } label: {
-                        Text("Hide Overwatch")
+                        Text("Hide HUD")
                             .font(.system(size: 14, weight: .bold))
                     }
+                    .accessibilityLabel("Hide drive HUD")
                     .accessibilityHint("Closes the drive HUD. Live Activity keeps running until End Drive.")
 
                     OverwatchPrimaryButton(verticalPadding: 15, useGradient: true) {
@@ -154,10 +155,11 @@ struct DriveModeView: View {
                     .frame(width: 7, height: 7)
                     .opacity(pulse ? 0.25 : 1)
                     .shadow(color: driveLevel.color.opacity(0.8), radius: 4)
-                Text("OVERWATCH · DRIVE")
+                Text(AppIdentity.chromeEyebrow("DRIVE"))
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
                     .tracking(1.1)
                     .foregroundStyle(driveLevel.color)
+                    .accessibilityLabel("\(AppIdentity.displayName) drive")
                 Spacer()
                 StatusBadge(text: driveLevel.chip, color: driveLevel.color)
                 StatusBadge(

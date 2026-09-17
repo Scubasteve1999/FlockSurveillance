@@ -18,7 +18,7 @@ final class DriveLiveActivityController {
         guard session.isActive, generation == session.liveActivityGeneration else { return }
 
         let state = contentState(from: session)
-        let attributes = DriveActivityAttributes(routeSummary: "Overwatch Drive")
+        let attributes = DriveActivityAttributes(routeSummary: "\(AppIdentity.displayName) Drive")
         do {
             activity = try Activity.request(attributes: attributes, content: .init(state: state, staleDate: nil))
         } catch {

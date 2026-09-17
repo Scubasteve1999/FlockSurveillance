@@ -142,6 +142,8 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertFalse(score.shareText.contains("coverage %"))
         XCTAssertFalse(score.shareText.contains("How watched is your life right now?"))
         XCTAssertTrue(score.shareText.contains("FLOCK SURVEILLANCE"))
+        XCTAssertTrue(score.shareText.hasPrefix(AppIdentity.chromeMono))
+        XCTAssertFalse(score.shareText.contains("OVERWATCH"))
         XCTAssertFalse(score.shareText.contains("MAPPED CAMERA PINS"))
         XCTAssertFalse(score.shareText.contains("flocksurveillance.com"))
         XCTAssertTrue(score.shareText.contains("scubasteve1999.github.io/mapped-camera-pins-site"))

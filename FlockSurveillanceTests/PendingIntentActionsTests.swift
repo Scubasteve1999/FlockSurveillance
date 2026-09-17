@@ -72,6 +72,8 @@ final class PendingIntentActionsTests: XCTestCase {
         let link = try XCTUnwrap(score.mapDeepLink)
         XCTAssertEqual(link.scheme, AppIdentity.urlScheme)
         XCTAssertEqual(AppIdentity.displayName, "Flock Surveillance")
+        XCTAssertEqual(AppIdentity.chromeMono, "FLOCK SURVEILLANCE")
+        XCTAssertEqual(AppIdentity.chromeEyebrow("ROUTE"), "FLOCK SURVEILLANCE · ROUTE")
         XCTAssertEqual(AppIdentity.urlScheme, "flocksurveillance")
         XCTAssertEqual(AppIdentity.appGroupID, "group.com.flocksurveillance.shared")
         XCTAssertEqual(AppLinks.supportURL.absoluteString, "https://scubasteve1999.github.io/mapped-camera-pins-site/")

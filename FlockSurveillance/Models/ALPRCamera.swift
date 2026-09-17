@@ -97,9 +97,18 @@ enum ALPRIdentity {
 
 enum CameraFilter: String, CaseIterable, Identifiable {
     case all = "All ALPRs"
+    /// Persistence key only — never show `rawValue` in UI. See `title`.
     case flockOnly = "Flock only"
 
     var id: String { rawValue }
+
+    /// Filter menu + VoiceOver. OSM-tagged Flock-branded pins, not vendor affiliation.
+    var title: String {
+        switch self {
+        case .all: return "All ALPRs"
+        case .flockOnly: return "Flock-branded pins"
+        }
+    }
 }
 
 struct CameraCluster: Identifiable, Hashable {

@@ -465,7 +465,8 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
             "\(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)",
             "Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)",
             "Mapped OSM pin density near you.",
-            "Mapped OSM pins — not a vendor feed."
+            "Mapped OSM pins — not a vendor feed.",
+            MapHonestyCopy.chipLine
         ]
         lines.append(AppLinks.shareFooterHost)
         if let store = AppLinks.appStore {

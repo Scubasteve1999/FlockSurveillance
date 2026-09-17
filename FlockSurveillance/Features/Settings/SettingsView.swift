@@ -84,7 +84,7 @@ struct SettingsView: View {
                                         .foregroundStyle(AppTheme.foreground)
                                     Picker("Default filter", selection: $defaultFilterRaw) {
                                         ForEach(CameraFilter.allCases) { filter in
-                                            Text(filter.rawValue).tag(filter.rawValue)
+                                            Text(filter.title).tag(filter.rawValue)
                                         }
                                     }
                                     .pickerStyle(.segmented)

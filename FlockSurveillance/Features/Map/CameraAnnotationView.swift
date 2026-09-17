@@ -181,9 +181,8 @@ struct RadarHUD: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            HStack(alignment: .center, spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
                 DataSourcePill()
-                Spacer(minLength: 8)
                 overwatchToggle
             }
         }

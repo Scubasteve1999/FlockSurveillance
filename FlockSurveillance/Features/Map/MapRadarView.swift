@@ -245,6 +245,8 @@ struct MapRadarView: View {
             }
             toolRail
             filterBar
+            DataSourcePill()
+                .padding(.horizontal, 16)
             if showSensorAtlas, let atlasError = sensorAtlasStore.loadError {
                 Text(atlasError)
                     .font(.system(size: 12, weight: .semibold))
@@ -710,7 +712,7 @@ struct MapRadarView: View {
                                 filter = item
                             }
                         } label: {
-                            Text(item.rawValue)
+                            Text(item.title)
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundStyle(filter == item ? AppTheme.background : AppTheme.foreground)
                                 .padding(.horizontal, 14)
@@ -720,6 +722,12 @@ struct MapRadarView: View {
                                 .overlay(Capsule().stroke(AppTheme.border, lineWidth: filter == item ? 0 : 1))
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(item.title)
+                        .accessibilityHint(
+                            item == .flockOnly
+                                ? "OpenStreetMap pins tagged Flock-branded. Not a Flock Safety affiliation."
+                                : "All mapped ALPR pins"
+                        )
                     }
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {

@@ -696,7 +696,8 @@ struct RouteExposureView: View {
             "Pin score: \(result.exposureScore)",
             "Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi",
             "Alternatives scored: \(optionCount)",
-            "Fewer mapped pins. Same destination."
+            "Fewer mapped pins. Same destination.",
+            MapHonestyCopy.chipLine
         ]
         lines.append(AppLinks.shareFooterHost)
         if let store = AppLinks.appStore {

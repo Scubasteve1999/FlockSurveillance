@@ -117,18 +117,28 @@ struct MapKitSizeGate<Content: View>: View {
 
 struct DataSourcePill: View {
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
             Image(systemName: "map.fill")
                 .font(.system(size: 10, weight: .semibold))
-            Text("OSM · DeFlock community")
+                .padding(.top, 1)
+            Text(MapHonestyCopy.chipLine)
                 .font(.system(size: 11, weight: .medium))
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.leading)
         }
         .foregroundStyle(AppTheme.mutedForeground)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(AppTheme.card.opacity(0.9))
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(AppTheme.border, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(MapHonestyCopy.accessibilityLabel)
+        .accessibilityIdentifier("map-honesty-chip")
     }
 }
 

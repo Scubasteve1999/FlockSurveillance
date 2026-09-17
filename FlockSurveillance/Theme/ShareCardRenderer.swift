@@ -169,6 +169,10 @@ private struct PlaceScoreShareCard: View {
                         Text("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED")
                             .font(.system(size: 9, weight: .semibold, design: .monospaced))
                             .foregroundStyle(AppTheme.mutedForeground)
+                        Text(MapHonestyCopy.chipLine)
+                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                            .foregroundStyle(AppTheme.mutedForeground)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
@@ -338,6 +342,10 @@ private struct DriveReportShareCard: View {
                     Text("FEWER PINS. SAME DESTINATION.")
                         .font(.system(size: 12, weight: .heavy, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
+                    Text(MapHonestyCopy.chipLine)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text("\(AppLinks.shareFooterHost) · OSM community data")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)

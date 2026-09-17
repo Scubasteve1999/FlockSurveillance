@@ -138,6 +138,8 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertFalse(score.shareText.contains("8 cameras"))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pins — not a vendor feed."))
         XCTAssertTrue(score.shareText.contains("Mapped OSM pin density near you."))
+        XCTAssertTrue(score.shareText.contains(MapHonestyCopy.chipLine))
+        XCTAssertFalse(score.shareText.contains("coverage %"))
         XCTAssertFalse(score.shareText.contains("How watched is your life right now?"))
         XCTAssertTrue(score.shareText.contains("FLOCK SURVEILLANCE"))
         XCTAssertFalse(score.shareText.contains("MAPPED CAMERA PINS"))

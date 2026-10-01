@@ -273,7 +273,7 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertFalse(nilLines.contains(" on "))
         XCTAssertEqual(
             OfficialMapStatusCopy.chip(for: missed).subline,
-            "As of 2026-09-30, we found no map."
+            "As of Sep 30, 2026, we found no map."
         )
     }
 
@@ -282,12 +282,14 @@ final class OfficialMapStatusTests: XCTestCase {
         let byID = Dictionary(uniqueKeysWithValues: dataset.records.map { ($0.id, $0) })
 
         let alexandria = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["alexandria-va"]))
-        XCTAssertEqual(alexandria.title, "Promised by 2026-10-01")
+        XCTAssertEqual(alexandria.title, "Promised by Oct 1, 2026")
         XCTAssertEqual(
             alexandria.subline,
-            "Alexandria Police Department says it will publish a map by 2026-10-01. Nothing was live when we checked."
+            "Alexandria Police Department says it will publish a map by Oct 1, 2026. Nothing was live when we checked."
         )
-        XCTAssertEqual(alexandria.sourceLine, "Source · checked 2026-09-30")
+        XCTAssertEqual(alexandria.sourceLine, "Source · checked Sep 30, 2026")
+        XCTAssertFalse(alexandria.renderedLines.joined(separator: "\n").contains("2026-10-01"))
+        XCTAssertEqual(try XCTUnwrap(byID["alexandria-va"]).promisedDate, "2026-10-01")
         XCTAssertNil(alexandria.agencyUpdatedLine)
 
         let sanDiego = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["san-diego-ca"]))
@@ -307,13 +309,13 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertEqual(louisville.title, "Declined to publish")
         XCTAssertEqual(
             louisville.subline,
-            "Louisville Metro Police Department declined on 2026-02-02. Upheld by Kentucky AG 26-ORD-034."
+            "Louisville Metro Police Department declined on Feb 2, 2026. Upheld by Kentucky AG 26-ORD-034."
         )
 
         let bowlingGreen = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["bowling-green-ky"]))
         XCTAssertEqual(
             bowlingGreen.subline,
-            "Bowling Green police declined on 2025-11. Upheld by Kentucky AG."
+            "Bowling Green police declined in Nov 2025. Upheld by Kentucky AG."
         )
         XCTAssertFalse(bowlingGreen.subline.contains("2025-11-01"))
         XCTAssertFalse(bowlingGreen.renderedLines.joined().contains("November"))
@@ -326,25 +328,81 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertEqual(eugene.title, "Official list, program ended")
         XCTAssertEqual(
             eugene.subline,
-            "Posted while cameras were active. The program was paused or ended on 2025-11-07."
+            "Posted while cameras were active. The program was paused or ended on Nov 7, 2025."
         )
 
         let boulder = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["boulder-co"]))
         XCTAssertEqual(boulder.title, "No official list found")
-        XCTAssertEqual(boulder.subline, "We looked on 2026-09-30 and found none.")
+        XCTAssertEqual(boulder.subline, "We looked on Sep 30, 2026 and found none.")
 
         XCTAssertEqual(
             OfficialMapStatusCopy.incompletenessBanner(agencyCount: dataset.records.count, datasetAsOf: dataset.datasetAsOf),
-            "Hand-checked list of 19 agencies as of 2026-09-30. Most agencies aren't checked yet."
+            "Hand-checked list of 19 agencies as of Sep 30, 2026. Most agencies aren't checked yet."
         )
         XCTAssertEqual(
             OfficialMapStatusCopy.incompletenessBanner(agencyCount: 4, datasetAsOf: "2020-01-01"),
-            "Hand-checked list of 4 agencies as of 2020-01-01. Most agencies aren't checked yet."
+            "Hand-checked list of 4 agencies as of Jan 1, 2020. Most agencies aren't checked yet."
         )
         XCTAssertFalse(
             OfficialMapStatusCopy.incompletenessBanner(agencyCount: dataset.records.count, datasetAsOf: dataset.datasetAsOf)
                 .contains("%")
         )
+    }
+
+    func testUserFacingDatesFormatWithoutShiftingTheCalendarDay() {
+        let full = sample(status: .refused, eventDate: "2026-10-01")
+        XCTAssertEqual(
+            OfficialMapStatusCopy.chip(for: full).subline,
+            "Example Police Department declined on Oct 1, 2026."
+        )
+
+        let month = sample(status: .refused, eventDate: "2025-11")
+        XCTAssertEqual(
+            OfficialMapStatusCopy.chip(for: month).subline,
+            "Example Police Department declined in Nov 2025."
+        )
+        XCTAssertFalse(OfficialMapStatusCopy.chip(for: month).subline.contains(" on "))
+
+        let missing = sample(status: .refused, eventDate: nil)
+        XCTAssertEqual(
+            OfficialMapStatusCopy.chip(for: missing).subline,
+            "Example Police Department declined."
+        )
+
+        let unparsed = sample(status: .refused, eventDate: "not-a-date")
+        XCTAssertEqual(
+            OfficialMapStatusCopy.chip(for: unparsed).subline,
+            "Example Police Department declined on not-a-date."
+        )
+        XCTAssertEqual(OfficialMapDateDisplay.render("2026-02-31").text, "2026-02-31")
+        XCTAssertEqual(OfficialMapDateDisplay.render("2026-02-31").precision, .raw)
+
+        let live = OfficialMapRecord(
+            id: "sample-live",
+            jurisdiction: "Example",
+            state: "KY",
+            agency: "Example Police Department",
+            status: .publishedLive,
+            asOf: "2026-09-30",
+            sourceURL: "https://example.com/official-map",
+            sourceType: .agency,
+            agencyUpdated: "2026-03-09",
+            scopeNote: "Scope note."
+        )
+        XCTAssertEqual(
+            OfficialMapStatusCopy.chip(for: live).agencyUpdatedLine,
+            "Agency last updated 2026-03-09"
+        )
+
+        let previous = NSTimeZone.default
+        defer { NSTimeZone.default = previous }
+        for identifier in ["Pacific/Kiritimati", "Pacific/Pago_Pago", "America/Los_Angeles", "UTC"] {
+            let zone = TimeZone(identifier: identifier)!
+            NSTimeZone.default = zone as NSTimeZone
+            XCTAssertEqual(TimeZone.current.secondsFromGMT(), zone.secondsFromGMT(), identifier)
+            XCTAssertEqual(OfficialMapDateDisplay.render("2026-10-01").text, "Oct 1, 2026", identifier)
+            XCTAssertEqual(OfficialMapDateDisplay.render("2026-10-01").precision, .day, identifier)
+        }
     }
 
     func testBannedPhrasesStayOutOfUserFacingTextAndDomainStaysOutOfJSON() throws {

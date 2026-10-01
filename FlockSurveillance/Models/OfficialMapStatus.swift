@@ -128,7 +128,8 @@ enum OfficialMapStatusCopy {
     static let communityBody = "Map pins are volunteer-mapped OpenStreetMap data. They may include other agencies' and private cameras, and may be incomplete."
 
     static func incompletenessBanner(agencyCount: Int, datasetAsOf: String) -> String {
-        "Hand-checked list of \(agencyCount) agencies as of \(datasetAsOf). Most agencies aren't checked yet."
+        let shown = OfficialMapDateDisplay.render(datasetAsOf).text
+        return "Hand-checked list of \(agencyCount) agencies as of \(shown). Most agencies aren't checked yet."
     }
 
     static func chip(for record: OfficialMapRecord) -> OfficialMapChipPresentation {
@@ -156,18 +157,20 @@ enum OfficialMapStatusCopy {
             subline = "A court ordered disclosure\(onClause(record.eventDate)). We haven't seen the release yet."
         case .promised:
             if let promised = nonempty(record.promisedDate) {
-                title = "Promised by \(promised)"
-                subline = "\(name) says it will publish a map by \(promised). Nothing was live when we checked."
+                let shown = displayDate(promised)
+                title = "Promised by \(shown)"
+                subline = "\(name) says it will publish a map by \(shown). Nothing was live when we checked."
             } else {
                 title = "Promised"
                 subline = "\(name) says it will publish a map. Nothing was live when we checked."
             }
         case .promiseMissed:
             title = "Promised date passed"
+            let asOf = displayDate(record.asOf)
             if let promised = nonempty(record.promisedDate) {
-                subline = "\(name) said \(promised). As of \(record.asOf), we found no map."
+                subline = "\(name) said \(displayDate(promised)). As of \(asOf), we found no map."
             } else {
-                subline = "As of \(record.asOf), we found no map."
+                subline = "As of \(asOf), we found no map."
             }
         case .refused, .refusedUpheld:
             title = "Declined to publish"
@@ -178,7 +181,7 @@ enum OfficialMapStatusCopy {
             subline = line
         case .noneFound:
             title = "No official list found"
-            subline = "We looked on \(record.asOf) and found none."
+            subline = lookedLine(record.asOf)
         case .unknown:
             return unknownChip()
         }
@@ -190,7 +193,7 @@ enum OfficialMapStatusCopy {
             updatedLine = nil
         }
 
-        let sourceLine = "Source · checked \(record.asOf)"
+        let sourceLine = "Source · checked \(displayDate(record.asOf))"
         let sourceURL = httpsURL(record.sourceURL)
         return OfficialMapChipPresentation(
             title: title,
@@ -235,9 +238,31 @@ enum OfficialMapStatusCopy {
         return lines
     }
 
+    private static func displayDate(_ raw: String) -> String {
+        OfficialMapDateDisplay.render(raw).text
+    }
+
+    /// Full dates use "on Oct 1, 2026". Month precision uses "in Nov 2025".
+    /// Nil, empty, and the literal "nil" drop the clause. Anything else keeps "on" plus the raw text.
     private static func onClause(_ date: String?) -> String {
         guard let date = nonempty(date) else { return "" }
-        return " on \(date)"
+        let rendered = OfficialMapDateDisplay.render(date)
+        switch rendered.precision {
+        case .month:
+            return " in \(rendered.text)"
+        case .day, .raw:
+            return " on \(rendered.text)"
+        }
+    }
+
+    private static func lookedLine(_ asOf: String) -> String {
+        let rendered = OfficialMapDateDisplay.render(asOf)
+        switch rendered.precision {
+        case .month:
+            return "We looked in \(rendered.text) and found none."
+        case .day, .raw:
+            return "We looked on \(rendered.text) and found none."
+        }
     }
 
     private static func nonempty(_ value: String?) -> String? {
@@ -252,6 +277,68 @@ enum OfficialMapStatusCopy {
     private static func httpsURL(_ raw: String) -> URL? {
         guard let url = URL(string: raw), url.scheme?.lowercased() == "https" else { return nil }
         return url
+    }
+}
+
+struct OfficialMapRenderedDate: Equatable, Sendable {
+    enum Precision: Equatable, Sendable {
+        case day
+        case month
+        case raw
+    }
+
+    let text: String
+    let precision: Precision
+}
+
+/// User-facing calendar dates. JSON stays ISO. Parsed and formatted on a fixed
+/// Gregorian UTC calendar so the civil day does not follow `TimeZone.current`.
+enum OfficialMapDateDisplay {
+    static func render(_ raw: String) -> OfficialMapRenderedDate {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if isShape(trimmed, parts: [4, 2, 2]), let date = parse(trimmed, format: "yyyy-MM-dd") {
+            return OfficialMapRenderedDate(text: format(date, "MMM d, yyyy"), precision: .day)
+        }
+        if isShape(trimmed, parts: [4, 2]), let date = parse(trimmed, format: "yyyy-MM") {
+            return OfficialMapRenderedDate(text: format(date, "MMM yyyy"), precision: .month)
+        }
+        return OfficialMapRenderedDate(text: trimmed, precision: .raw)
+    }
+
+    private static let utc = TimeZone(secondsFromGMT: 0)!
+
+    private static let calendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = utc
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        return calendar
+    }()
+
+    private static func parse(_ raw: String, format: String) -> Date? {
+        let formatter = makeFormatter(format)
+        return formatter.date(from: raw)
+    }
+
+    private static func format(_ date: Date, _ format: String) -> String {
+        makeFormatter(format).string(from: date)
+    }
+
+    private static func makeFormatter(_ format: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = calendar
+        formatter.timeZone = utc
+        formatter.dateFormat = format
+        formatter.isLenient = false
+        return formatter
+    }
+
+    private static func isShape(_ value: String, parts expected: [Int]) -> Bool {
+        let pieces = value.split(separator: "-", omittingEmptySubsequences: false)
+        guard pieces.count == expected.count else { return false }
+        return zip(pieces, expected).allSatisfy { piece, count in
+            piece.count == count && piece.allSatisfy(\.isNumber)
+        }
     }
 }
 

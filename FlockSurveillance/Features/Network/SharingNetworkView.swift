@@ -929,6 +929,8 @@ private struct SharingPartnerSheet: View {
                         )
                     }
 
+                    OfficialMapStatusSurface(agencyName: partner.name, state: partner.state)
+
                     if let hub, let link = partner.link(for: hub.id) {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 8) {

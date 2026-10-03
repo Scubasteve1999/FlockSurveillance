@@ -16,6 +16,8 @@ struct SharingNetworkView: View {
     @State private var retentionDeltaStore = RetentionDeltaStore()
     @State private var selectedPortalAgency: AgencyPortalShareAgency?
     @State private var showRetentionSamples = false
+    @State private var officialMapStore = OfficialMapStatusStore()
+    @State private var showOfficialMaps = false
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
     @State private var selectedCountyGroup: SharingCountyGroup?
@@ -82,6 +84,7 @@ struct SharingNetworkView: View {
             await store.loadIfNeeded()
             await portalSharesStore.loadIfNeeded()
             await retentionDeltaStore.loadIfNeeded()
+            await officialMapStore.loadIfNeeded()
         }
         .onChange(of: selectedMarkerID) { _, markerID in
             handleMarkerSelection(markerID)
@@ -141,6 +144,11 @@ struct SharingNetworkView: View {
         }
         .sheet(isPresented: $showRetentionSamples) {
             RetentionDeltaSamplesList(store: retentionDeltaStore)
+                .presentationDetents([.large])
+                .presentationBackground(AppTheme.background)
+        }
+        .sheet(isPresented: $showOfficialMaps) {
+            OfficialCameraMapsList()
                 .presentationDetents([.large])
                 .presentationBackground(AppTheme.background)
         }
@@ -373,6 +381,7 @@ struct SharingNetworkView: View {
                 .fill(AppTheme.border)
                 .frame(height: 1)
                 .padding(.vertical, 2)
+            officialMapsRow
             midSouthSamplesRow
             retentionSamplesRow
         }
@@ -386,6 +395,52 @@ struct SharingNetworkView: View {
         )
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
+    }
+
+    private var officialMapsRow: some View {
+        Button {
+            showOfficialMaps = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(OfficialMapStatusCopy.listTitle)
+                        .font(AppTypography.rowTitle)
+                        .foregroundStyle(AppTheme.foreground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let dataset = officialMapStore.dataset {
+                        Text(
+                            OfficialMapStatusCopy.incompletenessBanner(
+                                agencyCount: dataset.records.count,
+                                datasetAsOf: dataset.datasetAsOf
+                            )
+                        )
+                        .font(AppTypography.rowSubtitle)
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(AppTypography.rowSubtitle)
+                    .foregroundStyle(AppTheme.accent)
+            }
+            .padding(.top, 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("official-camera-maps-entry")
+        .accessibilityLabel(officialMapsAccessibilityLabel)
+    }
+
+    private var officialMapsAccessibilityLabel: String {
+        if let dataset = officialMapStore.dataset {
+            let banner = OfficialMapStatusCopy.incompletenessBanner(
+                agencyCount: dataset.records.count,
+                datasetAsOf: dataset.datasetAsOf
+            )
+            return "\(OfficialMapStatusCopy.listTitle). \(banner)"
+        }
+        return OfficialMapStatusCopy.listTitle
     }
 
     private var midSouthSampleAgency: AgencyPortalShareAgency? {

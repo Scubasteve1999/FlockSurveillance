@@ -36,16 +36,34 @@ struct OfficialMapStatusSurface: View {
     }
 
     private func banner(_ dataset: OfficialMapDataset) -> some View {
-        Text(
-            OfficialMapStatusCopy.incompletenessBanner(
-                agencyCount: dataset.records.count,
-                datasetAsOf: dataset.datasetAsOf
+        VStack(alignment: .leading, spacing: 8) {
+            Text(
+                OfficialMapStatusCopy.incompletenessBanner(
+                    agencyCount: dataset.records.count,
+                    datasetAsOf: dataset.datasetAsOf
+                )
             )
-        )
-        .font(AppTypography.footer)
-        .foregroundStyle(AppTheme.mutedForeground)
-        .fixedSize(horizontal: false, vertical: true)
-        .accessibilityIdentifier("official-map-status-banner")
+            .font(AppTypography.footer)
+            .foregroundStyle(AppTheme.mutedForeground)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("official-map-status-banner")
+
+            NavigationLink {
+                OfficialCameraMapsListContent()
+            } label: {
+                HStack(spacing: 6) {
+                    Text(OfficialMapStatusCopy.seeAllTitle(agencyCount: dataset.records.count))
+                        .font(AppTypography.button)
+                        .foregroundStyle(AppTheme.accent)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Image(systemName: "chevron.right")
+                        .font(AppTypography.rowSubtitle)
+                        .foregroundStyle(AppTheme.accent)
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("official-map-status-see-all")
+        }
     }
 
     private var unknownLine: some View {
@@ -57,6 +75,31 @@ struct OfficialMapStatusSurface: View {
     }
 
     private func chipCard(_ presentation: OfficialMapChipPresentation) -> some View {
+        OfficialMapStatusChipCard(presentation: presentation)
+    }
+
+    private var communityCard: some View {
+        SectionCard {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(OfficialMapStatusCopy.communityTitle)
+                    .font(AppTypography.rowTitle)
+                    .foregroundStyle(AppTheme.foreground)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(OfficialMapStatusCopy.communityBody)
+                    .font(AppTypography.footer)
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .accessibilityIdentifier("official-map-status-community")
+    }
+}
+
+/// Scope note, dates, and source link for one official-map record.
+struct OfficialMapStatusChipCard: View {
+    let presentation: OfficialMapChipPresentation
+
+    var body: some View {
         SectionCard {
             VStack(alignment: .leading, spacing: 8) {
                 Text(presentation.title)
@@ -102,21 +145,5 @@ struct OfficialMapStatusSurface: View {
             }
         }
         .accessibilityIdentifier("official-map-status-chip")
-    }
-
-    private var communityCard: some View {
-        SectionCard {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(OfficialMapStatusCopy.communityTitle)
-                    .font(AppTypography.rowTitle)
-                    .foregroundStyle(AppTheme.foreground)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(OfficialMapStatusCopy.communityBody)
-                    .font(AppTypography.footer)
-                    .foregroundStyle(AppTheme.mutedForeground)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .accessibilityIdentifier("official-map-status-community")
     }
 }

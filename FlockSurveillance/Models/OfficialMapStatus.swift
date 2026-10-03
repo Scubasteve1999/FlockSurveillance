@@ -2,7 +2,7 @@ import Foundation
 
 /// Hand-checked answer to whether an agency publishes its own ALPR locations.
 /// Bundled JSON only. No network. An agency with no row is `unknown`.
-enum OfficialMapStatus: String, Codable, Sendable, CaseIterable {
+enum OfficialMapStatus: String, Codable, Sendable, Equatable, CaseIterable {
     case publishedLive = "published_live"
     case publishedStatic = "published_static"
     case publishedProgramEnded = "published_program_ended"
@@ -123,6 +123,7 @@ struct OfficialMapChipPresentation: Equatable, Sendable {
 
 enum OfficialMapStatusCopy {
     static let unknownLine = "Official map status: not checked yet"
+    static let listTitle = "Official camera maps"
     static let footnote = "Official lists usually cover only that agency's cameras. Private and neighboring-agency cameras can feed the same network."
     static let communityTitle = "Community-mapped (not official)"
     static let communityBody = "Map pins are volunteer-mapped OpenStreetMap data. They may include other agencies' and private cameras, and may be incomplete."
@@ -130,6 +131,10 @@ enum OfficialMapStatusCopy {
     static func incompletenessBanner(agencyCount: Int, datasetAsOf: String) -> String {
         let shown = OfficialMapDateDisplay.render(datasetAsOf).text
         return "Hand-checked list of \(agencyCount) agencies as of \(shown). Most agencies aren't checked yet."
+    }
+
+    static func seeAllTitle(agencyCount: Int) -> String {
+        "See all \(agencyCount)"
     }
 
     static func chip(for record: OfficialMapRecord) -> OfficialMapChipPresentation {
@@ -218,11 +223,13 @@ enum OfficialMapStatusCopy {
         )
     }
 
-    /// Every string a person can read from the bundled rows, banner, footnote, and community line.
-    /// Source URLs are omitted on purpose.
+    /// Every string a person can read from the bundled rows, banner, list title,
+    /// see-all link, footnote, and community line. Source URLs are omitted on purpose.
     static func userFacingStrings(dataset: OfficialMapDataset) -> [String] {
         var lines = [
             incompletenessBanner(agencyCount: dataset.records.count, datasetAsOf: dataset.datasetAsOf),
+            seeAllTitle(agencyCount: dataset.records.count),
+            listTitle,
             footnote,
             communityTitle,
             communityBody,

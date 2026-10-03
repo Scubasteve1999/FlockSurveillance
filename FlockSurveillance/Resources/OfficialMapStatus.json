@@ -6,12 +6,13 @@
       "jurisdiction": "Alexandria",
       "state": "VA",
       "agency": "Alexandria Police Department",
-      "status": "promised",
-      "asOf": "2026-09-30",
+      "status": "published_static",
+      "asOf": "2026-10-01",
       "sourceURL": "https://alexandriava.gov/police-department/license-plate-reader-dashboard-and-response-to-city-council-questions-on-flock",
       "sourceType": "agency",
-      "promisedDate": "2026-10-01",
-      "scopeNote": "APD reports 61 fixed ALPRs. City says a map will be published by Oct 1, 2026."
+      "eventDate": "2026-10-01",
+      "agencyUpdated": "Page updated Oct 1, 2026",
+      "scopeNote": "Map of APD's 61 fixed ALPRs, posted as an image and PDF."
     },
     {
       "id": "san-diego-ca",

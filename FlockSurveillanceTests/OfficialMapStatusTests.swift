@@ -20,7 +20,11 @@ final class OfficialMapStatusTests: XCTestCase {
         for record in dataset.records {
             XCTAssertFalse(record.asOf.isEmpty)
             XCTAssertTrue(matches(day, record.asOf), record.id)
-            XCTAssertEqual(record.asOf, "2026-09-30", record.id)
+            if record.id == "alexandria-va" {
+                XCTAssertEqual(record.asOf, "2026-10-01", record.id)
+            } else {
+                XCTAssertEqual(record.asOf, "2026-09-30", record.id)
+            }
             XCTAssertTrue(record.sourceURL.hasPrefix("https://"), record.id)
             XCTAssertNotNil(URL(string: record.sourceURL), record.id)
             XCTAssertFalse(record.scopeNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, record.id)
@@ -54,9 +58,11 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertEqual(alexandria.jurisdiction, "Alexandria")
         XCTAssertEqual(alexandria.state, "VA")
         XCTAssertEqual(alexandria.agency, "Alexandria Police Department")
-        XCTAssertEqual(alexandria.status, .promised)
-        XCTAssertEqual(alexandria.promisedDate, "2026-10-01")
-        XCTAssertNil(alexandria.eventDate)
+        XCTAssertEqual(alexandria.status, .publishedStatic)
+        XCTAssertNil(alexandria.promisedDate)
+        XCTAssertEqual(alexandria.asOf, "2026-10-01")
+        XCTAssertEqual(alexandria.eventDate, "2026-10-01")
+        XCTAssertEqual(alexandria.agencyUpdated, "Page updated Oct 1, 2026")
         XCTAssertEqual(alexandria.sourceType, .agency)
         XCTAssertEqual(
             alexandria.sourceURL,
@@ -64,7 +70,7 @@ final class OfficialMapStatusTests: XCTestCase {
         )
         XCTAssertEqual(
             alexandria.scopeNote,
-            "APD reports 61 fixed ALPRs. City says a map will be published by Oct 1, 2026."
+            "Map of APD's 61 fixed ALPRs, posted as an image and PDF."
         )
 
         let sanDiego = try XCTUnwrap(byID["san-diego-ca"])
@@ -193,7 +199,14 @@ final class OfficialMapStatusTests: XCTestCase {
 
     func testPublishedRowsAreAgencySourcesAndPromisesCarryDates() throws {
         let dataset = try loadDataset()
-        for record in dataset.records {
+        // The shipped seed no longer has a promised row. Keep the date invariant on a fixture.
+        let promisedFixture = sample(
+            status: .promised,
+            eventDate: nil,
+            promisedDate: "2026-11-01"
+        )
+        let checked = dataset.records + [promisedFixture]
+        for record in checked {
             switch record.status {
             case .publishedLive, .publishedStatic:
                 XCTAssertEqual(record.sourceType, .agency, record.id)
@@ -210,9 +223,9 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertEqual(dataset.records.filter { $0.status == .publishedLive }.map(\.id), ["san-diego-ca"])
         XCTAssertEqual(
             dataset.records.filter { $0.status == .publishedStatic }.map(\.id),
-            ["lexington-ky", "berkeley-ca"]
+            ["alexandria-va", "lexington-ky", "berkeley-ca"]
         )
-        XCTAssertEqual(dataset.records.filter { $0.status == .promised }.map(\.id), ["alexandria-va"])
+        XCTAssertEqual(dataset.records.filter { $0.status == .promised }.map(\.id), [])
         XCTAssertEqual(
             dataset.records.filter { $0.status == .refusedUpheld }.map(\.id),
             ["louisville-ky", "bowling-green-ky", "elizabethtown-ky"]
@@ -282,14 +295,14 @@ final class OfficialMapStatusTests: XCTestCase {
         let byID = Dictionary(uniqueKeysWithValues: dataset.records.map { ($0.id, $0) })
 
         let alexandria = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["alexandria-va"]))
-        XCTAssertEqual(alexandria.title, "Promised by Oct 1, 2026")
+        XCTAssertEqual(alexandria.title, "Official list (static)")
         XCTAssertEqual(
             alexandria.subline,
-            "Alexandria Police Department says it will publish a map by Oct 1, 2026. Nothing was live when we checked."
+            "Alexandria Police Department posted a list or map. It may not show later changes."
         )
-        XCTAssertEqual(alexandria.sourceLine, "Source · checked Sep 30, 2026")
+        XCTAssertEqual(alexandria.sourceLine, "Source · checked Oct 1, 2026")
         XCTAssertFalse(alexandria.renderedLines.joined(separator: "\n").contains("2026-10-01"))
-        XCTAssertEqual(try XCTUnwrap(byID["alexandria-va"]).promisedDate, "2026-10-01")
+        XCTAssertNil(try XCTUnwrap(byID["alexandria-va"]).promisedDate)
         XCTAssertNil(alexandria.agencyUpdatedLine)
 
         let sanDiego = OfficialMapStatusCopy.chip(for: try XCTUnwrap(byID["san-diego-ca"]))

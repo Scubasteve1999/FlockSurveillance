@@ -441,8 +441,10 @@ final class OfficialMapStatusTests: XCTestCase {
 
         let product = try [
             "FlockSurveillance/Models/OfficialMapStatus.swift",
+            "FlockSurveillance/Models/OfficialMapStatusList.swift",
             "FlockSurveillance/Services/OfficialMapStatusStore.swift",
             "FlockSurveillance/Features/Network/OfficialMapStatusChip.swift",
+            "FlockSurveillance/Features/Network/OfficialCameraMapsList.swift",
             "FlockSurveillance/Features/Network/SharingNetworkView.swift"
         ].map { try readProductSource($0) }.joined(separator: "\n")
         XCTAssertFalse(product.localizedCaseInsensitiveContains("flocksurveillance.org"))
@@ -572,6 +574,164 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertFalse(OfficialMapStatusCopy.communityBody.contains("0"))
         XCTAssertFalse(OfficialMapStatusCopy.communityBody.contains("1"))
         XCTAssertFalse(OfficialMapStatusCopy.footnote.contains("%"))
+    }
+
+    func testListModelReturnsEveryRecordInStatusOrder() throws {
+        let dataset = try loadDataset()
+        let model = OfficialMapStatusListModel(dataset: dataset)
+        let reversed = OfficialMapStatusListModel(
+            dataset: OfficialMapDataset(
+                datasetAsOf: dataset.datasetAsOf,
+                records: Array(dataset.records.reversed())
+            )
+        )
+
+        XCTAssertEqual(model.records.count, dataset.records.count)
+        XCTAssertEqual(Set(model.records.map(\.id)), Set(dataset.records.map(\.id)))
+        XCTAssertEqual(model.records.map(\.id), reversed.records.map(\.id))
+        XCTAssertEqual(model, reversed)
+
+        XCTAssertEqual(model.groups.map(\.status), [
+            .publishedLive,
+            .publishedStatic,
+            .publishedProgramEnded,
+            .releasedOnRequest,
+            .courtDisclosed,
+            .courtOrderedPending,
+            .refused,
+            .refusedUpheld,
+            .noneFound
+        ])
+
+        let publishedStatic = try XCTUnwrap(model.groups.first { $0.status == .publishedStatic })
+        XCTAssertEqual(
+            publishedStatic.records.map(\.id),
+            ["berkeley-ca", "lexington-ky", "alexandria-va"]
+        )
+        XCTAssertEqual(publishedStatic.title, OfficialMapStatusCopy.chip(for: publishedStatic.records[0]).title)
+        XCTAssertEqual(publishedStatic.title, "Official list (static)")
+
+        XCTAssertEqual(model.records.map(\.id), [
+            "san-diego-ca",
+            "berkeley-ca",
+            "lexington-ky",
+            "alexandria-va",
+            "oak-park-il",
+            "eugene-or",
+            "berea-ky",
+            "versailles-ky",
+            "norfolk-va",
+            "massachusetts-state-police",
+            "frankfort-ky",
+            "nicholasville-ky",
+            "paris-ky",
+            "richmond-ky",
+            "genesee-county-mi",
+            "bowling-green-ky",
+            "elizabethtown-ky",
+            "louisville-ky",
+            "boulder-co"
+        ])
+
+        for group in model.groups {
+            for pair in zip(group.records, group.records.dropFirst()) {
+                XCTAssertFalse(OfficialMapStatusListModel.isBefore(pair.1, pair.0), pair.0.id)
+            }
+        }
+
+        for record in model.records {
+            XCTAssertEqual(
+                OfficialMapStatusListModel.rowTitle(for: record),
+                OfficialMapStatusCopy.chip(for: record).title,
+                record.id
+            )
+        }
+
+        XCTAssertEqual(
+            model.banner,
+            OfficialMapStatusCopy.incompletenessBanner(
+                agencyCount: dataset.records.count,
+                datasetAsOf: dataset.datasetAsOf
+            )
+        )
+        XCTAssertTrue(model.banner.contains("\(dataset.records.count)"))
+
+        let one = OfficialMapDataset(datasetAsOf: "2020-01-01", records: [try XCTUnwrap(dataset.records.first)])
+        let oneModel = OfficialMapStatusListModel(dataset: one)
+        XCTAssertEqual(oneModel.records.count, 1)
+        XCTAssertEqual(oneModel.records.map(\.id), [one.records[0].id])
+        XCTAssertEqual(
+            oneModel.banner,
+            OfficialMapStatusCopy.incompletenessBanner(agencyCount: one.records.count, datasetAsOf: one.datasetAsOf)
+        )
+        XCTAssertEqual(OfficialMapStatusCopy.seeAllTitle(agencyCount: one.records.count), "See all 1")
+        XCTAssertEqual(
+            OfficialMapStatusCopy.seeAllTitle(agencyCount: dataset.records.count),
+            "See all \(dataset.records.count)"
+        )
+    }
+
+    func testStatusGroupOmitsHeaderWhenChipTitlesDiffer() {
+        let dated = OfficialMapRecord(
+            id: "dated",
+            jurisdiction: "Alpha",
+            state: "KY",
+            agency: "Alpha Police Department",
+            status: .promised,
+            asOf: "2026-09-30",
+            sourceURL: "https://example.com/official-map",
+            sourceType: .agency,
+            promisedDate: "2026-11-01",
+            scopeNote: "Scope note."
+        )
+        let open = OfficialMapRecord(
+            id: "open",
+            jurisdiction: "Beta",
+            state: "KY",
+            agency: "Beta Police Department",
+            status: .promised,
+            asOf: "2026-09-30",
+            sourceURL: "https://example.com/official-map",
+            sourceType: .agency,
+            scopeNote: "Scope note."
+        )
+        let groups = OfficialMapStatusListModel.groups(from: [open, dated])
+        XCTAssertEqual(groups.map(\.status), [.promised])
+        XCTAssertNil(groups[0].title)
+        XCTAssertEqual(groups[0].records.map(\.id), ["dated", "open"])
+        XCTAssertNotEqual(
+            OfficialMapStatusListModel.rowTitle(for: groups[0].records[0]),
+            OfficialMapStatusListModel.rowTitle(for: groups[0].records[1])
+        )
+    }
+
+    func testOfficialMapsListIsReachableWithoutCallingAnAgencyAPartner() throws {
+        let list = try readProductSource("FlockSurveillance/Features/Network/OfficialCameraMapsList.swift")
+        XCTAssertTrue(list.contains("Text(model.banner)"))
+        XCTAssertTrue(list.contains("OfficialMapStatusListModel.rowTitle"))
+        XCTAssertTrue(list.contains("OfficialMapStatusChipCard"))
+        XCTAssertTrue(list.contains("preferredColorScheme(.dark)"))
+        XCTAssertTrue(list.contains("AppTypography"))
+        XCTAssertFalse(list.contains("URLSession"))
+        XCTAssertFalse(list.contains(".font(.system(size:"))
+        XCTAssertFalse(list.contains("19"))
+        XCTAssertFalse(list.localizedCaseInsensitiveContains("flocksurveillance.org"))
+        XCTAssertFalse(list.localizedCaseInsensitiveContains("partner"))
+        XCTAssertFalse(list.localizedCaseInsensitiveContains("detected"))
+
+        let chip = try readProductSource("FlockSurveillance/Features/Network/OfficialMapStatusChip.swift")
+        XCTAssertTrue(chip.contains("OfficialMapStatusCopy.seeAllTitle(agencyCount: dataset.records.count)"))
+        XCTAssertTrue(chip.contains("OfficialCameraMapsListContent()"))
+        XCTAssertFalse(chip.contains("See all 19"))
+
+        let sharing = try readProductSource("FlockSurveillance/Features/Network/SharingNetworkView.swift")
+        XCTAssertTrue(sharing.contains("OfficialCameraMapsList()"))
+        XCTAssertTrue(sharing.contains("officialMapsRow"))
+        XCTAssertTrue(sharing.contains("OfficialMapStatusCopy.listTitle"))
+        XCTAssertTrue(sharing.contains("OfficialMapStatusCopy.incompletenessBanner"))
+        XCTAssertTrue(sharing.contains("agencyCount: dataset.records.count"))
+        XCTAssertFalse(sharing.contains("OfficialMapStatus("))
+        XCTAssertFalse(sharing.contains("See all 19"))
     }
 
     private func loadDataset() throws -> OfficialMapDataset {

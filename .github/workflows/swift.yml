@@ -19,10 +19,6 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: TEMP check committed pbxproj matches CI xcodegen
-        continue-on-error: true
-        run: git diff --stat --exit-code -- FlockSurveillance.xcodeproj && echo "PBXPROJ_MATCHES_CI_XCODEGEN" || { git diff -- FlockSurveillance.xcodeproj; echo "PBXPROJ_DRIFT"; exit 1; }
-
       - name: Build and test
         run: |
           # Pick whatever iPhone simulator the runner image ships, so the job

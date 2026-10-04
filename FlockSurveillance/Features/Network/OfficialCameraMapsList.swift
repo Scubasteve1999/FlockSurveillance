@@ -47,6 +47,7 @@ struct OfficialCameraMapsListContent: View {
         .task {
             await store.loadIfNeeded()
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("official-camera-maps-list")
     }
 
@@ -103,7 +104,7 @@ struct OfficialCameraMapsListContent: View {
 
     private func row(_ record: OfficialMapRecord) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(record.agency)
+            Text(OfficialMapStatusListModel.agencyTitle(for: record))
                 .font(AppTypography.rowTitle)
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.leading)
@@ -124,7 +125,7 @@ struct OfficialCameraMapsListContent: View {
 
     private func accessibilityLabel(for record: OfficialMapRecord) -> String {
         let title = OfficialMapStatusListModel.rowTitle(for: record)
-        return "\(record.agency), \(OfficialMapStatusListModel.placeLine(for: record)), \(title)"
+        return "\(OfficialMapStatusListModel.agencyTitle(for: record)), \(OfficialMapStatusListModel.placeLine(for: record)), \(title)"
     }
 }
 
@@ -136,7 +137,7 @@ struct OfficialMapRecordDetail: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(record.agency)
+                    Text(OfficialMapStatusListModel.agencyTitle(for: record))
                         .font(AppTypography.pageTitle)
                         .foregroundStyle(AppTheme.foreground)
                         .fixedSize(horizontal: false, vertical: true)
@@ -146,7 +147,7 @@ struct OfficialMapRecordDetail: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("\(record.agency), \(OfficialMapStatusListModel.placeLine(for: record))")
+                .accessibilityLabel("\(OfficialMapStatusListModel.agencyTitle(for: record)), \(OfficialMapStatusListModel.placeLine(for: record))")
 
                 OfficialMapStatusChipCard(presentation: OfficialMapStatusCopy.chip(for: record))
 
@@ -162,6 +163,7 @@ struct OfficialMapRecordDetail: View {
         .navigationTitle(OfficialMapStatusCopy.listTitle)
         .navigationBarTitleDisplayMode(.inline)
         .preferredColorScheme(.dark)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("official-camera-map-detail")
     }
 }

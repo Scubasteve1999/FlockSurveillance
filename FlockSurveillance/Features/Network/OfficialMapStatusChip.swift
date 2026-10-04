@@ -32,6 +32,7 @@ struct OfficialMapStatusSurface: View {
         .task {
             await store.loadIfNeeded()
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("official-map-status")
     }
 
@@ -144,6 +145,7 @@ struct OfficialMapStatusChipCard: View {
                 }
             }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("official-map-status-chip")
     }
 }

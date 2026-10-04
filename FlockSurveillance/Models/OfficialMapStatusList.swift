@@ -9,8 +9,10 @@ struct OfficialMapStatusGroup: Equatable, Sendable, Identifiable {
     var id: String { status.rawValue }
 
     /// Chip title when every row shares one. Nil when a date changes the title,
-    /// so the section header does not invent wording.
+    /// so the section header does not invent wording. `refused_upheld` gets its own
+    /// header so it doesn't repeat the `refused` header.
     var title: String? {
+        if status == .refusedUpheld { return OfficialMapStatusCopy.refusedUpheldGroupTitle }
         let titles = Set(records.map { OfficialMapStatusCopy.chip(for: $0).title })
         guard titles.count == 1 else { return nil }
         return titles.first
@@ -38,8 +40,13 @@ struct OfficialMapStatusListModel: Equatable, Sendable {
         OfficialMapStatusCopy.chip(for: record).title
     }
 
+    /// Row and detail title. Never a bare role word like "police" or "county".
+    static func agencyTitle(for record: OfficialMapRecord) -> String {
+        record.displayName
+    }
+
     static func placeLine(for record: OfficialMapRecord) -> String {
-        "\(record.jurisdiction), \(record.state)"
+        record.placeLine
     }
 
     static func groups(from records: [OfficialMapRecord]) -> [OfficialMapStatusGroup] {

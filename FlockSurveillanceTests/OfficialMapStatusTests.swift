@@ -411,8 +411,11 @@ final class OfficialMapStatusTests: XCTestCase {
         defer { NSTimeZone.default = previous }
         for identifier in ["Pacific/Kiritimati", "Pacific/Pago_Pago", "America/Los_Angeles", "UTC"] {
             let zone = TimeZone(identifier: identifier)!
-            NSTimeZone.default = zone as NSTimeZone
-            XCTAssertEqual(TimeZone.current.secondsFromGMT(), zone.secondsFromGMT(), identifier)
+            NSTimeZone.default = zone
+            // Xcode 27's Foundation no longer routes TimeZone.current through NSTimeZone.default,
+            // so check the default zone itself and a formatter that inherits it.
+            XCTAssertEqual(NSTimeZone.default.identifier, zone.identifier, identifier)
+            XCTAssertEqual(DateFormatter().timeZone.identifier, zone.identifier, identifier)
             XCTAssertEqual(OfficialMapDateDisplay.render("2026-10-01").text, "Oct 1, 2026", identifier)
             XCTAssertEqual(OfficialMapDateDisplay.render("2026-10-01").precision, .day, identifier)
         }
@@ -732,6 +735,124 @@ final class OfficialMapStatusTests: XCTestCase {
         XCTAssertTrue(sharing.contains("agencyCount: dataset.records.count"))
         XCTAssertFalse(sharing.contains("OfficialMapStatus("))
         XCTAssertFalse(sharing.contains("See all 19"))
+    }
+
+    func testListTitlesNameTheAgencyNotABareRole() throws {
+        let dataset = try loadDataset()
+        let model = OfficialMapStatusListModel(dataset: dataset)
+        let generic: Set<String> = ["police", "county", "sheriff", "pd", "so", "department"]
+        for record in model.records {
+            let title = OfficialMapStatusListModel.agencyTitle(for: record)
+            XCTAssertFalse(generic.contains(title.lowercased()), record.id)
+            XCTAssertTrue(
+                title.localizedCaseInsensitiveContains(record.jurisdiction)
+                    || title == record.agency.trimmingCharacters(in: .whitespacesAndNewlines),
+                "\(record.id): \(title)"
+            )
+            XCTAssertFalse(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, record.id)
+        }
+
+        let byID = Dictionary(uniqueKeysWithValues: dataset.records.map { ($0.id, $0) })
+        let expected: [String: String] = [
+            "berea-ky": "Berea Police",
+            "versailles-ky": "Versailles Police",
+            "frankfort-ky": "Frankfort Police",
+            "nicholasville-ky": "Nicholasville Police",
+            "paris-ky": "Paris Police",
+            "richmond-ky": "Richmond Police",
+            "bowling-green-ky": "Bowling Green Police",
+            "elizabethtown-ky": "Elizabethtown Police",
+            "genesee-county-mi": "Genesee County",
+            "louisville-ky": "Louisville Metro Police Department",
+            "lexington-ky": "Lexington Police Department (LFUCG)",
+            "massachusetts-state-police": "Massachusetts State Police"
+        ]
+        for (id, title) in expected {
+            XCTAssertEqual(OfficialMapStatusListModel.agencyTitle(for: try XCTUnwrap(byID[id])), title, id)
+        }
+
+        // Partner-sheet matching still reads the stored role, not the display title.
+        XCTAssertEqual(try XCTUnwrap(byID["berea-ky"]).agency, "police")
+        XCTAssertEqual(try XCTUnwrap(byID["genesee-county-mi"]).agency, "county")
+        XCTAssertEqual(dataset.record(matchingAgencyName: "Berea KY PD", state: "KY")?.id, "berea-ky")
+
+        let sheriff = OfficialMapRecord(
+            id: "sample-sheriff",
+            jurisdiction: "Example",
+            state: "KY",
+            agency: "sheriff",
+            status: .refused,
+            asOf: "2026-09-30",
+            sourceURL: "https://example.com/official-map",
+            sourceType: .news,
+            scopeNote: "Scope note."
+        )
+        XCTAssertEqual(sheriff.displayName, "Example Sheriff")
+
+        let list = try readProductSource("FlockSurveillance/Features/Network/OfficialCameraMapsList.swift")
+        XCTAssertFalse(list.contains("Text(record.agency)"))
+        XCTAssertTrue(list.contains("OfficialMapStatusListModel.agencyTitle(for: record)"))
+    }
+
+    func testStatusGroupHeadersAreUnique() throws {
+        let dataset = try loadDataset()
+        let model = OfficialMapStatusListModel(dataset: dataset)
+        let headers = model.groups.compactMap(\.title)
+        XCTAssertEqual(headers.count, Set(headers).count, headers.joined(separator: " | "))
+
+        let refused = try XCTUnwrap(model.groups.first { $0.status == .refused })
+        let upheld = try XCTUnwrap(model.groups.first { $0.status == .refusedUpheld })
+        XCTAssertEqual(refused.title, "Declined to publish")
+        XCTAssertEqual(upheld.title, "Declined, upheld on appeal")
+        XCTAssertNotEqual(refused.title, upheld.title)
+        XCTAssertTrue(
+            OfficialMapStatusCopy.userFacingStrings(dataset: dataset).contains(OfficialMapStatusCopy.refusedUpheldGroupTitle)
+        )
+    }
+
+    func testStatewideRecordPlaceLineDoesNotRepeatTheState() throws {
+        let dataset = try loadDataset()
+        let byID = Dictionary(uniqueKeysWithValues: dataset.records.map { ($0.id, $0) })
+        let massachusetts = try XCTUnwrap(byID["massachusetts-state-police"])
+        XCTAssertTrue(massachusetts.isStatewide)
+        XCTAssertEqual(OfficialMapStatusListModel.placeLine(for: massachusetts), "Massachusetts")
+
+        XCTAssertEqual(OfficialMapStatusListModel.placeLine(for: try XCTUnwrap(byID["berea-ky"])), "Berea, KY")
+        XCTAssertEqual(
+            OfficialMapStatusListModel.placeLine(for: try XCTUnwrap(byID["genesee-county-mi"])),
+            "Genesee County, MI"
+        )
+        XCTAssertFalse(try XCTUnwrap(byID["alexandria-va"]).isStatewide)
+
+        for record in dataset.records {
+            let line = OfficialMapStatusListModel.placeLine(for: record)
+            XCTAssertNotEqual(line, "\(record.jurisdiction), \(record.jurisdiction)", record.id)
+            if record.isStatewide {
+                XCTAssertFalse(line.contains(","), record.id)
+            } else {
+                XCTAssertEqual(line, "\(record.jurisdiction), \(record.state)", record.id)
+            }
+        }
+    }
+
+    func testOuterAccessibilityIdentifiersKeepInnerIdentifiersReachable() throws {
+        let chip = try readProductSource("FlockSurveillance/Features/Network/OfficialMapStatusChip.swift")
+        let list = try readProductSource("FlockSurveillance/Features/Network/OfficialCameraMapsList.swift")
+        let containers: [(String, String)] = [
+            (chip, "official-map-status"),
+            (chip, "official-map-status-chip"),
+            (list, "official-camera-maps-list"),
+            (list, "official-camera-map-detail")
+        ]
+        for (source, id) in containers {
+            XCTAssertTrue(
+                source.contains(".accessibilityElement(children: .contain)\n        .accessibilityIdentifier(\"\(id)\")"),
+                id
+            )
+        }
+        for id in ["official-map-status-see-all", "official-map-status-source", "official-map-status-title"] {
+            XCTAssertTrue(chip.contains("\"\(id)\""), id)
+        }
     }
 
     private func loadDataset() throws -> OfficialMapDataset {

@@ -99,6 +99,36 @@ struct OfficialMapRecord: Codable, Sendable, Equatable, Identifiable, Hashable {
         if place.lowercased().hasSuffix(agencyName.lowercased()) { return place }
         return "\(place) \(agencyName)"
     }
+
+    /// Name used as a row or page title. A role-only agency ("police", "county")
+    /// becomes "<Jurisdiction> Police" or keeps a jurisdiction that already ends in the role.
+    var displayName: String {
+        let agencyName = agency.trimmingCharacters(in: .whitespacesAndNewlines)
+        let place = jurisdiction.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard Self.genericAgencyNames.contains(agencyName.lowercased()) else { return agencyName }
+        if place.isEmpty { return agencyName.capitalized }
+        if place.lowercased().hasSuffix(agencyName.lowercased()) { return place }
+        return "\(place) \(agencyName.capitalized)"
+    }
+
+    /// Jurisdiction and state for subtitles. A statewide record ("Massachusetts", "MA")
+    /// shows the state name once instead of "Massachusetts, MA".
+    var placeLine: String {
+        let place = jurisdiction.trimmingCharacters(in: .whitespacesAndNewlines)
+        let stateCode = state.trimmingCharacters(in: .whitespacesAndNewlines)
+        if place.isEmpty { return stateCode }
+        if isStatewide { return place }
+        return "\(place), \(stateCode)"
+    }
+
+    /// True when the jurisdiction is the state itself (full name or postal code).
+    var isStatewide: Bool {
+        let place = jurisdiction.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !place.isEmpty else { return false }
+        return OfficialMapMatching.normalizeState(place) == OfficialMapMatching.normalizeState(state)
+    }
+
+    private static let genericAgencyNames: Set<String> = ["police", "county", "sheriff"]
 }
 
 struct OfficialMapChipPresentation: Equatable, Sendable {
@@ -124,6 +154,8 @@ struct OfficialMapChipPresentation: Equatable, Sendable {
 enum OfficialMapStatusCopy {
     static let unknownLine = "Official map status: not checked yet"
     static let listTitle = "Official camera maps"
+    /// List section header for `refused_upheld`, so it reads differently from `refused`.
+    static let refusedUpheldGroupTitle = "Declined, upheld on appeal"
     static let footnote = "Official lists usually cover only that agency's cameras. Private and neighboring-agency cameras can feed the same network."
     static let communityTitle = "Community-mapped (not official)"
     static let communityBody = "Map pins are volunteer-mapped OpenStreetMap data. They may include other agencies' and private cameras, and may be incomplete."
@@ -230,12 +262,15 @@ enum OfficialMapStatusCopy {
             incompletenessBanner(agencyCount: dataset.records.count, datasetAsOf: dataset.datasetAsOf),
             seeAllTitle(agencyCount: dataset.records.count),
             listTitle,
+            refusedUpheldGroupTitle,
             footnote,
             communityTitle,
             communityBody,
             unknownLine
         ]
         for record in dataset.records {
+            lines.append(record.displayName)
+            lines.append(record.placeLine)
             lines.append(contentsOf: chip(for: record).renderedLines)
             if let updated = nonempty(record.agencyUpdated) {
                 lines.append(updated)

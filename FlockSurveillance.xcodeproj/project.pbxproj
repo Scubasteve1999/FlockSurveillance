@@ -67,6 +67,7 @@
 		7D4BE1FC08C7CAE6A8FBEBA3 /* RetentionDeltaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195BAB2763D3AE283506CA9D /* RetentionDeltaModels.swift */; };
 		7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637361494637A5B0C42496C5 /* OverpassParserTests.swift */; };
 		7E6AF7448B723066C4DA7C45 /* FlockIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */; };
+		7F0A8D4B991A5D4D312353F6 /* InfoPlistKeysTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */; };
 		7FD8B1ABCDD2F8C41F72B3A2 /* OverwatchAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = D665607AAF78390D21697570 /* OverwatchAudio.swift */; };
 		7FE26DB3C13EA28F603CE839 /* OfficialMapStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC36D20580EB086E05378BAB /* OfficialMapStatus.swift */; };
 		81253B267E41D771BD89733A /* WatchedZoneCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25565AEE4313CE68A62C5C8B /* WatchedZoneCopy.swift */; };
@@ -262,6 +263,7 @@
 		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
 		CECA89BDF64C04D62B34E8B8 /* OfficialMapStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatusTests.swift; sourceTree = "<group>"; };
+		D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPlistKeysTests.swift; sourceTree = "<group>"; };
 		D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStoreTests.swift; sourceTree = "<group>"; };
 		D665607AAF78390D21697570 /* OverwatchAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchAudio.swift; sourceTree = "<group>"; };
 		D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeView.swift; sourceTree = "<group>"; };
@@ -330,6 +332,7 @@
 				BAEE58D61678DEC0AEF52530 /* DriveSessionTests.swift */,
 				59FB5F639A2FCB641BFE56CD /* DynamicTypeChromeTests.swift */,
 				A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */,
+				D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */,
 				E987F4C7BA6BB712F3BB5098 /* MapHonestyCopyTests.swift */,
 				72CF362BF614A477E4A6985D /* MidSouthHonestyCopyTests.swift */,
 				CECA89BDF64C04D62B34E8B8 /* OfficialMapStatusTests.swift */,
@@ -807,6 +810,7 @@
 				3859C79C7225B4174E6D7B2C /* DriveSessionTests.swift in Sources */,
 				CE15CE6652A326E78FF58277 /* DynamicTypeChromeTests.swift in Sources */,
 				90ECB5ACE131C0A2F16C1B0F /* GeoHelpersTests.swift in Sources */,
+				7F0A8D4B991A5D4D312353F6 /* InfoPlistKeysTests.swift in Sources */,
 				44AACB2B42B10887A56A72B8 /* MapHonestyCopyTests.swift in Sources */,
 				CB8F7B0C75B26BA0C2199148 /* MidSouthHonestyCopyTests.swift in Sources */,
 				A03E0CD95CBAA892531408EC /* OfficialMapStatusTests.swift in Sources */,
@@ -968,6 +972,12 @@
 				CODE_SIGN_ENTITLEMENTS = FlockSurveillance/FlockSurveillance.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FlockSurveillance/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Flock Surveillance";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1077,6 +1087,12 @@
 				CODE_SIGN_ENTITLEMENTS = FlockSurveillance/FlockSurveillance.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FlockSurveillance/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Flock Surveillance";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

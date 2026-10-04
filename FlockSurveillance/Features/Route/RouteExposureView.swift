@@ -1,4 +1,5 @@
 import ActivityKit
+import AppIntents
 import MapKit
 import SwiftUI
 
@@ -193,7 +194,10 @@ struct RouteExposureView: View {
                     .disabled(isRouting)
 
                     OverwatchSecondaryButton(verticalPadding: 14) {
-                        Task { await runCommute(toHome: true) }
+                        Task {
+                            await runCommute(toHome: true)
+                            _ = try? await IntentDonationManager.shared.donate(intent: SafestDriveHomeIntent())
+                        }
                     } label: {
                         Label("Work → Home", systemImage: "house.fill")
                             .font(.system(size: 14, weight: .bold))

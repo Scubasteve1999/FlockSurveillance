@@ -1,3 +1,4 @@
+import AppIntents
 import MapKit
 import StoreKit
 import SwiftUI
@@ -663,6 +664,9 @@ struct MapRadarView: View {
                     label: "Place score"
                 ) {
                     computePlaceScore()
+                    Task {
+                        _ = try? await IntentDonationManager.shared.donate(intent: CheckPlaceScoreIntent())
+                    }
                 }
                 headerRailButton(
                     systemName: showHeat ? "circle.hexagongrid.fill" : "circle.hexagongrid",

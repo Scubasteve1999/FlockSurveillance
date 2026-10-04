@@ -70,7 +70,6 @@ struct NearbyCamerasIntent: AppIntent {
     static let title: LocalizedStringResource = "Check Nearby Mapped Pins"
     static let description = IntentDescription("Counts community-mapped ALPR pins within a mile of Home.")
 
-    @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let snapshot = WidgetBridge.readSnapshot()
         guard WidgetBridge.homeCoordinate() != nil else {
@@ -83,7 +82,7 @@ struct NearbyCamerasIntent: AppIntent {
             ? "There is 1 mapped pin within a mile of Home."
             : "There are \(snapshot.count) mapped pins within a mile of Home."
         if let nearest = snapshot.nearestMeters {
-            dialog += " The nearest is \(ProximityRadar.formatDistance(nearest)) away."
+            dialog += " The nearest is \(await ProximityRadar.formatDistance(nearest)) away."
         }
         return .result(dialog: IntentDialog(stringLiteral: dialog))
     }
@@ -94,7 +93,6 @@ struct CheckPlaceScoreIntent: AppIntent {
     static let description = IntentDescription("Opens the map and grades surveillance exposure where you are.")
     static let openAppWhenRun = true
 
-    @MainActor
     func perform() async throws -> some IntentResult {
         NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.mapURL])
         // Belt and braces: the notification reaches an already-mounted map; the
@@ -110,7 +108,6 @@ struct StartDriveModeIntent: AppIntent {
     static let description = IntentDescription("Opens route analysis so you can start a drive with fewer mapped pins.")
     static let openAppWhenRun = true
 
-    @MainActor
     func perform() async throws -> some IntentResult {
         NotificationCenter.default.post(name: .flockDeepLink, object: nil, userInfo: ["url": AppIdentity.routeURL])
         return .result()
@@ -122,7 +119,6 @@ struct SafestDriveHomeIntent: AppIntent {
     static let description = IntentDescription("Opens the Route tab and scores the drive with the fewest mapped pins from Work to Home.")
     static let openAppWhenRun = true
 
-    @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard WidgetBridge.homeCoordinate() != nil else {
             return .result(dialog: "Set Home in Flock Surveillance Settings first.")

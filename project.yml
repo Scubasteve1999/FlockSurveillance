@@ -39,15 +39,15 @@ targets:
     info:
       path: FlockSurveillance/Info.plist
       properties:
-        CFBundleDisplayName: Flock Surveillance
+        # Display name, export compliance, Live Activities and the camera/location
+        # usage strings are set as INFOPLIST_KEY_* build settings on this target
+        # (see `settings` below) and merged into the built Info.plist because
+        # GENERATE_INFOPLIST_FILE is YES. Keep the version keys here: without them
+        # xcodegen writes literal 1.0 / 1 into Info.plist.
         CFBundleIconName: AppIcon
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen: {}
-        # App uses only standard HTTPS (Overpass/OSM) — exempt from export
-        # compliance. Declaring it here skips the encryption question per upload.
-        ITSAppUsesNonExemptEncryption: false
-        NSSupportsLiveActivities: true
         # Significant-change + region monitoring need the location background mode.
         UIBackgroundModes:
           - location
@@ -59,12 +59,19 @@ targets:
           - CFBundleURLName: com.flocksurveillance.app
             CFBundleURLSchemes:
               - flocksurveillance
-        NSLocationWhenInUseUsageDescription: Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure.
-        NSLocationAlwaysAndWhenInUseUsageDescription: Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device.
-        NSCameraUsageDescription: Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flocksurveillance.app
+        # Info.plist keys as build settings (moved from Info.plist in the 1.9.5 WIP).
+        # CFBundleDisplayName and the orientation keys are also set project-wide above.
+        INFOPLIST_KEY_CFBundleDisplayName: "Flock Surveillance"
+        # App uses only standard HTTPS (Overpass/OSM): exempt from export
+        # compliance. Declaring it here skips the encryption question per upload.
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: "NO"
+        INFOPLIST_KEY_NSSupportsLiveActivities: "YES"
+        INFOPLIST_KEY_NSCameraUsageDescription: "Flock Surveillance uses the camera only to overlay mapped ALPR locations in AR. Video stays on your device and is not recorded or uploaded."
+        INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription: "Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Flock Surveillance uses your location to show nearby mapped ALPR cameras and route exposure."
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_STRICT_CONCURRENCY: complete

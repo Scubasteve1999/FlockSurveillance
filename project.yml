@@ -31,8 +31,11 @@ targets:
       - path: Shared
         excludes:
           - "**/.DS_Store"
-    resources:
+      # Privacy manifest is excluded from the folder glob above and listed here
+      # explicitly so it always lands in Copy Bundle Resources (xcodegen has no
+      # target-level `resources:` key; it was silently ignored).
       - path: FlockSurveillance/PrivacyInfo.xcprivacy
+        buildPhase: resources
     info:
       path: FlockSurveillance/Info.plist
       properties:
@@ -103,8 +106,8 @@ targets:
       - path: Shared
         excludes:
           - "**/.DS_Store"
-    resources:
       - path: NearbyCamerasWidget/PrivacyInfo.xcprivacy
+        buildPhase: resources
     info:
       path: NearbyCamerasWidget/Info.plist
       properties:

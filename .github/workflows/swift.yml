@@ -25,8 +25,13 @@ jobs:
           # survives Xcode/simulator runtime bumps.
           DEVICE=$(xcrun simctl list devices available | grep -oE 'iPhone [A-Za-z0-9 ]+' | head -1 | sed 's/ *$//')
           echo "Using simulator: $DEVICE"
+          # Fail the step when xcodebuild fails (compile error or failing test).
+          # Without pipefail the pipeline's exit status is xcbeautify's, which is
+          # almost always 0, so broken builds used to show green. Set it here,
+          # after the DEVICE lookup, so `head -1` closing early can't trip it.
+          set -o pipefail
           xcodebuild test \
             -scheme FlockSurveillance \
             -destination "platform=iOS Simulator,name=$DEVICE" \
             CODE_SIGNING_ALLOWED=NO \
-            | xcbeautify --renderer github-actions || exit ${PIPESTATUS[0]}
+            | xcbeautify --renderer github-actions

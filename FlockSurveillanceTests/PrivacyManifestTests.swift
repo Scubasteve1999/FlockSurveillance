@@ -69,7 +69,7 @@ final class PrivacyManifestTests: XCTestCase {
 
     func testProjectYmlWiresPrivacyInfoResourcesAtReleaseVersion() throws {
         let yaml = try String(contentsOf: repoFile("project.yml"), encoding: .utf8)
-        XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.9.5\""))
+        XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.9.6\""))
         XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"23\""))
         XCTAssertTrue(yaml.contains("FlockSurveillance/PrivacyInfo.xcprivacy"))
         XCTAssertTrue(yaml.contains("NearbyCamerasWidget/PrivacyInfo.xcprivacy"))

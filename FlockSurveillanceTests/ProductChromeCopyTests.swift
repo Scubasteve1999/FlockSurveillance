@@ -112,6 +112,177 @@ final class ProductChromeCopyTests: XCTestCase {
         XCTAssertFalse(hud.contains("OVERWATCH ·"))
     }
 
+    // MARK: - Banned spy / threat framing
+
+    /// Calm, factual copy only: the app knows phone GPS near mapped OSM pins, nothing more.
+    /// Case-insensitive, word-boundary.
+    private static let bannedFramingPattern =
+        #"(?i)\b(overwatch|watchedness|watched|threat|classified|dossier|hot zone|safest|radar|tracker|speed camera|arm|scan|lock)\b"#
+
+    /// Exact literals allowed to contain a banned word. Justify every entry.
+    private static let bannedFramingAllowlist: [(file: String, literal: String)] = [
+        // Accessibility identifier for UI tests; never displayed or spoken by VoiceOver.
+        ("FlockSurveillance/Features/Network/RecordsWallStatusChip.swift", "records-wall-tracker")
+    ]
+
+    /// Proper nouns stripped (case-sensitive) before matching.
+    private static let bannedFramingAllowedPhrases = [
+        // Apple's name for the iOS system surface where Live Activities appear.
+        "Lock Screen"
+    ]
+
+    func testNoBannedFramingInSwiftStringLiterals() throws {
+        let regex = try NSRegularExpression(pattern: Self.bannedFramingPattern)
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        var hits: [String] = []
+        var scannedFiles = 0
+
+        for directory in ["FlockSurveillance", "NearbyCamerasWidget", "Shared"] {
+            let base = root.appendingPathComponent(directory)
+            let enumerator = try XCTUnwrap(FileManager.default.enumerator(at: base, includingPropertiesForKeys: nil))
+            let files = enumerator.compactMap { $0 as? URL }
+                .filter { $0.pathExtension == "swift" }
+                .sorted { $0.path < $1.path }
+            for file in files {
+                scannedFiles += 1
+                let relative = String(file.path.dropFirst(root.path.count + 1))
+                let source = try String(contentsOf: file, encoding: .utf8)
+                for literal in Self.stringLiterals(in: source) {
+                    if Self.bannedFramingAllowlist.contains(where: { $0.file == relative && $0.literal == literal.text }) {
+                        continue
+                    }
+                    let text = Self.bannedFramingAllowedPhrases.reduce(literal.text) {
+                        $0.replacingOccurrences(of: $1, with: " ")
+                    }
+                    let range = NSRange(text.startIndex..., in: text)
+                    guard let match = regex.firstMatch(in: text, range: range),
+                          let wordRange = Range(match.range, in: text)
+                    else { continue }
+                    hits.append("\(relative):\(literal.line): \"\(text[wordRange])\" in \"\(literal.text.prefix(90))\"")
+                }
+            }
+        }
+
+        XCTAssertGreaterThan(scannedFiles, 50, "Source walk found too few files — check repo-relative paths")
+        XCTAssertTrue(
+            hits.isEmpty,
+            "Banned spy/threat framing in string literals (reword, or allowlist with a reason):\n"
+                + hits.joined(separator: "\n")
+        )
+    }
+
+    func testBannedFramingScannerFindsLiteralsAndSkipsCode() {
+        let sample = """
+        // Overwatch in a comment is fine
+        let mode = OverwatchMode() /* threat in block comment */
+        Text("THREAT BOARD")
+        Text("Pins: \\(isOn ? "Radar on" : "off") nearby")
+        let multi = \"\"\"
+            calm line
+            CLASSIFIED line
+            \"\"\"
+        """
+        let literals = Self.stringLiterals(in: sample)
+        XCTAssertEqual(literals.map(\.text), ["THREAT BOARD", "Radar on", "off", "Pins:   nearby", "    calm line\n    CLASSIFIED line\n    "])
+        XCTAssertEqual(literals.first?.line, 3)
+        XCTAssertEqual(literals.first { $0.text == "Radar on" }?.line, 4)
+        XCTAssertFalse(literals.contains { $0.text.contains("Overwatch") || $0.text.contains("threat in") })
+    }
+
+    private struct SourceLiteral {
+        let line: Int
+        let text: String
+    }
+
+    /// Minimal Swift lexer: string literals (single- and multi-line) outside comments, recursing
+    /// into `\( … )` interpolations so nested literals are scanned and interpolated code is not.
+    private static func stringLiterals(in source: String) -> [SourceLiteral] {
+        let bytes = Array(source.utf8)
+        var index = 0
+        var line = 1
+        var literals: [SourceLiteral] = []
+        scanCode(bytes, &index, &line, &literals, untilCloseParen: false)
+        return literals
+    }
+
+    private static func scanCode(
+        _ b: [UInt8], _ i: inout Int, _ line: inout Int, _ out: inout [SourceLiteral], untilCloseParen: Bool
+    ) {
+        var depth = 0
+        while i < b.count {
+            let c = b[i]
+            let next: UInt8 = i + 1 < b.count ? b[i + 1] : 0
+            if c == UInt8(ascii: "\n") {
+                line += 1
+            } else if c == UInt8(ascii: "/"), next == UInt8(ascii: "/") {
+                while i < b.count, b[i] != UInt8(ascii: "\n") { i += 1 }
+                continue
+            } else if c == UInt8(ascii: "/"), next == UInt8(ascii: "*") {
+                i += 2
+                while i + 1 < b.count, !(b[i] == UInt8(ascii: "*") && b[i + 1] == UInt8(ascii: "/")) {
+                    if b[i] == UInt8(ascii: "\n") { line += 1 }
+                    i += 1
+                }
+                i += 2
+                continue
+            } else if c == UInt8(ascii: "\"") {
+                scanLiteral(b, &i, &line, &out)
+                continue
+            } else if untilCloseParen, c == UInt8(ascii: "(") {
+                depth += 1
+            } else if untilCloseParen, c == UInt8(ascii: ")") {
+                if depth == 0 {
+                    i += 1
+                    return
+                }
+                depth -= 1
+            }
+            i += 1
+        }
+    }
+
+    private static func scanLiteral(_ b: [UInt8], _ i: inout Int, _ line: inout Int, _ out: inout [SourceLiteral]) {
+        let quote = UInt8(ascii: "\"")
+        let multiline = i + 2 < b.count && b[i + 1] == quote && b[i + 2] == quote
+        let startLine = line
+        i += multiline ? 3 : 1
+        if multiline, i < b.count, b[i] == UInt8(ascii: "\n") {
+            line += 1
+            i += 1
+        }
+        var text: [UInt8] = []
+        while i < b.count {
+            let c = b[i]
+            if c == UInt8(ascii: "\\"), i + 1 < b.count {
+                let escaped = b[i + 1]
+                i += 2
+                if escaped == UInt8(ascii: "(") {
+                    scanCode(b, &i, &line, &out, untilCloseParen: true)
+                    text.append(UInt8(ascii: " "))
+                } else if [UInt8(ascii: "n"), UInt8(ascii: "t"), UInt8(ascii: "r")].contains(escaped) {
+                    text.append(UInt8(ascii: " "))
+                } else {
+                    if escaped == UInt8(ascii: "\n") { line += 1 }
+                    text.append(escaped)
+                }
+                continue
+            }
+            if multiline {
+                if c == quote, i + 2 < b.count, b[i + 1] == quote, b[i + 2] == quote {
+                    i += 3
+                    break
+                }
+            } else if c == quote || c == UInt8(ascii: "\n") {
+                if c == quote { i += 1 }
+                break
+            }
+            if c == UInt8(ascii: "\n") { line += 1 }
+            text.append(c)
+            i += 1
+        }
+        out.append(SourceLiteral(line: startLine, text: String(decoding: text, as: UTF8.self)))
+    }
+
     private func readProductSource(_ relativePath: String) throws -> String {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()

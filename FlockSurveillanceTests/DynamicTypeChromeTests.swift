@@ -69,7 +69,14 @@ final class DynamicTypeChromeTests: XCTestCase {
         XCTAssertTrue(map.contains("DataSourcePill()"))
         XCTAssertTrue(map.contains("Text(item.title)"))
         XCTAssertTrue(map.contains(".font(AppTypography.filterChip)"))
-        XCTAssertTrue(map.contains(".font(AppTypography.hudMono)"))
+        // Every filter chip shares one style — Metros / Gates are not a second mono style.
+        XCTAssertTrue(map.contains("Text(item.title)\n                                .mapFilterChip("))
+        XCTAssertTrue(map.contains("Text(\"Traffic cams\")\n                            .mapFilterChip("))
+        XCTAssertTrue(map.contains("Text(\"Metros\")\n                                .mapFilterChip("))
+        XCTAssertTrue(map.contains("Text(\"Gates\")\n                    .mapFilterChip("))
+        XCTAssertFalse(map.contains("Text(\"METROS\")"))
+        XCTAssertFalse(map.contains("Text(\"GATES\")"))
+        XCTAssertFalse(map.contains(".font(AppTypography.hudMono)"))
         XCTAssertTrue(map.contains("OpenStreetMap pins tagged Flock-branded"))
         XCTAssertFalse(map.contains("\"Flock only\""))
 

@@ -31,9 +31,10 @@ enum AppTypography {
     /// MAP honesty chip + `DataSourcePill`.
     static let chip = Font.caption.weight(.medium)
     static let chipIcon = Font.caption.weight(.semibold)
-    /// Filter chip titles (All ALPRs, Flock-branded pins).
+    /// Filter chip titles — map filters (All ALPRs, Flock-branded pins, Traffic cams, Metros,
+    /// Gates) and Sharing Network hub / breadcrumb chips.
     static let filterChip = Font.footnote.weight(.semibold)
-    /// Compact mono chips (METROS, GATES, boot HUD).
+    /// Compact mono HUD labels (boot banner).
     static let hudMono = Font.system(.caption, design: .monospaced).weight(.black)
     static let hudMonoSmall = Font.system(.caption2, design: .monospaced).weight(.bold)
     /// Radar HUD coverage instrument line.

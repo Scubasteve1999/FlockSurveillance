@@ -782,16 +782,7 @@ struct MapRadarView: View {
                             }
                         } label: {
                             Text(item.title)
-                                .font(AppTypography.filterChip)
-                                .foregroundStyle(filter == item ? AppTheme.background : AppTheme.foreground)
-                                .multilineTextAlignment(.center)
-                                .lineLimit(3)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
-                                .background(filter == item ? AppTheme.primary : AppTheme.card.opacity(0.92))
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(AppTheme.border, lineWidth: filter == item ? 0 : 1))
+                                .mapFilterChip(isOn: filter == item, tint: AppTheme.primary)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(item.title)
@@ -808,16 +799,7 @@ struct MapRadarView: View {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     } label: {
                         Text("Traffic cams")
-                            .font(AppTypography.filterChip)
-                            .foregroundStyle(showSensorAtlas ? AppTheme.background : AppTheme.foreground)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(3)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(showSensorAtlas ? AppTheme.trafficSensorMarker : AppTheme.card.opacity(0.92))
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(AppTheme.border, lineWidth: showSensorAtlas ? 0 : 1))
+                            .mapFilterChip(isOn: showSensorAtlas, tint: AppTheme.trafficSensorMarker)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(showSensorAtlas ? "Hide municipal traffic cameras" : "Show municipal traffic cameras")
@@ -830,14 +812,8 @@ struct MapRadarView: View {
                             }
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         } label: {
-                            Text("METROS")
-                                .font(AppTypography.hudMono)
-                                .foregroundStyle(showCityRankings ? AppTheme.background : AppTheme.foreground)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(showCityRankings ? AppTheme.accent : AppTheme.card.opacity(0.92))
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(AppTheme.border, lineWidth: showCityRankings ? 0 : 1))
+                            Text("Metros")
+                                .mapFilterChip(isOn: showCityRankings, tint: AppTheme.accent)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(showCityRankings ? "Hide city rankings" : "Show city rankings")
@@ -850,14 +826,8 @@ struct MapRadarView: View {
                 }
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
-                Text("GATES")
-                    .font(AppTypography.hudMono)
-                    .foregroundStyle(showOliveBranchEntrances ? AppTheme.background : AppTheme.foreground)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(showOliveBranchEntrances ? AppTheme.entranceLayerMarker : AppTheme.card.opacity(0.92))
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(AppTheme.border, lineWidth: showOliveBranchEntrances ? 0 : 1))
+                Text("Gates")
+                    .mapFilterChip(isOn: showOliveBranchEntrances, tint: AppTheme.entranceLayerMarker)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(
@@ -1256,4 +1226,33 @@ private struct ActivityShareView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Filter chip style
+
+/// One style for every map filter chip (All ALPRs, Flock-branded pins, Traffic cams, Metros,
+/// Gates): filterChip type, 14×8 padding, tint fill when on, bordered card when off.
+private struct MapFilterChipStyle: ViewModifier {
+    let isOn: Bool
+    let tint: Color
+
+    func body(content: Content) -> some View {
+        content
+            .font(AppTypography.filterChip)
+            .foregroundStyle(isOn ? AppTheme.background : AppTheme.foreground)
+            .multilineTextAlignment(.center)
+            .lineLimit(3)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isOn ? tint : AppTheme.card.opacity(0.92))
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(AppTheme.border, lineWidth: isOn ? 0 : 1))
+    }
+}
+
+private extension View {
+    func mapFilterChip(isOn: Bool, tint: Color) -> some View {
+        modifier(MapFilterChipStyle(isOn: isOn, tint: tint))
+    }
 }

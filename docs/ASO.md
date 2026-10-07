@@ -34,7 +34,7 @@ Notes:
 
 > How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 >
-> Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device.
+> Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your precise location stays on your device; only a rough ~10 km area is requested from public OpenStreetMap servers.
 
 Then feature bullets in this order: Drive Mode, Fewest Pins Drive, Pin-zone alerts, Place Score, AR, Map + FOV, Sharing Network, reporting/widgets.
 
@@ -71,7 +71,7 @@ NEW: Drive Mode + Live Activity — how mapped is this road while you drive. Map
 ```
 How mapped is this road right now? Start Drive Mode for a live countdown HUD and Lock Screen Live Activity near mapped ALPR pins — then compare Home ↔ Work routes by mapped pin exposure, or grade your block with Place Score.
 
-Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your location never leaves your device. Data Not Collected.
+Built on OpenStreetMap community data (the same public dataset as DeFlock) plus a DeFlock Dane FOIA snapshot. Differentiation is the drive: route exposure, pin-zone alerts, and Live Activity — not a bigger map. No accounts. No tracking. Your precise location stays on your device; only a rough ~10 km area is requested from public OpenStreetMap servers.
 
 • Drive Mode — live countdown HUD + Lock Screen / Dynamic Island Live Activity while you drive
 • Fewest Pins Drive Home ↔ Work — compare routes by mapped pin exposure; share a drive report
@@ -139,13 +139,13 @@ Paste / select these in **App Store Connect → App Privacy**.
 
 | ASC question | Answer |
 |---|---|
-| Data types collected by you / linked to identity | **Data Not Collected** — no developer analytics, accounts, or developer-operated servers |
-| Location | Used **on device only**. Powers map, Drive Mode, and optional geofenced proximity alerts. Never transmitted to the developer |
+| Data types collected | **Coarse Location** only — Not linked to identity, not used for tracking, purpose **App Functionality**. Matches `PrivacyInfo.xcprivacy`. No developer analytics, accounts, or developer-operated servers |
+| Location | **Precise location stays on device.** Powers map, Drive Mode, and optional geofenced proximity alerts. Overpass receives only a rough ~10 km area (bbox snapped to a fixed 0.1° grid, never centered on the user). Never transmitted to the developer |
 | Camera | Used **on device only** for AR Camera Sight overlay. Video is **not** recorded or uploaded |
 | Product interaction / diagnostics / identifiers | Not collected by the developer |
-| Third-party / network | (1) **Overpass / OpenStreetMap:** map bounding-box queries only; no user identifiers. (2) **Optional:** when the user opens a Sensor Atlas traffic-cam detail, a public traveler still may load from allowlisted WisDOT hosts (`content.dot.wi.gov`, `www.dot.wi.gov`). Device IP reaches that host. Not ALPR, not Flock, not developer-collected |
+| Third-party / network | (1) **Overpass / OpenStreetMap:** coarse bounding-box queries only (snapped to a 0.1° grid); no user identifiers. (2) **Optional:** when the user opens a Sensor Atlas traffic-cam detail, a public traveler still may load from allowlisted WisDOT hosts (`content.dot.wi.gov`, `www.dot.wi.gov`). Device IP reaches that host. Not ALPR, not Flock, not developer-collected |
 
-Do **not** claim “no network.” Feature the on-device / no-developer-tracking story in the description.
+Do **not** claim “no network.” Do **not** select “Data Not Collected” — the manifest declares Coarse Location. Feature the precise-location-stays-on-device / no-developer-tracking story in the description.
 
 If Apple’s questionnaire forces a choice because of WisDOT image loads, disclose under the closest “browsing” / third-party content category and keep the review notes explicit that loads are user-initiated, allowlisted, and not ALPR feeds.
 
@@ -161,4 +161,4 @@ If Apple’s questionnaire forces a choice because of WisDOT image loads, disclo
 
 ## App Review notes (paste into the review-notes field)
 
-> Flock Surveillance helps drivers understand mapped ALPR exposure on the road: Drive Mode HUD, Live Activity, and route comparison use community-documented camera locations from OpenStreetMap (the same public dataset as deflock.me). Alerts and Live Activity mean the phone is near a mapped OSM pin — not that a plate was read. Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Those pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. Civic transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications; location data never leaves the device to developer servers.
+> Flock Surveillance helps drivers understand mapped ALPR exposure on the road: Drive Mode HUD, Live Activity, and route comparison use community-documented camera locations from OpenStreetMap (the same public dataset as deflock.me). Alerts and Live Activity mean the phone is near a mapped OSM pin — not that a plate was read. Sharing Network shows agency-to-agency sharing links from a public FOIA snapshot (DeFlock Dane / Wisconsin hubs) bundled on-device — not live vendor data and not which cameras feed which agency. Optional Sensor Atlas layer shows municipal WisDOT traffic CCTV locations (Madison/Milwaukee inventory snapshot). Those pins are not ALPR and do not feed proximity alerts. Opening a traffic-cam detail may load a public traveler still from WisDOT hosts only (allowlisted); these are not live Flock/ALPR feeds and are not recorded by the app. Civic transparency tool: it does not detect police, defeat enforcement, or use any ALPR vendor's private APIs. AR Camera Sight overlays mapped OSM ALPR locations on the device camera for awareness only — it does not show live camera feeds or record video. Background location powers optional proximity notifications. Precise location stays on the device; to load pins, the app requests only a rough ~10 km grid area from public OpenStreetMap Overpass servers, never the exact position, and nothing goes to developer servers.

@@ -225,10 +225,8 @@ actor OverpassClient {
     }
 
     func fetchCameras(in region: MKCoordinateRegion) async throws -> [ALPRCameraDTO] {
-        let south = region.center.latitude - region.span.latitudeDelta / 2
-        let north = region.center.latitude + region.span.latitudeDelta / 2
-        let west = region.center.longitude - region.span.longitudeDelta / 2
-        let east = region.center.longitude + region.span.longitudeDelta / 2
+        // Privacy: send only a coarse 0.1° grid-aligned bbox, never one centered on the GPS fix.
+        let (south, west, north, east) = GeoHelpers.overpassBoundingBox(for: region)
 
         guard north > south, east > west else { throw OverpassError.emptyRegion }
 

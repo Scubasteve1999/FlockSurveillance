@@ -319,7 +319,12 @@ struct OnboardingView: View {
         // because MapKit isn't on screen yet.
         repository.attach(modelContext: modelContext)
         ReportStore.shared.attach(modelContext: modelContext)
-        locationManager.start()
+        // Never prompt from the cold open: read location only if already granted.
+        // Otherwise the teaser falls back to the sample metro. The system prompt
+        // comes solely from "Enable location" on the permissions page.
+        if locationIsAuthorized {
+            locationManager.start()
+        }
         isLoadingTeaser = true
         teaserScore = nil
         let coordinate = teaserCoordinate()
@@ -372,7 +377,7 @@ struct OnboardingView: View {
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
 
-            Text("Both are optional. Everything stays on your device — no accounts, no tracking, no data collection.")
+            Text("Both are optional. Your precise location stays on your phone. To load pins, the app asks public OpenStreetMap servers for a rough area around you, never your exact spot.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
                 .multilineTextAlignment(.center)
@@ -393,9 +398,13 @@ struct OnboardingView: View {
             permissionCard(
                 icon: "bell.badge.fill",
                 title: "Mapped-pin alerts",
-                detail: "Notifies you near mapped OSM pins, even in the background.",
+                detail: locationIsAuthorized
+                    ? "Notifies you near mapped OSM pins, even in the background."
+                    : "Enable location first. Then alerts can notify you near mapped OSM pins, even in the background.",
                 actionLabel: alertsActionLabel,
-                isDone: alertsFullyEnabled
+                isDone: alertsFullyEnabled,
+                // AlertsEngine requests When-In-Use if undetermined — keep that prompt on "Enable location".
+                isEnabled: locationIsAuthorized
             ) {
                 Task {
                     if alertsEngine.needsAlwaysAuthorization {
@@ -420,6 +429,11 @@ struct OnboardingView: View {
         .padding(.horizontal, 24)
         // Observe auth so labels update when Always is granted.
         .onChange(of: alertsEngine.authorizationStatus) { _, _ in }
+    }
+
+    private var locationIsAuthorized: Bool {
+        locationManager.authorizationStatus == .authorizedWhenInUse
+            || locationManager.authorizationStatus == .authorizedAlways
     }
 
     private var alertsFullyEnabled: Bool {
@@ -546,6 +560,7 @@ struct OnboardingView: View {
         detail: String,
         actionLabel: String,
         isDone: Bool,
+        isEnabled: Bool = true,
         action: @escaping () -> Void
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -584,7 +599,8 @@ struct OnboardingView: View {
                 )
             }
             .buttonStyle(.plain)
-            .disabled(isDone)
+            .disabled(isDone || !isEnabled)
+            .opacity(isEnabled || isDone ? 1 : 0.45)
         }
         .padding(16)
         .background(AppTheme.card.opacity(0.65))

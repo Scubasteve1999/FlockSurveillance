@@ -164,10 +164,17 @@ struct DataSourcePill: View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
             Image(systemName: "map.fill")
                 .font(AppTypography.chipIcon)
-            Text(MapHonestyCopy.chipLine)
-                .font(AppTypography.chip)
-                .fixedSize(horizontal: false, vertical: true)
-                .multilineTextAlignment(.leading)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(MapHonestyCopy.chipLine)
+                    .font(AppTypography.chip)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+                    .accessibilityLabel(MapHonestyCopy.accessibilityLabel)
+                Link(MapHonestyCopy.osmAttribution, destination: MapHonestyCopy.osmCopyrightURL)
+                    .font(AppTypography.chip)
+                    .foregroundStyle(AppTheme.accent)
+            }
         }
         .foregroundStyle(AppTheme.mutedForeground)
         .padding(.horizontal, 10)
@@ -179,8 +186,8 @@ struct DataSourcePill: View {
             RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
                 .stroke(AppTheme.border, lineWidth: 1)
         )
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(MapHonestyCopy.accessibilityLabel)
+        // .contain so VoiceOver reaches the OSM copyright link inside the pill.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("map-honesty-chip")
     }
 }

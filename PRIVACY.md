@@ -1,23 +1,30 @@
 # Privacy Policy — Flock Surveillance
 
-**Last updated: August 13, 2026**
+**Last updated: October 6, 2026**
 
 Flock Surveillance is a civic transparency app that maps community-documented ALPR (automated
 license plate reader) camera locations from OpenStreetMap. It is not affiliated with Flock Safety.
 
-**The developer collects no data.** There are no accounts, no analytics, no advertising, no
-tracking, and no developer-operated servers. Nothing you do in this app is transmitted to us,
-because there is nowhere for it to go.
+**The developer receives no data.** There are no accounts, no analytics, no advertising, no
+tracking, and no developer-operated servers. Nothing you do in this app is sent to us, because
+there is nowhere for it to go. To load camera pins, the app does ask public OpenStreetMap servers
+for a rough area around you. That is described below.
 
 ## Location
 
 The app requests location access to show nearby mapped cameras, run Drive Mode, and — if you turn
 it on — send geofenced alerts when you approach a mapped camera.
 
-Your location is used **on your device only**. It is never transmitted to the developer, never
-stored off device, and never shared or sold. If you grant Always access, background location is
-used solely for the optional proximity alerts described above, and only while that feature is
-enabled.
+**Your precise location stays on your phone.** It is never sent to the developer, never stored
+off device, and never shared or sold.
+
+To load pins, the app asks public OpenStreetMap servers for camera data in a **rough area** around
+you, never your exact spot. Every request is rounded outward to a fixed grid of about 10 km
+(0.1° of latitude and longitude), so the area is the same for everyone in that grid square and is
+never centered on you. No account, name, or device identifier is attached.
+
+If you grant Always access, background location is used solely for the optional proximity alerts
+described above, and only while that feature is enabled.
 
 Location permission can be revoked at any time in iOS Settings. The app remains usable without it.
 
@@ -34,9 +41,11 @@ knows only your phone's GPS position relative to a location mapped in OpenStreet
 The app makes network requests to these third parties. None of them receive your identity, an
 account, or a device identifier.
 
-- **OpenStreetMap / Overpass API** — the app requests camera data for a map area by sending a
-  geographic bounding box. This is the region of the map being viewed, not your precise position,
-  and it is not linked to you.
+- **OpenStreetMap / Overpass API** — the app requests camera data by sending a geographic
+  bounding box. The box is snapped outward to a fixed ~10 km grid, so it reveals only a rough
+  area (for example, the grid square around you or the part of the map you are viewing), never
+  your precise position. It is not linked to you. Like any web request, the server sees your IP
+  address; see the [OpenStreetMap privacy policy](https://osmfoundation.org/wiki/Privacy_Policy).
 - **Wisconsin DOT** (`content.dot.wi.gov`, `www.dot.wi.gov`) — if you open the detail view for a
   municipal traffic camera in the optional Sensor Atlas layer, the app loads a publicly available
   traveler-information still image from these hosts. This happens only when you tap that specific
@@ -62,13 +71,13 @@ or transaction data to a developer server. A tip unlocks nothing. The app stays 
 ## On-device storage
 
 Cached camera data, your preferences, and any Home or Work locations you set are stored on your
-device and in a shared app group so the Home Screen widget can read them. This data never leaves
+device and in a shared app group so the Home Screen widget can read them. This data stays on
 your device and is deleted when you delete the app. Cached camera data can be cleared at any time
 from Settings.
 
 ## Children
 
-The app is not directed at children and collects no data from anyone, including children.
+The app is not directed at children. The developer receives no data from anyone, including children.
 
 ## Data disclosure requests
 
@@ -77,6 +86,11 @@ We hold no user data, so there is none to disclose, sell, or hand over in respon
 ## Changes
 
 Material changes to this policy will be published on this page with an updated date.
+
+## Map data
+
+Camera locations come from OpenStreetMap. Map data © OpenStreetMap contributors, available
+under the Open Database License: <https://www.openstreetmap.org/copyright>.
 
 ## Contact
 

@@ -1,7 +1,8 @@
 import XCTest
 
 /// Locks the ASC/TF privacy manifests to the audited Required Reason API
-/// and location nutrition label. Location is on-device only; not tracking.
+/// and location nutrition label. Precise GPS stays on device; only a coarse grid
+/// area reaches public Overpass servers (Coarse Location, not linked, not tracking).
 final class PrivacyManifestTests: XCTestCase {
     func testAppManifestDeclaresUserDefaultsAndLocationWithoutTracking() throws {
         let plist = try loadPlist("FlockSurveillance/PrivacyInfo.xcprivacy")
@@ -13,14 +14,13 @@ final class PrivacyManifestTests: XCTestCase {
         let apiTypes = try XCTUnwrap(plist["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
         XCTAssertEqual(apiTypes.count, 1)
         XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPIType"] as? String, "NSPrivacyAccessedAPICategoryUserDefaults")
-        XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])
+        // CA92.1: app-only defaults. 1C8F.1: app-group defaults shared with the widget.
+        XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1", "1C8F.1"])
 
         let collected = try XCTUnwrap(plist["NSPrivacyCollectedDataTypes"] as? [[String: Any]])
         let types = Set(collected.compactMap { $0["NSPrivacyCollectedDataType"] as? String })
-        XCTAssertEqual(types, [
-            "NSPrivacyCollectedDataTypePreciseLocation",
-            "NSPrivacyCollectedDataTypeCoarseLocation"
-        ])
+        XCTAssertEqual(types, ["NSPrivacyCollectedDataTypeCoarseLocation"])
+        XCTAssertFalse(types.contains("NSPrivacyCollectedDataTypePreciseLocation"))
 
         for entry in collected {
             XCTAssertEqual(entry["NSPrivacyCollectedDataTypeLinked"] as? Bool, false)
@@ -42,7 +42,8 @@ final class PrivacyManifestTests: XCTestCase {
         let apiTypes = try XCTUnwrap(plist["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
         XCTAssertEqual(apiTypes.count, 1)
         XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPIType"] as? String, "NSPrivacyAccessedAPICategoryUserDefaults")
-        XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])
+        // CA92.1: app-only defaults. 1C8F.1: app-group defaults shared with the widget.
+        XCTAssertEqual(apiTypes[0]["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1", "1C8F.1"])
     }
 
     func testAppBundleCopiesPrivacyManifest() throws {

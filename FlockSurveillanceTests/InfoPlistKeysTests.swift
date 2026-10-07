@@ -17,7 +17,7 @@ final class InfoPlistKeysTests: XCTestCase {
         )
         XCTAssertEqual(
             info["NSLocationAlwaysAndWhenInUseUsageDescription"] as? String,
-            "Always access lets Flock Surveillance alert you when you approach a mapped ALPR camera, even while the app is closed. Your location never leaves your device."
+            "Used for nearby pin alerts. Your precise location stays on your device; only a rough ~10 km area is requested from public OpenStreetMap servers."
         )
         XCTAssertEqual(
             info["NSLocationWhenInUseUsageDescription"] as? String,

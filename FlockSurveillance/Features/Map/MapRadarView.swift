@@ -4,6 +4,15 @@ import StoreKit
 import SwiftUI
 import UIKit
 
+/// Equatable stand-in for `MKCoordinateRegion` (which isn't), so `onChange` can watch the viewport.
+private struct RegionKey: Hashable {
+    let lat: Double, lon: Double, spanLat: Double, spanLon: Double
+    init(_ region: MKCoordinateRegion) {
+        lat = region.center.latitude; lon = region.center.longitude
+        spanLat = region.span.latitudeDelta; spanLon = region.span.longitudeDelta
+    }
+}
+
 struct MapRadarView: View {
     @Environment(CameraRepository.self) private var repository
     @Environment(LocationManager.self) private var locationManager
@@ -26,9 +35,17 @@ struct MapRadarView: View {
         )
     )
     @State private var lastSurveillanceLevel: SurveillanceLevel?
-    @State private var showBootBanner = true
+    /// Claimed once per app launch via `BootBannerGate` (not per view instance).
+    @State private var showBootBanner = false
+    /// One-time setup guard: the Map stays mounted across tab switches.
+    @State private var didBootstrap = false
     @State private var lastInWatchedZone = false
     @State private var visibleRegion: MKCoordinateRegion?
+    /// Off-main viewport/proximity results; the only source for pin counts, clusters and nearest.
+    @State private var snapshot = MapSnapshot.empty
+    @State private var snapshotTask: Task<Void, Never>?
+    @State private var snapshotGeneration = 0
+    @State private var lastSnapshotUser: CLLocationCoordinate2D?
     @State private var filter: CameraFilter = AppPreferences.defaultFilter
     @State private var selectedCluster: CameraCluster?
     @State private var selectedSensor: PublicSensor?
@@ -72,22 +89,13 @@ struct MapRadarView: View {
         return status == .denied || status == .restricted
     }
 
-    private var clusters: [CameraCluster] {
-        guard let visibleRegion else { return [] }
-        return repository.clusters(for: filter, in: visibleRegion)
-    }
+    // Viewport and proximity math is computed off the main actor into `snapshot`
+    // (see `requestSnapshot`); body only reads the published result.
+    private var clusters: [ClusterSnapshot] { snapshot.clusters }
 
-    private var camerasInView: [ALPRCamera] {
-        // Never fall back to the full cache — that can be thousands of rows and
-        // stalls the first Map paint (especially on iPad).
-        guard let region = visibleRegion else { return [] }
-        return repository.cameras(in: region, filter: filter)
-    }
+    private var camerasInViewCount: Int { snapshot.inViewCount }
 
-    private var nearest: (camera: ALPRCamera, meters: CLLocationDistance)? {
-        guard let coordinate = locationManager.location?.coordinate else { return nil }
-        return repository.nearest(to: coordinate, filter: filter)
-    }
+    private var nearest: NearestSnapshot? { snapshot.nearest }
 
     /// Foreground proximity to a mapped ALPR pin and/or active corridor geofence state.
     private var inWatchedZone: Bool {
@@ -113,7 +121,8 @@ struct MapRadarView: View {
             return GeoHelpers.region(fetched, contains: visible.center)
         }()
         return CoverageConfidence.make(
-            visibleCameras: camerasInView,
+            visibleCount: snapshot.inViewCount,
+            facingPercent: snapshot.facingPercent,
             isLoading: repository.isLoading,
             isSeeding: repository.isSeeding,
             isServingStale: repository.isServingStale,
@@ -125,7 +134,7 @@ struct MapRadarView: View {
 
     private var surveillanceLevel: SurveillanceLevel {
         SurveillanceLevel.compute(
-            visibleCount: camerasInView.count,
+            visibleCount: camerasInViewCount,
             nearestMeters: nearest?.meters,
             inWatchedZone: inWatchedZone
         )
@@ -134,7 +143,7 @@ struct MapRadarView: View {
     /// Keep repository sparse/seed hints. After a successful fetch with 0 pins in view, name the next tap.
     private var mapCoverageHint: String? {
         if let hint = repository.coverageHint { return hint }
-        guard camerasInView.isEmpty,
+        guard camerasInViewCount == 0,
               !locationDenied,
               !repository.isLoading,
               repository.lastSuccessfulFetchAt != nil
@@ -142,7 +151,8 @@ struct MapRadarView: View {
         return "Zoom into a city, or tap Report on the tool rail."
     }
 
-    var body: some View {
+    /// Lifecycle and state observers, split from `body` to keep the modifier chain type-checkable.
+    private var trackedMap: some View {
         GeometryReader { geo in
             mapStack(size: geo.size)
         }
@@ -160,7 +170,17 @@ struct MapRadarView: View {
         .onChange(of: showHeat) { _, value in showHeatStored = value }
         .onChange(of: showSensorAtlas) { _, value in handleSensorAtlasToggle(value) }
         .onChange(of: showOliveBranchEntrances) { _, value in handleEntranceToggle(value) }
-        .onChange(of: filter) { _, value in defaultFilterRaw = value.rawValue }
+        .onChange(of: filter) { _, value in
+            defaultFilterRaw = value.rawValue
+            requestSnapshot(immediately: true)
+        }
+        .onChange(of: visibleRegion.map(RegionKey.init)) { _, _ in requestSnapshot() }
+        .onChange(of: repository.indexVersion) { _, _ in requestSnapshot() }
+        .onChange(of: locationManager.location) { _, location in handleSnapshotLocation(location) }
+    }
+
+    var body: some View {
+        trackedMap
         .onReceive(NotificationCenter.default.publisher(for: .flockPlaceScore)) { _ in
             PendingIntentActions.placeScoreRequested = false
             computePlaceScore()
@@ -238,7 +258,7 @@ struct MapRadarView: View {
         VStack(spacing: 10) {
             if showBootBanner {
                 OverwatchBootBanner(
-                    visibleCount: camerasInView.count,
+                    visibleCount: camerasInViewCount,
                     level: surveillanceLevel
                 ) {
                     showBootBanner = false
@@ -320,11 +340,11 @@ struct MapRadarView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             RadarHUD(
-                visibleCount: camerasInView.count,
+                visibleCount: camerasInViewCount,
                 nearestMeters: nearest?.meters,
-                nearestLabel: nearest.map { $0.camera.displayManufacturer },
+                nearestLabel: nearest?.manufacturer,
                 inWatchedZone: inWatchedZone,
-                densityLabel: AppTheme.densityLabel(count: camerasInView.count),
+                densityLabel: AppTheme.densityLabel(count: camerasInViewCount),
                 confidence: coverageConfidence,
                 coverageHint: mapCoverageHint,
                 errorMessage: repository.lastError,
@@ -339,14 +359,18 @@ struct MapRadarView: View {
 
     private func handleAppear() {
         locationManager.start()
-        showHeat = showHeatStored
-        showSensorAtlas = showSensorAtlasStored
-        showOliveBranchEntrances = showOliveBranchEntrancesStored
-        filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
-        radar.watchModeEnabled = watchModeStored
-        sensorAtlasStore.loadIfNeeded()
-        entranceStore.loadIfNeeded()
-        bootstrapRegion()
+        if !didBootstrap {
+            didBootstrap = true
+            if BootBannerGate.claim() { showBootBanner = true }
+            showHeat = showHeatStored
+            showSensorAtlas = showSensorAtlasStored
+            showOliveBranchEntrances = showOliveBranchEntrancesStored
+            filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
+            radar.watchModeEnabled = watchModeStored
+            sensorAtlasStore.loadIfNeeded()
+            entranceStore.loadIfNeeded()
+            bootstrapRegion()
+        }
         startPulseIfNeeded()
         maybeAutoEnableSensorAtlas()
         maybeAutoEnableEntrances()
@@ -367,7 +391,48 @@ struct MapRadarView: View {
         noteSurveillanceLevel()
     }
 
+    /// Recompute the snapshot off the main actor. Region/cache changes are debounced so a pan or a
+    /// fetch burst builds once after it settles; filter changes and first loads go immediately.
+    private func requestSnapshot(immediately: Bool = false) {
+        snapshotTask?.cancel()
+        snapshotGeneration &+= 1
+        let generation = snapshotGeneration
+        let index = repository.spatialIndex
+        let region = visibleRegion
+        let filter = filter
+        let user = locationManager.location?.coordinate
+        lastSnapshotUser = user
+        let wait: UInt64 = immediately || snapshot.inViewCount == 0 && snapshot.clusters.isEmpty ? 0 : 200_000_000
+        snapshotTask = Task {
+            if wait > 0 { try? await Task.sleep(nanoseconds: wait) }
+            guard !Task.isCancelled else { return }
+            let built = await Task.detached(priority: .userInitiated) {
+                MapSnapshotBuilder.build(index: index, region: region, filter: filter, user: user)
+            }.value
+            guard !Task.isCancelled, generation == snapshotGeneration else { return }
+            snapshot = built
+        }
+    }
+
+    /// Location ticks rebuild only on meaningful movement; the nearest lookup is cheap and
+    /// proximity haptics want it fresh, so this skips the debounce.
+    private func handleSnapshotLocation(_ location: CLLocation?) {
+        guard let coordinate = location?.coordinate else { return }
+        if let last = lastSnapshotUser,
+           GeoDistance.meters(
+               fromLatitude: last.latitude, longitude: last.longitude,
+               toLatitude: coordinate.latitude, longitude: coordinate.longitude
+           ) < 5 {
+            return
+        }
+        requestSnapshot(immediately: true)
+    }
+
     private func handleDisappear() {
+        // The map stays mounted while hidden; stop the ambient pulse so it isn't animating off-screen.
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { pulsePhase = false }
         sensorAtlasBannerDismissTask?.cancel()
         sensorAtlasBannerDismissTask = nil
         entranceBannerDismissTask?.cancel()
@@ -422,7 +487,6 @@ struct MapRadarView: View {
 
     private func handleWatchModeChange(_ enabled: Bool) {
         watchModeStored = enabled
-        if enabled { OverwatchAudio.armClick() }
         startPulseIfNeeded()
     }
 
@@ -505,11 +569,11 @@ struct MapRadarView: View {
                 }
             }
 
-            ForEach(fovCameras) { camera in
-                if let degrees = GeoHelpers.directionDegrees(from: camera.direction) {
+            ForEach(snapshot.fovPoints) { camera in
+                if let degrees = camera.directionDegrees {
                     MapPolygon(
                         coordinates: GeoHelpers.fovPolygon(
-                            center: camera.coordinate,
+                            center: CLLocationCoordinate2D(latitude: camera.latitude, longitude: camera.longitude),
                             bearingDegrees: degrees
                         )
                     )
@@ -522,7 +586,12 @@ struct MapRadarView: View {
             ForEach(clusters.prefix(120)) { cluster in
                 Annotation("", coordinate: cluster.coordinate, anchor: .center) {
                     Button {
-                        selectedCluster = cluster
+                        selectedCluster = CameraCluster(
+                            id: cluster.id,
+                            coordinate: cluster.coordinate,
+                            cameras: repository.cameras(withIDs: cluster.cameraIDs),
+                            isFlockDominant: cluster.isFlockDominant
+                        )
                     } label: {
                         CameraAnnotationView(count: cluster.count, isFlock: cluster.isFlockDominant)
                     }
@@ -618,13 +687,6 @@ struct MapRadarView: View {
                 .stroke(AppTheme.border, lineWidth: 1)
         )
         .transition(.move(edge: .bottom).combined(with: .opacity))
-    }
-
-    private var fovCameras: [ALPRCamera] {
-        camerasInView
-            .filter { GeoHelpers.directionDegrees(from: $0.direction) != nil }
-            .prefix(40)
-            .map { $0 }
     }
 
     /// Compact tool rail only — RadarHUD carries status; no second brand band.
@@ -824,7 +886,9 @@ struct MapRadarView: View {
         withAnimation(.easeInOut(duration: 0.25)) {
             radar.watchModeEnabled.toggle()
         }
+        // Single owner of watch-toggle feedback: one haptic, plus one click when arming.
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        if radar.watchModeEnabled { OverwatchAudio.armClick() }
     }
 
     private func startPulseIfNeeded() {

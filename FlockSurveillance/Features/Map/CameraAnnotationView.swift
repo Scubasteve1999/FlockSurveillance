@@ -244,23 +244,13 @@ struct RadarHUD: View {
             withAnimation(.easeInOut(duration: 0.35)) {
                 ringProgress = targetRing
             }
-            if inside {
-                UINotificationFeedbackGenerator().notificationOccurred(.warning)
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
-            }
+            // Zone / watch-mode / critical feedback is owned by MapRadarView.
             updateZonePulse(inside || watchModeEnabled)
             startSweep()
         }
         .onChange(of: watchModeEnabled) { _, enabled in
-            if enabled {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                OverwatchAudio.armClick()
-            }
             updateZonePulse(enabled || inWatchedZone)
             startSweep()
-        }
-        .onChange(of: level) { previous, current in
-            OverwatchAudio.stingIfEnteringCritical(previous: previous, current: current)
         }
     }
 

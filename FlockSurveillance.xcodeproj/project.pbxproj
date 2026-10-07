@@ -14,6 +14,7 @@
 		0473DAB1AD29F262ED8B940E /* PublicSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */; };
 		06548B21963B112C3090B679 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
 		065E689BE7C41604D8427337 /* OfficialMapStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28FC4247ECD424E345DBE71 /* OfficialMapStatusStore.swift */; };
+		D51BAFC4455616EB814F3561 /* RecordsWallStatusStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31546B6DAD56AAED0EB3C224 /* RecordsWallStatusStore.swift */; };
 		084D5CB1295BB5FE46CC2CCB /* AgencyPortalSharesBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 7B02C898D695E1CBF72D8F8D /* AgencyPortalSharesBundle.json */; };
 		085AF7BD75826619C561CACE /* OliveBranchEntrance.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */; };
 		08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */; };
@@ -22,6 +23,7 @@
 		105E2A0019C3934D3951A69F /* MapHonestyCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7768DF8192D9D87CF7178404 /* MapHonestyCopy.swift */; };
 		1133495C724E816335A06712 /* AlertsAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */; };
 		11604F749087B24B50B7CBFA /* OfficialCameraMapsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E501D86083F2A274F5E6CC31 /* OfficialCameraMapsList.swift */; };
+		92DF5D6E6F999E9FFC75CF11 /* RecordsWallList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884516EDCD70706F85DE3239 /* RecordsWallList.swift */; };
 		11CCD893F336E16104455165 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA45A1E26E6ABA7C92885FD8 /* RootTabView.swift */; };
 		1415B0516182E38E2674E520 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E0E918A2741433F40B4681 /* KeyboardDismiss.swift */; };
 		166F21FDA500EDC98D3947D7 /* SurveillanceLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */; };
@@ -33,6 +35,7 @@
 		2422FD84647A699EBB159978 /* SensorAtlasStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C373293D13ED5DA5B5271D6 /* SensorAtlasStore.swift */; };
 		248C77EA26A3AF98FF6EB85E /* SensorAtlasCoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB7D63F1267C1CA4224E1F5 /* SensorAtlasCoverageTests.swift */; };
 		26D318110D5D46140FECD625 /* OfficialMapStatusChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68865CE44CE81CB6D835A4D1 /* OfficialMapStatusChip.swift */; };
+		2A7363E83D48CDE5BFFCC676 /* RecordsWallStatusChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C720AE3E5573DA91CF8C79 /* RecordsWallStatusChip.swift */; };
 		2EB1337FE5373576E00D9720 /* FlockSurveillanceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FC17954A70DAEE86221D64 /* FlockSurveillanceApp.swift */; };
 		332A92EC2D5CF49EBDDE7363 /* CameraRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */; };
 		3628A0D564D84CA19E2BA0FB /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */; };
@@ -70,6 +73,7 @@
 		7F0A8D4B991A5D4D312353F6 /* InfoPlistKeysTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */; };
 		7FD8B1ABCDD2F8C41F72B3A2 /* OverwatchAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = D665607AAF78390D21697570 /* OverwatchAudio.swift */; };
 		7FE26DB3C13EA28F603CE839 /* OfficialMapStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC36D20580EB086E05378BAB /* OfficialMapStatus.swift */; };
+		F9FDE2D5DE0F33F416715E2C /* RecordsWallStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A0C3244D9EAB31259CD0FC /* RecordsWallStatus.swift */; };
 		81253B267E41D771BD89733A /* WatchedZoneCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25565AEE4313CE68A62C5C8B /* WatchedZoneCopy.swift */; };
 		81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC41C26170FE6EC75640BC0D /* ARCameraSightView.swift */; };
 		825736B74843637D839FD918 /* OliveBranchEntranceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10BD8EA73F456C0232EDF66 /* OliveBranchEntranceStoreTests.swift */; };
@@ -89,6 +93,7 @@
 		9A23C5F65166237D59781E73 /* RetentionDeltaBundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 13B70887B150D9CBAF7DA4EC /* RetentionDeltaBundle.json */; };
 		9CB65369BA218943953FE432 /* AppLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF94A8C60991DECD85C56617 /* AppLinks.swift */; };
 		A03E0CD95CBAA892531408EC /* OfficialMapStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECA89BDF64C04D62B34E8B8 /* OfficialMapStatusTests.swift */; };
+		FD16B9E10C0826D1EEC2A4BD /* RecordsWallStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D2B5D428D1B64F58133E80 /* RecordsWallStatusTests.swift */; };
 		AC4DD48F9C6B9492B67D7073 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D98217CB84CE09EDCB9FCA /* SettingsView.swift */; };
 		AE12A36D58869D04BFE846B9 /* SensorDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE6EDE149F913CE7636ADA4 /* SensorDetailSheet.swift */; };
 		AF6A3FA095257191917FC1D0 /* EntranceSiteDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77966A5546130F29FF025FF /* EntranceSiteDetailSheet.swift */; };
@@ -100,6 +105,7 @@
 		B6BBA5E5669820112F22D0DC /* CoverageConfidence.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFC7E8DF7567DB8501A2A37 /* CoverageConfidence.swift */; };
 		B7CF5F885EFF99A8FEA919EF /* PendingReportDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E86136691802958D238D8D3 /* PendingReportDetailSheet.swift */; };
 		BF8DA08B7038269DF47ACDC6 /* OfficialMapStatus.json in Resources */ = {isa = PBXBuildFile; fileRef = A633B5F8A97590D736C8224D /* OfficialMapStatus.json */; };
+		37DC7E49A3E89456A4182973 /* RecordsWallStatus.json in Resources */ = {isa = PBXBuildFile; fileRef = C1A29CA7E60A20895B90EB86 /* RecordsWallStatus.json */; };
 		C63B431F7CBF224F966ACC0C /* RefreshNearbyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */; };
 		C798CFFD683A611ADB8C8DC3 /* AgencyPortalSharesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A9D3B012673AAB62AD50A3 /* AgencyPortalSharesModels.swift */; };
 		CB8D603813359A8D91EA1DEE /* EntranceSiteAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2967FD230AD3C22319422D /* EntranceSiteAnnotationView.swift */; };
@@ -121,6 +127,7 @@
 		E58BF2EF6A9D54D122965FE1 /* SurveillanceLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B55E39886ECEA0BFB3C874D /* SurveillanceLevel.swift */; };
 		E7ADB8087407111D5DA58BB8 /* RefreshNearbyIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 546DB77F4EA0C9971956F944 /* RefreshNearbyIntent.swift */; };
 		E809A75E3FDD4BE47B192FC4 /* OfficialMapStatusList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A283F180E54B34FDA6B98899 /* OfficialMapStatusList.swift */; };
+		9174B5A1B13F963FE30B21B7 /* RecordsWallStatusList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223673BC254FE294E705DC4E /* RecordsWallStatusList.swift */; };
 		ED008F1B0443FCEC717CB613 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */; };
 		F212FE758A463AAC1F72DFE6 /* AgencyPortalSharesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB80418B840539CCB50ED9C /* AgencyPortalSharesStore.swift */; };
 		F2DCECB5D5040B8C00428E1E /* SensorAtlasAutoPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */; };
@@ -209,6 +216,7 @@
 		64598DDE13993848B823B464 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		67D1FF1994351D264823D5DB /* OSMReportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSMReportService.swift; sourceTree = "<group>"; };
 		68865CE44CE81CB6D835A4D1 /* OfficialMapStatusChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatusChip.swift; sourceTree = "<group>"; };
+		84C720AE3E5573DA91CF8C79 /* RecordsWallStatusChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallStatusChip.swift; sourceTree = "<group>"; };
 		6A07056E7263E762DD1DCD73 /* SharingNetworkBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SharingNetworkBundle.json; sourceTree = "<group>"; };
 		6A36BF712EA787B0B1D93BC7 /* CameraRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRepository.swift; sourceTree = "<group>"; };
 		6AC739360F96B00B18FF118D /* GeoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpers.swift; sourceTree = "<group>"; };
@@ -233,11 +241,14 @@
 		9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = OliveBranchEntranceBundle.json; sourceTree = "<group>"; };
 		A12B3B5423AFA980DB52F222 /* GeoHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoHelpersTests.swift; sourceTree = "<group>"; };
 		A283F180E54B34FDA6B98899 /* OfficialMapStatusList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatusList.swift; sourceTree = "<group>"; };
+		223673BC254FE294E705DC4E /* RecordsWallStatusList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallStatusList.swift; sourceTree = "<group>"; };
 		A28FC4247ECD424E345DBE71 /* OfficialMapStatusStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatusStore.swift; sourceTree = "<group>"; };
+		31546B6DAD56AAED0EB3C224 /* RecordsWallStatusStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallStatusStore.swift; sourceTree = "<group>"; };
 		A49125D402CAD705C90729FB /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
 		A4B0B4143401454EFDFBD3EA /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		A61AD18D5039104F66E37260 /* AlertsAndReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsAndReportTests.swift; sourceTree = "<group>"; };
 		A633B5F8A97590D736C8224D /* OfficialMapStatus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = OfficialMapStatus.json; sourceTree = "<group>"; };
+		C1A29CA7E60A20895B90EB86 /* RecordsWallStatus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = RecordsWallStatus.json; sourceTree = "<group>"; };
 		A7A9D3B012673AAB62AD50A3 /* AgencyPortalSharesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyPortalSharesModels.swift; sourceTree = "<group>"; };
 		A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
 		AAC6202E3E0B861EDB885511 /* RetentionDeltaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaStore.swift; sourceTree = "<group>"; };
@@ -259,10 +270,12 @@
 		C38A882B8D95C203AAB19E8B /* RetentionDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaTests.swift; sourceTree = "<group>"; };
 		C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportStore.swift; sourceTree = "<group>"; };
 		CC36D20580EB086E05378BAB /* OfficialMapStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatus.swift; sourceTree = "<group>"; };
+		48A0C3244D9EAB31259CD0FC /* RecordsWallStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallStatus.swift; sourceTree = "<group>"; };
 		CCAEBC12DFF996D92B3E3FDA /* PendingIntentActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentActionsTests.swift; sourceTree = "<group>"; };
 		CD30CD848C1FACE72DE6F058 /* DriveLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveLiveActivityController.swift; sourceTree = "<group>"; };
 		CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceCompleter.swift; sourceTree = "<group>"; };
 		CECA89BDF64C04D62B34E8B8 /* OfficialMapStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialMapStatusTests.swift; sourceTree = "<group>"; };
+		F8D2B5D428D1B64F58133E80 /* RecordsWallStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallStatusTests.swift; sourceTree = "<group>"; };
 		D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPlistKeysTests.swift; sourceTree = "<group>"; };
 		D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStoreTests.swift; sourceTree = "<group>"; };
 		D665607AAF78390D21697570 /* OverwatchAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchAudio.swift; sourceTree = "<group>"; };
@@ -270,6 +283,7 @@
 		D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidget.swift; sourceTree = "<group>"; };
 		D9C7E3BD8E8A9BD287C40FCB /* ReportCameraSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportCameraSheet.swift; sourceTree = "<group>"; };
 		E501D86083F2A274F5E6CC31 /* OfficialCameraMapsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialCameraMapsList.swift; sourceTree = "<group>"; };
+		884516EDCD70706F85DE3239 /* RecordsWallList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsWallList.swift; sourceTree = "<group>"; };
 		E987F4C7BA6BB712F3BB5098 /* MapHonestyCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapHonestyCopyTests.swift; sourceTree = "<group>"; };
 		EA8E10E52F111D14D243853E /* CityRankingsStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityRankingsStrip.swift; sourceTree = "<group>"; };
 		EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OliveBranchEntrance.swift; sourceTree = "<group>"; };
@@ -315,7 +329,9 @@
 			children = (
 				4C1FF1832220D03BC719B5EB /* AgencyPortalSharesView.swift */,
 				E501D86083F2A274F5E6CC31 /* OfficialCameraMapsList.swift */,
+				884516EDCD70706F85DE3239 /* RecordsWallList.swift */,
 				68865CE44CE81CB6D835A4D1 /* OfficialMapStatusChip.swift */,
+				84C720AE3E5573DA91CF8C79 /* RecordsWallStatusChip.swift */,
 				BE00454428F760D163259776 /* RetentionDeltaView.swift */,
 				F169A9D0A2262070DE739E1F /* SharingNetworkView.swift */,
 			);
@@ -336,6 +352,7 @@
 				E987F4C7BA6BB712F3BB5098 /* MapHonestyCopyTests.swift */,
 				72CF362BF614A477E4A6985D /* MidSouthHonestyCopyTests.swift */,
 				CECA89BDF64C04D62B34E8B8 /* OfficialMapStatusTests.swift */,
+				F8D2B5D428D1B64F58133E80 /* RecordsWallStatusTests.swift */,
 				B489EBB3102FBA3A93353B01 /* OliveBranchEntranceAutoPolicyTests.swift */,
 				F10BD8EA73F456C0232EDF66 /* OliveBranchEntranceStoreTests.swift */,
 				637361494637A5B0C42496C5 /* OverpassParserTests.swift */,
@@ -448,7 +465,9 @@
 				A7A9D3B012673AAB62AD50A3 /* AgencyPortalSharesModels.swift */,
 				F1FD7C2FF28F7D3B44D77F83 /* ALPRCamera.swift */,
 				CC36D20580EB086E05378BAB /* OfficialMapStatus.swift */,
+				48A0C3244D9EAB31259CD0FC /* RecordsWallStatus.swift */,
 				A283F180E54B34FDA6B98899 /* OfficialMapStatusList.swift */,
+				223673BC254FE294E705DC4E /* RecordsWallStatusList.swift */,
 				EAE6190ED466BFD5E1F84A08 /* OliveBranchEntrance.swift */,
 				839B34D71A068F6E097C63DE /* PendingReport.swift */,
 				5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */,
@@ -481,6 +500,7 @@
 				2DA709B0872A9F478764A4CA /* LocationManager.swift */,
 				7768DF8192D9D87CF7178404 /* MapHonestyCopy.swift */,
 				A28FC4247ECD424E345DBE71 /* OfficialMapStatusStore.swift */,
+				31546B6DAD56AAED0EB3C224 /* RecordsWallStatusStore.swift */,
 				0BE467C1FAA251A460E75C96 /* OliveBranchEntranceAutoPolicy.swift */,
 				58072CF2BD594E71080FB456 /* OliveBranchEntranceCoverage.swift */,
 				B76099548A9D2BC9AE0E7357 /* OliveBranchEntranceStore.swift */,
@@ -526,6 +546,7 @@
 				7B02C898D695E1CBF72D8F8D /* AgencyPortalSharesBundle.json */,
 				8ED03FA3B1E8310241F711D5 /* FlockSurveillance.storekit */,
 				A633B5F8A97590D736C8224D /* OfficialMapStatus.json */,
+				C1A29CA7E60A20895B90EB86 /* RecordsWallStatus.json */,
 				9F13CC6AE1C6F41E425EC73F /* OliveBranchEntranceBundle.json */,
 				13B70887B150D9CBAF7DA4EC /* RetentionDeltaBundle.json */,
 				38E4546BCC022F9ACAB3B832 /* SensorAtlasBundle.json */,
@@ -694,6 +715,7 @@
 				45A5AA8B0B98B2AC41DB4141 /* Assets.xcassets in Resources */,
 				1DFA15E663E9542FBB321049 /* FlockSurveillance.storekit in Resources */,
 				BF8DA08B7038269DF47ACDC6 /* OfficialMapStatus.json in Resources */,
+				37DC7E49A3E89456A4182973 /* RecordsWallStatus.json in Resources */,
 				59546AA990B08DF4B87D3409 /* OliveBranchEntranceBundle.json in Resources */,
 				5933C4C05F56C65BA6A98020 /* PrivacyInfo.xcprivacy in Resources */,
 				9A23C5F65166237D59781E73 /* RetentionDeltaBundle.json in Resources */,
@@ -751,10 +773,15 @@
 				E2F73E9EB82B38D978BF5D18 /* MapRadarView.swift in Sources */,
 				DCAADB26884D5252B0422E76 /* OSMReportService.swift in Sources */,
 				11604F749087B24B50B7CBFA /* OfficialCameraMapsList.swift in Sources */,
+				92DF5D6E6F999E9FFC75CF11 /* RecordsWallList.swift in Sources */,
 				7FE26DB3C13EA28F603CE839 /* OfficialMapStatus.swift in Sources */,
+				F9FDE2D5DE0F33F416715E2C /* RecordsWallStatus.swift in Sources */,
 				26D318110D5D46140FECD625 /* OfficialMapStatusChip.swift in Sources */,
+				2A7363E83D48CDE5BFFCC676 /* RecordsWallStatusChip.swift in Sources */,
 				E809A75E3FDD4BE47B192FC4 /* OfficialMapStatusList.swift in Sources */,
+				9174B5A1B13F963FE30B21B7 /* RecordsWallStatusList.swift in Sources */,
 				065E689BE7C41604D8427337 /* OfficialMapStatusStore.swift in Sources */,
+				D51BAFC4455616EB814F3561 /* RecordsWallStatusStore.swift in Sources */,
 				085AF7BD75826619C561CACE /* OliveBranchEntrance.swift in Sources */,
 				909C3D5AB821E8634CED5C07 /* OliveBranchEntranceAutoPolicy.swift in Sources */,
 				DEDB0A00D8A43A9F1FEC880A /* OliveBranchEntranceCoverage.swift in Sources */,
@@ -814,6 +841,7 @@
 				44AACB2B42B10887A56A72B8 /* MapHonestyCopyTests.swift in Sources */,
 				CB8F7B0C75B26BA0C2199148 /* MidSouthHonestyCopyTests.swift in Sources */,
 				A03E0CD95CBAA892531408EC /* OfficialMapStatusTests.swift in Sources */,
+				FD16B9E10C0826D1EEC2A4BD /* RecordsWallStatusTests.swift in Sources */,
 				AF90F826176C18AE29A6D643 /* OliveBranchEntranceAutoPolicyTests.swift in Sources */,
 				825736B74843637D839FD918 /* OliveBranchEntranceStoreTests.swift in Sources */,
 				7E2F1631CA165501D7C2723F /* OverpassParserTests.swift in Sources */,

@@ -160,7 +160,7 @@ struct ReportCameraSheet: View {
                 .padding(.vertical, 16)
                 .foregroundStyle(AppTheme.background)
                 .background(AppTheme.primary.opacity(isSubmitting ? 0.6 : 1))
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
             }
             .buttonStyle(.plain)
             .disabled(isSubmitting)
@@ -211,7 +211,7 @@ struct ReportCameraSheet: View {
                     .padding(.vertical, 16)
                     .foregroundStyle(AppTheme.background)
                     .background(AppTheme.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
             }
             .buttonStyle(.plain)
             .padding(.top, 8)

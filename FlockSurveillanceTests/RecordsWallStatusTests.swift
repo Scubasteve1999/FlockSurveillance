@@ -5,7 +5,7 @@ final class RecordsWallStatusTests: XCTestCase {
     private let expectedIDs = [
         "north-richland-hills-tx", "sealy-tx", "victoria-tx", "harris-county-sheriff-tx",
         "irving-tx", "carrollton-tx", "texas-dps", "txdot-tx", "live-oak-tx",
-        "corinth-tx", "prosper-tx", "alexandria-va"
+        "corinth-tx", "prosper-tx"
     ]
 
     private func loadDataset() throws -> RecordsWallDataset {
@@ -52,6 +52,28 @@ final class RecordsWallStatusTests: XCTestCase {
         }
     }
 
+    func testElevenRecordsAndEveryRecordHasAnHTTPSSourceURL() throws {
+        let dataset = try loadDataset()
+        XCTAssertEqual(dataset.records.count, 11)
+        XCTAssertNil(dataset.records.first { $0.id == "alexandria-va" })
+        for record in dataset.records {
+            let raw = record.sourceURL?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            XCTAssertFalse(raw.isEmpty, "\(record.id) has no source_url")
+            XCTAssertEqual(URL(string: raw)?.scheme, "https", record.id)
+        }
+    }
+
+    func testIrvingAndVictoriaAttribution() throws {
+        XCTAssertEqual(
+            try record("irving-tx").foiaCostNote,
+            "Reported by Current Revolt and cited by the Texas Tribune on Oct 5. Secondary source."
+        )
+        XCTAssertEqual(
+            try record("victoria-tx").foiaCostNote,
+            "Approximate figure, per the requester. Not confirmed by the city."
+        )
+    }
+
     func testMetaDecodes() throws {
         let meta = try XCTUnwrap(loadDataset().meta)
         let tracker = try XCTUnwrap(meta.tracker)
@@ -94,7 +116,6 @@ final class RecordsWallStatusTests: XCTestCase {
         XCTAssertEqual(dps.searchesPublic, .searchesWithheld)
         XCTAssertEqual(try record("txdot-tx").foiaStatus, .foiaChallengedAG)
         XCTAssertEqual(try record("live-oak-tx").portalURL, "https://transparency.flocksafety.com/live-oak-tx-pd-")
-        XCTAssertEqual(try record("alexandria-va").portalStatus, .portalClaimed)
     }
 
     func testNRHDoesNotInventAModifiedPrice() throws {
@@ -148,7 +169,6 @@ final class RecordsWallStatusTests: XCTestCase {
         XCTAssertEqual(RecordsWallStatusCopy.title(for: try record("texas-dps")), "Records challenged / withheld")
         XCTAssertEqual(RecordsWallStatusCopy.title(for: try record("txdot-tx")), "Records challenged / withheld")
         XCTAssertEqual(RecordsWallStatusCopy.title(for: try record("live-oak-tx")), "Portal · search detail unchecked")
-        XCTAssertEqual(RecordsWallStatusCopy.title(for: try record("alexandria-va")), "Portal · search detail unchecked")
         let none = RecordsWallRecord(
             id: "x", jurisdiction: "X", state: "TX", agency: "X PD",
             portalStatus: .portalNoneFound, portalURL: nil, searchesPublic: .searchesUnknown,
@@ -179,13 +199,13 @@ final class RecordsWallStatusTests: XCTestCase {
         let dataset = try loadDataset()
         XCTAssertEqual(
             RecordsWallStatusCopy.incompletenessBanner(agencyCount: dataset.records.count, datasetAsOf: dataset.datasetAsOf),
-            "Hand-checked sample of 12 agencies as of Oct 6, 2026, not every agency."
+            "Hand-checked sample of 11 agencies as of Oct 6, 2026, not every agency."
         )
         XCTAssertEqual(
             RecordsWallStatusCopy.footnote,
             "Flock offers portals; each agency chooses what to publish. A portal is not the same as a full audit log."
         )
-        XCTAssertEqual(RecordsWallStatusCopy.seeAllTitle(agencyCount: 12), "See all 12")
+        XCTAssertEqual(RecordsWallStatusCopy.seeAllTitle(agencyCount: 11), "See all 11")
     }
 
     func testTexasAggregateIsLabeledTexasOnly() throws {

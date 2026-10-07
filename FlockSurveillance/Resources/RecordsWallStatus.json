@@ -55,7 +55,7 @@
       "searches_public": "searches_unknown",
       "foia_status": "foia_quoted",
       "foia_cost_usd": 5000,
-      "foia_cost_note": "Approximate figure quoted to a requester.",
+      "foia_cost_note": "Approximate figure, per the requester. Not confirmed by the city.",
       "as_of": "2026-10-05",
       "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
       "source_type": "news"
@@ -83,7 +83,7 @@
       "searches_public": "searches_unknown",
       "foia_status": "foia_quoted",
       "foia_cost_usd": 70000,
-      "foia_cost_note": "Figure from the Texas Tribune's Oct 5 reporting, as relayed by Current Revolt.",
+      "foia_cost_note": "Reported by Current Revolt and cited by the Texas Tribune on Oct 5. Secondary source.",
       "as_of": "2026-10-05",
       "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
       "source_type": "news_secondary"
@@ -168,18 +168,6 @@
       "as_of": "2025-04-29",
       "source_url": "https://transparency.flocksafety.com/prosper-tx-pd",
       "source_type": "indexed_portal"
-    },
-    {
-      "id": "alexandria-va",
-      "jurisdiction": "Alexandria",
-      "state": "VA",
-      "agency": "Alexandria Police Department",
-      "portal_status": "portal_claimed",
-      "searches_public": "searches_unknown",
-      "foia_status": "foia_unknown",
-      "scope_note": "Portal exists per earlier research. Search detail has not been checked.",
-      "as_of": "2026-10-06",
-      "source_type": "agency"
     }
   ]
 }

@@ -10,6 +10,10 @@
 		00FCB5E4D569A4F550DBA42D /* NearbyCamerasWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F9CF93C0D2299CE3A6BBFE17 /* NearbyCamerasWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		01892D5DC7EC016FBCF91B71 /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = C054DC736F277F3650CB0992 /* AppIdentity.swift */; };
 		CD1415C424C5EC2FE5408578 /* PinDensity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037E09C16A117D305EC972A0 /* PinDensity.swift */; };
+		0EEFAB047BE43C53996EB5E1 /* AppTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457350F3E00F70BFF9B52582 /* AppTypography.swift */; };
+		887CDBA805644D1E8F15B8F5 /* AppTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457350F3E00F70BFF9B52582 /* AppTypography.swift */; };
+		928497B0716327BBDFCA4ACC /* AppThemeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B86420272CD2C63B44F91D /* AppThemeTokens.swift */; };
+		8055FA60B61F92CE50C42678 /* AppThemeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B86420272CD2C63B44F91D /* AppThemeTokens.swift */; };
 		0332AEC2BFEDF8594A275803 /* ShareCardASOExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E865B6C580025A423D96835 /* ShareCardASOExportTests.swift */; };
 		0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 839B34D71A068F6E097C63DE /* PendingReport.swift */; };
 		0473DAB1AD29F262ED8B940E /* PublicSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A80301B55D799BE3A6F7F4E /* PublicSensor.swift */; };
@@ -280,6 +284,8 @@
 		BF0844EAE1991FA51BC19FA1 /* OverwatchChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchChrome.swift; sourceTree = "<group>"; };
 		C054DC736F277F3650CB0992 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
 		037E09C16A117D305EC972A0 /* PinDensity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinDensity.swift; sourceTree = "<group>"; };
+		457350F3E00F70BFF9B52582 /* AppTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTypography.swift; sourceTree = "<group>"; };
+		F1B86420272CD2C63B44F91D /* AppThemeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppThemeTokens.swift; sourceTree = "<group>"; };
 		C305FAD7AFCE10120DCFC586 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		C38A882B8D95C203AAB19E8B /* RetentionDeltaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetentionDeltaTests.swift; sourceTree = "<group>"; };
 		C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportStore.swift; sourceTree = "<group>"; };
@@ -593,6 +599,7 @@
 		D1FD6B99158084B1D420AE07 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				6B330BBAA6C599541A09D9D3 /* Theme */,
 				C054DC736F277F3650CB0992 /* AppIdentity.swift */,
 				037E09C16A117D305EC972A0 /* PinDensity.swift */,
 				B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */,
@@ -600,6 +607,15 @@
 				A84C5EAD5FC79BFE1B632527 /* WidgetSnapshotStore.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		6B330BBAA6C599541A09D9D3 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				F1B86420272CD2C63B44F91D /* AppThemeTokens.swift */,
+				457350F3E00F70BFF9B52582 /* AppTypography.swift */,
+			);
+			path = Theme;
 			sourceTree = "<group>";
 		};
 		E163E36B1DA9F6A7A5D35874 /* Map */ = {
@@ -764,6 +780,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				887CDBA805644D1E8F15B8F5 /* AppTypography.swift in Sources */,
+				8055FA60B61F92CE50C42678 /* AppThemeTokens.swift in Sources */,
 				B3F7BF7D82DEB4B48E332808 /* ALPRCamera.swift in Sources */,
 				8D393EDF60B9CA294633DB92 /* ARCameraSightRepresentable.swift in Sources */,
 				81592D7B17BDCF42A9D0A5B1 /* ARCameraSightView.swift in Sources */,
@@ -898,6 +916,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0EEFAB047BE43C53996EB5E1 /* AppTypography.swift in Sources */,
+				928497B0716327BBDFCA4ACC /* AppThemeTokens.swift in Sources */,
 				01892D5DC7EC016FBCF91B71 /* AppIdentity.swift in Sources */,
 				CD1415C424C5EC2FE5408578 /* PinDensity.swift in Sources */,
 				3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */,

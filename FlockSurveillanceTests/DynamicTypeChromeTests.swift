@@ -4,7 +4,8 @@ import XCTest
 /// Locks P1.3 MAP + GEAR Dynamic Type: critical labels use text styles, not tiny point sizes.
 final class DynamicTypeChromeTests: XCTestCase {
     func testAppTypographyTokensAreTextStylesNotPointSizes() throws {
-        let theme = try readProductSource("FlockSurveillance/Theme/AppTheme.swift")
+        // Shared with the widget target (audit #10); see DesignTokenDriftTests.
+        let theme = try readProductSource("Shared/Theme/AppTypography.swift")
         XCTAssertTrue(theme.contains("enum AppTypography"))
         XCTAssertTrue(theme.contains("static let chip = Font.caption.weight(.medium)"))
         XCTAssertTrue(theme.contains("static let filterChip = Font.footnote.weight(.semibold)"))
@@ -15,11 +16,14 @@ final class DynamicTypeChromeTests: XCTestCase {
         XCTAssertTrue(theme.contains("static let rowTitle = Font.subheadline.weight(.semibold)"))
         XCTAssertTrue(theme.contains("static let rowSubtitle = Font.caption.weight(.medium)"))
         XCTAssertTrue(theme.contains("static let hudMono = Font.system(.caption, design: .monospaced).weight(.black)"))
+        XCTAssertTrue(theme.contains("static let sheetTitle = Font.title2.weight(.bold)"))
+        XCTAssertTrue(theme.contains("static let eyebrow = Font.caption.weight(.bold)"))
         XCTAssertFalse(theme.contains("static let chip = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let filterChip = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let pageTitle = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let sectionEyebrow = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let rowTitle = Font.system(size:"))
+        XCTAssertFalse(theme.contains("Font.system(size:"))
     }
 
     func testHonestyChipUsesScalableChipStyleAndStillWraps() throws {

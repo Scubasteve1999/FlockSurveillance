@@ -244,6 +244,35 @@ final class ProductChromeCopyTests: XCTestCase {
         XCTAssertFalse(level.contains("var color"))
     }
 
+    /// A multi-level green→red gradient next to a density word disagrees with it
+    /// (a Light badge beside an arc ending amber). Density visuals use `PinDensity.color`.
+    private static let densityRampPattern = #"AppTheme\.densityLow\s*,\s*AppTheme\.densityMedium"#
+
+    func testOneDensityReadingPerScreen() throws {
+        let ramp = try NSRegularExpression(pattern: Self.densityRampPattern)
+        func hasRamp(_ text: String) -> Bool {
+            ramp.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+        }
+        // Positive control: the old dial arc gradient is caught.
+        XCTAssertTrue(hasRamp("colors: [\n    AppTheme.densityLow,\n    AppTheme.densityMedium,\n    AppTheme.critical\n]"))
+
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        for directory in ["FlockSurveillance", "NearbyCamerasWidget", "Shared"] {
+            let base = root.appendingPathComponent(directory)
+            let enumerator = try XCTUnwrap(FileManager.default.enumerator(at: base, includingPropertiesForKeys: nil))
+            for file in enumerator.compactMap({ $0 as? URL }) where file.pathExtension == "swift" {
+                let source = try String(contentsOf: file, encoding: .utf8)
+                XCTAssertFalse(hasRamp(source), "Multi-level density gradient in \(file.lastPathComponent) — use PinDensity.color")
+            }
+        }
+
+        // Map: the HUD drops its density word while the Place Score card shows its own.
+        let map = try readProductSource("FlockSurveillance/Features/Map/MapRadarView.swift")
+        XCTAssertTrue(map.contains("showsDensity: placeScore == nil"))
+        let hud = try readProductSource("FlockSurveillance/Features/Map/CameraAnnotationView.swift")
+        XCTAssertTrue(hud.contains("if showsDensity {\n                        StatusBadge(text: density.label, color: density.color)"))
+    }
+
     private struct SourceLiteral {
         let line: Int
         let text: String

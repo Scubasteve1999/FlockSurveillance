@@ -345,6 +345,8 @@ struct MapRadarView: View {
                 coverageHint: mapCoverageHint,
                 errorMessage: repository.lastError,
                 watchModeEnabled: radar.watchModeEnabled,
+                // Place Score card carries the density reading while it's open.
+                showsDensity: placeScore == nil,
                 onToggleWatch: toggleWatchMode
             )
             .padding(.horizontal, 16)

@@ -43,6 +43,9 @@ struct RadarHUD: View {
     let coverageHint: String?
     let errorMessage: String?
     let watchModeEnabled: Bool
+    /// False while another density reading (the Place Score card) is on screen: the HUD drops
+    /// its word and mutes its ring/meter so the screen shows one density reading, not two.
+    var showsDensity: Bool = true
     let onToggleWatch: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -55,8 +58,11 @@ struct RadarHUD: View {
         PinDensity(count: visibleCount, scale: .inView)
     }
 
-    /// Zone glow is proximity (fixed tint); otherwise the density color.
-    private var levelColor: Color { inWatchedZone ? AppTheme.zoneTint : density.color }
+    /// Ring and meter color — the density color, or neutral while density is deferred.
+    private var densityTint: Color { showsDensity ? density.color : AppTheme.mutedForeground }
+
+    /// Zone glow is proximity (fixed tint); otherwise the density tint.
+    private var levelColor: Color { inWatchedZone ? AppTheme.zoneTint : densityTint }
 
     private var targetRing: CGFloat { density.fill }
 
@@ -71,6 +77,10 @@ struct RadarHUD: View {
         visibleCount == 1 ? "1 mapped pin" : "\(visibleCount) mapped pins"
     }
 
+    private var densityPhrase: String {
+        showsDensity ? ", \(density.label) density" : ""
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
@@ -78,8 +88,8 @@ struct RadarHUD: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
                         inWatchedZone
-                            ? "Pin zone. \(visibleCountLabel) in view, \(density.label) density. Phone near mapped ALPR pins, not a plate-read alert."
-                            : "\(visibleCountLabel) in view, \(density.label) density"
+                            ? "Pin zone. \(visibleCountLabel) in view\(densityPhrase). Phone near mapped ALPR pins, not a plate-read alert."
+                            : "\(visibleCountLabel) in view\(densityPhrase)"
                     )
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -98,7 +108,9 @@ struct RadarHUD: View {
                             .contentTransition(.opacity)
                     }
 
-                    StatusBadge(text: density.label, color: density.color)
+                    if showsDensity {
+                        StatusBadge(text: density.label, color: density.color)
+                    }
 
                     if inWatchedZone {
                         Text(WatchedZoneCopy.hudActiveSubtitle)
@@ -138,9 +150,9 @@ struct RadarHUD: View {
                     Capsule()
                         .fill(AppTheme.border.opacity(0.5))
                     Capsule()
-                        .fill(density.color)
+                        .fill(densityTint)
                         .frame(width: max(8, geo.size.width * targetRing))
-                        .shadow(color: density.color.opacity(0.6), radius: 6, y: 0)
+                        .shadow(color: densityTint.opacity(0.6), radius: 6, y: 0)
                 }
             }
             .frame(height: 5)
@@ -292,21 +304,11 @@ struct RadarHUD: View {
                 .stroke(AppTheme.border.opacity(0.7), lineWidth: 9)
                 .frame(width: 92, height: 92)
 
-            // Threat arc
+            // Density arc — one color, the same one as the density word.
             Circle()
                 .trim(from: 0, to: ringProgress)
                 .stroke(
-                    AngularGradient(
-                        colors: [
-                            AppTheme.densityLow,
-                            AppTheme.densityMedium,
-                            AppTheme.primary,
-                            AppTheme.critical
-                        ],
-                        center: .center,
-                        startAngle: .degrees(-90),
-                        endAngle: .degrees(270)
-                    ),
+                    densityTint,
                     style: StrokeStyle(lineWidth: 9, lineCap: .round)
                 )
                 .frame(width: 92, height: 92)

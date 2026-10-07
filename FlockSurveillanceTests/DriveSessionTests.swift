@@ -12,7 +12,7 @@ final class DriveSessionTests: XCTestCase {
             makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100),
             makeHit(id: "b", lat: 43.2, lon: -89.4, metersFromStart: 500)
         ]
-        session.start(hits: hits, exposureLabel: "Light")
+        session.start(hits: hits, density: .light)
 
         XCTAssertTrue(session.isActive)
         XCTAssertEqual(session.hits.map(\.id), ["a", "b"])
@@ -26,7 +26,7 @@ final class DriveSessionTests: XCTestCase {
         let session = DriveSession()
         session.start(
             hits: [makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100)],
-            exposureLabel: "Clear"
+            density: .clear
         )
         session.stop()
 
@@ -43,7 +43,7 @@ final class DriveSessionTests: XCTestCase {
         let before = session.liveActivityGeneration
         session.start(
             hits: [makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100)],
-            exposureLabel: "Light"
+            density: .light
         )
         XCTAssertGreaterThan(session.liveActivityGeneration, before)
         let afterStart = session.liveActivityGeneration
@@ -56,7 +56,7 @@ final class DriveSessionTests: XCTestCase {
         let session = DriveSession()
         session.start(
             hits: [makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100)],
-            exposureLabel: "Light"
+            density: .light
         )
         session.stop()
         session.update(
@@ -74,7 +74,7 @@ final class DriveSessionTests: XCTestCase {
 
         let near = makeHit(id: "near", lat: 43.1000, lon: -89.4000, metersFromStart: 50)
         let far = makeHit(id: "far", lat: 43.1100, lon: -89.4000, metersFromStart: 1_200)
-        session.start(hits: [near, far], exposureLabel: "Light")
+        session.start(hits: [near, far], density: .light)
 
         // Within the 35 m pass threshold of "near".
         let atNear = CLLocation(latitude: 43.10005, longitude: -89.4000)
@@ -96,7 +96,7 @@ final class DriveSessionTests: XCTestCase {
                 makeHit(id: "a", lat: 43.1, lon: -89.4, metersFromStart: 100),
                 makeHit(id: "b", lat: 43.2, lon: -89.4, metersFromStart: 500)
             ],
-            exposureLabel: "Elevated"
+            density: .moderate
         )
         session.update(userLocation: nil, hapticsEnabled: false)
 

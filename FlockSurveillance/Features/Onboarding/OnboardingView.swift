@@ -240,18 +240,13 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
             } else if let teaserScore {
-                let densityLabel = AppTheme.densityLabel(count: teaserScore.cameraCount)
-                let densityColor = AppTheme.densityColor(count: teaserScore.cameraCount)
+                let densityColor = teaserScore.density.color
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        if teaserIsSample {
-                            Text("MEMPHIS PREVIEW")
-                                .font(.system(size: 10, weight: .black, design: .monospaced))
-                                .tracking(0.8)
-                                .foregroundStyle(AppTheme.accent)
-                        }
-                        Spacer()
-                        StatusBadge(text: densityLabel, color: densityColor)
+                    if teaserIsSample {
+                        Text("MEMPHIS PREVIEW")
+                            .font(.system(size: 10, weight: .black, design: .monospaced))
+                            .tracking(0.8)
+                            .foregroundStyle(AppTheme.accent)
                     }
 
                     Text(teaserScore.headline)
@@ -261,15 +256,12 @@ struct OnboardingView: View {
 
                     HStack(alignment: .center, spacing: 16) {
                         WatchednessDial(
-                            grade: teaserScore.grade,
+                            density: teaserScore.density,
                             cameraCount: teaserScore.cameraCount,
                             size: 110,
                             animate: true
                         )
                         VStack(alignment: .leading, spacing: 6) {
-                            Text(teaserScore.grade.uppercased())
-                                .font(.system(size: 28, weight: .black))
-                                .foregroundStyle(densityColor)
                             Text(teaserScore.cameraCountLabel)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(AppTheme.accent)

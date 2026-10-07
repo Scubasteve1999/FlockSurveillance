@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Shared radial bloom used by Place Score in-app and share PNG.
 struct WatchednessDial: View {
-    let grade: String
+    let density: PinDensity
     let cameraCount: Int
     var size: CGFloat = 148
     var animate: Bool = true
@@ -11,18 +11,9 @@ struct WatchednessDial: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var bloom: CGFloat = 0
 
-    private var densityColor: Color {
-        AppTheme.densityColor(count: cameraCount)
-    }
+    private var densityColor: Color { density.color }
 
-    private var targetBloom: CGFloat {
-        switch cameraCount {
-        case 0: return 0.12
-        case 1...4: return 0.35
-        case 5...14: return 0.65
-        default: return 0.95
-        }
-    }
+    private var targetBloom: CGFloat { density.fill }
 
     /// Share / ImageRenderer paths skip animation and must not depend on `onAppear`.
     private var displayedBloom: CGFloat {
@@ -61,11 +52,13 @@ struct WatchednessDial: View {
                 .rotationEffect(.degrees(-90))
 
             VStack(spacing: 2) {
-                Text(grade.uppercased())
+                Text(density.label.uppercased())
                     .font(.system(size: size * 0.18, weight: .black))
-                    .foregroundStyle(AppTheme.primary)
-                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(densityColor)
+                    .minimumScaleFactor(0.5)
                     .lineLimit(1)
+                    // Bounded width so MODERATE / SATURATED shrink inside the ring.
+                    .frame(maxWidth: size * 0.74)
                 Text(cameraCount == 1 ? "1 PIN" : "\(cameraCount) PINS")
                     .font(.system(size: size * 0.08, weight: .bold))
                     .tracking(0.6)
@@ -85,7 +78,7 @@ struct WatchednessDial: View {
         .onChange(of: cameraCount) { _, _ in
             applyBloomChange()
         }
-        .onChange(of: grade) { _, _ in
+        .onChange(of: density) { _, _ in
             applyBloomChange()
         }
     }
@@ -129,7 +122,7 @@ struct PlaceScoreCard: View {
             }
 
             HStack(alignment: .center, spacing: 16) {
-                WatchednessDial(grade: score.grade, cameraCount: score.cameraCount, size: 120)
+                WatchednessDial(density: score.density, cameraCount: score.cameraCount, size: 120)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(score.headline)

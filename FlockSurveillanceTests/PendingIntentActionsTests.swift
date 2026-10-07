@@ -67,7 +67,7 @@ final class PendingIntentActionsTests: XCTestCase {
             flockCount: 2,
             flockPercent: 50,
             densityPerSquareMile: 1.3,
-            grade: "Light"
+            density: .light
         )
         let link = try XCTUnwrap(score.mapDeepLink)
         XCTAssertEqual(link.scheme, AppIdentity.urlScheme)

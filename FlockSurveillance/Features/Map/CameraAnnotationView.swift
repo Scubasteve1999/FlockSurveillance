@@ -39,7 +39,6 @@ struct RadarHUD: View {
     let nearestLabel: String?
     /// Nearest mapped camera is within alert-geofence range — "watched right now".
     let inWatchedZone: Bool
-    let densityLabel: String
     let confidence: CoverageConfidence
     let coverageHint: String?
     let errorMessage: String?
@@ -51,23 +50,21 @@ struct RadarHUD: View {
     @State private var zonePulse = false
     @State private var sweepAngle: Double = 0
 
-    private var level: SurveillanceLevel {
-        SurveillanceLevel.compute(
-            visibleCount: visibleCount,
-            nearestMeters: nearestMeters,
-            inWatchedZone: inWatchedZone
-        )
+    /// The one density word on the map: pins in view.
+    private var density: PinDensity {
+        PinDensity(count: visibleCount, scale: .inView)
     }
 
-    private var levelColor: Color { level.color }
+    /// Zone glow is proximity (fixed tint); otherwise the density color.
+    private var levelColor: Color { inWatchedZone ? AppTheme.zoneTint : density.color }
 
-    private var targetRing: CGFloat { level.dialFill }
+    private var targetRing: CGFloat { density.fill }
 
-    /// One headline: PIN ZONE while inside, otherwise the surveillance title.
-    /// Density (Saturated, etc.) stays a badge — not a second shout.
+    /// PIN ZONE while inside an alert radius (proximity), otherwise a plain label.
+    /// Density lives only in the badge — never a second scale.
     private var headline: String {
         if inWatchedZone { return WatchedZoneCopy.hudActiveLabel }
-        return level.title
+        return "PINS IN VIEW"
     }
 
     private var visibleCountLabel: String {
@@ -81,8 +78,8 @@ struct RadarHUD: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
                         inWatchedZone
-                            ? "Pin zone. \(visibleCountLabel) in view, \(headline). Phone near mapped ALPR pins, not a plate-read alert."
-                            : "\(visibleCountLabel) in view, \(headline)"
+                            ? "Pin zone. \(visibleCountLabel) in view, \(density.label) density. Phone near mapped ALPR pins, not a plate-read alert."
+                            : "\(visibleCountLabel) in view, \(density.label) density"
                     )
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -101,7 +98,7 @@ struct RadarHUD: View {
                             .contentTransition(.opacity)
                     }
 
-                    StatusBadge(text: densityLabel, color: AppTheme.densityColor(count: visibleCount))
+                    StatusBadge(text: density.label, color: density.color)
 
                     if inWatchedZone {
                         Text(WatchedZoneCopy.hudActiveSubtitle)
@@ -135,26 +132,15 @@ struct RadarHUD: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            // Threat meter bar
+            // Density meter bar
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(AppTheme.border.opacity(0.5))
                     Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    AppTheme.densityLow,
-                                    AppTheme.densityMedium,
-                                    AppTheme.primary,
-                                    AppTheme.critical
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .fill(density.color)
                         .frame(width: max(8, geo.size.width * targetRing))
-                        .shadow(color: levelColor.opacity(0.6), radius: 6, y: 0)
+                        .shadow(color: density.color.opacity(0.6), radius: 6, y: 0)
                 }
             }
             .frame(height: 5)
@@ -294,7 +280,7 @@ struct RadarHUD: View {
     private var tacticalDial: some View {
         ZStack {
             // Outer glow when hot
-            if level >= .high {
+            if inWatchedZone || density >= .heavy {
                 Circle()
                     .fill(levelColor.opacity(zonePulse ? 0.22 : 0.08))
                     .frame(width: 118, height: 118)
@@ -403,12 +389,11 @@ struct RadarHUD: View {
 
 /// Full-bleed edge vignette when you're inside a watched corridor.
 struct WatchedZoneEdgeAlert: View {
-    let level: SurveillanceLevel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pulse = false
 
     var body: some View {
-        let c = level.color
+        let c = AppTheme.zoneTint
         RoundedRectangle(cornerRadius: 0)
             .strokeBorder(
                 LinearGradient(

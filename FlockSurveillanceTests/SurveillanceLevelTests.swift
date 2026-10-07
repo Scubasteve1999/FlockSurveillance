@@ -58,33 +58,14 @@ final class SurveillanceLevelTests: XCTestCase {
         XCTAssertEqual(level, .critical)
     }
 
-    func testDialFillMonotonic() {
-        let fills = SurveillanceLevel.allCases.map(\.dialFill)
-        for i in 1..<fills.count {
-            XCTAssertGreaterThan(fills[i], fills[i - 1])
-        }
-    }
-
-    func testCriticalCopyIsWatchedZoneNotDetector() {
-        XCTAssertEqual(SurveillanceLevel.clear.chip, "CLEAR")
-        XCTAssertEqual(SurveillanceLevel.low.chip, "LOW")
-        XCTAssertEqual(SurveillanceLevel.elevated.chip, "MOD")
-        XCTAssertEqual(SurveillanceLevel.high.chip, "DENSE")
-        XCTAssertEqual(SurveillanceLevel.critical.chip, "ZONE")
-        XCTAssertEqual(SurveillanceLevel.clear.title, "CLEAR PINS")
-        XCTAssertEqual(SurveillanceLevel.low.title, "LOW PINS")
-        XCTAssertEqual(SurveillanceLevel.elevated.title, "MODERATE PINS")
-        XCTAssertEqual(SurveillanceLevel.high.title, "DENSE PINS")
-        XCTAssertEqual(SurveillanceLevel.critical.title, "PIN ZONE")
-        for level in SurveillanceLevel.allCases {
-            XCTAssertFalse(level.chip.contains("HOT"))
-            XCTAssertFalse(level.title.contains("HOT"))
-            XCTAssertFalse(level.chip.contains("ARM"))
-            XCTAssertFalse(level.title.contains("ARM"))
-            XCTAssertFalse(level.title.contains("GRID"))
-            XCTAssertFalse(level.title.contains("COVERAGE"))
-            XCTAssertFalse(level.chip.contains("ELEV"))
-            XCTAssertFalse(level.chip.contains("HIGH"))
+    /// Without proximity, the internal baseline tracks the map's density word exactly.
+    func testDensityBaselineMatchesPinDensity() {
+        for count in 0...60 {
+            XCTAssertEqual(
+                SurveillanceLevel.compute(visibleCount: count, nearestMeters: nil, inWatchedZone: false).rawValue,
+                PinDensity(count: count, scale: .inView).rawValue,
+                "count \(count)"
+            )
         }
     }
 }

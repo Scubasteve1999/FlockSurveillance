@@ -45,26 +45,14 @@ struct NearbyCamerasWidgetView: View {
     var entry: NearbyCamerasEntry
     @Environment(\.widgetFamily) private var family
 
-    /// Same buckets as `AppTheme.densityLabel` — HUD words, not CLEAR/ELEV/ZONE.
-    private var densityLabel: String {
-        switch entry.count {
-        case 0: return "Clear"
-        case 1...4: return "Low"
-        case 5...14: return "Moderate"
-        case 15...29: return "Dense"
-        default: return "Saturated"
-        }
+    /// Pins within 1 mi of Home on the shared ladder — same words and colors as Place Score.
+    private var density: PinDensity {
+        PinDensity(count: entry.count, scale: .nearPlace)
     }
 
-    /// Same buckets as `AppTheme.densityColor`. Palette RGB stays local (widget target).
-    private var densityColor: Color {
-        switch entry.count {
-        case 0...4: return Color(red: 0.22, green: 0.92, blue: 0.55)
-        case 5...14: return Color(red: 1.0, green: 0.72, blue: 0.18)
-        case 15...29: return Color(red: 1.0, green: 0.32, blue: 0.22)
-        default: return Color(red: 1.0, green: 0.12, blue: 0.28)
-        }
-    }
+    private var densityLabel: String { density.label }
+
+    private var densityColor: Color { density.color }
 
     private var pinCountLabel: String {
         entry.count == 1 ? "1 pin" : "\(entry.count) pins"

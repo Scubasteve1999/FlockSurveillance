@@ -38,25 +38,6 @@ enum AppTheme {
     /// Primary / secondary CTA corners (Drive, Route, etc.).
     static let buttonCornerRadius: CGFloat = 12
     static let cardPadding: CGFloat = 16
-
-    static func densityColor(count: Int) -> Color {
-        switch count {
-        case 0...4: return densityLow
-        case 5...14: return densityMedium
-        case 15...29: return densityHigh
-        default: return critical
-        }
-    }
-
-    static func densityLabel(count: Int) -> String {
-        switch count {
-        case 0: return "Clear"
-        case 1...4: return "Low"
-        case 5...14: return "Moderate"
-        case 15...29: return "Dense"
-        default: return "Saturated"
-        }
-    }
 }
 
 /// Dynamic Type–friendly fonts for MAP chrome and GEAR Settings.

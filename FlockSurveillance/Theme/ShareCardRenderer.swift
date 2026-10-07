@@ -12,14 +12,14 @@ enum ShareCardRenderer {
 
     static func driveReportImage(
         cameraCount: Int,
-        exposureLabel: String,
+        density: PinDensity,
         distanceMiles: Double,
         originLabel: String,
         destinationLabel: String
     ) -> UIImage? {
         let view = DriveReportShareCard(
             cameraCount: cameraCount,
-            exposureLabel: exposureLabel,
+            density: density,
             distanceMiles: distanceMiles,
             originLabel: originLabel,
             destinationLabel: destinationLabel
@@ -48,13 +48,7 @@ enum ShareCardRenderer {
 private struct PlaceScoreShareCard: View {
     let score: PlaceScore
 
-    private var level: SurveillanceLevel {
-        SurveillanceLevel.compute(
-            visibleCount: score.cameraCount,
-            nearestMeters: nil,
-            inWatchedZone: score.cameraCount >= 5
-        )
-    }
+    private var density: PinDensity { score.density }
 
     var body: some View {
         ZStack {
@@ -82,7 +76,7 @@ private struct PlaceScoreShareCard: View {
             // Hot corner wash
             RadialGradient(
                 colors: [
-                    level.color.opacity(0.35),
+                    density.color.opacity(0.35),
                     .clear
                 ],
                 center: .topTrailing,
@@ -121,20 +115,19 @@ private struct PlaceScoreShareCard: View {
                 HStack(alignment: .center, spacing: 18) {
                     ZStack {
                         WatchednessDial(
-                            grade: score.grade,
+                            density: density,
                             cameraCount: score.cameraCount,
                             size: 108,
                             animate: false
                         )
-                        // Outer threat ring
+                        // Outer density ring
                         Circle()
-                            .stroke(level.color.opacity(0.55), lineWidth: 2)
+                            .stroke(density.color.opacity(0.55), lineWidth: 2)
                             .frame(width: 122, height: 122)
                     }
 
                     VStack(alignment: .leading, spacing: 10) {
-                        warBadge(level.chip, color: level.color)
-                        warBadge(level.title, color: AppTheme.foreground.opacity(0.9))
+                        warBadge(density.label.uppercased(), color: density.color)
                         Text(score.cameraCountLabel.uppercased())
                             .font(.system(size: 13, weight: .bold, design: .monospaced))
                             .foregroundStyle(AppTheme.accent)
@@ -226,18 +219,11 @@ private struct PlaceScoreShareCard: View {
 
 private struct DriveReportShareCard: View {
     let cameraCount: Int
-    let exposureLabel: String
+    let density: PinDensity
     let distanceMiles: Double
     let originLabel: String
     let destinationLabel: String
 
-    private var level: SurveillanceLevel {
-        SurveillanceLevel.compute(
-            visibleCount: cameraCount,
-            nearestMeters: nil,
-            inWatchedZone: false
-        )
-    }
 
     var body: some View {
         ZStack {
@@ -262,7 +248,7 @@ private struct DriveReportShareCard: View {
             }
 
             LinearGradient(
-                colors: [level.color.opacity(0.22), .clear],
+                colors: [density.color.opacity(0.22), .clear],
                 startPoint: .top,
                 endPoint: .center
             )
@@ -288,12 +274,12 @@ private struct DriveReportShareCard: View {
                     .tracking(1.2)
                     .foregroundStyle(AppTheme.accent)
 
-                Text(exposureLabel.uppercased())
+                Text(density.label.uppercased())
                     .font(.system(size: 36, weight: .black))
-                    .foregroundStyle(level.color)
-                    .shadow(color: level.color.opacity(0.45), radius: 10, y: 0)
+                    .foregroundStyle(density.color)
+                    .shadow(color: density.color.opacity(0.45), radius: 10, y: 0)
 
-                Text(level.title)
+                Text("PIN DENSITY ON ROUTE")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.foreground)
 
@@ -314,24 +300,13 @@ private struct DriveReportShareCard: View {
                         .stroke(AppTheme.border, lineWidth: 1)
                 )
 
-                // Exposure meter
+                // Density meter
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule().fill(AppTheme.border.opacity(0.5))
                         Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        AppTheme.densityLow,
-                                        AppTheme.densityMedium,
-                                        AppTheme.primary,
-                                        AppTheme.critical
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: max(12, geo.size.width * level.dialFill))
+                            .fill(density.color)
+                            .frame(width: max(12, geo.size.width * density.fill))
                     }
                 }
                 .frame(height: 6)

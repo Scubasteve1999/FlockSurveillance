@@ -155,12 +155,14 @@ struct ARCameraSightView: View {
         }
     }
 
-    private var arLevel: SurveillanceLevel {
-        SurveillanceLevel.compute(
-            visibleCount: nearbyItems.count,
-            nearestMeters: nearestMeters,
-            inWatchedZone: (nearestMeters ?? .infinity) <= AlertsEngine.regionRadius
-        )
+    /// Pins within 400 m on the shared density ladder.
+    private var arDensity: PinDensity {
+        PinDensity(count: nearbyItems.count, scale: .nearPlace)
+    }
+
+    /// Zone tint inside an alert radius (proximity), otherwise the density color.
+    private var arTint: Color {
+        (nearestMeters ?? .infinity) <= AlertsEngine.regionRadius ? AppTheme.zoneTint : arDensity.color
     }
 
     private var hud: some View {
@@ -168,13 +170,13 @@ struct ARCameraSightView: View {
             VStack(alignment: .leading, spacing: 5) {
                 HStack(spacing: 6) {
                     Circle()
-                        .fill(arLevel.color)
+                        .fill(arTint)
                         .frame(width: 7, height: 7)
-                        .shadow(color: arLevel.color.opacity(0.8), radius: 4)
+                        .shadow(color: arTint.opacity(0.8), radius: 4)
                     Text(AppIdentity.chromeEyebrow("AR SIGHT"))
                         .font(.system(size: 11, weight: .black, design: .monospaced))
                         .tracking(1.0)
-                        .foregroundStyle(arLevel.color)
+                        .foregroundStyle(arTint)
                         .accessibilityLabel("\(AppIdentity.displayName) AR sight")
                 }
                 Text(hudSubtitle)
@@ -189,7 +191,7 @@ struct ARCameraSightView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(arLevel.color.opacity(0.4), lineWidth: 1)
+                    .stroke(arTint.opacity(0.4), lineWidth: 1)
             )
             .allowsHitTesting(false)
             Spacer()
@@ -221,7 +223,7 @@ struct ARCameraSightView: View {
         }
         let nearest = nearestMeters.map(ProximityRadar.formatDistance) ?? "—"
         let pins = count == 1 ? "1 PIN" : "\(count) PINS"
-        return "\(pins) · NEAR \(nearest) · \(AppTheme.densityLabel(count: count))"
+        return "\(pins) · NEAR \(nearest) · \(arDensity.label.uppercased())"
     }
 
     private var emptyBanner: some View {

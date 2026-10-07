@@ -16,12 +16,25 @@ struct DriveModeView: View {
     @State private var arrowAngle: Double = 0
     @State private var pulse = false
 
+    /// Internal intensity for the critical sting only — never displayed.
     private var driveLevel: SurveillanceLevel {
         SurveillanceLevel.compute(
             visibleCount: driveSession.camerasRemaining,
             nearestMeters: driveSession.metersToNext,
-            inWatchedZone: (driveSession.metersToNext ?? .infinity) <= AlertsEngine.regionRadius
+            inWatchedZone: inAlertRadius
         )
+    }
+
+    /// Inside the next pin's alert radius — proximity ("PIN ZONE"), not density.
+    private var inAlertRadius: Bool {
+        (driveSession.metersToNext ?? .infinity) <= AlertsEngine.regionRadius
+    }
+
+    /// The one density word on this screen: pins along the route.
+    private var routeDensity: PinDensity { driveSession.exposureDensity }
+
+    private var hudTint: Color {
+        inAlertRadius ? AppTheme.zoneTint : routeDensity.color
     }
 
     private var inHotApproach: Bool {
@@ -57,7 +70,7 @@ struct DriveModeView: View {
             .ignoresSafeArea()
 
             if inHotApproach {
-                WatchedZoneEdgeAlert(level: driveLevel)
+                WatchedZoneEdgeAlert()
             }
 
             VStack(spacing: 12) {
@@ -151,21 +164,20 @@ struct DriveModeView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Circle()
-                    .fill(driveLevel.color)
+                    .fill(hudTint)
                     .frame(width: 7, height: 7)
                     .opacity(pulse ? 0.25 : 1)
-                    .shadow(color: driveLevel.color.opacity(0.8), radius: 4)
+                    .shadow(color: hudTint.opacity(0.8), radius: 4)
                 Text(AppIdentity.chromeEyebrow("DRIVE"))
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
                     .tracking(1.1)
-                    .foregroundStyle(driveLevel.color)
+                    .foregroundStyle(hudTint)
                     .accessibilityLabel("\(AppIdentity.displayName) drive")
                 Spacer()
-                StatusBadge(text: driveLevel.chip, color: driveLevel.color)
-                StatusBadge(
-                    text: driveSession.exposureLabel.uppercased(),
-                    color: AppTheme.densityColor(count: driveSession.hits.count)
-                )
+                if inAlertRadius {
+                    StatusBadge(text: WatchedZoneCopy.hudActiveLabel, color: AppTheme.zoneTint)
+                }
+                StatusBadge(text: routeDensity.label.uppercased(), color: routeDensity.color)
             }
 
             if let next = driveSession.nextHit {
@@ -219,7 +231,7 @@ struct DriveModeView: View {
                     Capsule()
                         .fill(
                             LinearGradient(
-                                colors: [AppTheme.accent, driveLevel.color],
+                                colors: [AppTheme.accent, hudTint],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -234,9 +246,6 @@ struct DriveModeView: View {
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
                 Spacer()
-                Text(driveLevel.title)
-                    .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(driveLevel.color)
             }
         }
         .padding(16)
@@ -248,7 +257,7 @@ struct DriveModeView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                driveLevel.color.opacity(inHotApproach ? 0.2 : 0.08),
+                                hudTint.opacity(inHotApproach ? 0.2 : 0.08),
                                 AppTheme.card.opacity(0.9)
                             ],
                             startPoint: .topLeading,
@@ -260,11 +269,11 @@ struct DriveModeView: View {
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
                 .stroke(
-                    inHotApproach ? driveLevel.color.opacity(pulse ? 0.4 : 0.95) : AppTheme.border,
+                    inHotApproach ? hudTint.opacity(pulse ? 0.4 : 0.95) : AppTheme.border,
                     lineWidth: inHotApproach ? 1.5 : 1
                 )
         )
-        .shadow(color: inHotApproach ? driveLevel.color.opacity(0.35) : .clear, radius: 14, y: 0)
+        .shadow(color: inHotApproach ? hudTint.opacity(0.35) : .clear, radius: 14, y: 0)
         .padding(.horizontal, 16)
     }
 }

@@ -40,8 +40,11 @@ struct OverwatchPageHeader: View {
 /// Slides in once when the map comes online, then dismisses.
 struct OverwatchBootBanner: View {
     let visibleCount: Int
-    let level: SurveillanceLevel
     var onFinished: () -> Void
+
+    private var density: PinDensity {
+        PinDensity(count: visibleCount, scale: .inView)
+    }
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var phase: BootPhase = .hidden
@@ -56,10 +59,10 @@ struct OverwatchBootBanner: View {
             if phase != .hidden {
                 HStack(spacing: 10) {
                     Circle()
-                        .fill(level.color)
+                        .fill(density.color)
                         .frame(width: 8, height: 8)
                         .opacity(glow ? 0.3 : 1)
-                        .shadow(color: level.color.opacity(0.9), radius: glow ? 8 : 2)
+                        .shadow(color: density.color.opacity(0.9), radius: glow ? 8 : 2)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(AppIdentity.chromeMono)
@@ -67,9 +70,9 @@ struct OverwatchBootBanner: View {
                             .tracking(1.4)
                             .foregroundStyle(AppTheme.foreground)
                             .fixedSize(horizontal: false, vertical: true)
-                        Text("\(pinCountLabel(visibleCount)) IN VIEW · \(level.chip)")
+                        Text("\(pinCountLabel(visibleCount)) IN VIEW · \(density.label.uppercased())")
                             .font(AppTypography.hudMonoSmall)
-                            .foregroundStyle(level.color)
+                            .foregroundStyle(density.color)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
@@ -84,15 +87,15 @@ struct OverwatchBootBanner: View {
                         .fill(AppTheme.card.opacity(0.96))
                         .overlay(
                             RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
-                                .stroke(level.color.opacity(0.55), lineWidth: 1)
+                                .stroke(density.color.opacity(0.55), lineWidth: 1)
                         )
-                        .shadow(color: level.color.opacity(0.25), radius: 14, y: 0)
+                        .shadow(color: density.color.opacity(0.25), radius: 14, y: 0)
                 }
                 .padding(.horizontal, 16)
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(
-                    "\(AppIdentity.displayName). \(pinCountLabel(visibleCount)) in view. \(level.chip)"
+                    "\(AppIdentity.displayName). \(pinCountLabel(visibleCount)) in view. \(density.label) density."
                 )
             }
         }

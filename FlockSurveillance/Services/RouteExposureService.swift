@@ -11,14 +11,8 @@ struct RouteExposureResult: Identifiable {
     var cameraCount: Int { cameras.count }
     var flockCount: Int { cameras.filter { $0.camera.isFlock }.count }
 
-    var exposureScore: String {
-        switch cameraCount {
-        case 0: return "Clear"
-        case 1...3: return "Light"
-        case 4...9: return "Elevated"
-        default: return "Heavy"
-        }
-    }
+    /// Pins along this route on the shared density ladder (route thresholds).
+    var density: PinDensity { PinDensity(count: cameraCount, scale: .route) }
 }
 
 struct RankedRouteExposure: Identifiable {

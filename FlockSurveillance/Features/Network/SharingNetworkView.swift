@@ -18,6 +18,8 @@ struct SharingNetworkView: View {
     @State private var showRetentionSamples = false
     @State private var officialMapStore = OfficialMapStatusStore()
     @State private var showOfficialMaps = false
+    @State private var recordsWallStore = RecordsWallStatusStore()
+    @State private var showRecordsWall = false
     @State private var selectedHubID: String?
     @State private var selectedPartner: SharingPartner?
     @State private var selectedCountyGroup: SharingCountyGroup?
@@ -85,6 +87,7 @@ struct SharingNetworkView: View {
             await portalSharesStore.loadIfNeeded()
             await retentionDeltaStore.loadIfNeeded()
             await officialMapStore.loadIfNeeded()
+            await recordsWallStore.loadIfNeeded()
         }
         .onChange(of: selectedMarkerID) { _, markerID in
             handleMarkerSelection(markerID)
@@ -149,6 +152,11 @@ struct SharingNetworkView: View {
         }
         .sheet(isPresented: $showOfficialMaps) {
             OfficialCameraMapsList()
+                .presentationDetents([.large])
+                .presentationBackground(AppTheme.background)
+        }
+        .sheet(isPresented: $showRecordsWall) {
+            RecordsWallList()
                 .presentationDetents([.large])
                 .presentationBackground(AppTheme.background)
         }
@@ -240,9 +248,18 @@ struct SharingNetworkView: View {
                     Text("FOIA names pinned to Census places — not live Flock data")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            Spacer()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(AppTheme.card.opacity(0.92))
+            .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                    .stroke(AppTheme.border, lineWidth: 1)
+            )
+            Spacer(minLength: 0)
             Button {
                 showPartnerSearch = true
             } label: {
@@ -382,6 +399,7 @@ struct SharingNetworkView: View {
                 .frame(height: 1)
                 .padding(.vertical, 2)
             officialMapsRow
+            recordsWallRow
             midSouthSamplesRow
             retentionSamplesRow
         }
@@ -441,6 +459,48 @@ struct SharingNetworkView: View {
             return "\(OfficialMapStatusCopy.listTitle). \(banner)"
         }
         return OfficialMapStatusCopy.listTitle
+    }
+
+    private var recordsWallRow: some View {
+        Button {
+            showRecordsWall = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(RecordsWallStatusCopy.listTitle)
+                        .font(AppTypography.rowTitle)
+                        .foregroundStyle(AppTheme.foreground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let dataset = recordsWallStore.dataset {
+                        Text(RecordsWallStatusCopy.incompletenessBanner(
+                            agencyCount: dataset.records.count,
+                            datasetAsOf: dataset.datasetAsOf
+                        ))
+                        .font(AppTypography.rowSubtitle)
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(AppTypography.rowSubtitle)
+                    .foregroundStyle(AppTheme.accent)
+            }
+            .padding(.top, 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("records-wall-entry")
+        .accessibilityLabel(recordsWallAccessibilityLabel)
+    }
+
+    private var recordsWallAccessibilityLabel: String {
+        guard let dataset = recordsWallStore.dataset else { return RecordsWallStatusCopy.listTitle }
+        let banner = RecordsWallStatusCopy.incompletenessBanner(
+            agencyCount: dataset.records.count,
+            datasetAsOf: dataset.datasetAsOf
+        )
+        return "\(RecordsWallStatusCopy.listTitle). \(banner)"
     }
 
     private var midSouthSampleAgency: AgencyPortalShareAgency? {

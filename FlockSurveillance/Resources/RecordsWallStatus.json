@@ -1,0 +1,173 @@
+{
+  "datasetAsOf": "2026-10-06",
+  "meta": {
+    "tracker": {
+      "label": "Texas Privacy Coalition FOIA tracker",
+      "url": "https://www.texasprivacycoalition.com/foia",
+      "reached": 186,
+      "received": 38,
+      "partial": 111,
+      "asOf": "2026-10-06"
+    },
+    "texasAggregate": {
+      "portals": 60,
+      "searchSharing": 16,
+      "camerasOnPortalsMin": 2600,
+      "camerasApprox": 13000,
+      "sourceURL": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "asOf": "2026-10-05"
+    }
+  },
+  "records": [
+    {
+      "id": "north-richland-hills-tx",
+      "jurisdiction": "North Richland Hills",
+      "state": "TX",
+      "agency": "North Richland Hills Police Department",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_quoted",
+      "foia_cost_usd": 2300000,
+      "foia_cost_note": "Up-front estimate for about 1 TB of records at $15 per hour. A modified request is expected to be significantly less; no revised amount is recorded here.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "sealy-tx",
+      "jurisdiction": "Sealy",
+      "state": "TX",
+      "agency": "Sealy Police Department",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_via_foia_free",
+      "foia_status": "foia_free",
+      "foia_cost_note": "More than 400,000 pages provided at no charge.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "victoria-tx",
+      "jurisdiction": "Victoria",
+      "state": "TX",
+      "agency": "City of Victoria",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_quoted",
+      "foia_cost_usd": 5000,
+      "foia_cost_note": "Approximate figure, per the requester. Not confirmed by the city.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "harris-county-sheriff-tx",
+      "jurisdiction": "Harris County",
+      "state": "TX",
+      "agency": "Harris County Sheriff's Office",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_quoted",
+      "foia_cost_usd": 121602,
+      "foia_cost_note": "Estimate the sheriff's office gave the group ENOUGH, as reported by KPRC. Not paid. The request was later narrowed.",
+      "as_of": "2026-09-24",
+      "source_url": "https://www.click2houston.com/news/local/2026/09/24/harris-county-sheriffs-office-quotes-enough-dollar121000-for-flock-records-as-hidalgo-plans-oct-15-meeting/",
+      "source_type": "news"
+    },
+    {
+      "id": "irving-tx",
+      "jurisdiction": "Irving",
+      "state": "TX",
+      "agency": "City of Irving",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_quoted",
+      "foia_cost_usd": 70000,
+      "foia_cost_note": "Reported by Current Revolt and cited by the Texas Tribune on Oct 5. Secondary source.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news_secondary"
+    },
+    {
+      "id": "carrollton-tx",
+      "jurisdiction": "Carrollton",
+      "state": "TX",
+      "agency": "Carrollton Police Department",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_free",
+      "foia_cost_note": "Records produced to the Texas Privacy Coalition on Aug 18.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "secondary_source_url": "https://www.texasprivacycoalition.com/texas/agency/carrollton-police-department",
+      "source_type": "news"
+    },
+    {
+      "id": "texas-dps",
+      "jurisdiction": "Texas",
+      "state": "TX",
+      "agency": "Texas Department of Public Safety",
+      "portal_status": "portal_none_found",
+      "searches_public": "searches_withheld",
+      "foia_status": "foia_unknown",
+      "scope_note": "A July release was followed by an early-August release limited to DPS's own searches. Later search detail was withheld and referred to the Texas Attorney General.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "txdot-tx",
+      "jurisdiction": "Texas",
+      "state": "TX",
+      "agency": "Texas Department of Transportation",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_challenged_ag",
+      "scope_note": "Request for camera location and permit counts was challenged at the Texas Attorney General.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "live-oak-tx",
+      "jurisdiction": "Live Oak",
+      "state": "TX",
+      "agency": "Live Oak Police Department",
+      "portal_status": "portal_claimed",
+      "portal_url": "https://transparency.flocksafety.com/live-oak-tx-pd-",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_unknown",
+      "scope_note": "The city page links a portal. The link ends in a hyphen, as written in the city's HTML. Search detail has not been checked in a browser.",
+      "as_of": "2026-10-06",
+      "source_url": "https://www.liveoaktx.net/departments/police/flock-safety",
+      "source_type": "agency"
+    },
+    {
+      "id": "corinth-tx",
+      "jurisdiction": "Corinth",
+      "state": "TX",
+      "agency": "Corinth Police Department",
+      "portal_status": "portal_unknown",
+      "searches_public": "searches_unknown",
+      "foia_status": "foia_unknown",
+      "scope_note": "Street locations of cameras have been published, per Denton Record-Chronicle and Texas Tribune reporting. That is not search sharing.",
+      "as_of": "2026-10-05",
+      "source_url": "https://www.texastribune.org/2026/10/05/texas-flock-cameras-two-million-public-records-information/",
+      "source_type": "news"
+    },
+    {
+      "id": "prosper-tx",
+      "jurisdiction": "Prosper",
+      "state": "TX",
+      "agency": "Prosper Police Department",
+      "portal_status": "portal_claimed",
+      "portal_url": "https://transparency.flocksafety.com/prosper-tx-pd",
+      "searches_public": "searches_aggregate_only",
+      "foia_status": "foia_unknown",
+      "scope_note": "Portal snapshot from Apr 29, 2025 showed 216 searches in the last 30 days. A downloadable audit log is unverified.",
+      "as_of": "2025-04-29",
+      "source_url": "https://transparency.flocksafety.com/prosper-tx-pd",
+      "source_type": "indexed_portal"
+    }
+  ]
+}

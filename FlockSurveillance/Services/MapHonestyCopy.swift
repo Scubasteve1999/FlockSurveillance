@@ -10,6 +10,10 @@ enum MapHonestyCopy {
     /// Quiet MAP chip + share footer. No coverage percentage.
     static let chipLine = "\(affiliation) · \(provenance) · \(incomplete)."
 
+    /// ODbL attribution. One string for the MAP pill, Settings, and every share card.
+    static let osmAttribution = "© OpenStreetMap contributors"
+    static let osmCopyrightURL = URL(string: "https://www.openstreetmap.org/copyright")!
+
     static let accessibilityLabel =
         "Not affiliated with Flock Safety. OpenStreetMap and DeFlock community data. Incomplete map."
 }

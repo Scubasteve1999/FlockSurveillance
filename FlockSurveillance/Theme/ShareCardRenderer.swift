@@ -90,7 +90,8 @@ private struct PlaceScoreShareCard: View {
                 endRadius: 280
             )
 
-            VStack(alignment: .leading, spacing: 14) {
+            // Tight rhythm: header through the OSM credit must fit the fixed 390×520 canvas.
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text(AppIdentity.chromeMono)
                         .font(.system(size: 11, weight: .black, design: .monospaced))
@@ -122,13 +123,13 @@ private struct PlaceScoreShareCard: View {
                         WatchednessDial(
                             grade: score.grade,
                             cameraCount: score.cameraCount,
-                            size: 148,
+                            size: 120,
                             animate: false
                         )
                         // Outer threat ring
                         Circle()
                             .stroke(level.color.opacity(0.55), lineWidth: 2)
-                            .frame(width: 168, height: 168)
+                            .frame(width: 136, height: 136)
                     }
 
                     VStack(alignment: .leading, spacing: 10) {
@@ -140,7 +141,6 @@ private struct PlaceScoreShareCard: View {
                     }
                     Spacer(minLength: 0)
                 }
-                .padding(.vertical, 4)
 
                 VStack(spacing: 0) {
                     instrumentRow("RADIUS", score.radiusMilesLabel)
@@ -152,7 +152,7 @@ private struct PlaceScoreShareCard: View {
                     instrumentRow("GRADE", score.grade.uppercased())
                 }
                 .padding(.horizontal, 14)
-                .padding(.vertical, 10)
+                .padding(.vertical, 4)
                 .background(Color.black.opacity(0.45))
                 .overlay(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -181,6 +181,9 @@ private struct PlaceScoreShareCard: View {
                             .foregroundStyle(.white.opacity(0.55))
                         Text("OSM community data")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.4))
+                        Text(MapHonestyCopy.osmAttribution)
+                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
                             .foregroundStyle(.white.opacity(0.4))
                     }
                 }
@@ -348,6 +351,9 @@ private struct DriveReportShareCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Text("\(AppLinks.shareFooterHost) · OSM community data")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                    Text(MapHonestyCopy.osmAttribution)
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }
             }

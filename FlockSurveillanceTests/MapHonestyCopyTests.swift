@@ -17,6 +17,27 @@ final class MapHonestyCopyTests: XCTestCase {
         XCTAssertFalse(MapHonestyCopy.accessibilityLabel.contains("%"))
     }
 
+    func testOSMAttributionMatchesODbLCreditAndLinksToCopyright() {
+        XCTAssertEqual(MapHonestyCopy.osmAttribution, "© OpenStreetMap contributors")
+        XCTAssertEqual(MapHonestyCopy.osmCopyrightURL.absoluteString, "https://www.openstreetmap.org/copyright")
+    }
+
+    func testOSMAttributionAppearsOnPillSettingsAndEveryShareCard() throws {
+        let pill = try readProductSource("FlockSurveillance/Theme/AppTheme.swift")
+        XCTAssertTrue(pill.contains("Link(MapHonestyCopy.osmAttribution, destination: MapHonestyCopy.osmCopyrightURL)"))
+        XCTAssertTrue(pill.contains("Text(MapHonestyCopy.chipLine)"), "DeFlock credit stays on the pill")
+
+        let settings = try readProductSource("FlockSurveillance/Features/Settings/SettingsView.swift")
+        XCTAssertTrue(settings.contains("Link(MapHonestyCopy.osmAttribution, destination: MapHonestyCopy.osmCopyrightURL)"))
+
+        let shareCards = try readProductSource("FlockSurveillance/Theme/ShareCardRenderer.swift")
+        let cardCount = shareCards.components(separatedBy: "ShareCard: View {").count - 1
+        let creditCount = shareCards.components(separatedBy: "Text(MapHonestyCopy.osmAttribution)").count - 1
+        XCTAssertGreaterThan(cardCount, 0)
+        XCTAssertEqual(creditCount, cardCount, "Every share card needs the OSM footer credit")
+        XCTAssertFalse(shareCards.contains("\"© OpenStreetMap contributors\""), "Use the shared constant")
+    }
+
     func testFlockFilterTitleIsNotVendorAffiliation() {
         XCTAssertEqual(CameraFilter.flockOnly.title, "Flock-branded pins")
         XCTAssertEqual(CameraFilter.all.title, "All ALPRs")

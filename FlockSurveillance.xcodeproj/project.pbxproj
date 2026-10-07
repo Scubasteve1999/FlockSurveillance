@@ -43,6 +43,7 @@
 		39F09E544379830F538DE7D7 /* TipJarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D9FE2E02AB3A589F54F006 /* TipJarStore.swift */; };
 		39F2D5BAEFB927FE385ABA94 /* WatchedZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC82521CA35252739669DF77 /* WatchedZone.swift */; };
 		3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */; };
+		B9219C6D37029AF37DF167E7 /* MapSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D7BA17FA4E3D729A30AFBF /* MapSnapshotTests.swift */; };
 		3860FF1294A6DC52633C9B01 /* SoundsAndFeedbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
@@ -73,6 +74,8 @@
 		7E6AF7448B723066C4DA7C45 /* FlockIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4CA3EFD6910E6C888CDA3C /* FlockIntents.swift */; };
 		7F0A8D4B991A5D4D312353F6 /* InfoPlistKeysTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */; };
 		7FD8B1ABCDD2F8C41F72B3A2 /* OverwatchAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = D665607AAF78390D21697570 /* OverwatchAudio.swift */; };
+		33E737ED564CFC38EF7C3597 /* MapSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975DD867DB16A3BD0FB31D3A /* MapSnapshot.swift */; };
+		62C940EF24A95B12ECDEF1B6 /* CameraSpatialIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE45D396983F5AA4122241B /* CameraSpatialIndex.swift */; };
 		7FE26DB3C13EA28F603CE839 /* OfficialMapStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC36D20580EB086E05378BAB /* OfficialMapStatus.swift */; };
 		F9FDE2D5DE0F33F416715E2C /* RecordsWallStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48A0C3244D9EAB31259CD0FC /* RecordsWallStatus.swift */; };
 		81253B267E41D771BD89733A /* WatchedZoneCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25565AEE4313CE68A62C5C8B /* WatchedZoneCopy.swift */; };
@@ -234,6 +237,7 @@
 		87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasAutoPolicy.swift; sourceTree = "<group>"; };
 		87AA373662BC417002454737 /* ProximityRadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityRadar.swift; sourceTree = "<group>"; };
 		8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZoneTests.swift; sourceTree = "<group>"; };
+		10D7BA17FA4E3D729A30AFBF /* MapSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSnapshotTests.swift; sourceTree = "<group>"; };
 		94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundsAndFeedbackTests.swift; sourceTree = "<group>"; };
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveillanceLevelTests.swift; sourceTree = "<group>"; };
@@ -281,6 +285,8 @@
 		D1CDD5D3EB4187AC0E778232 /* InfoPlistKeysTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPlistKeysTests.swift; sourceTree = "<group>"; };
 		D4C1A02C7EE495EC238B8042 /* SharingNetworkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingNetworkStoreTests.swift; sourceTree = "<group>"; };
 		D665607AAF78390D21697570 /* OverwatchAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverwatchAudio.swift; sourceTree = "<group>"; };
+		975DD867DB16A3BD0FB31D3A /* MapSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSnapshot.swift; sourceTree = "<group>"; };
+		9BE45D396983F5AA4122241B /* CameraSpatialIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSpatialIndex.swift; sourceTree = "<group>"; };
 		D818989D989E0B0E7D67A9B0 /* DriveModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeView.swift; sourceTree = "<group>"; };
 		D86937B5C8035A7EA0159021 /* NearbyCamerasWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyCamerasWidget.swift; sourceTree = "<group>"; };
 		D9C7E3BD8E8A9BD287C40FCB /* ReportCameraSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportCameraSheet.swift; sourceTree = "<group>"; };
@@ -371,6 +377,7 @@
 				8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */,
 				EEA5A86FD7B9DA246AC132CF /* TipJarStoreTests.swift */,
 				8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */,
+				10D7BA17FA4E3D729A30AFBF /* MapSnapshotTests.swift */,
 				94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */,
 			);
 			path = FlockSurveillanceTests;
@@ -510,6 +517,8 @@
 				67D1FF1994351D264823D5DB /* OSMReportService.swift */,
 				ABBC3E49CFB7AA4084A6C067 /* OverpassClient.swift */,
 				D665607AAF78390D21697570 /* OverwatchAudio.swift */,
+				975DD867DB16A3BD0FB31D3A /* MapSnapshot.swift */,
+				9BE45D396983F5AA4122241B /* CameraSpatialIndex.swift */,
 				CDC11831FE3155BF1E30BB0A /* PlaceCompleter.swift */,
 				87AA373662BC417002454737 /* ProximityRadar.swift */,
 				C58F6CFB7054A1FC247A81A1 /* ReportStore.swift */,
@@ -792,6 +801,8 @@
 				8CC4681E7884555A5C755309 /* OnboardingView.swift in Sources */,
 				08DA00CF9B62567325973DF2 /* OverpassClient.swift in Sources */,
 				7FD8B1ABCDD2F8C41F72B3A2 /* OverwatchAudio.swift in Sources */,
+				33E737ED564CFC38EF7C3597 /* MapSnapshot.swift in Sources */,
+				62C940EF24A95B12ECDEF1B6 /* CameraSpatialIndex.swift in Sources */,
 				E1A1CD76343699371753B0BE /* OverwatchChrome.swift in Sources */,
 				0358612176E75CF905DB1F77 /* PendingReport.swift in Sources */,
 				B7CF5F885EFF99A8FEA919EF /* PendingReportDetailSheet.swift in Sources */,
@@ -861,6 +872,7 @@
 				166F21FDA500EDC98D3947D7 /* SurveillanceLevelTests.swift in Sources */,
 				F6A1766D4222FD6BE0BCCFBF /* TipJarStoreTests.swift in Sources */,
 				3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */,
+				B9219C6D37029AF37DF167E7 /* MapSnapshotTests.swift in Sources */,
 				3860FF1294A6DC52633C9B01 /* SoundsAndFeedbackTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

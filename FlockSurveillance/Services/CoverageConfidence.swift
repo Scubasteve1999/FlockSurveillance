@@ -66,8 +66,33 @@ struct CoverageConfidence: Equatable {
         hasViewportFetch: Bool,
         now: Date = .now
     ) -> CoverageConfidence {
+        make(
+            visibleCount: visibleCameras.count,
+            facingPercent: facingPercent(in: visibleCameras),
+            isLoading: isLoading,
+            isSeeding: isSeeding,
+            isServingStale: isServingStale,
+            lastError: lastError,
+            lastSuccessfulFetchAt: lastSuccessfulFetchAt,
+            hasViewportFetch: hasViewportFetch,
+            now: now
+        )
+    }
+
+    /// Count-based variant for callers holding a precomputed viewport snapshot.
+    static func make(
+        visibleCount: Int,
+        facingPercent: Int,
+        isLoading: Bool,
+        isSeeding: Bool,
+        isServingStale: Bool,
+        lastError: String?,
+        lastSuccessfulFetchAt: Date?,
+        hasViewportFetch: Bool,
+        now: Date = .now
+    ) -> CoverageConfidence {
         let state: FetchState
-        let hasPins = !visibleCameras.isEmpty
+        let hasPins = visibleCount > 0
         // Pins already on screen are never "Loading" — that footer flickered as
         // `Loading · 116 pins` during refresh. Fetched / cached / error only.
         if isLoading && !hasPins {
@@ -84,8 +109,8 @@ struct CoverageConfidence: Equatable {
         }
 
         return CoverageConfidence(
-            visibleCount: visibleCameras.count,
-            facingPercent: facingPercent(in: visibleCameras),
+            visibleCount: visibleCount,
+            facingPercent: facingPercent,
             state: state,
             freshnessShort: shortFreshness(from: lastSuccessfulFetchAt, now: now)
         )

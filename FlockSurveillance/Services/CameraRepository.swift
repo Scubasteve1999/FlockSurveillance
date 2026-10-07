@@ -7,6 +7,11 @@ import SwiftData
 @Observable
 final class CameraRepository {
     private(set) var cameras: [ALPRCamera] = []
+    /// Grid index over `cameras`, rebuilt whenever the cache changes. Safe to hand to detached work.
+    private(set) var spatialIndex = CameraSpatialIndex.empty
+    /// Bumps on every cache change so the Map knows to rebuild its snapshot.
+    private(set) var indexVersion = 0
+    private var camerasByID: [String: ALPRCamera] = [:]
     private(set) var isLoading = false
     private(set) var lastError: String?
     private(set) var coverageHint: String?
@@ -49,11 +54,26 @@ final class CameraRepository {
         guard let modelContext else { return }
         // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
         let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        cameras = fetched
-            .filter { !$0.isHidden && !$0.isAbsentFromOSM }
-            .sorted { $0.fetchedAt > $1.fetchedAt }
+        setCameras(
+            fetched
+                .filter { !$0.isHidden && !$0.isAbsentFromOSM }
+                .sorted { $0.fetchedAt > $1.fetchedAt }
+        )
         // Heavy distance ranking must not block the main thread (onboarding → map).
         Task { await publishAlertCandidatesAsync() }
+    }
+
+    /// Single write path for `cameras`: keeps the spatial index and id lookup in step.
+    private func setCameras(_ new: [ALPRCamera]) {
+        cameras = new
+        camerasByID = Dictionary(new.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        spatialIndex = CameraSpatialIndex(points: new.map(\.point))
+        indexVersion &+= 1
+    }
+
+    /// Resolve snapshot ids back to live models (e.g. a tapped cluster). Unknown ids are dropped.
+    func cameras(withIDs ids: [String]) -> [ALPRCamera] {
+        ids.compactMap { camerasByID[$0] }
     }
 
     /// Snapshot cameras to disk so AlertsEngine can reseed geofences on
@@ -338,7 +358,7 @@ final class CameraRepository {
         seedTask?.cancel()
         isSeeding = false
         guard let modelContext else {
-            cameras = []
+            setCameras([])
             lastSuccessfulFetchAt = nil
             lastFetchedRegion = nil
             lastRegion = nil
@@ -352,7 +372,7 @@ final class CameraRepository {
             modelContext.delete(camera)
         }
         try? modelContext.save()
-        cameras = []
+        setCameras([])
         lastSuccessfulFetchAt = nil
         lastFetchedRegion = nil
         lastRegion = nil
@@ -372,7 +392,7 @@ final class CameraRepository {
     /// Soft-hide a camera after a confirmed removal report.
     func hideCamera(id: String) {
         guard let modelContext else {
-            cameras.removeAll { $0.id == id }
+            setCameras(cameras.filter { $0.id != id })
             return
         }
         let all = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
@@ -397,20 +417,21 @@ final class CameraRepository {
     }
 
     func cameras(near coordinate: CLLocationCoordinate2D, radiusMeters: CLLocationDistance) -> [ALPRCamera] {
-        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        return cameras
-            .map { ($0, $0.location.distance(from: origin)) }
+        cameras
+            .map { ($0, GeoDistance.meters(
+                fromLatitude: coordinate.latitude, longitude: coordinate.longitude,
+                toLatitude: $0.latitude, longitude: $0.longitude
+            )) }
             .filter { $0.1 <= radiusMeters }
             .sorted { $0.1 < $1.1 }
             .map(\.0)
     }
 
     func nearest(to coordinate: CLLocationCoordinate2D, filter: CameraFilter) -> (camera: ALPRCamera, meters: CLLocationDistance)? {
-        let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        return filtered(filter)
-            .map { ($0, $0.location.distance(from: origin)) }
-            .min { $0.1 < $1.1 }
-            .map { (camera: $0.0, meters: $0.1) }
+        guard let hit = spatialIndex.nearest(to: coordinate, filter: filter),
+              let camera = camerasByID[hit.point.id]
+        else { return nil }
+        return (camera: camera, meters: hit.meters)
     }
 
     func clusters(for filter: CameraFilter, in region: MKCoordinateRegion) -> [CameraCluster] {
@@ -457,7 +478,7 @@ final class CameraRepository {
             for camera in remote {
                 byID[camera.id] = camera
             }
-            cameras = Array(byID.values)
+            setCameras(Array(byID.values))
             return
         }
 

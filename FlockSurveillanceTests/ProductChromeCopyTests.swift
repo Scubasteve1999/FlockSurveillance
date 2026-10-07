@@ -189,6 +189,61 @@ final class ProductChromeCopyTests: XCTestCase {
         XCTAssertFalse(literals.contains { $0.text.contains("Overwatch") || $0.text.contains("threat in") })
     }
 
+    // MARK: - One density scale
+
+    /// Words from the retired ladders: AppTheme (Low / Dense), Place Score ("Mapped" as a grade),
+    /// Route ("Elevated") and the map chip (LOW / MOD / DENSE / ZONE and its "… PINS" titles).
+    /// `PinDensity` is the only scale; "PIN ZONE" is proximity copy and stays allowed.
+    private static let retiredDensityLiterals: Set<String> = [
+        "Elevated", "Mapped", "MAPPED", "Low", "Dense",
+        "LOW", "MOD", "DENSE", "ZONE",
+        "CLEAR PINS", "LOW PINS", "MODERATE PINS", "DENSE PINS"
+    ]
+
+    private static func retiredDensityHits(in source: String) throws -> [String] {
+        let elevated = try NSRegularExpression(pattern: #"(?i)\belevated\b"#)
+        return stringLiterals(in: source).compactMap { literal in
+            let text = literal.text.trimmingCharacters(in: .whitespaces)
+            let range = NSRange(text.startIndex..., in: text)
+            if retiredDensityLiterals.contains(text) || elevated.firstMatch(in: text, range: range) != nil {
+                return "\(literal.line): \"\(text)\""
+            }
+            return nil
+        }
+    }
+
+    func testRetiredDensityLabelsAreGone() throws {
+        // The scanner itself must catch the old ladders and pass the current one.
+        let sample = """
+        case 4...9: return "Elevated"
+        StatusBadge(text: "MOD", color: c)
+        Text("PIN ZONE"); Text("Moderate"); Text("Mapped OSM pins")
+        """
+        XCTAssertEqual(try Self.retiredDensityHits(in: sample).count, 2)
+
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        var hits: [String] = []
+        for directory in ["FlockSurveillance", "NearbyCamerasWidget", "Shared"] {
+            let base = root.appendingPathComponent(directory)
+            let enumerator = try XCTUnwrap(FileManager.default.enumerator(at: base, includingPropertiesForKeys: nil))
+            for file in enumerator.compactMap({ $0 as? URL }) where file.pathExtension == "swift" {
+                let relative = String(file.path.dropFirst(root.path.count + 1))
+                let source = try String(contentsOf: file, encoding: .utf8)
+                hits += try Self.retiredDensityHits(in: source).map { "\(relative):\($0)" }
+                XCTAssertFalse(source.contains("AppTheme.densityLabel"), relative)
+                XCTAssertFalse(source.contains("AppTheme.densityColor"), relative)
+            }
+        }
+        XCTAssertTrue(hits.isEmpty, "Retired density labels — use PinDensity:\n" + hits.joined(separator: "\n"))
+
+        // SurveillanceLevel is internal intensity only: no words, no colors.
+        let level = try readProductSource("FlockSurveillance/Services/SurveillanceLevel.swift")
+        XCTAssertTrue(Self.stringLiterals(in: level).isEmpty, "SurveillanceLevel must not carry user-facing copy")
+        XCTAssertFalse(level.contains("var chip"))
+        XCTAssertFalse(level.contains("var title"))
+        XCTAssertFalse(level.contains("var color"))
+    }
+
     private struct SourceLiteral {
         let line: Int
         let text: String

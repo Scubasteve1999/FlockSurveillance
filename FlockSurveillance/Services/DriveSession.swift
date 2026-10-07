@@ -33,7 +33,9 @@ final class DriveSession {
     private(set) var nextHit: DriveHit?
     private(set) var metersToNext: CLLocationDistance?
     private(set) var camerasRemaining = 0
-    private(set) var exposureLabel = "Clear"
+    /// Route density on the shared ladder; `exposureLabel` is its word for Live Activity / CarPlay.
+    private(set) var exposureDensity: PinDensity = .clear
+    var exposureLabel: String { exposureDensity.label }
     /// Bumped on every start/stop so a stale Live Activity `start` Task cannot
     /// request a new activity after the session has already ended.
     private(set) var liveActivityGeneration = 0
@@ -52,17 +54,17 @@ final class DriveSession {
                     metersFromStart: $0.metersFromStart
                 )
             },
-            exposureLabel: result.exposureScore,
+            density: result.density,
             route: result.route
         )
     }
 
     /// Starts a drive with prebuilt hits. Used by production via `start(from:)` and by tests.
-    func start(hits: [DriveHit], exposureLabel: String, route: MKRoute? = nil) {
+    func start(hits: [DriveHit], density: PinDensity, route: MKRoute? = nil) {
         self.route = route
         self.hits = hits
         passedIDs = []
-        self.exposureLabel = exposureLabel
+        exposureDensity = density
         isActive = true
         lastPulseDistance = .greatestFiniteMagnitude
         liveActivityGeneration += 1

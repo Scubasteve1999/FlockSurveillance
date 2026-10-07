@@ -240,7 +240,7 @@ struct MapRadarView: View {
                     .transition(.opacity)
             }
             if inWatchedZone {
-                WatchedZoneEdgeAlert(level: surveillanceLevel)
+                WatchedZoneEdgeAlert()
                     .transition(.opacity)
             }
             if isPlacingReport {
@@ -257,10 +257,7 @@ struct MapRadarView: View {
     private var mapChrome: some View {
         VStack(spacing: 10) {
             if showBootBanner {
-                OverwatchBootBanner(
-                    visibleCount: camerasInViewCount,
-                    level: surveillanceLevel
-                ) {
+                OverwatchBootBanner(visibleCount: camerasInViewCount) {
                     showBootBanner = false
                 }
             }
@@ -344,11 +341,12 @@ struct MapRadarView: View {
                 nearestMeters: nearest?.meters,
                 nearestLabel: nearest?.manufacturer,
                 inWatchedZone: inWatchedZone,
-                densityLabel: AppTheme.densityLabel(count: camerasInViewCount),
                 confidence: coverageConfidence,
                 coverageHint: mapCoverageHint,
                 errorMessage: repository.lastError,
                 watchModeEnabled: radar.watchModeEnabled,
+                // Place Score card carries the density reading while it's open.
+                showsDensity: placeScore == nil,
                 onToggleWatch: toggleWatchMode
             )
             .padding(.horizontal, 16)
@@ -565,7 +563,7 @@ struct MapRadarView: View {
             if showHeat {
                 ForEach(clusters.prefix(80)) { cluster in
                     MapCircle(center: cluster.coordinate, radius: heatRadius(for: cluster.count))
-                        .foregroundStyle(AppTheme.densityColor(count: cluster.count).opacity(0.14))
+                        .foregroundStyle(PinDensity(count: cluster.count, scale: .inView).color.opacity(0.14))
                 }
             }
 

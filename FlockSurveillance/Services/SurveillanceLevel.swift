@@ -1,9 +1,10 @@
 import CoreLocation
 import Foundation
-import SwiftUI
 
-/// How dense the mapped ALPR pins are in view right now.
-/// Pure density + proximity math — never plate-read claims.
+/// Internal feedback intensity: viewport density plus GPS proximity to mapped pins.
+/// Drives scanline strength and the critical audio sting only — it is never displayed.
+/// The user-facing density word and color always come from `PinDensity`; being inside
+/// an alert radius is shown as "PIN ZONE" (`WatchedZoneCopy`), not as a level.
 enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
     case clear = 0
     case low = 1
@@ -15,49 +16,6 @@ enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
         lhs.rawValue < rhs.rawValue
     }
 
-    /// Short HUD chip: CLEAR / LOW / MOD / DENSE / ZONE
-    var chip: String {
-        switch self {
-        case .clear: return "CLEAR"
-        case .low: return "LOW"
-        case .elevated: return "MOD"
-        case .high: return "DENSE"
-        case .critical: return "ZONE"
-        }
-    }
-
-    /// Full instrument title under the dial — pin density in view, not metro coverage.
-    var title: String {
-        switch self {
-        case .clear: return "CLEAR PINS"
-        case .low: return "LOW PINS"
-        case .elevated: return "MODERATE PINS"
-        case .high: return "DENSE PINS"
-        case .critical: return "PIN ZONE"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .clear: return AppTheme.densityLow
-        case .low: return AppTheme.accent
-        case .elevated: return AppTheme.densityMedium
-        case .high: return AppTheme.primary
-        case .critical: return AppTheme.critical
-        }
-    }
-
-    /// 0…1 fill for the outer threat arc.
-    var dialFill: CGFloat {
-        switch self {
-        case .clear: return 0.12
-        case .low: return 0.32
-        case .elevated: return 0.55
-        case .high: return 0.78
-        case .critical: return 1.0
-        }
-    }
-
     /// Compute from what the map + GPS actually know.
     ///
     /// Priority: inside a watched corridor always elevates; nearest pin distance
@@ -67,15 +25,10 @@ enum SurveillanceLevel: Int, CaseIterable, Comparable, Sendable {
         nearestMeters: CLLocationDistance?,
         inWatchedZone: Bool
     ) -> SurveillanceLevel {
-        var level: SurveillanceLevel
-
-        switch visibleCount {
-        case 0: level = .clear
-        case 1...4: level = .low
-        case 5...14: level = .elevated
-        case 15...29: level = .high
-        default: level = .critical
-        }
+        // Density baseline uses the same thresholds as the map's density word.
+        var level = SurveillanceLevel(
+            rawValue: PinDensity(count: visibleCount, scale: .inView).rawValue
+        ) ?? .clear
 
         if let nearestMeters {
             if nearestMeters <= 50 {

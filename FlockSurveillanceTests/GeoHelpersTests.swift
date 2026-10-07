@@ -189,10 +189,11 @@ final class GeoHelpersTests: XCTestCase {
             )
         }
         let score = GeoHelpers.placeScore(cameras: cameras, near: origin, radiusMeters: 1609.34)
-        XCTAssertEqual(score.grade, "Mapped")
+        XCTAssertEqual(score.density, .moderate)
+        XCTAssertEqual(score.grade, "Moderate")
         XCTAssertEqual(score.cameraCount, 8)
         XCTAssertEqual(score.flockPercent, 50)
-        XCTAssertEqual(score.headline, "Your block has mapped pins nearby")
+        XCTAssertEqual(score.headline, "Your block has moderate mapped pins")
         XCTAssertFalse(score.headline.lowercased().contains("watched"))
         XCTAssertTrue(score.headline.hasPrefix("Your block"))
         let area = GeoHelpers.placeScore(
@@ -202,7 +203,7 @@ final class GeoHelpersTests: XCTestCase {
             isPersonal: false
         )
         XCTAssertTrue(area.headline.hasPrefix("This area"))
-        XCTAssertEqual(area.headline, "This area has mapped pins nearby")
+        XCTAssertEqual(area.headline, "This area has moderate mapped pins")
         XCTAssertEqual(score.cameraCountLabel, "8 mapped pins")
         XCTAssertTrue(score.cameraCountLabel.contains("mapped pin"))
         XCTAssertFalse(score.cameraCountLabel.contains("camera"))
@@ -223,17 +224,20 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore!.absoluteString))
     }
 
-    func testPlaceScoreGradeLadderIsSharedAndCalm() {
-        XCTAssertEqual(GeoHelpers.placeScoreGrades, ["Clear", "Light", "Mapped", "Heavy", "Saturated"])
-        for count in 0...60 {
-            let grade = GeoHelpers.placeScoreGrade(forCameraCount: count)
-            XCTAssertTrue(GeoHelpers.placeScoreGrades.contains(grade), "count \(count) → \(grade)")
-            XCTAssertFalse(grade.lowercased().contains("watch"))
+    func testPlaceScoreGradeIsTheSharedDensityLadder() {
+        let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
+        for count in [0, 1, 4, 5, 9, 14, 15, 29, 30] {
+            let cameras = (0..<count).map { index in
+                ALPRCamera(id: "g\(index)", latitude: 33.75 + Double(index) * 0.0001, longitude: -84.39, manufacturer: "Other")
+            }
+            let score = GeoHelpers.placeScore(cameras: cameras, near: origin, radiusMeters: 1609.34)
+            XCTAssertEqual(score.density, PinDensity(count: count, scale: .nearPlace), "count \(count)")
+            XCTAssertEqual(score.grade, score.density.label)
+            XCTAssertFalse(score.headline.lowercased().contains("watch"))
         }
-        XCTAssertEqual(GeoHelpers.placeScoreGrade(forCameraCount: 9), "Mapped")
     }
 
-    func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {
+    func testPlaceScoreLightModerateHeavyHeadlinesUseMappedPins() {
         let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
         func cameras(_ count: Int) -> [ALPRCamera] {
             (0..<count).map { index in
@@ -251,14 +255,14 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertEqual(light.headline, "Your block has light mapped pins")
         XCTAssertFalse(light.headline.lowercased().contains("watched"))
 
-        let mapped = GeoHelpers.placeScore(cameras: cameras(8), near: origin, radiusMeters: 1609.34)
-        XCTAssertEqual(mapped.grade, "Mapped")
-        XCTAssertEqual(mapped.headline, "Your block has mapped pins nearby")
-        XCTAssertFalse(mapped.headline.lowercased().contains("watched"))
+        let moderate = GeoHelpers.placeScore(cameras: cameras(8), near: origin, radiusMeters: 1609.34)
+        XCTAssertEqual(moderate.grade, "Moderate")
+        XCTAssertEqual(moderate.headline, "Your block has moderate mapped pins")
+        XCTAssertFalse(moderate.headline.lowercased().contains("watched"))
 
         let heavy = GeoHelpers.placeScore(cameras: cameras(20), near: origin, radiusMeters: 1609.34)
         XCTAssertEqual(heavy.grade, "Heavy")
-        XCTAssertEqual(heavy.headline, "Your block has dense mapped pins")
+        XCTAssertEqual(heavy.headline, "Your block has heavy mapped pins")
         XCTAssertFalse(heavy.headline.lowercased().contains("watched"))
 
         XCTAssertEqual(

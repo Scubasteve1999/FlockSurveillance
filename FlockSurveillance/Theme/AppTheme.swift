@@ -14,11 +14,14 @@ enum AppTheme {
     static let cardTop = Color(red: 0.10, green: 0.12, blue: 0.16)
     static let cardBottom = Color(red: 0.05, green: 0.06, blue: 0.09)
 
-    static let densityLow = Color(red: 0.22, green: 0.92, blue: 0.55)
-    static let densityMedium = Color(red: 1.0, green: 0.72, blue: 0.18)
-    static let densityHigh = Color(red: 1.0, green: 0.32, blue: 0.22)
-    /// Beyond dense — hot zone pulse.
-    static let critical = Color(red: 1.0, green: 0.12, blue: 0.28)
+    /// Density palette lives on `PinDensity` (Shared, so the widget uses the same colors).
+    static let densityLow = PinDensity.clear.color
+    static let densityMedium = PinDensity.moderate.color
+    static let densityHigh = PinDensity.heavy.color
+    /// Saturated density.
+    static let critical = PinDensity.saturated.color
+    /// Inside a mapped pin's alert radius — proximity, never a density level.
+    static let zoneTint = primary
 
     static let flockMarker = Color(red: 1.0, green: 0.32, blue: 0.22)
     static let otherMarker = Color(red: 0.18, green: 0.92, blue: 0.88)
@@ -35,25 +38,6 @@ enum AppTheme {
     /// Primary / secondary CTA corners (Drive, Route, etc.).
     static let buttonCornerRadius: CGFloat = 12
     static let cardPadding: CGFloat = 16
-
-    static func densityColor(count: Int) -> Color {
-        switch count {
-        case 0...4: return densityLow
-        case 5...14: return densityMedium
-        case 15...29: return densityHigh
-        default: return critical
-        }
-    }
-
-    static func densityLabel(count: Int) -> String {
-        switch count {
-        case 0: return "Clear"
-        case 1...4: return "Low"
-        case 5...14: return "Moderate"
-        case 15...29: return "Dense"
-        default: return "Saturated"
-        }
-    }
 }
 
 /// Dynamic Type–friendly fonts for MAP chrome and GEAR Settings.

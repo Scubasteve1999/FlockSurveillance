@@ -26,11 +26,6 @@ struct CityRankingsStrip: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(Array(rankings.enumerated()), id: \.element.id) { index, city in
-                        let level = SurveillanceLevel.compute(
-                            visibleCount: city.cameraCount,
-                            nearestMeters: nil,
-                            inWatchedZone: false
-                        )
                         Button {
                             onSelect(city)
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -39,7 +34,7 @@ struct CityRankingsStrip: View {
                                 HStack(spacing: 6) {
                                     Text("#\(index + 1)")
                                         .font(.system(size: 11, weight: .black, design: .monospaced))
-                                        .foregroundStyle(level.color)
+                                        .foregroundStyle(AppTheme.accent)
                                     Text(city.name.uppercased())
                                         .font(.system(size: 13, weight: .bold))
                                         .foregroundStyle(AppTheme.foreground)
@@ -48,7 +43,6 @@ struct CityRankingsStrip: View {
                                 Text("\(city.cameraCount) PINS")
                                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                                     .foregroundStyle(AppTheme.accent)
-                                StatusBadge(text: level.chip, color: level.color)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
@@ -56,9 +50,9 @@ struct CityRankingsStrip: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .stroke(level.color.opacity(0.35), lineWidth: 1)
+                                    .stroke(AppTheme.accent.opacity(0.35), lineWidth: 1)
                             )
-                            .shadow(color: level.color.opacity(0.12), radius: 8, y: 0)
+                            .shadow(color: AppTheme.accent.opacity(0.12), radius: 8, y: 0)
                         }
                         .buttonStyle(.plain)
                     }

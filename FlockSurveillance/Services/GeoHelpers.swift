@@ -342,20 +342,6 @@ enum GeoHelpers {
         return CLLocationCoordinate2D(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
     }
 
-    /// Shared Place Score grade ladder — map card, onboarding teaser, and share cards.
-    /// Calm, factual density words only; never "watched".
-    static let placeScoreGrades = ["Clear", "Light", "Mapped", "Heavy", "Saturated"]
-
-    static func placeScoreGrade(forCameraCount count: Int) -> String {
-        switch count {
-        case ..<1: return "Clear"
-        case 1...4: return "Light"
-        case 5...14: return "Mapped"
-        case 15...29: return "Heavy"
-        default: return "Saturated"
-        }
-    }
-
     static func placeScore(
         cameras: [ALPRCamera],
         near coordinate: CLLocationCoordinate2D,
@@ -368,7 +354,7 @@ enum GeoHelpers {
         let radiusMiles = radiusMeters / 1609.34
         let areaSqMi = max(radiusMiles * radiusMiles * Double.pi, 0.01)
         let perSqMi = Double(nearby.count) / areaSqMi
-        let grade = placeScoreGrade(forCameraCount: nearby.count)
+        let density = PinDensity(count: nearby.count, scale: .nearPlace)
         let flockPercent: Int
         if nearby.isEmpty {
             flockPercent = 0
@@ -382,7 +368,7 @@ enum GeoHelpers {
             flockCount: flock,
             flockPercent: flockPercent,
             densityPerSquareMile: perSqMi,
-            grade: grade,
+            density: density,
             isPersonal: isPersonal
         )
     }
@@ -497,7 +483,8 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     let flockCount: Int
     let flockPercent: Int
     let densityPerSquareMile: Double
-    let grade: String
+    /// Place Score grade — the shared `PinDensity` ladder, never a separate scale.
+    let density: PinDensity
     /// True when the pin is live GPS or saved Home — never a map-center / metro preview.
     var isPersonal: Bool = true
 
@@ -510,14 +497,16 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
     /// Honest headline: "Your block…" only for GPS/Home; otherwise "This area…"
     var headline: String {
         let subject = isPersonal ? "Your block" : "This area"
-        switch grade {
-        case "Clear": return "\(subject) looks clear"
-        case "Light": return "\(subject) has light mapped pins"
-        case "Mapped": return "\(subject) has mapped pins nearby"
-        case "Heavy": return "\(subject) has dense mapped pins"
-        default: return "\(subject) is saturated with mapped pins"
+        switch density {
+        case .clear: return "\(subject) looks clear"
+        case .light: return "\(subject) has light mapped pins"
+        case .moderate: return "\(subject) has moderate mapped pins"
+        case .heavy: return "\(subject) has heavy mapped pins"
+        case .saturated: return "\(subject) is saturated with mapped pins"
         }
     }
+
+    var grade: String { density.label }
 
     var cameraCountLabel: String {
         cameraCount == 1 ? "1 mapped pin" : "\(cameraCount) mapped pins"

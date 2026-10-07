@@ -54,7 +54,7 @@ final class DriveLiveActivityController {
         await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
     }
 
-    private var sessionExposureFallback: String { "CLEAR" }
+    private var sessionExposureFallback: String { PinDensity.clear.label.uppercased() }
 
     private func contentState(from session: DriveSession) -> DriveActivityAttributes.ContentState {
         let next = session.nextHit.map { $0.isFlock ? "Next Flock pin" : "Next mapped pin" }

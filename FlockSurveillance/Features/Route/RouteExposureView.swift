@@ -316,8 +316,8 @@ struct RouteExposureView: View {
                             }
                             Spacer()
                             StatusBadge(
-                                text: option.result.exposureScore,
-                                color: AppTheme.densityColor(count: option.cameraCount)
+                                text: option.result.density.label,
+                                color: option.result.density.color
                             )
                         }
                         .padding(12)
@@ -358,15 +358,14 @@ struct RouteExposureView: View {
                     }
                     Spacer()
                     StatusBadge(
-                        text: result.exposureScore,
-                        color: AppTheme.densityColor(count: result.cameraCount)
+                        text: result.density.label,
+                        color: result.density.color
                     )
                 }
 
                 HStack(spacing: 16) {
                     metric("Flock", "\(result.flockCount)")
                     metric("Distance", String(format: "%.1f mi", result.route.distance / 1609.34))
-                    metric("Pin score", result.exposureScore)
                 }
 
                 OverwatchPrimaryButton {
@@ -678,7 +677,7 @@ struct RouteExposureView: View {
             var items: [Any] = [shareReport(result)]
             if let image = ShareCardRenderer.driveReportImage(
                 cameraCount: result.cameraCount,
-                exposureLabel: result.exposureScore,
+                density: result.density,
                 distanceMiles: result.route.distance / 1609.34,
                 originLabel: from,
                 destinationLabel: to
@@ -698,7 +697,7 @@ struct RouteExposureView: View {
             "From: \(from)",
             "To: \(to)",
             "Mapped pins on route: \(result.cameraCount) (\(result.flockCount) Flock)",
-            "Pin score: \(result.exposureScore)",
+            "Pin score: \(result.density.label)",
             "Distance: \(String(format: "%.1f", result.route.distance / 1609.34)) mi",
             "Alternatives scored: \(optionCount)",
             "Fewer mapped pins. Same destination.",

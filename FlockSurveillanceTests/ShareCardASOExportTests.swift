@@ -26,7 +26,7 @@ final class ShareCardASOExportTests: XCTestCase {
             flockCount: 9,
             flockPercent: 100,
             densityPerSquareMile: 2.9,
-            grade: "Watched"
+            grade: GeoHelpers.placeScoreGrade(forCameraCount: 9)
         )
         guard let image = ShareCardRenderer.placeScoreImage(score) else {
             XCTFail("ShareCardRenderer returned nil")

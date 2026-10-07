@@ -1,7 +1,7 @@
 import MapKit
 import SwiftUI
 
-/// Horizontal strip of most-mapped metros — war-board ranking, not a census.
+/// Horizontal strip of most-mapped metros — a cache ranking, not a census.
 struct CityRankingsStrip: View {
     let rankings: [CityRanking]
     let onSelect: (CityRanking) -> Void
@@ -9,7 +9,7 @@ struct CityRankingsStrip: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Text("THREAT BOARD")
+                Text("MOST-MAPPED METROS")
                     .font(.system(size: 11, weight: .black, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(AppTheme.primary)

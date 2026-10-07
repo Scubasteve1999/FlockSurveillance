@@ -68,7 +68,7 @@ struct ReportCameraSheet: View {
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
 
-            Text("Sends an anonymous note to OpenStreetMap so community mappers can verify and tag it. We keep a local copy and watch for when it lands on the map.")
+            Text("Sends an anonymous note to OpenStreetMap so community mappers can verify and tag it. We keep a local copy and check for when it lands on the map.")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(AppTheme.mutedForeground)
 

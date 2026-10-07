@@ -311,7 +311,7 @@ struct SettingsView: View {
                                     .foregroundStyle(AppTheme.mutedForeground)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                Text("Anonymous OSM notes you submitted from this device. We watch open notes and refresh nearby when a camera lands.")
+                                Text("Anonymous OSM notes you submitted from this device. We check open notes and refresh nearby when a camera lands.")
                                     .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
 
@@ -414,7 +414,7 @@ struct SettingsView: View {
                                 Text("Unknown private: HOA and other private Flocks often never appear in official agency counts.")
                                     .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
-                                Text("Sources: OpenStreetMap; city and county minutes; Atlas of Surveillance (agency/vendor rows, which can lag); bundled FOIA Sharing Network from DeFlock Dane. This app does not store plate reads, does not invent a scan score, and cannot see a vendor network. Dodging a mapped pin does not mean you are off the network. Not affiliated with Flock Safety.")
+                                Text("Sources: OpenStreetMap; city and county minutes; Atlas of Surveillance (agency/vendor rows, which can lag); bundled FOIA Sharing Network from DeFlock Dane. This app does not store plate reads, does not invent a plate-read score, and cannot see a vendor network. Dodging a mapped pin does not mean you are off the network. Not affiliated with Flock Safety.")
                                     .font(AppTypography.footer)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Link(MapHonestyCopy.osmAttribution, destination: MapHonestyCopy.osmCopyrightURL)

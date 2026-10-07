@@ -104,10 +104,11 @@ final class ProductChromeCopyTests: XCTestCase {
         XCTAssertEqual(AppIdentity.appGroupID, "group.com.flocksurveillance.shared")
     }
 
-    func testMapWatchToggleKeepsOverwatchAsMode() throws {
+    func testMapWatchToggleUsesCalmPinPulseLabel() throws {
         let hud = try readProductSource("FlockSurveillance/Features/Map/CameraAnnotationView.swift")
-        XCTAssertTrue(hud.contains("Disable overwatch mode"))
-        XCTAssertTrue(hud.contains("Set overwatch mode"))
+        XCTAssertTrue(hud.contains(".accessibilityLabel(\"Pin pulse\")"))
+        XCTAssertTrue(hud.contains(".accessibilityHint(\"Pulses nearby mapped pins on the map.\")"))
+        XCTAssertFalse(hud.contains("overwatch mode"))
         XCTAssertFalse(hud.contains("OVERWATCH ·"))
     }
 

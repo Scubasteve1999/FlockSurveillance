@@ -2,8 +2,26 @@ import AudioToolbox
 import Foundation
 import UIKit
 
+/// Shows the Map boot banner (and its ping) at most once per app launch.
+/// App-scoped on purpose: view `@State` resets whenever the Map view is rebuilt.
+@MainActor
+enum BootBannerGate {
+    private(set) static var hasShown = false
+
+    /// Returns true exactly once per launch.
+    static func claim() -> Bool {
+        guard !hasShown else { return false }
+        hasShown = true
+        return true
+    }
+
+    static func resetForTesting() { hasShown = false }
+}
+
 /// Short system stings for Overwatch state changes.
 /// No custom asset pipeline — AudioServices + haptic only.
+/// Every sound goes through `play(_:)`, the single gate for the Sounds setting.
+/// Haptics are deliberately outside that gate.
 @MainActor
 enum OverwatchAudio {
     private static var lastCriticalStingAt: Date = .distantPast
@@ -11,6 +29,21 @@ enum OverwatchAudio {
     private static var lastZoneExitAt: Date = .distantPast
     private static let criticalCooldown: TimeInterval = 12
     private static let zoneCooldown: TimeInterval = 4
+
+    /// Where sounds are actually played. Tests swap this to observe the gate.
+    static var soundSink: (SystemSoundID) -> Void = { AudioServicesPlaySystemSound($0) }
+
+    /// Central gate: all app sounds funnel through here.
+    static func play(_ id: SystemSoundID) {
+        guard AppPreferences.soundsEnabled else { return }
+        soundSink(id)
+    }
+
+    static func resetCooldownsForTesting() {
+        lastCriticalStingAt = .distantPast
+        lastZoneEnterAt = .distantPast
+        lastZoneExitAt = .distantPast
+    }
 
     /// Fire when surveillance level crosses into `.critical`.
     static func stingIfEnteringCritical(
@@ -25,9 +58,9 @@ enum OverwatchAudio {
         lastCriticalStingAt = now
 
         // 1057 ≈ lock / tink; 1521 ≈ modern alert.
-        AudioServicesPlaySystemSound(1057)
+        play(1057)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-            AudioServicesPlaySystemSound(1521)
+            play(1521)
         }
         UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
@@ -38,7 +71,7 @@ enum OverwatchAudio {
         guard now.timeIntervalSince(lastZoneEnterAt) >= zoneCooldown else { return }
         lastZoneEnterAt = now
 
-        AudioServicesPlaySystemSound(1005) // new mail-ish alert
+        play(1005) // new mail-ish alert
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred(intensity: 1.0)
     }
 
@@ -48,18 +81,18 @@ enum OverwatchAudio {
         guard now.timeIntervalSince(lastZoneExitAt) >= zoneCooldown else { return }
         lastZoneExitAt = now
 
-        AudioServicesPlaySystemSound(1114) // end-record soft
+        play(1114) // end-record soft
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     /// Soft arm/disarm click for Overwatch toggle.
     static func armClick() {
-        AudioServicesPlaySystemSound(1104) // keyboard tap
+        play(1104) // keyboard tap
     }
 
     /// App / map session online.
     static func bootPing() {
-        AudioServicesPlaySystemSound(1103)
+        play(1103)
         UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.6)
     }
 }

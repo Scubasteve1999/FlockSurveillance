@@ -2,6 +2,8 @@ import Foundation
 
 enum AppPreferenceKey {
     static let hapticsEnabled = "prefs.hapticsEnabled"
+    /// App sounds (boot ping, arm click, stings). Haptics are separate.
+    static let soundsEnabled = "soundsEnabled"
     static let showHeatDefault = "prefs.showHeatDefault"
     static let showSensorAtlas = "prefs.showSensorAtlas"
     /// Metro names where the user manually turned Traffic cams off (per-city suppress).
@@ -28,6 +30,14 @@ enum AppPreferences {
             return UserDefaults.standard.bool(forKey: AppPreferenceKey.hapticsEnabled)
         }
         set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.hapticsEnabled) }
+    }
+
+    static var soundsEnabled: Bool {
+        get {
+            if UserDefaults.standard.object(forKey: AppPreferenceKey.soundsEnabled) == nil { return true }
+            return UserDefaults.standard.bool(forKey: AppPreferenceKey.soundsEnabled)
+        }
+        set { UserDefaults.standard.set(newValue, forKey: AppPreferenceKey.soundsEnabled) }
     }
 
     static var showHeatDefault: Bool {

@@ -43,6 +43,7 @@
 		39F09E544379830F538DE7D7 /* TipJarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D9FE2E02AB3A589F54F006 /* TipJarStore.swift */; };
 		39F2D5BAEFB927FE385ABA94 /* WatchedZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC82521CA35252739669DF77 /* WatchedZone.swift */; };
 		3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */; };
+		3860FF1294A6DC52633C9B01 /* SoundsAndFeedbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */; };
 		3C8BE86DE12D12D11D07AD2A /* CameraAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B071FF59632161F16D40277C /* CameraAnnotationView.swift */; };
 		3F450E1327D400D634D6AC86 /* DriveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DAEC9CBDA0F61B86C561 /* DriveActivityAttributes.swift */; };
 		42EB0EBC4947DCBA0612E8AC /* RetentionDeltaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE00454428F760D163259776 /* RetentionDeltaView.swift */; };
@@ -233,6 +234,7 @@
 		87784C2D6733C5C7355182A3 /* SensorAtlasAutoPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorAtlasAutoPolicy.swift; sourceTree = "<group>"; };
 		87AA373662BC417002454737 /* ProximityRadar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityRadar.swift; sourceTree = "<group>"; };
 		8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedZoneTests.swift; sourceTree = "<group>"; };
+		94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundsAndFeedbackTests.swift; sourceTree = "<group>"; };
 		8CCB9D48AF83D79A817AD6AB /* FlockSurveillance.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FlockSurveillance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveillanceLevelTests.swift; sourceTree = "<group>"; };
 		8ED03FA3B1E8310241F711D5 /* FlockSurveillance.storekit */ = {isa = PBXFileReference; path = FlockSurveillance.storekit; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				8DE3323954B18E0B99F0DB1F /* SurveillanceLevelTests.swift */,
 				EEA5A86FD7B9DA246AC132CF /* TipJarStoreTests.swift */,
 				8B9E458DAA6FCDC14BBDEDB7 /* WatchedZoneTests.swift */,
+				94745373247FFF4A5088B808 /* SoundsAndFeedbackTests.swift */,
 			);
 			path = FlockSurveillanceTests;
 			sourceTree = "<group>";
@@ -858,6 +861,7 @@
 				166F21FDA500EDC98D3947D7 /* SurveillanceLevelTests.swift in Sources */,
 				F6A1766D4222FD6BE0BCCFBF /* TipJarStoreTests.swift in Sources */,
 				3AD9CC1A3D89F168FC6C51BB /* WatchedZoneTests.swift in Sources */,
+				3860FF1294A6DC52633C9B01 /* SoundsAndFeedbackTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

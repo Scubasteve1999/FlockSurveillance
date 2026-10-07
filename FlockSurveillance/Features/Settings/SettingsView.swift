@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Environment(ProximityRadar.self) private var radar
     @Environment(ReportStore.self) private var reportStore
 
+    @AppStorage(AppPreferenceKey.soundsEnabled) private var soundsEnabled = true
     @AppStorage(AppPreferenceKey.showHeatDefault) private var showHeatDefault = true
     @AppStorage(AppPreferenceKey.defaultFilter) private var defaultFilterRaw = CameraFilter.all.rawValue
     @AppStorage(AppPreferenceKey.alertsEnabled) private var alertsEnabled = false
@@ -71,6 +72,11 @@ struct SettingsView: View {
                                     set: { radar.hapticsEnabled = $0 }
                                 )) {
                                     labelRow("Proximity haptics", "Pulse near mapped pins — not plate reads")
+                                }
+                                .tint(AppTheme.accent)
+
+                                Toggle(isOn: $soundsEnabled) {
+                                    labelRow("Sounds", "Startup chime, toggle clicks and alert tones")
                                 }
                                 .tint(AppTheme.accent)
 

@@ -26,7 +26,10 @@ struct MapRadarView: View {
         )
     )
     @State private var lastSurveillanceLevel: SurveillanceLevel?
-    @State private var showBootBanner = true
+    /// Claimed once per app launch via `BootBannerGate` (not per view instance).
+    @State private var showBootBanner = false
+    /// One-time setup guard: the Map stays mounted across tab switches.
+    @State private var didBootstrap = false
     @State private var lastInWatchedZone = false
     @State private var visibleRegion: MKCoordinateRegion?
     @State private var filter: CameraFilter = AppPreferences.defaultFilter
@@ -339,14 +342,18 @@ struct MapRadarView: View {
 
     private func handleAppear() {
         locationManager.start()
-        showHeat = showHeatStored
-        showSensorAtlas = showSensorAtlasStored
-        showOliveBranchEntrances = showOliveBranchEntrancesStored
-        filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
-        radar.watchModeEnabled = watchModeStored
-        sensorAtlasStore.loadIfNeeded()
-        entranceStore.loadIfNeeded()
-        bootstrapRegion()
+        if !didBootstrap {
+            didBootstrap = true
+            if BootBannerGate.claim() { showBootBanner = true }
+            showHeat = showHeatStored
+            showSensorAtlas = showSensorAtlasStored
+            showOliveBranchEntrances = showOliveBranchEntrancesStored
+            filter = CameraFilter(rawValue: defaultFilterRaw) ?? .all
+            radar.watchModeEnabled = watchModeStored
+            sensorAtlasStore.loadIfNeeded()
+            entranceStore.loadIfNeeded()
+            bootstrapRegion()
+        }
         startPulseIfNeeded()
         maybeAutoEnableSensorAtlas()
         maybeAutoEnableEntrances()
@@ -368,6 +375,10 @@ struct MapRadarView: View {
     }
 
     private func handleDisappear() {
+        // The map stays mounted while hidden; stop the ambient pulse so it isn't animating off-screen.
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { pulsePhase = false }
         sensorAtlasBannerDismissTask?.cancel()
         sensorAtlasBannerDismissTask = nil
         entranceBannerDismissTask?.cancel()
@@ -422,7 +433,6 @@ struct MapRadarView: View {
 
     private func handleWatchModeChange(_ enabled: Bool) {
         watchModeStored = enabled
-        if enabled { OverwatchAudio.armClick() }
         startPulseIfNeeded()
     }
 
@@ -824,7 +834,9 @@ struct MapRadarView: View {
         withAnimation(.easeInOut(duration: 0.25)) {
             radar.watchModeEnabled.toggle()
         }
+        // Single owner of watch-toggle feedback: one haptic, plus one click when arming.
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        if radar.watchModeEnabled { OverwatchAudio.armClick() }
     }
 
     private func startPulseIfNeeded() {

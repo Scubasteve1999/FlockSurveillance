@@ -26,13 +26,15 @@ final class CameraRepository {
 
     private let client: OverpassClient
     private var modelContext: ModelContext?
+    /// Background actor that owns all SwiftData diffing and saving.
+    private var store: CameraStore?
+    /// Latest-wins guard: a store result applies only if no newer store call has started since.
+    private var loadToken = 0
     private var debounceTask: Task<Void, Never>?
     private var seedTask: Task<Void, Never>?
     private var fetchGeneration = 0
     private var inFlightFetchGenerations = Set<Int>()
 
-    private let maxCachedCameras = 12_000
-    private let maxAge: TimeInterval = 14 * 24 * 60 * 60
     private let seedMinimumCacheCount = 250
 
     init(client: OverpassClient = .shared) {
@@ -43,31 +45,50 @@ final class CameraRepository {
         // Idempotent — onboarding → map can call this more than once.
         if self.modelContext != nil { return }
         self.modelContext = modelContext
-        loadCached()
-        lastSuccessfulFetchAt = cameras.map(\.fetchedAt).max()
-        if cameras.count < seedMinimumCacheCount {
-            startSeedIfNeeded()
+        store = CameraStore(modelContainer: modelContext.container)
+        Task { [weak self] in
+            guard let self else { return }
+            await self.reloadFromStore()
+            self.lastSuccessfulFetchAt = self.cameras.map(\.fetchedAt).max()
+            if self.cameras.count < self.seedMinimumCacheCount {
+                self.startSeedIfNeeded()
+            }
         }
     }
 
+    /// Re-read the cache. The fetch, filter, sort and index build run on the store actor.
     func loadCached() {
-        guard let modelContext else { return }
-        // Sort in memory to avoid Swift 6 KeyPath Sendable diagnostics from SortDescriptor.
-        let fetched = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        setCameras(
-            fetched
-                .filter { !$0.isHidden && !$0.isAbsentFromOSM }
-                .sorted { $0.fetchedAt > $1.fetchedAt }
-        )
+        Task { await reloadFromStore() }
+    }
+
+    private func reloadFromStore() async {
+        guard let store else { return }
+        let token = nextLoadToken()
+        let result = await store.load()
+        apply(result, token: token)
+    }
+
+    private func nextLoadToken() -> Int {
+        loadToken &+= 1
+        return loadToken
+    }
+
+    /// Resolve a background load into main-context models and publish it.
+    private func apply(_ result: CameraLoadResult, token: Int) {
+        guard token == loadToken, let modelContext else { return }
+        let models = result.orderedIDs.compactMap { modelContext.model(for: $0) as? ALPRCamera }
+        // Normally identical; rebuild if any row vanished between the background save and now.
+        let index = models.count == result.orderedIDs.count ? result.index : nil
+        setCameras(models, index: index)
         // Heavy distance ranking must not block the main thread (onboarding → map).
         Task { await publishAlertCandidatesAsync() }
     }
 
     /// Single write path for `cameras`: keeps the spatial index and id lookup in step.
-    private func setCameras(_ new: [ALPRCamera]) {
+    private func setCameras(_ new: [ALPRCamera], index: CameraSpatialIndex? = nil) {
         cameras = new
         camerasByID = Dictionary(new.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        spatialIndex = CameraSpatialIndex(points: new.map(\.point))
+        spatialIndex = index ?? CameraSpatialIndex(points: new.map(\.point))
         indexVersion &+= 1
     }
 
@@ -186,8 +207,7 @@ final class CameraRepository {
         do {
             let remote = try await client.fetchCameras(in: region)
             if !remote.isEmpty {
-                upsert(remote.map { $0.makeModel() })
-                loadCached()
+                await upsertDTOs(remote)
             }
             return Set(remote.map(\.id))
         } catch {
@@ -253,18 +273,19 @@ final class CameraRepository {
                 endFetch(generation)
                 return nil
             }
-            upsert(combined.map { $0.makeModel() })
-            if updateSettledRegion, !tooLarge {
-                for tileResult in tileResults {
-                    markAbsentFromOSM(
-                        remoteIDs: tileResult.ids,
-                        in: [tileResult.region],
-                        protecting: seen
-                    )
-                }
+            // One background pass per fetch: upsert, a single batched absent diff, prune, one save.
+            if let store {
+                let token = nextLoadToken()
+                let result = await store.applyFetch(
+                    dtos: combined,
+                    tileResults: tileResults.map { FetchTileResult(region: $0.region, ids: $0.ids) },
+                    protecting: seen,
+                    markAbsent: updateSettledRegion && !tooLarge
+                )
+                apply(result, token: token)
+            } else {
+                upsertInMemory(combined.map { $0.makeModel() })
             }
-            pruneCache()
-            loadCached()
             if updateSettledRegion {
                 // Only the tiles we actually queried — never the scheduled
                 // continental / capped viewport (false Place Score Clear).
@@ -288,7 +309,7 @@ final class CameraRepository {
                 }
                 isServingStale = !cameras.isEmpty
                 if cameras.isEmpty {
-                    loadCached()
+                    await reloadFromStore()
                     isServingStale = !cameras.isEmpty
                 }
             }
@@ -327,9 +348,8 @@ final class CameraRepository {
                 do {
                     let remote = try await self.client.fetchCameras(in: region)
                     if !remote.isEmpty {
-                        self.upsert(remote.map { $0.makeModel() })
+                        await self.upsertDTOs(remote)
                         loadedAny = true
-                        self.loadCached()
                         self.lastSuccessfulFetchAt = .now
                         self.isServingStale = false
                         WidgetBridge.writeNearbySnapshot(from: self.cameras)
@@ -343,8 +363,11 @@ final class CameraRepository {
                 try? await Task.sleep(nanoseconds: 700_000_000)
             }
 
-            self.pruneCache()
-            self.loadCached()
+            if let store = self.store {
+                let token = self.nextLoadToken()
+                let result = await store.pruneAndLoad()
+                self.apply(result, token: token)
+            }
             self.isSeeding = false
             if loadedAny {
                 self.coverageHint = nil
@@ -357,7 +380,7 @@ final class CameraRepository {
     func clearCache() {
         seedTask?.cancel()
         isSeeding = false
-        guard let modelContext else {
+        guard let store else {
             setCameras([])
             lastSuccessfulFetchAt = nil
             lastFetchedRegion = nil
@@ -367,11 +390,8 @@ final class CameraRepository {
             AlertsEngine.shared.clearGeofences()
             return
         }
-        let all = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        for camera in all {
-            modelContext.delete(camera)
-        }
-        try? modelContext.save()
+        // Invalidate any in-flight load so rows being deleted aren't resurrected.
+        loadToken &+= 1
         setCameras([])
         lastSuccessfulFetchAt = nil
         lastFetchedRegion = nil
@@ -382,7 +402,10 @@ final class CameraRepository {
         WidgetSnapshotStore.clearNearbySnapshot()
         AlertsEngine.shared.clearGeofences()
         WidgetBridge.writeNearbySnapshot(from: [])
-        startSeedIfNeeded()
+        Task { [weak self] in
+            await store.clearAll()
+            self?.startSeedIfNeeded()
+        }
     }
 
     func refreshWidgetSnapshot() {
@@ -391,18 +414,17 @@ final class CameraRepository {
 
     /// Soft-hide a camera after a confirmed removal report.
     func hideCamera(id: String) {
-        guard let modelContext else {
-            setCameras(cameras.filter { $0.id != id })
-            return
-        }
-        let all = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        if let match = all.first(where: { $0.id == id }) {
-            match.isHidden = true
-            try? modelContext.save()
-        }
-        loadCached()
+        // Optimistic: the pin disappears now; the store persists the hide and we reload.
+        setCameras(cameras.filter { $0.id != id })
         WidgetBridge.writeNearbySnapshot(from: cameras)
-        Task { await publishAlertCandidatesAsync() }
+        guard let store else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            let token = self.nextLoadToken()
+            let result = await store.hide(id: id)
+            self.apply(result, token: token)
+            WidgetBridge.writeNearbySnapshot(from: self.cameras)
+        }
     }
 
     func filtered(_ filter: CameraFilter) -> [ALPRCamera] {
@@ -472,88 +494,22 @@ final class CameraRepository {
         return isServingStale ? "\(base) · cached" : base
     }
 
-    private func upsert(_ remote: [ALPRCamera]) {
-        guard let modelContext else {
-            var byID = Dictionary(uniqueKeysWithValues: cameras.map { ($0.id, $0) })
-            for camera in remote {
-                byID[camera.id] = camera
-            }
-            setCameras(Array(byID.values))
+    private func upsertDTOs(_ dtos: [ALPRCameraDTO]) async {
+        guard let store else {
+            upsertInMemory(dtos.map { $0.makeModel() })
             return
         }
+        let token = nextLoadToken()
+        let result = await store.upsert(dtos: dtos)
+        apply(result, token: token)
+    }
 
-        // Index existing rows in memory instead of #Predicate KeyPaths (not Sendable in Swift 6).
-        let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        var byID = Dictionary(uniqueKeysWithValues: existing.map { ($0.id, $0) })
-
+    /// Only used before a store is attached (no persistence): merge into the in-memory list.
+    private func upsertInMemory(_ remote: [ALPRCamera]) {
+        var byID = Dictionary(cameras.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         for camera in remote {
-            if let current = byID[camera.id] {
-                current.latitude = camera.latitude
-                current.longitude = camera.longitude
-                current.manufacturer = camera.manufacturer
-                current.operatorName = camera.operatorName
-                // Don't wipe a known direction when a mirror omits the tag.
-                if let direction = camera.direction, !direction.isEmpty {
-                    current.direction = direction
-                }
-                current.cameraName = camera.cameraName
-                current.tagsJSON = camera.tagsJSON
-                current.fetchedAt = camera.fetchedAt
-                current.isAbsentFromOSM = false
-                // Preserve local soft-hide across refetches.
-            } else {
-                modelContext.insert(camera)
-                if byID[camera.id] == nil {
-                    byID[camera.id] = camera
-                }
-            }
+            byID[camera.id] = camera
         }
-        try? modelContext.save()
-    }
-
-    /// Soft-mark cameras inside successfully covered tiles that OSM no longer returned.
-    /// Empty `remoteIDs` is allowed — sparse-void trust lives in CoverageConfidence.
-    /// `protecting` holds IDs returned anywhere in this fetch batch (neighbor-tile edges).
-    private func markAbsentFromOSM(
-        remoteIDs: Set<String>,
-        in regions: [MKCoordinateRegion],
-        protecting protectedIDs: Set<String> = []
-    ) {
-        guard let modelContext, !regions.isEmpty else { return }
-        let existing = (try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? []
-        // Hidden / already-absent rows must not inflate density and block sparse clear.
-        let visible = existing.filter { !$0.isHidden && !$0.isAbsentFromOSM }
-        let absent = CoverageConfidence.idsToMarkAbsent(
-            cached: visible.map { ($0.id, $0.coordinate) },
-            remoteIDs: remoteIDs,
-            regions: regions,
-            excluding: protectedIDs
-        )
-        guard !absent.isEmpty else { return }
-        for camera in existing where absent.contains(camera.id) {
-            // Don't override an explicit user removal hide.
-            if camera.isHidden { continue }
-            camera.isAbsentFromOSM = true
-        }
-        try? modelContext.save()
-    }
-
-    private func pruneCache() {
-        guard let modelContext else { return }
-        let cutoff = Date().addingTimeInterval(-maxAge)
-        let all = ((try? modelContext.fetch(FetchDescriptor<ALPRCamera>())) ?? [])
-            .sorted { $0.fetchedAt > $1.fetchedAt }
-
-        for camera in all where camera.fetchedAt < cutoff {
-            modelContext.delete(camera)
-        }
-
-        let remaining = all.filter { $0.fetchedAt >= cutoff }
-        if remaining.count > maxCachedCameras {
-            for camera in remaining.dropFirst(maxCachedCameras) {
-                modelContext.delete(camera)
-            }
-        }
-        try? modelContext.save()
+        setCameras(Array(byID.values))
     }
 }

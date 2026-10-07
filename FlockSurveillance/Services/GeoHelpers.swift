@@ -141,51 +141,109 @@ enum GeoHelpers {
         collapseContinental: Bool = true,
         maxTiles: Int = maxTilesPerFetch
     ) -> [MKCoordinateRegion] {
-        let latSpan = max(region.span.latitudeDelta, 0.01)
-        let lonSpan = max(region.span.longitudeDelta, 0.01)
+        // Privacy: every tile is built from whole grid cells, so the bbox sent to
+        // Overpass is a fixed coarse area — never centered on the user's GPS fix.
+        let cells = gridCells(for: region)
+        let latCells = cells.north - cells.south
+        let lonCells = cells.east - cells.west
 
-        if latSpan <= maxQuerySpanDegrees, lonSpan <= maxQuerySpanDegrees {
-            return [region]
+        if latCells <= maxCellsPerTile, lonCells <= maxCellsPerTile {
+            return [gridRegion(south: cells.south, north: cells.north, west: cells.west, east: cells.east)]
         }
 
         if collapseContinental, dominantSpan(region) > maxTileableSpanDegrees {
-            // Continental / country zooms: only sample the viewport center metro tile.
+            // Continental / country zooms: only sample the metro tile around the viewport center.
+            let centerLat = Int(floor(region.center.latitude * overpassCellsPerDegree))
+            let centerLon = Int(floor(region.center.longitude * overpassCellsPerDegree))
+            let half = maxCellsPerTile / 2
+            let south = clampLatCell(centerLat - half, length: maxCellsPerTile)
             return [
-                MKCoordinateRegion(
-                    center: region.center,
-                    span: MKCoordinateSpan(
-                        latitudeDelta: maxQuerySpanDegrees,
-                        longitudeDelta: maxQuerySpanDegrees
-                    )
+                gridRegion(
+                    south: south,
+                    north: south + maxCellsPerTile,
+                    west: centerLon - half,
+                    east: centerLon - half + maxCellsPerTile
                 )
             ]
         }
 
         let maxAxisTiles = collapseContinental ? 3 : 6
-        let latTiles = min(maxAxisTiles, max(1, Int(ceil(latSpan / maxQuerySpanDegrees))))
-        let lonTiles = min(maxAxisTiles, max(1, Int(ceil(lonSpan / maxQuerySpanDegrees))))
-        let tileLat = latSpan / Double(latTiles)
-        let tileLon = lonSpan / Double(lonTiles)
-        let originLat = region.center.latitude - latSpan / 2
-        let originLon = region.center.longitude - lonSpan / 2
+        let latTiles = min(maxAxisTiles, max(1, Int(ceil(Double(latCells) / Double(maxCellsPerTile)))))
+        let lonTiles = min(maxAxisTiles, max(1, Int(ceil(Double(lonCells) / Double(maxCellsPerTile)))))
 
         var tiles: [MKCoordinateRegion] = []
         for row in 0..<latTiles {
             for col in 0..<lonTiles {
-                let center = CLLocationCoordinate2D(
-                    latitude: originLat + (Double(row) + 0.5) * tileLat,
-                    longitude: originLon + (Double(col) + 0.5) * tileLon
-                )
                 tiles.append(
-                    MKCoordinateRegion(
-                        center: center,
-                        span: MKCoordinateSpan(latitudeDelta: tileLat, longitudeDelta: tileLon)
+                    gridRegion(
+                        south: cells.south + latCells * row / latTiles,
+                        north: cells.south + latCells * (row + 1) / latTiles,
+                        west: cells.west + lonCells * col / lonTiles,
+                        east: cells.west + lonCells * (col + 1) / lonTiles
                     )
                 )
                 if tiles.count >= maxTiles { return tiles }
             }
         }
         return tiles
+    }
+
+    /// Fixed Overpass request grid (~11 km of latitude per cell).
+    static let overpassGridDegrees: Double = 1 / overpassCellsPerDegree
+    private static let overpassCellsPerDegree: Double = 10
+    /// Whole cells per tile axis that stay within `maxQuerySpanDegrees`.
+    private static let maxCellsPerTile = Int(maxQuerySpanDegrees * overpassCellsPerDegree)
+
+    /// Expand `region` outward to whole 0.1° grid cells (minimum one cell).
+    /// Idempotent, so OverpassClient can apply it to already-tiled regions.
+    static func snappedToOverpassGrid(_ region: MKCoordinateRegion) -> MKCoordinateRegion {
+        let cells = gridCells(for: region)
+        return gridRegion(south: cells.south, north: cells.north, west: cells.west, east: cells.east)
+    }
+
+    /// The exact bbox OverpassClient sends: snapped to the grid, edges rounded to whole cells
+    /// so float noise from center ± span/2 never leaks into the query string.
+    static func overpassBoundingBox(for region: MKCoordinateRegion) -> (south: Double, west: Double, north: Double, east: Double) {
+        let cells = gridCells(for: region)
+        return (
+            Double(cells.south) / overpassCellsPerDegree,
+            Double(cells.west) / overpassCellsPerDegree,
+            Double(cells.north) / overpassCellsPerDegree,
+            Double(cells.east) / overpassCellsPerDegree
+        )
+    }
+
+    /// Integer cell indices (in tenths of a degree) covering `region`, expanded outward.
+    private static func gridCells(for region: MKCoordinateRegion) -> (south: Int, north: Int, west: Int, east: Int) {
+        // Epsilon keeps an already-snapped edge from rounding out by one cell.
+        let epsilon = 1e-7
+        let latHalf = abs(region.span.latitudeDelta) / 2
+        let lonHalf = abs(region.span.longitudeDelta) / 2
+        var south = Int(floor((region.center.latitude - latHalf) * overpassCellsPerDegree + epsilon))
+        var north = Int(ceil((region.center.latitude + latHalf) * overpassCellsPerDegree - epsilon))
+        let west = Int(floor((region.center.longitude - lonHalf) * overpassCellsPerDegree + epsilon))
+        var east = Int(ceil((region.center.longitude + lonHalf) * overpassCellsPerDegree - epsilon))
+        south = max(south, -900)
+        north = min(north, 900)
+        if north <= south {
+            north = south + 1
+            if north > 900 { north = 900; south = 899 }
+        }
+        if east <= west { east = west + 1 }
+        return (south, north, west, east)
+    }
+
+    private static func clampLatCell(_ south: Int, length: Int) -> Int {
+        min(max(south, -900), 900 - length)
+    }
+
+    private static func gridRegion(south: Int, north: Int, west: Int, east: Int) -> MKCoordinateRegion {
+        let s = Double(south) / overpassCellsPerDegree, n = Double(north) / overpassCellsPerDegree
+        let w = Double(west) / overpassCellsPerDegree, e = Double(east) / overpassCellsPerDegree
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: (s + n) / 2, longitude: (w + e) / 2),
+            span: MKCoordinateSpan(latitudeDelta: n - s, longitudeDelta: e - w)
+        )
     }
 
     /// Bounding region of tiles that were actually queried — not the scheduled viewport.

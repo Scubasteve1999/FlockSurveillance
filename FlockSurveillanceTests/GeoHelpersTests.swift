@@ -78,6 +78,78 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertLessThanOrEqual(tiles.count, GeoHelpers.maxTilesPerFetch)
     }
 
+    func testOverpassBoundingBoxesSnapToCoarseGridAndAreNeverCenteredOnFix() {
+        var rng = SeededGenerator(seed: 0x0F1_0C4)
+        let spans: [Double] = [0.01, 0.05, 0.2, 0.45, 1.0, 3.5]
+        for _ in 0..<500 {
+            let fix = CLLocationCoordinate2D(
+                latitude: Double.random(in: -60...70, using: &rng),
+                longitude: Double.random(in: -179...179, using: &rng)
+            )
+            for span in spans {
+                let region = MKCoordinateRegion(
+                    center: fix,
+                    span: MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+                )
+                for collapse in [true, false] {
+                    let tiles = GeoHelpers.queryTiles(for: region, collapseContinental: collapse, maxTiles: 24)
+                    XCTAssertFalse(tiles.isEmpty)
+                    for tile in tiles {
+                        assertGridAligned(GeoHelpers.overpassBoundingBox(for: tile), fix: fix)
+                        // Already-snapped tiles must pass through the client's guard unchanged.
+                        let snapped = GeoHelpers.snappedToOverpassGrid(tile)
+                        XCTAssertEqual(snapped.span.latitudeDelta, tile.span.latitudeDelta, accuracy: 1e-9)
+                        XCTAssertEqual(snapped.center.longitude, tile.center.longitude, accuracy: 1e-9)
+                    }
+                    if tiles.count == 1, span <= GeoHelpers.maxQuerySpanDegrees {
+                        let box = GeoHelpers.overpassBoundingBox(for: tiles[0])
+                        XCTAssertTrue((box.south...box.north).contains(fix.latitude))
+                        XCTAssertTrue((box.west...box.east).contains(fix.longitude))
+                    }
+                }
+                // Direct client calls (probe / seed) bypass queryTiles and still snap.
+                let direct = GeoHelpers.overpassBoundingBox(for: region)
+                assertGridAligned(direct, fix: fix)
+                XCTAssertGreaterThanOrEqual(direct.north - direct.south, GeoHelpers.overpassGridDegrees - 1e-9)
+            }
+        }
+    }
+
+    func testTinyRegionSnapsToExactlyOneGridCell() {
+        let tiny = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 35.1234, longitude: -89.9876),
+            span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001)
+        )
+        let tiles = GeoHelpers.queryTiles(for: tiny)
+        XCTAssertEqual(tiles.count, 1)
+        let box = GeoHelpers.overpassBoundingBox(for: tiles[0])
+        XCTAssertEqual(box.south, 35.1, accuracy: 1e-12)
+        XCTAssertEqual(box.north, 35.2, accuracy: 1e-12)
+        XCTAssertEqual(box.west, -90.0, accuracy: 1e-12)
+        XCTAssertEqual(box.east, -89.9, accuracy: 1e-12)
+    }
+
+    private func assertGridAligned(
+        _ box: (south: Double, west: Double, north: Double, east: Double),
+        fix: CLLocationCoordinate2D,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        for edge in [box.south, box.west, box.north, box.east] {
+            XCTAssertEqual(edge * 10, (edge * 10).rounded(), accuracy: 1e-9, "edge \(edge) off 0.1° grid", file: file, line: line)
+        }
+        XCTAssertGreaterThan(box.north, box.south, file: file, line: line)
+        XCTAssertGreaterThan(box.east, box.west, file: file, line: line)
+        let centerLat = (box.south + box.north) / 2
+        let centerLon = (box.west + box.east) / 2
+        XCTAssertFalse(
+            abs(centerLat - fix.latitude) < 1e-6 && abs(centerLon - fix.longitude) < 1e-6,
+            "bbox is centered on the fix",
+            file: file,
+            line: line
+        )
+    }
+
     func testLongRouteRegionDoesNotCollapseWhenDisabled() {
         let longDrive = MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 34.0, longitude: -118.5),
@@ -338,5 +410,20 @@ final class GeoHelpersTests: XCTestCase {
                 contains: CLLocationCoordinate2D(latitude: 47.6, longitude: -122.3)
             )
         )
+    }
+}
+
+/// Deterministic SplitMix64 so the random-fix property test is reproducible.
+private struct SeededGenerator: RandomNumberGenerator {
+    private var state: UInt64
+
+    init(seed: UInt64) { state = seed }
+
+    mutating func next() -> UInt64 {
+        state &+= 0x9E37_79B9_7F4A_7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+        return z ^ (z >> 31)
     }
 }

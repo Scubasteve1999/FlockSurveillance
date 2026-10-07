@@ -70,8 +70,13 @@ struct RecordsWallRecord: Codable, Sendable, Equatable, Identifiable, Hashable {
 
     var displayName: String { agency }
 
+    /// True when the jurisdiction is the state itself ("Texas" / "TX").
+    var isStatewide: Bool {
+        OfficialMapMatching.normalizeState(jurisdiction) == OfficialMapMatching.normalizeState(state)
+    }
+
     var placeLine: String {
-        jurisdiction == state ? state : "\(jurisdiction), \(state)"
+        isStatewide ? "Statewide, \(state)" : "\(jurisdiction), \(state)"
     }
 }
 

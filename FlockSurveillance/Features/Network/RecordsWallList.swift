@@ -91,7 +91,9 @@ struct RecordsWallListContent: View {
 
             Section {
                 RecordsWallMetaBlock(meta: dataset.meta)
+                    .padding(.vertical, 4)
             }
+            .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
         }
         .listStyle(.insetGrouped)

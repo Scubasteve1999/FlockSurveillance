@@ -125,6 +125,7 @@ struct RecordsWallMetaBlock: View {
                         }
                     }
                 }
+                .padding(.horizontal, AppTheme.cardPadding)
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("records-wall-tracker")
             }

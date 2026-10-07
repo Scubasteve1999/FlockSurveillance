@@ -306,6 +306,13 @@ final class RecordsWallStatusTests: XCTestCase {
         XCTAssertEqual(object["datasetAsOf"] as? String, "2026-09-30")
     }
 
+    func testStatewideAgenciesDoNotRepeatTheState() throws {
+        XCTAssertEqual(try record("texas-dps").placeLine, "Statewide, TX")
+        XCTAssertEqual(try record("txdot-tx").placeLine, "Statewide, TX")
+        XCTAssertEqual(try record("irving-tx").placeLine, "Irving, TX")
+        XCTAssertEqual(try record("harris-county-sheriff-tx").placeLine, "Harris County, TX")
+    }
+
     // MARK: - List model
 
     func testListModelGroupsEveryRecordOnce() throws {

@@ -296,7 +296,9 @@ struct RadarHUD: View {
         }
         .buttonStyle(.plain)
         .fixedSize()
-        .accessibilityLabel(watchModeEnabled ? "Disable overwatch mode" : "Set overwatch mode")
+        .accessibilityLabel("Pin pulse")
+        .accessibilityValue(watchModeEnabled ? "On" : "Off")
+        .accessibilityHint("Pulses nearby mapped pins on the map.")
     }
 
     private var tacticalDial: some View {

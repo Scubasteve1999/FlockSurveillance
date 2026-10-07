@@ -15,7 +15,7 @@ How mapped is this road?
 ================================================================================
 KEYWORDS (100)
 ================================================================================
-alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,speed camera,tracker
+alpr,license plate reader,flock,camera pins,surveillance,privacy,deflock,route,lpr,foia,osm,drive
 
 ================================================================================
 PROMOTIONAL TEXT (170)

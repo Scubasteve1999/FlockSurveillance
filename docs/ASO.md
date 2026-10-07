@@ -18,12 +18,14 @@
 ## Keyword field (100 chars)
 
 ```
-alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,speed camera,tracker
+alpr,license plate reader,flock,camera pins,surveillance,privacy,deflock,route,lpr,foia,osm,drive
 ```
 
 Notes:
 - Don't repeat words already in the title/subtitle (Apple indexes those separately).
-- "speed camera" is high-volume adjacent intent; the map genuinely answers it for ALPR-style cameras.
+- No "speed camera" or "tracker": the app maps ALPR pins, not speed enforcement, and does not track anyone.
+- "map" is already in the name, so Apple combines it with keywords ("alpr map", "camera pins map").
+  "license plate reader" + "map" covers "license plate reader map".
 - Revisit quarterly with App Store Connect search-terms data.
 
 ## Promotional text (170 chars, editable without review)
@@ -57,7 +59,7 @@ How mapped is this road?
 ### Keywords (100)
 
 ```
-alpr,license plate reader,flock,camera map,surveillance,privacy,deflock,route,speed camera,tracker
+alpr,license plate reader,flock,camera pins,surveillance,privacy,deflock,route,lpr,foia,osm,drive
 ```
 
 ### Promotional Text (170)

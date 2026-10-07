@@ -98,7 +98,7 @@ private struct PlaceScoreShareCard: View {
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
                     Spacer()
-                    Text("CLASSIFIED · PUBLIC DATA")
+                    Text("PUBLIC DATA")
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }
@@ -123,13 +123,13 @@ private struct PlaceScoreShareCard: View {
                         WatchednessDial(
                             grade: score.grade,
                             cameraCount: score.cameraCount,
-                            size: 120,
+                            size: 108,
                             animate: false
                         )
                         // Outer threat ring
                         Circle()
                             .stroke(level.color.opacity(0.55), lineWidth: 2)
-                            .frame(width: 136, height: 136)
+                            .frame(width: 122, height: 122)
                     }
 
                     VStack(alignment: .leading, spacing: 10) {
@@ -161,31 +161,28 @@ private struct PlaceScoreShareCard: View {
 
                 Spacer(minLength: 0)
 
-                HStack(alignment: .bottom) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("HOW MAPPED IS YOUR BLOCK RIGHT NOW?")
-                            .font(.system(size: 11, weight: .heavy, design: .monospaced))
-                            .foregroundStyle(AppTheme.accent)
-                        Text("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED")
-                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(AppTheme.mutedForeground)
-                        Text(MapHonestyCopy.chipLine)
-                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(AppTheme.mutedForeground)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(AppLinks.shareFooterHost)
-                            .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.white.opacity(0.55))
-                        Text("OSM community data")
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.white.opacity(0.4))
-                        Text(MapHonestyCopy.osmAttribution)
-                            .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(.white.opacity(0.4))
-                    }
+                // Full-width stack: a side-by-side host column truncated the left lines.
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("HOW MAPPED IS YOUR BLOCK RIGHT NOW?")
+                        .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                        .foregroundStyle(AppTheme.accent)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("OSM · COMMUNITY MAPPED · NOT A VENDOR FEED")
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(MapHonestyCopy.chipLine)
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(AppTheme.mutedForeground)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(AppLinks.shareFooterHost)
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.55))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Text(MapHonestyCopy.osmAttribution)
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.4))
                 }
             }
             .padding(24)
@@ -208,7 +205,7 @@ private struct PlaceScoreShareCard: View {
                 .font(.system(size: 13, weight: .black, design: .monospaced))
                 .foregroundStyle(.white)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 5)
     }
 
     private func warBadge(_ text: String, color: Color) -> some View {
@@ -277,7 +274,7 @@ private struct DriveReportShareCard: View {
                         .tracking(1.6)
                         .foregroundStyle(AppTheme.primary)
                     Spacer()
-                    Text("ROUTE DOSSIER")
+                    Text("ROUTE REPORT")
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }

@@ -119,7 +119,7 @@ struct RecordsWallMetaBlock: View {
                         .fixedSize(horizontal: false, vertical: true)
                     if let url = URL(string: tracker.url), url.scheme?.lowercased() == "https" {
                         Link(destination: url) {
-                            Text("Open tracker")
+                            Text("Open FOIA status page")
                                 .font(AppTypography.button)
                                 .foregroundStyle(AppTheme.accent)
                         }

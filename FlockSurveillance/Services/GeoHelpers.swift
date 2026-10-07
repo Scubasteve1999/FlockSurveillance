@@ -342,6 +342,20 @@ enum GeoHelpers {
         return CLLocationCoordinate2D(latitude: lat2 * 180 / .pi, longitude: lon2 * 180 / .pi)
     }
 
+    /// Shared Place Score grade ladder — map card, onboarding teaser, and share cards.
+    /// Calm, factual density words only; never "watched".
+    static let placeScoreGrades = ["Clear", "Light", "Mapped", "Heavy", "Saturated"]
+
+    static func placeScoreGrade(forCameraCount count: Int) -> String {
+        switch count {
+        case ..<1: return "Clear"
+        case 1...4: return "Light"
+        case 5...14: return "Mapped"
+        case 15...29: return "Heavy"
+        default: return "Saturated"
+        }
+    }
+
     static func placeScore(
         cameras: [ALPRCamera],
         near coordinate: CLLocationCoordinate2D,
@@ -354,14 +368,7 @@ enum GeoHelpers {
         let radiusMiles = radiusMeters / 1609.34
         let areaSqMi = max(radiusMiles * radiusMiles * Double.pi, 0.01)
         let perSqMi = Double(nearby.count) / areaSqMi
-        let grade: String
-        switch nearby.count {
-        case 0: grade = "Clear"
-        case 1...4: grade = "Light"
-        case 5...14: grade = "Mapped"
-        case 15...29: grade = "Heavy"
-        default: grade = "Saturated"
-        }
+        let grade = placeScoreGrade(forCameraCount: nearby.count)
         let flockPercent: Int
         if nearby.isEmpty {
             flockPercent = 0

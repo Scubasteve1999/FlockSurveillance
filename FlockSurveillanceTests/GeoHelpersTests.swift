@@ -223,6 +223,16 @@ final class GeoHelpersTests: XCTestCase {
         XCTAssertTrue(score.shareText.contains(AppLinks.appStore!.absoluteString))
     }
 
+    func testPlaceScoreGradeLadderIsSharedAndCalm() {
+        XCTAssertEqual(GeoHelpers.placeScoreGrades, ["Clear", "Light", "Mapped", "Heavy", "Saturated"])
+        for count in 0...60 {
+            let grade = GeoHelpers.placeScoreGrade(forCameraCount: count)
+            XCTAssertTrue(GeoHelpers.placeScoreGrades.contains(grade), "count \(count) → \(grade)")
+            XCTAssertFalse(grade.lowercased().contains("watch"))
+        }
+        XCTAssertEqual(GeoHelpers.placeScoreGrade(forCameraCount: 9), "Mapped")
+    }
+
     func testPlaceScoreLightMappedHeavyHeadlinesUseMappedPins() {
         let origin = CLLocationCoordinate2D(latitude: 33.75, longitude: -84.39)
         func cameras(_ count: Int) -> [ALPRCamera] {

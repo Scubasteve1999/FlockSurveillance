@@ -66,7 +66,7 @@ final class MidSouthHonestyCopyTests: XCTestCase {
         XCTAssertTrue(source.contains("Agency records"))
         XCTAssertTrue(source.contains("Unknown private"))
         XCTAssertTrue(source.contains("does not store plate reads"))
-        XCTAssertTrue(source.contains("does not invent a scan score"))
+        XCTAssertTrue(source.contains("does not invent a plate-read score"))
         XCTAssertTrue(source.contains("Dodging a mapped pin does not mean you are off the network"))
         XCTAssertTrue(source.contains("Not affiliated with Flock Safety"))
         XCTAssertFalse(source.contains("Community-mapped ALPR locations from OpenStreetMap and the DeFlock mapping community. Not affiliated with Flock Safety."))

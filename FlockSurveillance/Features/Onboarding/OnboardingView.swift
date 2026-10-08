@@ -584,9 +584,9 @@ struct OnboardingView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(isDone ? AppTheme.densityLow.opacity(0.15) : AppTheme.accent)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous)
                         .stroke(isDone ? AppTheme.densityLow.opacity(0.4) : .clear, lineWidth: 1)
                 )
             }

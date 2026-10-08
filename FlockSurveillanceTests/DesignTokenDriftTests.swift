@@ -71,6 +71,10 @@ final class DesignTokenDriftTests: XCTestCase {
             XCTAssertTrue(body.contains(".font(AppTypography.rowSubtitle)"), row)
             XCTAssertTrue(body.contains(".fixedSize(horizontal: false, vertical: true)"), row)
         }
+        // Hub and breadcrumb chips use the shared chip style, not a hand-rolled capsule.
+        XCTAssertNotNil(sharing.range(of: #"Text\(hub\.shortName\)\s*\.filterChipStyle\("#, options: .regularExpression))
+        XCTAssertNotNil(sharing.range(of: #"Text\(title\)\s*\.filterChipStyle\(isOn: false\)"#, options: .regularExpression))
+        XCTAssertFalse(sharing.contains(".clipShape(Capsule())"), "Chips come from FilterChipStyle")
         XCTAssertTrue(sharing.contains(".font(AppTypography.sheetTitle)"))
         XCTAssertTrue(sharing.contains(".font(AppTypography.eyebrow)"))
     }

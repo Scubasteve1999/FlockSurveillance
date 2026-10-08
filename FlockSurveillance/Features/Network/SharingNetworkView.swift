@@ -283,13 +283,7 @@ struct SharingNetworkView: View {
                         selectHub(hub)
                     } label: {
                         Text(hub.shortName)
-                            .font(AppTypography.filterChip)
-                            .foregroundStyle(selectedHub?.id == hub.id ? AppTheme.background : AppTheme.foreground)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(selectedHub?.id == hub.id ? AppTheme.primary : AppTheme.card.opacity(0.92))
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(AppTheme.border, lineWidth: selectedHub?.id == hub.id ? 0 : 1))
+                            .filterChipStyle(isOn: selectedHub?.id == hub.id)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("\(hub.shortName) sharing network")
@@ -327,13 +321,7 @@ struct SharingNetworkView: View {
     private func breadcrumbChip(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(AppTypography.filterChip)
-                .foregroundStyle(AppTheme.foreground)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background(AppTheme.card.opacity(0.92))
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(AppTheme.border, lineWidth: 1))
+                .filterChipStyle(isOn: false)
         }
         .buttonStyle(.plain)
     }

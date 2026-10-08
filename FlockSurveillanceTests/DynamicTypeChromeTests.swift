@@ -124,7 +124,7 @@ final class DynamicTypeChromeTests: XCTestCase {
     func testProjectYmlPinsReleaseVersion() throws {
         let yaml = try readProductSource("project.yml")
         XCTAssertTrue(yaml.contains("MARKETING_VERSION: \"1.9.7\""))
-        XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"23\""))
+        XCTAssertTrue(yaml.contains("CURRENT_PROJECT_VERSION: \"24\""))
         XCTAssertTrue(yaml.contains("iOS: \"17.0\""))
         // Generated project must match project.yml (xcodegen output is committed).
         let pbx = try readProductSource("FlockSurveillance.xcodeproj/project.pbxproj")

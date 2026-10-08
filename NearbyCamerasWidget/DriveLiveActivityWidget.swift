@@ -10,7 +10,7 @@ struct DriveLiveActivityWidget: Widget {
                     Text(AppIdentity.chromeEyebrow("DRIVE"))
                         .font(.system(size: 10, weight: .black, design: .monospaced))
                         .tracking(1.0)
-                        .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                        .foregroundStyle(AppTheme.primary)
                         .accessibilityLabel("\(AppIdentity.displayName) drive")
                     Spacer()
                     Text(context.state.exposureLabel.uppercased())
@@ -25,7 +25,7 @@ struct DriveLiveActivityWidget: Widget {
                             .lineLimit(1)
                         Text("NEAR \(context.state.distanceLabel)")
                             .font(.system(size: 14, weight: .black, design: .monospaced))
-                            .foregroundStyle(Color(red: 0.18, green: 0.92, blue: 0.88))
+                            .foregroundStyle(AppTheme.accent)
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
@@ -39,7 +39,7 @@ struct DriveLiveActivityWidget: Widget {
                 }
             }
             .padding(14)
-            .activityBackgroundTint(Color(red: 0.03, green: 0.035, blue: 0.05))
+            .activityBackgroundTint(AppTheme.background)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
@@ -65,14 +65,14 @@ struct DriveLiveActivityWidget: Widget {
                 }
             } compactLeading: {
                 Image(systemName: "eye")
-                    .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                    .foregroundStyle(AppTheme.primary)
             } compactTrailing: {
                 Text(context.state.distanceLabel)
                     .font(.caption2.weight(.black))
                     .monospacedDigit()
             } minimal: {
                 Image(systemName: "eye.fill")
-                    .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                    .foregroundStyle(AppTheme.primary)
             }
         }
     }

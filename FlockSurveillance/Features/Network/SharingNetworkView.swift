@@ -237,16 +237,16 @@ struct SharingNetworkView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("SHARING NETWORK")
-                    .font(.system(size: 13, weight: .bold))
+                    .font(AppTypography.eyebrow)
                     .tracking(1.1)
                     .foregroundStyle(AppTheme.foreground)
                 Text(statusLine)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(AppTypography.rowTitle)
                     .foregroundStyle(AppTheme.foreground)
                     .fixedSize(horizontal: false, vertical: true)
                 if store.isLoaded, selectedHub != nil {
                     Text("FOIA names pinned to Census places — not live Flock data")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(AppTypography.rowSubtitle)
                         .foregroundStyle(AppTheme.mutedForeground)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -264,7 +264,7 @@ struct SharingNetworkView: View {
                 showPartnerSearch = true
             } label: {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTypography.button)
                     .foregroundStyle(AppTheme.foreground)
                     .frame(width: 40, height: 40)
                     .background(AppTheme.card.opacity(0.92))
@@ -277,7 +277,7 @@ struct SharingNetworkView: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(AppTypography.button)
                     .foregroundStyle(AppTheme.foreground)
                     .frame(width: 40, height: 40)
                     .background(AppTheme.card.opacity(0.92))
@@ -297,7 +297,7 @@ struct SharingNetworkView: View {
                         selectHub(hub)
                     } label: {
                         Text(hub.shortName)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(AppTypography.filterChip)
                             .foregroundStyle(selectedHub?.id == hub.id ? AppTheme.background : AppTheme.foreground)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -341,7 +341,7 @@ struct SharingNetworkView: View {
     private func breadcrumbChip(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 12, weight: .semibold))
+                .font(AppTypography.filterChip)
                 .foregroundStyle(AppTheme.foreground)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
@@ -369,7 +369,7 @@ struct SharingNetworkView: View {
                 .fill(color)
                 .frame(width: 7, height: 7)
             Text(text)
-                .font(.system(size: 10, weight: .semibold))
+                .font(AppTypography.badge)
                 .foregroundStyle(AppTheme.mutedForeground)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -380,17 +380,17 @@ struct SharingNetworkView: View {
         VStack(alignment: .leading, spacing: 8) {
             if let error = store.loadError {
                 Text(error)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.primary)
                 Button("Try again") {
                     Task { await store.reload() }
                 }
-                .font(.system(size: 13, weight: .semibold))
+                .font(AppTypography.button)
                 .foregroundStyle(AppTheme.accent)
                 .disabled(store.isLoading)
             } else {
                 Text("Agency-to-agency FOIA links, mapped by inferred county from the agency name — not which cameras feed which agency.")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.mutedForeground)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -525,16 +525,17 @@ struct SharingNetworkView: View {
             HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(AgencyPortalSharesCopy.midSouthSamplesTitle)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(AppTypography.rowTitle)
                         .foregroundStyle(AppTheme.foreground)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text(midSouthSampleAgency?.displayName ?? "Bundled portal share lists")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(AppTypography.rowSubtitle)
                         .foregroundStyle(AppTheme.mutedForeground)
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 8)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.accent)
             }
             .padding(.top, 4)
@@ -563,16 +564,17 @@ struct SharingNetworkView: View {
             HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(RetentionDeltaCopy.samplesTitle)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(AppTypography.rowTitle)
                         .foregroundStyle(AppTheme.foreground)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text(retentionSamplesSubtitle)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(AppTypography.rowSubtitle)
                         .foregroundStyle(AppTheme.mutedForeground)
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 8)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.accent)
             }
             .padding(.top, 4)
@@ -810,10 +812,10 @@ private struct SharingCountySheet: View {
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(group.county), \(SharingStateGeography.displayName(for: group.state))")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(AppTypography.sheetTitle)
                             .foregroundStyle(AppTheme.foreground)
                         Text(countSummary)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppTypography.pageSubtitle)
                             .foregroundStyle(AppTheme.mutedForeground)
                     }
                     .listRowBackground(AppTheme.card)
@@ -853,12 +855,12 @@ private struct SharingCountySheet: View {
     private func partnerRow(_ partner: SharingPartner) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(partner.name)
-                .font(.system(size: 16, weight: .semibold))
+                .font(AppTypography.rowTitle)
                 .foregroundStyle(AppTheme.foreground)
                 .multilineTextAlignment(.leading)
             if let link = partner.link(for: hub.id) {
                 Text(link.direction.label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(AppTypography.rowSubtitle)
                     .foregroundStyle(AppTheme.mutedForeground)
             }
         }
@@ -888,7 +890,7 @@ private struct SharingUngroupedSheet: View {
             List {
                 Section {
                     Text("These FOIA names did not match a Census county or place in \(stateName). They stay on the list — not on a fake pin.")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTypography.pageSubtitle)
                         .foregroundStyle(AppTheme.mutedForeground)
                         .listRowBackground(AppTheme.card)
                 }
@@ -899,12 +901,12 @@ private struct SharingUngroupedSheet: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(partner.name)
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(AppTypography.rowTitle)
                                     .foregroundStyle(AppTheme.foreground)
                                     .multilineTextAlignment(.leading)
                                 if let link = partner.link(for: hub.id) {
                                     Text(link.direction.label)
-                                        .font(.system(size: 12, weight: .medium))
+                                        .font(AppTypography.rowSubtitle)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 }
                             }
@@ -971,21 +973,21 @@ private struct SharingPartnerSearchSheet: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(partner.name)
-                                    .font(.system(size: 16, weight: .semibold))
+                                    .font(AppTypography.rowTitle)
                                     .foregroundStyle(AppTheme.foreground)
                                     .multilineTextAlignment(.leading)
                                 HStack(spacing: 8) {
                                     Text(partner.state)
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(AppTypography.rowSubtitle.weight(.bold))
                                         .foregroundStyle(AppTheme.accent)
                                     if let county = partner.inferredCountyName {
                                         Text(county)
-                                            .font(.system(size: 12, weight: .medium))
+                                            .font(AppTypography.rowSubtitle)
                                             .foregroundStyle(AppTheme.mutedForeground)
                                     }
                                     if let link = partner.link(for: hub.id) {
                                         Text(link.direction.label)
-                                            .font(.system(size: 12, weight: .medium))
+                                            .font(AppTypography.rowSubtitle)
                                             .foregroundStyle(AppTheme.mutedForeground)
                                     }
                                 }
@@ -1030,7 +1032,7 @@ private struct SharingPartnerSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text(partner.name)
-                        .font(.system(size: 22, weight: .bold))
+                        .font(AppTypography.sheetTitle)
                         .foregroundStyle(AppTheme.foreground)
 
                     HStack(spacing: 8) {
@@ -1050,15 +1052,15 @@ private struct SharingPartnerSheet: View {
                         SectionCard {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("LINK TO \(hub.shortName.uppercased())")
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(AppTypography.eyebrow)
                                     .tracking(0.8)
                                     .foregroundStyle(AppTheme.mutedForeground)
                                 Text(link.direction.label)
-                                    .font(.system(size: 15, weight: .semibold))
+                                    .font(AppTypography.rowTitle)
                                     .foregroundStyle(AppTheme.foreground)
                                 if let release = hub.releaseDate {
                                     Text("Hub release \(release)")
-                                        .font(.system(size: 12, weight: .medium))
+                                        .font(AppTypography.rowSubtitle)
                                         .foregroundStyle(AppTheme.mutedForeground)
                                 }
                             }
@@ -1068,21 +1070,21 @@ private struct SharingPartnerSheet: View {
                     SectionCard {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("SOURCE")
-                                .font(.system(size: 10, weight: .semibold))
+                                .font(AppTypography.eyebrow)
                                 .tracking(0.8)
                                 .foregroundStyle(AppTheme.mutedForeground)
                             Text(attribution?.title ?? "DeFlock Dane Shared Networks")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(AppTypography.rowTitle)
                                 .foregroundStyle(AppTheme.foreground)
                             Text(attribution?.note ?? "")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(AppTypography.footer)
                                 .foregroundStyle(AppTheme.mutedForeground)
                             Text(pinHonesty)
-                                .font(.system(size: 13, weight: .medium))
+                                .font(AppTypography.footer)
                                 .foregroundStyle(AppTheme.mutedForeground)
                             if let urlString = attribution?.url, let url = URL(string: urlString) {
                                 Link("Open DeFlock Dane", destination: url)
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(AppTypography.button)
                                     .foregroundStyle(AppTheme.accent)
                             }
                         }

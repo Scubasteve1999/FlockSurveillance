@@ -521,7 +521,7 @@ struct OnboardingView: View {
                             endPoint: .trailing
                         )
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
                     .shadow(color: AppTheme.primary.opacity(0.4), radius: 12, y: 0)
             }
             .buttonStyle(.plain)

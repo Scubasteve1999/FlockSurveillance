@@ -123,7 +123,7 @@ struct NearbyCamerasWidgetView: View {
                 Text(AppIdentity.chromeMono)
                     .font(.system(size: 10, weight: .black, design: .monospaced))
                     .tracking(1.0)
-                    .foregroundStyle(Color(red: 1.0, green: 0.32, blue: 0.22))
+                    .foregroundStyle(AppTheme.primary)
                     .accessibilityLabel(AppIdentity.displayName)
                 Spacer()
                 if entry.hasHome {
@@ -150,7 +150,7 @@ struct NearbyCamerasWidgetView: View {
                 if let nearest = entry.nearestMeters {
                     Text("NEAR \(format(nearest).uppercased())")
                         .font(.system(size: 13, weight: .black, design: .monospaced))
-                        .foregroundStyle(Color(red: 0.18, green: 0.92, blue: 0.88))
+                        .foregroundStyle(AppTheme.accent)
                 }
                 if let updatedAt = entry.updatedAt {
                     HStack(spacing: 6) {
@@ -160,7 +160,7 @@ struct NearbyCamerasWidgetView: View {
                         Button(intent: RefreshNearbyIntent()) {
                             Image(systemName: "arrow.clockwise")
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(Color(red: 0.18, green: 0.92, blue: 0.88))
+                                .foregroundStyle(AppTheme.accent)
                         }
                         .buttonStyle(.plain)
                     }
@@ -179,8 +179,8 @@ struct NearbyCamerasWidgetView: View {
         .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [
-                    Color(red: 0.07, green: 0.09, blue: 0.12),
-                    Color(red: 0.03, green: 0.035, blue: 0.05)
+                    AppTheme.card,
+                    AppTheme.background
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing

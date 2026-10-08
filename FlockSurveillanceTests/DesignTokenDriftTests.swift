@@ -75,6 +75,21 @@ final class DesignTokenDriftTests: XCTestCase {
         XCTAssertTrue(sharing.contains(".font(AppTypography.eyebrow)"))
     }
 
+    /// Sharing Network text follows Dynamic Type, so the chrome must stay reachable at large sizes:
+    /// the pinned footer scrolls inside a height cap, the overlay can't scroll so it stops at AX2,
+    /// and icon buttons scale their circle with the glyph.
+    func testSharingNetworkChromeStaysReachableAtLargeText() throws {
+        let sharing = try readProductSource("FlockSurveillance/Features/Network/SharingNetworkView.swift")
+        let footer = try XCTUnwrap(Self.declaration("private func footer(maxHeight: CGFloat) -> some View", in: sharing))
+        XCTAssertTrue(footer.contains("HeightCap(maxHeight: maxHeight)"))
+        XCTAssertTrue(footer.contains("ViewThatFits(in: .vertical)"))
+        XCTAssertTrue(footer.contains("ScrollView {"))
+        XCTAssertTrue(sharing.contains("footer(maxHeight: geo.size.height * 0.45)"))
+        XCTAssertTrue(sharing.contains(".dynamicTypeSize(...DynamicTypeSize.accessibility2)"))
+        XCTAssertTrue(sharing.contains("@ScaledMetric(relativeTo: .subheadline) private var diameter: CGFloat = 40"))
+        XCTAssertFalse(sharing.contains(".frame(width: 40, height: 40)"), "Fixed icon circles clip scaled glyphs")
+    }
+
     func testThemeTokensLiveInShared() throws {
         let tokens = try readProductSource("Shared/Theme/AppThemeTokens.swift")
         XCTAssertTrue(tokens.contains("enum AppTheme {"))

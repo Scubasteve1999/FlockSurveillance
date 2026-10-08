@@ -76,10 +76,12 @@ struct SharingNetworkView: View {
                     legend
                 }
                 .padding(.top, 8)
+                // Overlay chrome can't scroll; past AX2 it would cover the whole map.
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             }
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            footer
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                footer(maxHeight: geo.size.height * 0.45)
+            }
         }
         .preferredColorScheme(.dark)
         .task {
@@ -260,29 +262,13 @@ struct SharingNetworkView: View {
                     .stroke(AppTheme.border, lineWidth: 1)
             )
             Spacer(minLength: 0)
-            Button {
+            OverlayIconButton(systemName: "magnifyingglass") {
                 showPartnerSearch = true
-            } label: {
-                Image(systemName: "magnifyingglass")
-                    .font(AppTypography.button)
-                    .foregroundStyle(AppTheme.foreground)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
             }
             .accessibilityLabel("Find partners")
             .disabled(selectedHub == nil || !store.isLoaded)
-            Button {
+            OverlayIconButton(systemName: "xmark") {
                 dismiss()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(AppTypography.button)
-                    .foregroundStyle(AppTheme.foreground)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.card.opacity(0.92))
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
             }
             .accessibilityLabel("Close sharing network")
         }
@@ -376,7 +362,29 @@ struct SharingNetworkView: View {
         }
     }
 
-    private var footer: some View {
+    /// Fits → plain card. Too tall for `maxHeight` (large Dynamic Type) → the same rows scroll
+    /// inside the cap, so the bottom rows stay reachable instead of running off-screen.
+    private func footer(maxHeight: CGFloat) -> some View {
+        HeightCap(maxHeight: maxHeight) {
+            ViewThatFits(in: .vertical) {
+                footerRows
+                ScrollView {
+                    footerRows
+                }
+                .scrollBounceBehavior(.basedOnSize)
+            }
+        }
+        .background(AppTheme.card.opacity(0.94))
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
+                .stroke(AppTheme.border, lineWidth: 1)
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    private var footerRows: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let error = store.loadError {
                 Text(error)
@@ -405,14 +413,6 @@ struct SharingNetworkView: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppTheme.card.opacity(0.94))
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadius, style: .continuous)
-                .stroke(AppTheme.border, lineWidth: 1)
-        )
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
     }
 
     private var officialMapsRow: some View {
@@ -796,6 +796,47 @@ struct SharingNetworkView: View {
     ) -> MKGeodesicPolyline {
         var coordinates = [start, end]
         return MKGeodesicPolyline(coordinates: &coordinates, count: coordinates.count)
+    }
+}
+
+/// Round map-overlay icon button. The circle scales with the glyph (`@ScaledMetric` reads the
+/// overlay's capped Dynamic Type size), so large text never clips the icon.
+private struct OverlayIconButton: View {
+    let systemName: String
+    let action: () -> Void
+
+    @ScaledMetric(relativeTo: .subheadline) private var diameter: CGFloat = 40
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(AppTypography.button)
+                .foregroundStyle(AppTheme.foreground)
+                .frame(width: diameter, height: diameter)
+                .background(AppTheme.card.opacity(0.92))
+                .clipShape(Circle())
+                .overlay(Circle().stroke(AppTheme.border, lineWidth: 1))
+        }
+    }
+}
+
+/// Proposes at most `maxHeight` to its content and reports the content's own size. A
+/// `ViewThatFits` inside therefore falls back to its scrolling form only past the cap,
+/// and a short footer stays exactly as tall as its rows.
+private struct HeightCap: Layout {
+    let maxHeight: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        guard let content = subviews.first else { return .zero }
+        return content.sizeThatFits(capped(proposal))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
+    }
+
+    private func capped(_ proposal: ProposedViewSize) -> ProposedViewSize {
+        ProposedViewSize(width: proposal.width, height: min(proposal.height ?? maxHeight, maxHeight))
     }
 }
 

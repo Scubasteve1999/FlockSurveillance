@@ -70,7 +70,7 @@ Chrome (`Theme/OverwatchChrome.swift`): `OverwatchPageHeader`, `OverwatchBootBan
 **Locked UI decisions — don't relitigate without being asked:**
 - Page header: mono coral eyebrow `FLOCK SURVEILLANCE · {TAB}`, title 28 `.black`.
   Overwatch is an internal Drive/proximity mode, never a competing product title.
-- Map is decluttered: no brand band, city rankings off by default (opt-in via the **METROS** chip),
+- Map is decluttered: no brand band, city rankings off by default (opt-in via the **Metros** chip),
   keeps the threat ticker + RadarHUD
 - Every pulse / glow / scanline animation is gated on Reduce Motion. Any new ambient animation must
   be too — check `@Environment(\.accessibilityReduceMotion)` like `MapRadarView` and `DriveModeView` do.

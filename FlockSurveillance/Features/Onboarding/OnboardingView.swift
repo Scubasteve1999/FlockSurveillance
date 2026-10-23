@@ -268,7 +268,7 @@ struct OnboardingView: View {
                         }
                     }
 
-                    Text("\(teaserScore.cameraCountLabel) within a mile · \(teaserScore.flockPercent)% Flock")
+                    Text("\(teaserScore.cameraCountLabel) within a mile · \(teaserScore.flockShareLine)")
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(AppTheme.mutedForeground)
                 }

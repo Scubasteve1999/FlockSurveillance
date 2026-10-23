@@ -138,7 +138,7 @@ private struct PlaceScoreShareCard: View {
                 VStack(spacing: 0) {
                     instrumentRow("RADIUS", score.radiusMilesLabel)
                     divider
-                    instrumentRow("FLOCK SHARE", "\(score.flockPercent)%")
+                    instrumentRow("FLOCK SHARE", "\(score.flockPercent)% OF MAPPED PINS")
                     divider
                     instrumentRow("DENSITY", String(format: "%.1f / SQ MI", score.densityPerSquareMile))
                     divider

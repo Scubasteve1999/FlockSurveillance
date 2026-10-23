@@ -181,11 +181,13 @@ final class CoverageConfidenceTests: XCTestCase {
         )
         XCTAssertEqual(confidence.state, .fetched)
         XCTAssertTrue(confidence.instrumentLine.contains("Fetched"))
-        XCTAssertTrue(confidence.instrumentLine.contains("1 pin"))
-        XCTAssertTrue(confidence.instrumentLine.contains("100% tagged direction"))
+        XCTAssertTrue(confidence.instrumentLine.contains("1 mapped pin"))
+        XCTAssertTrue(confidence.instrumentLine.contains("100% of mapped pins have a direction tag"))
+        XCTAssertFalse(confidence.instrumentLine.contains("1 pin"))
         XCTAssertFalse(confidence.instrumentLine.contains("% facing"))
         XCTAssertTrue(confidence.instrumentLine.contains("2m"))
-        XCTAssertTrue(confidence.instrumentAccessibilityLabel.contains("100 percent of pins have a tagged direction"))
+        XCTAssertTrue(confidence.instrumentAccessibilityLabel.contains("1 mapped pin"))
+        XCTAssertTrue(confidence.instrumentAccessibilityLabel.contains("100 percent of mapped pins have a direction tag"))
         XCTAssertFalse(confidence.instrumentAccessibilityLabel.lowercased().contains("facing you"))
     }
 
@@ -234,7 +236,7 @@ final class CoverageConfidenceTests: XCTestCase {
         )
         XCTAssertEqual(refreshing.state, .fetched)
         XCTAssertTrue(refreshing.instrumentLine.hasPrefix("Fetched"))
-        XCTAssertTrue(refreshing.instrumentLine.contains("1 pin"))
+        XCTAssertTrue(refreshing.instrumentLine.contains("1 mapped pin"))
         XCTAssertFalse(refreshing.instrumentLine.contains("Loading"))
 
         let cachedWhileRefresh = CoverageConfidence.make(

@@ -213,9 +213,11 @@ struct DriveModeView: View {
                         .foregroundStyle(AppTheme.critical.opacity(0.9))
                 }
             } else {
-                Text("NO PINS AHEAD")
+                Text("NO MAPPED PINS AHEAD")
                     .font(.system(size: 26, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.densityLow)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text("No remaining mapped pins on this drive.")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(AppTheme.mutedForeground)
@@ -242,7 +244,7 @@ struct DriveModeView: View {
             .frame(height: 5)
 
             HStack {
-                Text("\(driveSession.camerasRemaining) PINS AHEAD")
+                Text(driveSession.camerasRemaining == 1 ? "1 MAPPED PIN AHEAD" : "\(driveSession.camerasRemaining) MAPPED PINS AHEAD")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .foregroundStyle(AppTheme.mutedForeground)
                 Spacer()

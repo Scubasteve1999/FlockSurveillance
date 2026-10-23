@@ -136,13 +136,13 @@ struct RouteExposureView: View {
                             driveSession.nextHit.map { hit in
                                 let distance = driveSession.metersToNext.map(ProximityRadar.formatDistance) ?? "—"
                                 return "NEAR \(distance) · \(hit.isFlock ? "Flock" : "mapped") pin"
-                            } ?? "No pins ahead"
+                            } ?? "No mapped pins ahead"
                         )
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(AppTheme.foreground)
                     }
                     Spacer()
-                    Text("\(driveSession.camerasRemaining) PINS AHEAD")
+                    Text(driveSession.camerasRemaining == 1 ? "1 MAPPED PIN AHEAD" : "\(driveSession.camerasRemaining) MAPPED PINS AHEAD")
                         .font(.system(size: 12, weight: .black, design: .monospaced))
                         .foregroundStyle(AppTheme.accent)
                 }

@@ -6,18 +6,11 @@ import XCTest
 @MainActor
 final class ShareCardASOExportTests: XCTestCase {
     func testExportPlaceScoreShareCardForASO() throws {
-        // Prefer TEST_RUNNER_ASO_EXPORT_DIR (forwarded into the simulator test host).
-        // Fallback: repo docs path relative to this source file.
-        let dir: String = {
-            if let env = ProcessInfo.processInfo.environment["ASO_EXPORT_DIR"], !env.isEmpty {
-                return env
-            }
-            return URL(fileURLWithPath: #filePath)
-                .deletingLastPathComponent()
-                .deletingLastPathComponent()
-                .appendingPathComponent("docs/aso-captures/raw")
-                .path
-        }()
+        // Set via TEST_RUNNER_ASO_EXPORT_DIR (forwarded into the simulator test host).
+        // Without it, skip: a plain test run must never write into the repo checkout.
+        guard let dir = ProcessInfo.processInfo.environment["ASO_EXPORT_DIR"], !dir.isEmpty else {
+            throw XCTSkip("ASO_EXPORT_DIR not set; share card export only runs on request.")
+        }
 
         let score = PlaceScore(
             coordinate: CLLocationCoordinate2D(latitude: 43.0731, longitude: -89.4012),

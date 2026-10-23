@@ -512,11 +512,17 @@ struct PlaceScore: Identifiable, Equatable, Hashable {
         cameraCount == 1 ? "1 mapped pin" : "\(cameraCount) mapped pins"
     }
 
+    /// Share of OSM-mapped pins tagged Flock — not camera coverage.
+    var flockShareLine: String {
+        "\(flockPercent)% of mapped pins are Flock"
+    }
+
     var shareText: String {
         var lines = [
             AppIdentity.chromeMono,
             headline,
-            "\(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock · \(flockPercent)%)",
+            "\(cameraCountLabel) within \(radiusMilesLabel) (\(flockCount) Flock)",
+            flockShareLine,
             "Density: \(String(format: "%.1f", densityPerSquareMile)) / sq mi · Grade \(grade)",
             "Mapped OSM pin density near you.",
             "Mapped OSM pins — not a vendor feed.",

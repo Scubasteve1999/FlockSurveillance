@@ -17,23 +17,22 @@ struct CoverageConfidence: Equatable {
     let state: FetchState
     let freshnessShort: String?
 
-    /// Compact instrument line, e.g. `Fetched · 42 pins · 18% tagged direction · 3m`.
-    /// `tagged direction` is the share of viewport OSM pins that have a direction tag — not heading toward the user.
+    /// Two-line instrument readout, e.g. `Fetched · 42 mapped pins · 3m` / `18% of mapped pins have a direction tag`.
+    /// The percentage is the share of viewport OSM pins that have a direction tag — not coverage, not heading toward the user.
     var instrumentLine: String {
-        let pinLabel = visibleCount == 1 ? "1 pin" : "\(visibleCount) pins"
+        let pinLabel = visibleCount == 1 ? "1 mapped pin" : "\(visibleCount) mapped pins"
         var parts: [String] = [stateLabel, pinLabel]
-        parts.append("\(facingPercent)% tagged direction")
         if let freshnessShort, !freshnessShort.isEmpty {
             parts.append(freshnessShort)
         }
-        return parts.joined(separator: " · ")
+        return parts.joined(separator: " · ") + "\n\(facingPercent)% of mapped pins have a direction tag"
     }
 
     /// VoiceOver: tagged-direction share, never “cameras facing you.”
     var instrumentAccessibilityLabel: String {
-        let pinLabel = visibleCount == 1 ? "1 pin" : "\(visibleCount) pins"
+        let pinLabel = visibleCount == 1 ? "1 mapped pin" : "\(visibleCount) mapped pins"
         var parts: [String] = [stateLabel, pinLabel]
-        parts.append("\(facingPercent) percent of pins have a tagged direction")
+        parts.append("\(facingPercent) percent of mapped pins have a direction tag")
         if let freshnessShort, !freshnessShort.isEmpty {
             parts.append(freshnessShort)
         }

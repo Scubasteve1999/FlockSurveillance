@@ -87,6 +87,19 @@ final class MapHonestyCopyTests: XCTestCase {
         XCTAssertTrue(geo.contains("MapHonestyCopy.chipLine"))
     }
 
+    func testFlockShareIsCaptionedAsShareOfMappedPins() throws {
+        let card = try readProductSource("FlockSurveillance/Features/Map/PlaceScoreCard.swift")
+        XCTAssertTrue(card.contains("metric(\"Flock share\", \"\\(score.flockPercent)%\", caption: \"of mapped pins\")"))
+        XCTAssertFalse(card.contains("metric(\"Flock\","), "Bare FLOCK N% reads like coverage")
+
+        let shareCards = try readProductSource("FlockSurveillance/Theme/ShareCardRenderer.swift")
+        XCTAssertTrue(shareCards.contains("instrumentRow(\"FLOCK SHARE\", \"\\(score.flockPercent)% OF MAPPED PINS\")"))
+
+        let onboarding = try readProductSource("FlockSurveillance/Features/Onboarding/OnboardingView.swift")
+        XCTAssertTrue(onboarding.contains("teaserScore.flockShareLine"))
+        XCTAssertFalse(onboarding.contains("% Flock\""))
+    }
+
     func testLearnAndTrafficCamHonestyUnchanged() throws {
         let learn = try readProductSource("FlockSurveillance/Features/Learn/LearnView.swift")
         XCTAssertTrue(learn.contains("incomplete coverage is curiosity, not a blank map"))

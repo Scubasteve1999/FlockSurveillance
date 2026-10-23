@@ -341,9 +341,10 @@ struct RadarHUD: View {
                     .font(.system(size: 30, weight: .black, design: .rounded))
                     .foregroundStyle(AppTheme.foreground)
                     .contentTransition(.numericText())
-                Text(visibleCount == 1 ? "PIN" : "PINS")
+                Text(visibleCount == 1 ? "MAPPED\nPIN" : "MAPPED\nPINS")
                     .font(.system(size: 9, weight: .black))
                     .tracking(1.2)
+                    .multilineTextAlignment(.center)
                     .foregroundStyle(AppTheme.mutedForeground)
             }
         }

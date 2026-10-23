@@ -134,8 +134,8 @@ struct PlaceScoreCard: View {
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(AppTheme.mutedForeground)
 
-                    HStack(spacing: 12) {
-                        metric("Flock", "\(score.flockPercent)%")
+                    HStack(alignment: .top, spacing: 12) {
+                        metric("Flock share", "\(score.flockPercent)%", caption: "of mapped pins")
                         metric("Density", String(format: "%.1f/mi²", score.densityPerSquareMile))
                     }
                 }
@@ -171,7 +171,7 @@ struct PlaceScoreCard: View {
         )
     }
 
-    private func metric(_ label: String, _ value: String) -> some View {
+    private func metric(_ label: String, _ value: String, caption: String? = nil) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label.uppercased())
                 .font(.system(size: 9, weight: .semibold))
@@ -180,7 +180,14 @@ struct PlaceScoreCard: View {
             Text(value)
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(AppTheme.foreground)
+            if let caption {
+                Text(caption)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(AppTheme.mutedForeground)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
+        .accessibilityElement(children: .combine)
     }
 
     private func radiusChip(

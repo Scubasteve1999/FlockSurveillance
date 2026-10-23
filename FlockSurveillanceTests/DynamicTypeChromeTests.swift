@@ -12,12 +12,12 @@ final class DynamicTypeChromeTests: XCTestCase {
         XCTAssertTrue(theme.contains("static let pageTitle = Font.title.weight(.black)"))
         XCTAssertTrue(theme.contains("static let pageEyebrow = Font.system(.caption, design: .monospaced).weight(.black)"))
         XCTAssertTrue(theme.contains("static let pageSubtitle = Font.subheadline.weight(.medium)"))
-        XCTAssertTrue(theme.contains("static let sectionEyebrow = Font.caption2.weight(.semibold)"))
+        XCTAssertTrue(theme.contains("static let eyebrow = Font.caption2.weight(.semibold)"))
+        XCTAssertTrue(theme.contains("static let sectionEyebrow = eyebrow"), "One eyebrow role, not two near-duplicates")
         XCTAssertTrue(theme.contains("static let rowTitle = Font.subheadline.weight(.semibold)"))
         XCTAssertTrue(theme.contains("static let rowSubtitle = Font.caption.weight(.medium)"))
         XCTAssertTrue(theme.contains("static let hudMono = Font.system(.caption, design: .monospaced).weight(.black)"))
         XCTAssertTrue(theme.contains("static let sheetTitle = Font.title2.weight(.bold)"))
-        XCTAssertTrue(theme.contains("static let eyebrow = Font.caption.weight(.bold)"))
         XCTAssertFalse(theme.contains("static let chip = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let filterChip = Font.system(size:"))
         XCTAssertFalse(theme.contains("static let pageTitle = Font.system(size:"))
@@ -70,10 +70,16 @@ final class DynamicTypeChromeTests: XCTestCase {
         XCTAssertTrue(map.contains("Text(item.title)"))
         XCTAssertTrue(map.contains(".font(AppTypography.filterChip)"))
         // Every filter chip shares one style — Metros / Gates are not a second mono style.
-        XCTAssertTrue(map.contains("Text(item.title)\n                                .mapFilterChip("))
-        XCTAssertTrue(map.contains("Text(\"Traffic cams\")\n                            .mapFilterChip("))
-        XCTAssertTrue(map.contains("Text(\"Metros\")\n                                .mapFilterChip("))
-        XCTAssertTrue(map.contains("Text(\"Gates\")\n                    .mapFilterChip("))
+        // Whitespace-tolerant so re-indenting the filter bar doesn't break the lock.
+        for label in ["item.title", "\"Traffic cams\"", "\"Metros\"", "\"Gates\""] {
+            XCTAssertTrue(
+                try chipUsesSharedStyle(label, in: map),
+                "Text(\(label)) must use .filterChipStyle(isOn:tint:)"
+            )
+        }
+        let chipStyle = try readProductSource("FlockSurveillance/Theme/AppTheme.swift")
+        XCTAssertTrue(chipStyle.contains("struct FilterChipStyle: ViewModifier"))
+        XCTAssertTrue(chipStyle.contains(".font(AppTypography.filterChip)"))
         XCTAssertFalse(map.contains("Text(\"METROS\")"))
         XCTAssertFalse(map.contains("Text(\"GATES\")"))
         XCTAssertFalse(map.contains(".font(AppTypography.hudMono)"))
@@ -131,6 +137,13 @@ final class DynamicTypeChromeTests: XCTestCase {
         XCTAssertTrue(pbx.contains("MARKETING_VERSION = 1.9.7;"))
         XCTAssertTrue(pbx.contains("CURRENT_PROJECT_VERSION = 24;"))
         XCTAssertFalse(pbx.contains("MARKETING_VERSION = 1.3.5;"))
+    }
+
+    /// `Text(<label>)` immediately followed (any whitespace) by `.filterChipStyle(`.
+    private func chipUsesSharedStyle(_ label: String, in source: String) throws -> Bool {
+        let pattern = "Text\\(" + NSRegularExpression.escapedPattern(for: label) + "\\)\\s*\\.filterChipStyle\\("
+        let regex = try NSRegularExpression(pattern: pattern)
+        return regex.firstMatch(in: source, range: NSRange(source.startIndex..., in: source)) != nil
     }
 
     /// Point sizes applied to `Text` / `Label` within the next few modifier lines.

@@ -121,7 +121,7 @@ struct ReportCameraSheet: View {
                             .focused($notesFocused)
                             .padding(12)
                             .background(AppTheme.background.opacity(0.55))
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
                             .foregroundStyle(AppTheme.foreground)
                     }
 
@@ -133,7 +133,7 @@ struct ReportCameraSheet: View {
                             .focused($notesFocused)
                             .padding(12)
                             .background(AppTheme.background.opacity(0.55))
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: AppTheme.buttonCornerRadius, style: .continuous))
                             .foregroundStyle(AppTheme.foreground)
                     }
                 }

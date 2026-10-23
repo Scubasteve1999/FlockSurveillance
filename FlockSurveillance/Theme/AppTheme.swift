@@ -43,6 +43,34 @@ struct StatusBadge: View {
     }
 }
 
+/// One capsule chip style for filters and pickers: map filters (All ALPRs, Flock-branded pins,
+/// Traffic cams, Metros, Gates) and Sharing Network hub / breadcrumb chips. filterChip type,
+/// 14×8 padding, `tint` fill when on, bordered card when off.
+struct FilterChipStyle: ViewModifier {
+    let isOn: Bool
+    var tint: Color = AppTheme.primary
+
+    func body(content: Content) -> some View {
+        content
+            .font(AppTypography.filterChip)
+            .foregroundStyle(isOn ? AppTheme.background : AppTheme.foreground)
+            .multilineTextAlignment(.center)
+            .lineLimit(3)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isOn ? tint : AppTheme.card.opacity(0.92))
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(AppTheme.border, lineWidth: isOn ? 0 : 1))
+    }
+}
+
+extension View {
+    func filterChipStyle(isOn: Bool, tint: Color = AppTheme.primary) -> some View {
+        modifier(FilterChipStyle(isOn: isOn, tint: tint))
+    }
+}
+
 /// Gates MapKit-backed content on a live, non-degenerate size.
 ///
 /// MapKit hangs if inserted at zero size (CAMetalLayer width=0), so wrap map content in

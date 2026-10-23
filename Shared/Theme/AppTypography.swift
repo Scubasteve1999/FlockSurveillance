@@ -13,12 +13,12 @@ enum AppTypography {
     /// Sheet / detail title — county, partner agency (~22pt at default).
     static let sheetTitle = Font.title2.weight(.bold)
 
-    /// Section eyebrows — PREFERENCES, ALERTS, ABOUT (~11pt at default).
-    static let sectionEyebrow = Font.caption2.weight(.semibold)
-    /// Tracked uppercase labels inside cards and map overlays — SHARING NETWORK, SOURCE,
-    /// LINK TO … (~12pt at default). Not the mono coral `pageEyebrow`, and not a Settings
-    /// list header (`sectionEyebrow`).
-    static let eyebrow = Font.caption.weight(.bold)
+    /// The one tracked-uppercase label role (~11pt at default): Settings section headers
+    /// (PREFERENCES, ALERTS, ABOUT), card labels (SOURCE, LINK TO …) and map-overlay titles
+    /// (SHARING NETWORK). Not the mono coral page header — that is `pageEyebrow`.
+    static let eyebrow = Font.caption2.weight(.semibold)
+    /// Settings section headers — the same role as `eyebrow`, kept so call sites read clearly.
+    static let sectionEyebrow = eyebrow
     /// Row titles — toggles, list rows, tappable footer rows (~15pt at default).
     static let rowTitle = Font.subheadline.weight(.semibold)
     /// Row subtitles, status lines, row chevrons (~12pt at default).
